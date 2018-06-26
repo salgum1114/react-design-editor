@@ -6,7 +6,7 @@ import Editor from '../components/Editor';
 class App extends Component {
     render() {
         return (
-            <div className="rde-main" flexDirection="column">
+            <div className="rde-main">
                 <div className="rde-title">
                     <Title />
                 </div>
