@@ -8,7 +8,8 @@
     "clean": "webpack -p --config webpack.prod.config.js --clean",
     "build": "webpack -p --config webpack.prod.config.js",
     "start": "npm install && npm run start:dev",
-    "start:dev": "webpack-dev-server --config webpack.dev.config.js --inline"
+    "start:dev": "webpack-dev-server --config webpack.dev.config.js --inline",
+    "postinstall": "npm install --no-save --no-optional fabric@~2.3.3"
   },
   "repository": {
     "type": "git",
@@ -17,7 +18,7 @@
   "keywords": [
     "React.js",
     "ant.design",
-    "fabric.js",
+    "fabric",
     "design-editor",
     "designer"
   ],
@@ -39,6 +40,7 @@
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
+    "polestar-icons": "^0.9.15",
     "prop-types": "^15.6.2",
     "qs": "^6.5.2",
     "react": "^16.4.1",

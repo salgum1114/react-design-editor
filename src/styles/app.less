@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body, #root {
+    height: 100%;
+    width: 100%;
+}
+
+.rde-main {
+    height: inherit;
+    width: inherit;
+    .rde-title {
+        height: 60px;
+    }
+    .rde-content {
+        height: calc(100% - 60px);
+    }
+}
+
+.rde-editor {
+    height: 100%;
+}
+
+.rde-wireframe {
+    width: 180px;
+}
+
+.rde-items {
+    width: 200px;
+    .rde-item {
+        width: 80px;
+        height: 80px;
+        text-align: center;
+        transition: .5s ease;
+        border: 0 solid transparent;
+        border-radius: 12px;
+        cursor: pointer;
+        i {
+            line-height: 1.5em;
+        }
+        .rde-item-text {
+            line-height: 0;
+            font-size: 16px;
+        }
+        &:hover {
+            background: rgba(0, 0, 0, .2);
+            box-shadow: 0 0 11px rgba(33, 33, 33, .2); 
+        }
+    }
+}
+
+.rde-canvas {
+    height: 100%;
+    width: 100%;
+    background: #f3f3f3;
+}
+
+.rde-properties {
+    width: 200px;
+}
