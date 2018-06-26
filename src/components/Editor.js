@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import uuid from 'uuid/v4';
+import { Row, Col } from 'antd';
 
 import { FlexBox, FlexItem } from './flex';
 import Wireframe from './Wireframe';
@@ -32,20 +33,20 @@ class Editor extends Component {
         const { items } = this.state;
         const { onAdd } = this.handlers;
         return (
-            <FlexBox className="rde-editor" flexDirection="row">
-                <FlexItem flex="0 1 auto">
+            <Row className="rde-editor">
+                <Col span={2} className="rde-wireframe">
                     <Wireframe />
-                </FlexItem>
-                <FlexItem flex="0 1 auto">
+                </Col>
+                <Col span={4} className="rde-items">
                     <Items onAdd={onAdd} />
-                </FlexItem>
-                <FlexItem flex="0 1 auto">
+                </Col>
+                <Col span={12} className="rde-canvas">
                     <Canvas items={items} />
-                </FlexItem>
-                <FlexItem flex="0 1 auto">
+                </Col>
+                <Col span={6} className="rde-properties">
                     <Properties />
-                </FlexItem>
-            </FlexBox>
+                </Col>
+            </Row>
         );
     }
 }
