@@ -1,16 +1,33 @@
 import React, { Component } from 'react';
 import uuid from 'uuid/v4';
-import { Row, Col } from 'antd';
+import { ResizeSensor } from 'css-element-queries';
 
-import { FlexBox, FlexItem } from './flex';
 import Wireframe from './Wireframe';
 import Items from './Items';
 import Canvas from './Canvas';
 import Properties from './Properties';
+import FooterToolbar from './FooterToolbar';
+import HeaderToolbar from './HeaderToolbar';
 
 class Editor extends Component {
     state = {
         items: {},
+        canvasRect: {
+            width: 0,
+            height: 0,
+        },
+    }
+
+    componentDidMount() {
+        new ResizeSensor(this.container, () => {
+            const canvasRect = Object.assign({}, this.state.canvasRect, {
+                width: this.container.clientWidth,
+                height: this.container.clientHeight,
+            });
+            this.setState({
+                canvasRect,
+            });
+        });
     }
 
     handlers = {
@@ -30,23 +47,32 @@ class Editor extends Component {
     }
 
     render() {
-        const { items } = this.state;
+        const { items, canvasRect } = this.state;
         const { onAdd } = this.handlers;
         return (
-            <Row className="rde-editor">
-                <Col span={2} className="rde-wireframe">
+            <div className="rde-editor">
+                <nav className="rde-wireframe">
                     <Wireframe />
-                </Col>
-                <Col span={4} className="rde-items">
+                </nav>
+                <aside className="rde-items">
                     <Items onAdd={onAdd} />
-                </Col>
-                <Col span={12} className="rde-canvas">
-                    <Canvas items={items} />
-                </Col>
-                <Col span={6} className="rde-properties">
+                </aside>
+                <main
+                    ref={(c) => { this.container = c; }}
+                    className="rde-canvas-container"
+                >
+                    <Canvas items={items} width={canvasRect.width} height={canvasRect.height} />
+                </main>
+                <header style={{ width: canvasRect.width }} className="rde-canvas-header">
+                    <HeaderToolbar />
+                </header>
+                <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
+                    <FooterToolbar />
+                </footer>
+                <aside className="rde-properties">
                     <Properties />
-                </Col>
-            </Row>
+                </aside>
+            </div>
         );
     }
 }

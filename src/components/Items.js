@@ -89,7 +89,7 @@ class Items extends Component {
     render() {
         const showArrow = false;
         return (
-            <div className="rde-items">
+            <div>
                 <Collapse bordered={false}>
                     <Panel showArrow={showArrow} header="Marker">
                         {this.renderItems('MARKER', MARKER)}

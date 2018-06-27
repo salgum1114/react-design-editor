@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import difference from 'lodash/difference';
 import { fabric } from 'fabric';
 
-import { FlexBox, FlexItem } from './flex';
-
-
 const MARKER = {
     default: {
-        item: new fabric.IText('\uf041', {
-            color: 'black',
+        create: (id) => new fabric.IText('\uf041', {
+            id,
             fontSize: 60,
             fontFamily: 'FontAwesome',
+            centeredScaling: true,
         }),
     },
 };
@@ -20,23 +19,30 @@ const TEXT = {
 };
 
 const IMAGE = {
-    
+    default: {
+        create: (id) => new fabric.Image(null, {
+            id,
+        }),
+    },
 };
 
 const DRAWING = {
     triangle: {
-        item: new fabric.Triangle({
+        create: (id) => new fabric.Triangle({
+            id,
             width: 30,
             height: 30,
         }),
     },
     circle: {
-        item: new fabric.Circle({
+        create: (id) => new fabric.Circle({
+            id,
             radius: 40,
         }),
     },
     rect: {
-        item: new fabric.Rect({
+        create: (id) => new fabric.Rect({
+            id,
             width: 40,
             height: 40,
         }),
@@ -50,40 +56,131 @@ const ITEM_TEMPLATE = {
     DRAWING,
 };
 
-const topToolbarHeight = 40;
-const bottomToolbarHeight = 60;
+const canvasSize = {
+    width: 600,
+    height: 400,
+};
 
 class Canvas extends Component {
+    static propsTypes = {
+        width: PropTypes.width,
+        height: PropTypes.height,
+        onAdd: PropTypes.func,
+        onDelete: PropTypes.func,
+        onDuplicate: PropTypes.func,
+        onSelect: PropTypes.func,
+    }
+
+    handlers = {
+        add: (key, item) => {
+            const newItem = ITEM_TEMPLATE[item.type][item.key].create(key);
+            this.canvas.add(newItem);
+            this.canvas.centerObject(newItem);
+        },
+        delete: (key) => {
+
+        },
+        duplicate: (key) => {
+            console.log(this.canvas.getActiveObject());
+        },
+        select: (item) => {
+            console.log(item);
+            const { onSelect } = this.props;
+            if (onSelect) {
+                onSelect(item);
+            }
+        },
+        import: () => {
+
+        },
+        export: () => {
+
+        },
+        submit: () => {
+
+        },
+    }
+
+    events = {
+        mousewheel: () => {
+            this.canvas.on('mouse:wheel', (opt) => {
+                const delta = opt.e.deltaY;
+                let zoom = this.canvas.getZoom();
+                if (delta > 0) {
+                    zoom -= 0.01;
+                } else {
+                    zoom += 0.01;
+                }
+                this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoom);
+                opt.e.preventDefault();
+                opt.e.stopPropagation();
+            });
+        },
+        mousedown: () => {
+            const { select } = this.handlers;
+            this.canvas.on('mouse:down', (opt) => {
+                select(opt.target);
+            });
+        },
+        resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
+            this.canvas.setWidth(nextWidth);
+            this.canvas.setHeight(nextHeight);
+            this.canvas.centerObject(this.mainRect);
+            const diffWidth = (nextWidth / 2) - (currentWidth / 2);
+            const diffHeight = (nextHeight / 2) - (currentHeight / 2);
+            this.canvas.getObjects().forEach((object, index) => {
+                if (index !== 0) {
+                    object.set('left', object.left + diffWidth);
+                    object.set('top', object.top + diffHeight);
+                }
+            });
+            this.canvas.renderAll();
+        },
+    }
+
+    static defaultProps = {
+        width: 0,
+        height: 0,
+    }
+
     constructor(props) {
         super(props);
         this.container = React.createRef();
     }
-    
+
     componentDidMount() {
-        setTimeout(() => {
-            this.canvas = new fabric.Canvas('c', {
-                preserveObjectStacking: true,
-                width: this.container.current.clientWidth,
-                height: this.container.current.clientHeight - topToolbarHeight - bottomToolbarHeight,
-                backgroundColor: '#f3f3f3',
-            });
-            const circle = new fabric.Circle({
-                radius: 20, fill: 'gree', left: 100, top: 100,
-            });
-            const triangle = new fabric.Triangle({
-                width: 20, height: 30, fill: 'blue', left: 50, top: 50,
-            });
-            this.canvas.add(circle, triangle);
-            console.log(this.container.current);
-            console.log(this.container.current.clientWidth, this.container.current.clientHeight);
-        }, 500);
+        const { width, height } = this.props;
+        this.canvas = new fabric.Canvas('c', {
+            preserveObjectStacking: true,
+            width,
+            height,
+            backgroundColor: '#f3f3f3',
+        });
+        this.mainRect = new fabric.Rect({
+            width: canvasSize.width,
+            height: canvasSize.height,
+            fill: '#fff',
+            hasControls: false,
+            selectable: false,
+            lockMovementX: true,
+            lockMovementY: true,
+            top: 0,
+            left: 0,
+            hoverCursor: 'default',
+        });
+        this.canvas.add(this.mainRect);
+        const { mousewheel, mousedown } = this.events;
+        mousewheel();
+        mousedown();
     }
 
     componentWillReceiveProps(nextProps) {
         const prevKeys = Object.keys(this.props.items);
         const nextKeys = Object.keys(nextProps.items);
         const differenceKeys = difference(nextKeys, prevKeys);
-        console.log(this.container.current.getBoundingClientRect());
+        if (this.props.width !== nextProps.width || this.props.height !== nextProps.height) {
+            this.events.resize(this.props.width, this.props.height, nextProps.width, nextProps.height);
+        }
         if (differenceKeys.length) {
             const { add } = this.handlers;
             const key = differenceKeys[0];
@@ -91,37 +188,13 @@ class Canvas extends Component {
         }
     }
 
-    handlers = {
-        add: (key, item) => {
-            const newItem = ITEM_TEMPLATE[item.type][item.key].item;
-            this.canvas.add(newItem);
-            console.log(key, item);
-        },
-        delete: (key) => {
-
-        },
-        duplicate: (key) => {
-
-        },
-    }
-
     render() {
         return (
             <div
-                style={{ height: '100%' }}
-                ref={this.container} 
+                ref={this.container}
+                className="rde-canvas"
             >
-                <FlexBox style={{ height: '100%' }} flexWrap="wrap" flexDirection="column">
-                    <FlexItem flex="0">
-                        <div style={{ height: topToolbarHeight }}>top toolbar</div>
-                    </FlexItem>
-                    <FlexItem flex="1 auto">
-                        <canvas id="c" />
-                    </FlexItem>
-                    <FlexItem flex="0">
-                        <div style={{ height: bottomToolbarHeight }}>bottom toolbar</div>
-                    </FlexItem>
-                </FlexBox>
+                <canvas id="c" />
             </div>
         );
     }
