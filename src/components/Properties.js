@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Form } from 'antd';
+import PropertyFrom from './properties/PropertyForm';
 
 class Properties extends Component {
     render() {
+        const { type } = this.props;
         return (
-            <div className="rde-properties">
-                Properties
-            </div>
+            <PropertyFrom type={type} />
         );
     }
 }

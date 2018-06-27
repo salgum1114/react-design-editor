@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
-class Wireframe extends Component {
+class HeaderToolbar extends Component {
     render() {
         return (
             <div>
-                Wireframe
+                Header
             </div>
         );
     }
 }
 
-export default Wireframe;
+export default HeaderToolbar;
