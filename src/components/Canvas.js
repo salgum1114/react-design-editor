@@ -128,8 +128,7 @@ class Canvas extends Component {
             });
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
-            this.canvas.setWidth(nextWidth);
-            this.canvas.setHeight(nextHeight);
+            this.canvas.setWidth(nextWidth).setHeight(nextHeight);
             this.canvas.centerObject(this.mainRect);
             const diffWidth = (nextWidth / 2) - (currentWidth / 2);
             const diffHeight = (nextHeight / 2) - (currentHeight / 2);
@@ -137,6 +136,7 @@ class Canvas extends Component {
                 if (index !== 0) {
                     object.set('left', object.left + diffWidth);
                     object.set('top', object.top + diffHeight);
+                    object.setCoords();
                 }
             });
             this.canvas.renderAll();
