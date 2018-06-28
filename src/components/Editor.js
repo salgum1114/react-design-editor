@@ -19,7 +19,7 @@ class Editor extends Component {
     }
 
     componentDidMount() {
-        new ResizeSensor(this.container, () => {
+        new ResizeSensor(this.container, (e) => {
             const canvasRect = Object.assign({}, this.state.canvasRect, {
                 width: this.container.clientWidth,
                 height: this.container.clientHeight,

@@ -31,7 +31,7 @@ const IMAGE = [
     },
 ];
 
-const DRAWING = [
+const SHAPE = [
     // {
     //     key: 'line',
     //     icon: 'picture-o',
@@ -76,7 +76,7 @@ class Items extends Component {
             {
                 items.map(item => (
                     <FlexItem key={item.key} onClick={e => this.handlers.onClickItem(type, item.key)} className="rde-item" flex="0 1 auto">
-                        <Icon icon={item.icon} size={3} />
+                        <Icon name={item.icon} size={3} />
                         <div className="rde-item-text">
                             {item.title}
                         </div>
@@ -100,8 +100,8 @@ class Items extends Component {
                     <Panel showArrow={showArrow} header="Image">
                         {this.renderItems('IMAGE', IMAGE)}
                     </Panel>
-                    <Panel showArrow={showArrow} header="Drawing">
-                        {this.renderItems('DRAWING', DRAWING)}
+                    <Panel showArrow={showArrow} header="Shape">
+                        {this.renderItems('SHAPE', SHAPE)}
                     </Panel>
                 </Collapse>
             </div>

@@ -31,7 +31,7 @@ const IMAGE = {
     },
 };
 
-const DRAWING = {
+const SHAPE = {
     triangle: {
         create: (id) => new fabric.Triangle({
             id,
@@ -58,7 +58,7 @@ const ITEM_TEMPLATE = {
     MARKER,
     TEXT,
     IMAGE,
-    DRAWING,
+    SHAPE,
 };
 
 const canvasSize = {

@@ -1,11 +1,52 @@
 import React, { Component } from 'react';
+import { Button } from 'antd';
+
+import Icon from './Icon';
+import { FlexBox, FlexItem } from './flex';
 
 class HeaderToolbar extends Component {
     render() {
         return (
-            <div>
-                Header
-            </div>
+            <FlexBox className="rde-canvas-toolbar-container" flex="1">
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-content">
+                    <Button shape="circle">
+                        <Icon name="sitemap" />
+                    </Button>
+                    <div className="rde-canvas-list">
+                        canvas list
+                    </div>
+                </FlexItem>
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
+                    <Button shape="circle">
+                        <Icon name="align-left" />
+                    </Button>
+                    <Button shape="circle">
+                        <Icon name="align-center" />
+                    </Button>
+                    <Button shape="circle">
+                        <Icon name="align-right" />
+                    </Button>
+                    <Button shape="circle"></Button>
+                    <Button shape="circle"></Button>
+                    <Button shape="circle"></Button>
+                </FlexItem>
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-operation">
+                    <Button shape="circle">
+                        <Icon name="clone" />
+                    </Button>
+                    <Button shape="circle">
+                        <Icon name="trash" />
+                    </Button>
+                </FlexItem>
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
+                    <Button>
+                        <Icon name="rotate-left" />Undo
+                    </Button>
+                    <Button>
+                        Redo<Icon name="rotate-right" />
+                    </Button>
+                </FlexItem>
+            </FlexBox>
         );
     }
 }

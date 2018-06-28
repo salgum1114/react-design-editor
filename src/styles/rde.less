@@ -24,6 +24,10 @@ html, body, #root {
         display: -webkit-box;
         display: -ms-flexbox;
         display: flex;
+        -webkit-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+        z-index: 2000;
     }
     .rde-content {
         -webkit-box-flex: 1;
@@ -45,20 +49,24 @@ html, body, #root {
     display: -ms-flexbox;
     display: flex;
     height: 100vh;
-    border: 1px solid;
     .rde-wireframe {
         position: relative;
         left: 0;
         height: calc(100% - 60px);
         width: 160px;
-        border: 1px solid;
+        -webkit-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        z-index: 2000;
     }
     .rde-items {
         position: relative;
         height: calc(100% - 60px);
         min-width: 200px;
         width: 200px;
-        border: 1px solid;
+        -webkit-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
         .rde-item {
             width: 80px;
             height: 80px;
@@ -79,6 +87,7 @@ html, body, #root {
                 box-shadow: 0 0 11px rgba(33, 33, 33, .2); 
             }
         }
+        z-index: 10;
     }
     .rde-canvas-container {
         position: relative;
@@ -87,7 +96,7 @@ html, body, #root {
         flex: none;
         flex: 1;
         height: calc(100% - 60px);
-        border: 1px solid;
+        z-index: 0;
         .rde-canvas {
             position: absolute;
             width: 100%;
@@ -100,24 +109,68 @@ html, body, #root {
         transition: width .05s linear;
         display: flex;
         height: 40px;
-        background: rgba(22,25,30,.9);
         left: 360px;
         position: absolute;
         width: 100%;
         z-index: 1;
-        border: 1px solid;
+        -webkit-box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.5);
+        .rde-canvas-list {
+            position: absolute;
+            display: none;
+            background: #fff;
+            width: 300px;
+            height: calc(100vh - 160px);
+            top: 40px;
+            z-index: 2000;
+        }
     }
     .rde-canvas-footer {
         transition: width .05s linear;
         display: flex;
         height: 50px;
-        background: rgba(22,25,30,.9);
         left: 360px;
         bottom: 0;
         position: absolute;
         width: 100%;
         z-index: 1;
-        border: 1px solid;
+        -webkit-box-shadow: 0 -5px 10px -5px rgba(0, 0, 0, .5);
+        -moz-box-shadow: 0 -5px 10px -5px rgba(0, 0, 0, .5);
+        box-shadow: 0 -5px 10px -5px rgba(0, 0, 0, .5);
+    }
+    .rde-canvas-toolbar-container {
+        background: rgba(0, 0, 0, 0.05);
+        .rde-canvas-toolbar {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin: 4px;
+            &:not(:last-child):after {
+                background-color: #fff;
+                position: absolute;
+                right: -5px;
+                width: 1px;
+                height: 20px;
+                content: "";
+            }
+            &-content:hover {
+
+                .rde-canvas-list {
+                    display: block;
+                    -webkit-animation: slide-right .3s linear;
+                    -moz-animation: slide-right .3s linear;
+                }
+            }
+            &-history {
+                flex: 1;
+                justify-content: flex-end;
+            }
+            &-action {
+                flex: 1;
+                justify-content: flex-end;
+            }
+        }
     }
     .rde-properties {
         overflow-y: auto;
@@ -125,12 +178,24 @@ html, body, #root {
         height: calc(100% - 60px);
         width: 300px;
         right: 0;
-        z-index: 10;
-        border: 1px solid;
+        z-index: 1000;
+        background: #fff;
+        -webkit-box-shadow: -5px 0 5px -5px rgba(0, 0, 0, .5);
+        -moz-box-shadow: -5px 0 5px -5px rgba(0, 0, 0, .5);
+        box-shadow: -5px 0 5px -5px rgba(0, 0, 0, .5);
     }
 }
 
 .sketch-picker {
     padding: 0 !important;
     box-shadow: unset !important;
+}
+
+@-webkit-keyframes slide-right {
+    0% { opacity: 0; -webkit-transform: translateX(-100%); }   
+  100% { opacity: 1; -webkit-transform: translateX(0); }
+}
+@-moz-keyframes slide-right {
+    0% { opacity: 0; -moz-transform: translateX(-100%); }   
+  100% { opacity: 1; -moz-transform: translateX(0); }
 }
