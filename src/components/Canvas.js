@@ -9,13 +9,18 @@ const MARKER = {
             id,
             fontSize: 60,
             fontFamily: 'FontAwesome',
-            centeredScaling: true,
+            editable: false,
         }),
     },
 };
 
 const TEXT = {
-    
+    default: {
+        create: (id) => new fabric.Textbox('Input Text', {
+            id,
+            charSpacing:1000,
+        }),
+    }
 };
 
 const IMAGE = {
