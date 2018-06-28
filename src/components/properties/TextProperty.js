@@ -1,5 +1,6 @@
 import React from 'react';
-import { Form, Input, Slider, Switch, Col, InputNumber, Button, Select } from 'antd';
+import { Form, Slider, Col, Button, Select } from 'antd';
+import Icon from 'polestar-icons';
 
 export default {
     render(form) {
@@ -43,13 +44,79 @@ export default {
                 <Col span={6}>
                     <Form.Item>
                         {
-                            getFieldDecorator('height', {
+                            getFieldDecorator('fontWeight', {
                                 rules: [{
                                     required: true,
                                     message: 'Please input height',
                                 }],
                             })(
-                                <Button shape="circle" />,
+                                <Button shape="circle">
+                                    <Icon name="bold" />
+                                </Button>,
+                            )
+                        }
+                    </Form.Item>
+                </Col>
+                <Col span={6}>
+                    <Form.Item>
+                        {
+                            getFieldDecorator('fontStyle', {
+                                rules: [{
+                                    required: true,
+                                    message: 'Please input rotation',
+                                }],
+                            })(
+                                <Button shape="circle">
+                                    <Icon name="italic" />
+                                </Button>,
+                            )
+                        }
+                    </Form.Item>
+                </Col>
+                <Col span={6}>
+                    <Form.Item>
+                        {
+                            getFieldDecorator('linethrough', {
+                                rules: [{
+                                    required: true,
+                                    message: 'Please input x position',
+                                }],
+                            })(
+                                <Button shape="circle">
+                                    <Icon name="strikethrough" />
+                                </Button>,
+                            )
+                        }
+                    </Form.Item>
+                </Col>
+                <Col span={6}>
+                    <Form.Item>
+                        {
+                            getFieldDecorator('underline', {
+                                rules: [{
+                                    required: true,
+                                    message: 'Please input y position',
+                                }],
+                            })(
+                                <Button shape="circle">
+                                    <Icon name="underline" />
+                                </Button>,
+                            )
+                        }
+                    </Form.Item>
+                </Col>
+                <Col span={6}>
+                    <Form.Item>
+                        {
+                            getFieldDecorator('left', {
+                                rules: [{
+                                    required: true,
+                                    message: 'Please input height',
+                                }],
+                            })(
+                                <Button shape="circle">
+                                    <Icon name="align-left" />
+                                </Button>,
                             )
                         }
                     </Form.Item>
@@ -63,7 +130,9 @@ export default {
                                     message: 'Please input x position',
                                 }],
                             })(
-                                <Button shape="circle" />,
+                                <Button shape="circle">
+                                    <Icon name="align-center" />
+                                </Button>,
                             )
                         }
                     </Form.Item>
@@ -77,7 +146,9 @@ export default {
                                     message: 'Please input y position',
                                 }],
                             })(
-                                <Button shape="circle" />,
+                                <Button shape="circle">
+                                    <Icon name="align-right" />
+                                </Button>,
                             )
                         }
                     </Form.Item>
@@ -91,63 +162,9 @@ export default {
                                     message: 'Please input rotation',
                                 }],
                             })(
-                                <Button shape="circle" />,
-                            )
-                        }
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item>
-                        {
-                            getFieldDecorator('height', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input height',
-                                }],
-                            })(
-                                <Button shape="circle" />,
-                            )
-                        }
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item>
-                        {
-                            getFieldDecorator('left', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input x position',
-                                }],
-                            })(
-                                <Button shape="circle" />,
-                            )
-                        }
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item>
-                        {
-                            getFieldDecorator('top', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input y position',
-                                }],
-                            })(
-                                <Button shape="circle" />,
-                            )
-                        }
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item>
-                        {
-                            getFieldDecorator('rotation', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input rotation',
-                                }],
-                            })(
-                                <Button shape="circle" />,
+                                <Button shape="circle">
+                                    <Icon name="align-justify" />
+                                </Button>,
                             )
                         }
                     </Form.Item>
@@ -157,9 +174,11 @@ export default {
                         {
                             getFieldDecorator('lineHeight', {
                                 rules: [{
+                                    type: 'number',
                                     // required: false,
                                     // message: 'Please input name',
                                 }],
+                                initialValue: 0,
                             })(
                                 <Slider />,
                             )
@@ -171,9 +190,11 @@ export default {
                         {
                             getFieldDecorator('charSpacing', {
                                 rules: [{
+                                    type: 'number',
                                     // required: true,
                                     // message: 'Please input width',
                                 }],
+                                initialValue: 0,
                             })(
                                 <Slider />,
                             )

@@ -10,11 +10,11 @@ export default {
                 <Form.Item label="Image Load Type" colon={false}>
                     {
                         getFieldDecorator('imageLoadType', {
-                            initialValue: 'fileUpload',
                             rules: [{
-                                required: true,
-                                message: 'Please select icon',
+                                // required: true,
+                                // message: 'Please select icon',
                             }],
+                            initialValue: 'fileUpload',
                         })(
                             <Radio.Group size="large">
                                 <Radio.Button value="fileUpload">File Upload</Radio.Button>

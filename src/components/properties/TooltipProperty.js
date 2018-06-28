@@ -15,18 +15,18 @@ export default {
                                 // message: 'Please input rotation',
                             }],
                         })(
-                            <Switch />,
+                            <Switch defaultChecked />,
                         )
                     }
                 </Form.Item>
                 <Form.Item label="Show Tooltips on" colon={false}>
                     {
                         getFieldDecorator('showTooltipsOn', {
-                            initialValue: 'mouseover',
                             rules: [{
                                 // required: true,
                                 // message: 'Please input rotation',
                             }],
+                            initialValue: 'mouseover',
                         })(
                             <Select>
                                 <Select.Option value="mouseover">Mouseover</Select.Option>

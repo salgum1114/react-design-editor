@@ -6,6 +6,8 @@ import StyleProperty from './StyleProperty';
 import TooltipProperty from './TooltipProperty';
 import ImageProperty from './ImageProperty';
 import TextProperty from './TextProperty';
+import MapProperty from './MapProperty';
+import ActionProperty from './ActionProperty';
 
 const { Panel } = Collapse;
 
@@ -16,6 +18,9 @@ class PropertyForm extends Component {
         return (
             <Form layout="horizontal">
                 <Collapse bordered={false}>
+                    <Panel header="Map" showArrow={showArrow}>
+                        {MapProperty.render(form)}
+                    </Panel>
                     <Panel header="General" showArrow={showArrow}>
                         {GeneralProperty.render(form)}
                     </Panel>
@@ -29,7 +34,7 @@ class PropertyForm extends Component {
                         {TextProperty.render(form)}
                     </Panel>
                     <Panel header="Action" showArrow={showArrow}>
-                        {MarkerProperty.render(form)}
+                        {ActionProperty.render(form)}
                     </Panel>
                     <Panel header="Tooltip" showArrow={showArrow}>
                         {TooltipProperty.render(form)}
