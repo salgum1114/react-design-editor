@@ -1,64 +1,38 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import difference from 'lodash/difference';
 import { fabric } from 'fabric';
 
-const MARKER = {
-    default: {
-        create: (id) => new fabric.IText('\uf041', {
-            id,
-            fontSize: 60,
-            fontFamily: 'FontAwesome',
-            editable: false,
+const FabricObject = {
+    itext: {
+        create: ({ text, ...option }) => new fabric.IText(text, {
+            ...option,
         }),
     },
-};
-
-const TEXT = {
-    default: {
-        create: (id) => new fabric.Textbox('Input Text', {
-            id,
-            charSpacing:1000,
-        }),
-    }
-};
-
-const IMAGE = {
-    default: {
-        create: (id) => new fabric.Image(null, {
-            id,
+    textbox: {
+        create: ({ text, ...option }) => new fabric.Textbox(text, {
+            ...option,
         }),
     },
-};
-
-const SHAPE = {
+    image: {
+        create: ({ element, ...option }) => new fabric.Image(null, {
+            ...option,
+        }),
+    },
     triangle: {
-        create: (id) => new fabric.Triangle({
-            id,
-            width: 30,
-            height: 30,
+        create: option => new fabric.Triangle({
+            ...option,
         }),
     },
     circle: {
-        create: (id) => new fabric.Circle({
-            id,
-            radius: 40,
+        create: option => new fabric.Circle({
+            ...option,
         }),
     },
     rect: {
-        create: (id) => new fabric.Rect({
-            id,
-            width: 40,
-            height: 40,
+        create: option => new fabric.Rect({
+            ...option,
         }),
     },
-};
-
-const ITEM_TEMPLATE = {
-    MARKER,
-    TEXT,
-    IMAGE,
-    SHAPE,
 };
 
 const canvasSize = {
@@ -77,22 +51,104 @@ class Canvas extends Component {
     }
 
     handlers = {
-        add: (key, item) => {
-            const newItem = ITEM_TEMPLATE[item.type][item.key].create(key);
-            this.canvas.add(newItem);
-            this.canvas.centerObject(newItem);
+        add: (obj) => {
+            const newObject = FabricObject[obj.type].create(obj.option);
+            this.canvas.add(newObject);
+            this.canvas.centerObject(newObject);
+            const { onAdd } = this.props;
+            if (onAdd) {
+                onAdd(newObject);
+            }
         },
-        delete: (key) => {
-
+        delete: (id) => {
+            const { onDelete } = this.props;
+            if (onDelete) {
+                onDelete();
+            }
         },
-        duplicate: (key) => {
-            console.log(this.canvas.getActiveObject());
+        duplicate: (id) => {
+            const { onDuplicate } = this.props;
+            if (onDuplicate) {
+                onDuplicate();
+            }
         },
-        select: (item) => {
-            console.log(item);
-            const { onSelect } = this.props;
-            if (onSelect) {
-                onSelect(item);
+        getActiveObject: () => this.canvas.getActiveObject(),
+        getActiveObjects: () => this.canvas.getActiveObjects(),
+        set: (key, value) => {
+            const activeObject = this.canvas.getActiveObject();
+            activeObject.set(key, value);
+        },
+        setObject: (obj) => {
+            const activeObject = this.canvas.getActiveObject();
+            if (obj.id === activeObject.id) {
+                Object.keys(obj).forEach((key) => {
+                    if (obj[key] !== activeObject[key]) {
+                        activeObject.set(key, obj[key]);
+                    }
+                });
+            } else {
+                console.warn('Object id not equal active object id.');
+            }
+        },
+        setById: (id, key, value) => {
+            const findObject = this.handlers.findObjectById(id);
+            if (findObject) {
+                findObject.set(key, value);
+            }
+        },
+        setByName: (name, key, value) => {
+            const findObject = this.handlers.findObjectByName(name);
+            if (findObject) {
+                findObject.set(key, value);
+            }
+        },
+        find: obj => this.handlers.findById(obj.id),
+        findById: (id) => {
+            let findObject;
+            const exist = this.canvas.getObjects().some((obj) => {
+                if (obj.id === id) {
+                    findObject = obj;
+                    return true;
+                }
+                return false;
+            });
+            if (!exist) {
+                console.warn('Not found object by id.');
+                return exist;
+            }
+            return findObject;
+        },
+        findByName: (name) => {
+            let findObject;
+            const exist = this.canvas.getObjects().some((obj) => {
+                if (obj.name === name) {
+                    findObject = obj;
+                    return true;
+                }
+                return false;
+            });
+            if (!exist) {
+                console.warn('Not found object by name.');
+                return exist;
+            }
+            return findObject;
+        },
+        select: (obj) => {
+            const findObject = this.handlers.find(obj);
+            if (findObject) {
+                this.canvas.setActiveObject(findObject);
+            }
+        },
+        selectById: (id) => {
+            const findObject = this.handlers.findById(id);
+            if (findObject) {
+                this.canvas.setActiveObject(findObject);
+            }
+        },
+        selectByName: (name) => {
+            const findObject = this.handlers.findByName(name);
+            if (findObject) {
+                this.canvas.setActiveObject(findObject);
             }
         },
         import: () => {
@@ -180,16 +236,10 @@ class Canvas extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const prevKeys = Object.keys(this.props.items);
-        const nextKeys = Object.keys(nextProps.items);
-        const differenceKeys = difference(nextKeys, prevKeys);
-        if (this.props.width !== nextProps.width || this.props.height !== nextProps.height) {
-            this.events.resize(this.props.width, this.props.height, nextProps.width, nextProps.height);
-        }
-        if (differenceKeys.length) {
-            const { add } = this.handlers;
-            const key = differenceKeys[0];
-            add(key, nextProps.items[key]);
+        const { width: currentWidth, height: currentHeight } = this.props;
+        const { width: nextWidth, height: nextHeight } = nextProps;
+        if (currentWidth !== nextWidth || currentHeight !== nextHeight) {
+            this.events.resize(currentWidth, currentHeight, nextWidth, nextProps.height);
         }
     }
 

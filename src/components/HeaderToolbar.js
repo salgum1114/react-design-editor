@@ -3,17 +3,18 @@ import { Button } from 'antd';
 
 import Icon from './Icon';
 import { FlexBox, FlexItem } from './flex';
+import CanvasList from './CanvasList';
 
 class HeaderToolbar extends Component {
     render() {
         return (
             <FlexBox className="rde-canvas-toolbar-container" flex="1">
-                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-content">
-                    <Button shape="circle">
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-list">
+                    <Button className="rde-canvas-toolbar-list-btn" shape="circle">
                         <Icon name="sitemap" />
                     </Button>
                     <div className="rde-canvas-list">
-                        canvas list
+                        <CanvasList />
                     </div>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">

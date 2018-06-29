@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import uuid from 'uuid/v4';
 import { ResizeSensor } from 'css-element-queries';
 
 import Wireframe from './Wireframe';
@@ -10,6 +9,11 @@ import FooterToolbar from './FooterToolbar';
 import HeaderToolbar from './HeaderToolbar';
 
 class Editor extends Component {
+    constructor(props) {
+        super(props);
+        this.canvasRef = React.createRef();
+    }
+
     state = {
         items: {},
         canvasRect: {
@@ -30,38 +34,25 @@ class Editor extends Component {
         });
     }
 
-    handlers = {
-        onAdd: (type, key) => {
-            const newItem = {
-                [uuid()]: {
-                    type,
-                    key,
-                },
-            };
-            const { items } = this.state;
-            const newItems = Object.assign({}, items, newItem);
-            this.setState({
-                items: newItems,
-            });
-        },
-    }
-
     render() {
         const { items, canvasRect } = this.state;
-        const { onAdd } = this.handlers;
         return (
             <div className="rde-editor">
                 <nav className="rde-wireframe">
                     <Wireframe />
                 </nav>
                 <aside className="rde-items">
-                    <Items onAdd={onAdd} />
+                    <Items canvasRef={this.canvasRef} />
                 </aside>
                 <main
                     ref={(c) => { this.container = c; }}
                     className="rde-canvas-container"
                 >
-                    <Canvas items={items} width={canvasRect.width} height={canvasRect.height} />
+                    <Canvas
+                        ref={this.canvasRef}
+                        width={canvasRect.width}
+                        height={canvasRect.height}
+                    />
                 </main>
                 <header style={{ width: canvasRect.width }} className="rde-canvas-header">
                     <HeaderToolbar />
