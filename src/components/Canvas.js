@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
+import uuid from 'uuid/v4';
+import cloenDeep from 'lodash/cloneDeep';
 
 const FabricObject = {
     itext: {
@@ -44,39 +46,160 @@ class Canvas extends Component {
     static propsTypes = {
         width: PropTypes.width,
         height: PropTypes.height,
+        zoom: PropTypes.bool,
+        responsive: PropTypes.bool,
         onAdd: PropTypes.func,
-        onDelete: PropTypes.func,
-        onDuplicate: PropTypes.func,
+        onRemove: PropTypes.func,
         onSelect: PropTypes.func,
+    }
+
+    static defaultProps = {
+        width: 0,
+        height: 0,
+        zoom: true,
+        responsive: false,
     }
 
     handlers = {
         add: (obj) => {
             const newObject = FabricObject[obj.type].create(obj.option);
-            this.canvas.add(newObject);
+            const test = this.canvas.add(newObject);
             this.canvas.centerObject(newObject);
             const { onAdd } = this.props;
             if (onAdd) {
                 onAdd(newObject);
             }
         },
-        delete: (id) => {
-            const { onDelete } = this.props;
-            if (onDelete) {
-                onDelete();
+        remove: () => {
+            const activeObject = this.canvas.getActiveObject();
+            const { onRemove } = this.props;
+            if (activeObject.type !== 'activeSelection') {
+                if (onRemove) {
+                    onRemove(activeObject);
+                }
+                this.canvas.remove(activeObject);
+            } else {
+                const activeObjects = activeObject._objects;
+                this.canvas.discardActiveObject();
+                activeObjects.forEach((object) => {
+                    if (onRemove) {
+                        onRemove(object);
+                    }
+                    this.canvas.remove(object);
+                });
             }
         },
-        duplicate: (id) => {
-            const { onDuplicate } = this.props;
-            if (onDuplicate) {
-                onDuplicate();
+        removeById: (id) => {
+            const findObject = this.handlers.findById(id);
+            if (findObject) {
+                const { onRemove } = this.props;
+                if (onRemove) {
+                    onRemove(findObject);
+                }
+                this.canvas.remove(findObject);
             }
+        },
+        duplicate: () => {
+            const { onAdd } = this.props;
+            const activeObject = this.canvas.getActiveObject();
+            activeObject.clone((clonedObj) => {
+                this.canvas.discardActiveObject();
+                clonedObj.set({
+                    left: clonedObj.left + 10,
+                    top: clonedObj.top + 10,
+                    evented: true,
+                });
+                if (clonedObj.type === 'activeSelection') {
+                    clonedObj.canvas = this.canvas;
+                    clonedObj.forEachObject((obj) => {
+                        obj.set('id', uuid());
+                        this.canvas.add(obj);
+                    });
+                    if (onAdd) {
+                        onAdd(clonedObj);
+                    }
+                    clonedObj.setCoords();
+                } else {
+                    clonedObj.set('id', uuid());
+                    this.canvas.add(clonedObj);
+                    if (onAdd) {
+                        onAdd(clonedObj);
+                    }
+                }
+                this.canvas.setActiveObject(clonedObj);
+                this.canvas.requestRenderAll();
+            })
+        },
+        duplicateById: (id) => {
+            const { onAdd } = this.props;
+            const findObject = this.handlers.findById(id);
+            if (findObject) {
+                findObject.clone((cloned) => {
+                    cloned.set({
+                        left: cloned.left + 10,
+                        top: cloned.top + 10,
+                        id: uuid(),
+                        evented: true,
+                    });
+                    this.canvas.add(cloned);
+                    if (onAdd) {
+                        onAdd(cloned);
+                    }
+                    this.canvas.setActiveObject(cloned);
+                    this.canvas.requestRenderAll();
+                })
+            }
+        },
+        copy: () => {
+            this.canvas.getActiveObject().clone((cloned) => {
+                this.setState({
+                    clipboard: cloned,
+                })
+            });
+        },
+        paste: () => {
+            const { onAdd } = this.props;
+            this.state.clipboard.clone((clonedObj) => {
+                this.canvas.discardActiveObject();
+                clonedObj.set({
+                    left: clonedObj.left + 10,
+                    top: clonedObj.top + 10,
+                    evented: true,
+                });
+                if (clonedObj.type === 'activeSelection') {
+                    clonedObj.canvas = this.canvas;
+                    clonedObj.forEachObject((obj) => {
+                        obj.set('id', uuid());
+                        this.canvas.add(obj);
+                        if (onAdd) {
+                            onAdd(obj);
+                        }
+                    });
+                    clonedObj.setCoords();
+                } else {
+                    clonedObj.set('id', uuid());
+                    this.canvas.add(clonedObj);
+                    if (onAdd) {
+                        onAdd(clonedObj);
+                    }
+                }
+                const newClipboard = Object.assign({}, this.state.clipboard, {
+                    top: top + 10,
+                    left: left + 10,
+                })
+                this.setState({
+                    clipboard: newClipboard,
+                });
+                this.canvas.setActiveObject(clonedObj);
+                this.canvas.requestRenderAll();
+            });
         },
         getActiveObject: () => this.canvas.getActiveObject(),
         getActiveObjects: () => this.canvas.getActiveObjects(),
         set: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
             activeObject.set(key, value);
+            activeObject.setCoords();
         },
         setObject: (obj) => {
             const activeObject = this.canvas.getActiveObject();
@@ -84,6 +207,7 @@ class Canvas extends Component {
                 Object.keys(obj).forEach((key) => {
                     if (obj[key] !== activeObject[key]) {
                         activeObject.set(key, obj[key]);
+                        activeObject.setCoords();
                     }
                 });
             } else {
@@ -94,12 +218,14 @@ class Canvas extends Component {
             const findObject = this.handlers.findObjectById(id);
             if (findObject) {
                 findObject.set(key, value);
+                activeObject.setCoords();
             }
         },
         setByName: (name, key, value) => {
             const findObject = this.handlers.findObjectByName(name);
             if (findObject) {
                 findObject.set(key, value);
+                activeObject.setCoords();
             }
         },
         find: obj => this.handlers.findById(obj.id),
@@ -137,18 +263,21 @@ class Canvas extends Component {
             const findObject = this.handlers.find(obj);
             if (findObject) {
                 this.canvas.setActiveObject(findObject);
+                this.canvas.requestRenderAll();
             }
         },
         selectById: (id) => {
             const findObject = this.handlers.findById(id);
             if (findObject) {
                 this.canvas.setActiveObject(findObject);
+                this.canvas.requestRenderAll();
             }
         },
         selectByName: (name) => {
             const findObject = this.handlers.findByName(name);
             if (findObject) {
                 this.canvas.setActiveObject(findObject);
+                this.canvas.requestRenderAll();
             }
         },
         import: () => {
@@ -164,24 +293,29 @@ class Canvas extends Component {
 
     events = {
         mousewheel: () => {
-            this.canvas.on('mouse:wheel', (opt) => {
-                const delta = opt.e.deltaY;
-                let zoom = this.canvas.getZoom();
-                if (delta > 0) {
-                    zoom -= 0.01;
-                } else {
-                    zoom += 0.01;
-                }
-                this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoom);
-                opt.e.preventDefault();
-                opt.e.stopPropagation();
-            });
+            const { zoom } = this.props;
+            if (zoom) {
+                this.canvas.on('mouse:wheel', (opt) => {
+                    const delta = opt.e.deltaY;
+                    let zoom = this.canvas.getZoom();
+                    if (delta > 0) {
+                        zoom -= 0.01;
+                    } else {
+                        zoom += 0.01;
+                    }
+                    this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoom);
+                    opt.e.preventDefault();
+                    opt.e.stopPropagation();
+                });
+            }
         },
         mousedown: () => {
-            const { select } = this.handlers;
-            this.canvas.on('mouse:down', (opt) => {
-                select(opt.target);
-            });
+            const { onSelect } = this.props;
+            if (onSelect) {
+                this.canvas.on('mouse:down', (opt) => {
+                    onSelect(opt.target);
+                });
+            }
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
             this.canvas.setWidth(nextWidth).setHeight(nextHeight);
@@ -199,14 +333,13 @@ class Canvas extends Component {
         },
     }
 
-    static defaultProps = {
-        width: 0,
-        height: 0,
-    }
-
     constructor(props) {
         super(props);
         this.container = React.createRef();
+    }
+
+    state = {
+        clipboard: null,
     }
 
     componentDidMount() {
@@ -228,6 +361,8 @@ class Canvas extends Component {
             top: 0,
             left: 0,
             hoverCursor: 'default',
+            name: '',
+            type: 'map',
         });
         this.canvas.add(this.mainRect);
         const { mousewheel, mousedown } = this.events;

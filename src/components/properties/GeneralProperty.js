@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Input, Slider, Switch, Col, InputNumber, Row } from 'antd';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
@@ -31,6 +31,7 @@ export default {
                                         // required: true,
                                         // message: 'Please input rotation',
                                     }],
+                                    initialValue: data.visible,
                                 })(
                                     <Switch defaultChecked />,
                                 )
@@ -45,6 +46,7 @@ export default {
                                 // required: false,
                                 // message: 'Please input name',
                             }],
+                            initialValue: data.name,
                         })(
                             <Input />,
                         )
@@ -59,7 +61,7 @@ export default {
                                         required: true,
                                         message: 'Please input width',
                                     }],
-                                    initialValue: 0,
+                                    initialValue: data.width,
                                 })(
                                     <InputNumber />,
                                 )
@@ -74,7 +76,7 @@ export default {
                                         required: true,
                                         message: 'Please input height',
                                     }],
-                                    initialValue: 0,
+                                    initialValue: data.height,
                                 })(
                                     <InputNumber />,
                                 )
@@ -84,14 +86,14 @@ export default {
                 </Row>
                 <Row>
                     <Col span={12}>
-                        <Form.Item label="X" colon={false}>
+                        <Form.Item label="Left" colon={false}>
                             {
                                 getFieldDecorator('left', {
                                     rules: [{
                                         required: true,
                                         message: 'Please input x position',
                                     }],
-                                    initialValue: 0,
+                                    initialValue: data.left,
                                 })(
                                     <InputNumber />,
                                 )
@@ -99,14 +101,14 @@ export default {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item label="Y" colon={false}>
+                        <Form.Item label="Top" colon={false}>
                             {
                                 getFieldDecorator('top', {
                                     rules: [{
                                         required: true,
                                         message: 'Please input y position',
                                     }],
-                                    initialValue: 0,
+                                    initialValue: data.top,
                                 })(
                                     <InputNumber />,
                                 )

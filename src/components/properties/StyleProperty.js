@@ -3,7 +3,7 @@ import { Form, Slider, Popover, Button, Select, Col, Row } from 'antd';
 import { SketchPicker } from 'react-color';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>

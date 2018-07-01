@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Radio, Select, Switch, Input } from 'antd';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
         const actionType = 'map';
         return (

@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Switch, Select } from 'antd';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>

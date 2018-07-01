@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Input, Slider, Switch, Col, InputNumber } from 'antd';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
@@ -14,6 +14,7 @@ export default {
                                 // required: true,
                                 // message: 'Please input rotation',
                             }],
+                            initialValue: false,
                         })(
                             <Switch defaultChecked />,
                         )
@@ -26,6 +27,7 @@ export default {
                                 required: false,
                                 message: 'Please input name',
                             }],
+                            initialValue: '',
                         })(
                             <Input />,
                         )
@@ -39,7 +41,7 @@ export default {
                                     required: true,
                                     message: 'Please input width',
                                 }],
-                                initialValue: 0,
+                                initialValue: data ? data.width : 0,
                             })(
                                 <InputNumber />,
                             )
@@ -54,7 +56,7 @@ export default {
                                     required: true,
                                     message: 'Please input height',
                                 }],
-                                initialValue: 0,
+                                initialValue: data ? data.height : 0,
                             })(
                                 <InputNumber />,
                             )

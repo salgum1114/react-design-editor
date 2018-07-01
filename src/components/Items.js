@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Collapse } from 'antd';
 import uuid from 'uuid/v4';
-import { fabric } from 'fabric';
 
 import { FlexBox, FlexItem } from './flex';
 
@@ -21,6 +20,7 @@ const MARKER = [
             fontFamily: 'FontAwesome',
             fontSize: 60,
             editable: false,
+            name: 'New marker',
         },
     },
 ];
@@ -33,6 +33,7 @@ const TEXT = [
         title: 'Text',
         option: {
             text: 'Input text',
+            name: 'New text',
         },
     },
 ];
@@ -46,6 +47,7 @@ const IMAGE = [
         option: {
             width: 40,
             height: 40,
+            name: 'New image',
         },
     },
 ];
@@ -69,6 +71,7 @@ const SHAPE = [
         option: {
             width: 30,
             height: 30,
+            name: 'New shape',
         },
     },
     {
@@ -79,6 +82,7 @@ const SHAPE = [
         option: {
             width: 40,
             height: 40,
+            name: 'New shape',
         },
     },
     {
@@ -88,6 +92,7 @@ const SHAPE = [
         title: 'Circle',
         option: {
             radius: 30,
+            name: 'New shape',
         },
     },
 ];

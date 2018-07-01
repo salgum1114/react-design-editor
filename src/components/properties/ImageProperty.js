@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Button, Radio, Input } from 'antd';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
         const imageLoadType = 'fileUpload';
         return (

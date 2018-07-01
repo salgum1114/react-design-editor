@@ -10,11 +10,11 @@ class FooterToolbar extends Component {
             <FlexBox className="rde-canvas-toolbar-container" flex="1">
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-zoom">
                     <Button shape="circle">
-                        <Icon name="search-plus" />
+                        <Icon name="search-minus" />
                     </Button>
                     <div>100%</div>
                     <Button shape="circle">
-                        <Icon name="search-minus" />
+                        <Icon name="search-plus" />
                     </Button>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-pager">
