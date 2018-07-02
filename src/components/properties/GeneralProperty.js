@@ -126,7 +126,7 @@ export default {
                             }],
                             initialValue: data.angle,
                         })(
-                            <Slider />,
+                            <Slider min={0} max={360} />,
                         )
                     }
                 </Form.Item>

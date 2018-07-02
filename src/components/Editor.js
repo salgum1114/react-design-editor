@@ -83,14 +83,29 @@ class Editor extends Component {
             });
         },
         onChange: (selectedItem, changedValues, allValues) => {
-            console.log(selectedItem, changedValues);
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
+            console.log(selectedItem, changedKey, changedValue);
+            if (!selectedItem.id) {
+                this.handlers.onChangeCanvas(changedKey, changedValue);
+                return;
+            }
             if (changedKey === 'width' || changedKey === 'height') {
                 this.canvasRef.current.handlers.scaleToResize(allValues.width, allValues.height);
+            } else if (changedKey === 'image') {
+                this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
             } else {
                 this.canvasRef.current.handlers.set(changedKey, changedValue);
             }
+        },
+        onChangeCanvas: (changedKey, changedValue) => {
+            if (changedKey === 'image') {
+                this.canvasRef.current.handlers.setImageByObject(this.canvasRef.current.mainRect, changedValue);
+                return;
+            }
+            this.canvasRef.current.mainRect.set(changedKey, changedValue);
+            this.canvasRef.current.canvas.centerObject(this.canvasRef.current.mainRect);
+            this.canvasRef.current.canvas.requestRenderAll();
         },
     }
 

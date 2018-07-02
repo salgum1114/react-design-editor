@@ -14,11 +14,6 @@ const FabricObject = {
             ...option,
         }),
     },
-    image: {
-        create: ({ element, ...option }) => new fabric.Image(null, {
-            ...option,
-        }),
-    },
     triangle: {
         create: option => new fabric.Triangle({
             ...option,
@@ -63,6 +58,23 @@ class Canvas extends Component {
 
     handlers = {
         add: (obj) => {
+            if (obj.type === 'image') {
+                const newImg = new Image();
+                const { src, ...otherOption } = obj.option;
+                newImg.onload = (e) => {
+                    const imgObject = new fabric.Image(newImg, {
+                        ...otherOption,
+                    });
+                    this.canvas.add(imgObject)
+                    this.canvas.centerObject(imgObject);
+                    const { onAdd } = this.props;
+                    if (onAdd) {
+                        onAdd(imgObject);
+                    }
+                }
+                newImg.src = src;
+                return;
+            }
             const newObject = FabricObject[obj.type].create(obj.option);
             this.canvas.add(newObject);
             this.canvas.centerObject(newObject);
@@ -75,6 +87,7 @@ class Canvas extends Component {
             const activeObject = this.canvas.getActiveObject();
             const { onRemove } = this.props;
             if (activeObject.type !== 'activeSelection') {
+                this.canvas.discardActiveObject();
                 if (onRemove) {
                     onRemove(activeObject);
                 }
@@ -226,29 +239,47 @@ class Canvas extends Component {
                 console.warn('Object id not equal active object id.');
             }
         },
+        setByObject: (obj, key, value) => {
+            obj.set(key, value);
+            obj.setCoords();
+            this.canvas.requestRenderAll();
+            const { onModified } = this.props;
+            if (onModified) {
+                onModified(obj);
+            }
+        },
         setById: (id, key, value) => {
             const findObject = this.handlers.findObjectById(id);
-            if (findObject) {
-                findObject.set(key, value);
-                activeObject.setCoords();
-                this.canvas.requestRenderAll();
-                const { onModified } = this.props;
-                if (onModified) {
-                    onModified(activeObject);
-                }
-            }
+            this.handlers.setByObject(findObject, key, value);
         },
         setByName: (name, key, value) => {
             const findObject = this.handlers.findObjectByName(name);
-            if (findObject) {
-                findObject.set(key, value);
-                activeObject.setCoords();
-                this.canvas.requestRenderAll();
-                const { onModified } = this.props;
-                if (onModified) {
-                    onModified(activeObject);
+            this.handlers.setByObject(findObject, key, value);
+        },
+        setImage: (obj, source) => {
+            if (obj.type === 'image') {
+                const newImg = new Image();
+                newImg.onload = () => {
+                    obj.setElement(newImg);
+                    this.canvas.requestRenderAll();
                 }
+                newImg.src = source;
+                return;
             }
+            fabric.util.loadImage(source, (source) => {
+                obj.setPatternFill({
+                    source,
+                    repeat: 'repeat'
+                });
+                this.canvas.requestRenderAll();
+            });
+        },
+        setImageById: (id, source) => {
+            const findObject = this.handlers.findById(id);
+            this.handlers.setImage(findObject, source);
+        },
+        setImageByObject: (obj, source) => {
+            this.handlers.setImage(obj, source);
         },
         find: obj => this.handlers.findById(obj.id),
         findById: (id) => {
@@ -291,19 +322,11 @@ class Canvas extends Component {
         },
         selectById: (id) => {
             const findObject = this.handlers.findById(id);
-            if (findObject) {
-                this.canvas.discardActiveObject();
-                this.canvas.setActiveObject(findObject);
-                this.canvas.requestRenderAll();
-            }
+            this.handlers.select(findObject);
         },
         selectByName: (name) => {
             const findObject = this.handlers.findByName(name);
-            if (findObject) {
-                this.canvas.discardActiveObject();
-                this.canvas.setActiveObject(findObject);
-                this.canvas.requestRenderAll();
-            }
+            this.handlers.select(findObject);
         },
         scaleToResize: (width, height) => {
             const activeObject = this.handlers.getActiveObject();
@@ -417,11 +440,11 @@ class Canvas extends Component {
         });
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentDidUpdate(prevProps, prevState) {
         const { width: currentWidth, height: currentHeight } = this.props;
-        const { width: nextWidth, height: nextHeight } = nextProps;
-        if (currentWidth !== nextWidth || currentHeight !== nextHeight) {
-            this.events.resize(currentWidth, currentHeight, nextWidth, nextProps.height);
+        const { width: prevWidth, height: prevHeight } = prevProps;
+        if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
+            this.events.resize(prevWidth, prevHeight, currentWidth, currentHeight);
         }
     }
 
