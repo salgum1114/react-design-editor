@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
-import cloenDeep from 'lodash/cloneDeep';
 
 const FabricObject = {
     itext: {
@@ -48,9 +47,11 @@ class Canvas extends Component {
         height: PropTypes.height,
         zoom: PropTypes.bool,
         responsive: PropTypes.bool,
+        onModified: PropTypes.func,
         onAdd: PropTypes.func,
         onRemove: PropTypes.func,
         onSelect: PropTypes.func,
+        onMoved: PropTypes.func,
     }
 
     static defaultProps = {
@@ -63,7 +64,7 @@ class Canvas extends Component {
     handlers = {
         add: (obj) => {
             const newObject = FabricObject[obj.type].create(obj.option);
-            const test = this.canvas.add(newObject);
+            this.canvas.add(newObject);
             this.canvas.centerObject(newObject);
             const { onAdd } = this.props;
             if (onAdd) {
@@ -92,6 +93,7 @@ class Canvas extends Component {
         removeById: (id) => {
             const findObject = this.handlers.findById(id);
             if (findObject) {
+                this.canvas.discardActiveObject();
                 const { onRemove } = this.props;
                 if (onRemove) {
                     onRemove(findObject);
@@ -128,7 +130,7 @@ class Canvas extends Component {
                 }
                 this.canvas.setActiveObject(clonedObj);
                 this.canvas.requestRenderAll();
-            })
+            });
         },
         duplicateById: (id) => {
             const { onAdd } = this.props;
@@ -147,14 +149,14 @@ class Canvas extends Component {
                     }
                     this.canvas.setActiveObject(cloned);
                     this.canvas.requestRenderAll();
-                })
+                });
             }
         },
         copy: () => {
             this.canvas.getActiveObject().clone((cloned) => {
                 this.setState({
                     clipboard: cloned,
-                })
+                });
             });
         },
         paste: () => {
@@ -186,7 +188,7 @@ class Canvas extends Component {
                 const newClipboard = Object.assign({}, this.state.clipboard, {
                     top: top + 10,
                     left: left + 10,
-                })
+                });
                 this.setState({
                     clipboard: newClipboard,
                 });
@@ -200,6 +202,11 @@ class Canvas extends Component {
             const activeObject = this.canvas.getActiveObject();
             activeObject.set(key, value);
             activeObject.setCoords();
+            this.canvas.requestRenderAll();
+            const { onModified } = this.props;
+            if (onModified) {
+                onModified(activeObject);
+            }
         },
         setObject: (obj) => {
             const activeObject = this.canvas.getActiveObject();
@@ -210,6 +217,11 @@ class Canvas extends Component {
                         activeObject.setCoords();
                     }
                 });
+                this.canvas.requestRenderAll();
+                const { onModified } = this.props;
+                if (onModified) {
+                    onModified(activeObject);
+                }
             } else {
                 console.warn('Object id not equal active object id.');
             }
@@ -219,6 +231,11 @@ class Canvas extends Component {
             if (findObject) {
                 findObject.set(key, value);
                 activeObject.setCoords();
+                this.canvas.requestRenderAll();
+                const { onModified } = this.props;
+                if (onModified) {
+                    onModified(activeObject);
+                }
             }
         },
         setByName: (name, key, value) => {
@@ -226,6 +243,11 @@ class Canvas extends Component {
             if (findObject) {
                 findObject.set(key, value);
                 activeObject.setCoords();
+                this.canvas.requestRenderAll();
+                const { onModified } = this.props;
+                if (onModified) {
+                    onModified(activeObject);
+                }
             }
         },
         find: obj => this.handlers.findById(obj.id),
@@ -262,6 +284,7 @@ class Canvas extends Component {
         select: (obj) => {
             const findObject = this.handlers.find(obj);
             if (findObject) {
+                this.canvas.discardActiveObject();
                 this.canvas.setActiveObject(findObject);
                 this.canvas.requestRenderAll();
             }
@@ -269,6 +292,7 @@ class Canvas extends Component {
         selectById: (id) => {
             const findObject = this.handlers.findById(id);
             if (findObject) {
+                this.canvas.discardActiveObject();
                 this.canvas.setActiveObject(findObject);
                 this.canvas.requestRenderAll();
             }
@@ -276,9 +300,21 @@ class Canvas extends Component {
         selectByName: (name) => {
             const findObject = this.handlers.findByName(name);
             if (findObject) {
+                this.canvas.discardActiveObject();
                 this.canvas.setActiveObject(findObject);
                 this.canvas.requestRenderAll();
             }
+        },
+        scaleToResize: (width, height) => {
+            const activeObject = this.handlers.getActiveObject();
+            const obj = {
+                id: activeObject.id,
+                scaleX: width / activeObject.width,
+                scaleY: height / activeObject.height,
+            };
+            this.handlers.setObject(obj);
+            activeObject.setCoords();
+            this.canvas.requestRenderAll();
         },
         import: () => {
 
@@ -292,29 +328,35 @@ class Canvas extends Component {
     }
 
     events = {
-        mousewheel: () => {
-            const { zoom } = this.props;
-            if (zoom) {
-                this.canvas.on('mouse:wheel', (opt) => {
-                    const delta = opt.e.deltaY;
-                    let zoom = this.canvas.getZoom();
-                    if (delta > 0) {
-                        zoom -= 0.01;
-                    } else {
-                        zoom += 0.01;
-                    }
-                    this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoom);
-                    opt.e.preventDefault();
-                    opt.e.stopPropagation();
-                });
+        modified: (opt) => {
+            const { onModified } = this.props;
+            if (onModified) {
+                const { target } = opt;
+                if (!target) {
+                    return;
+                }
+                onModified(opt);
             }
         },
-        mousedown: () => {
+        mousewheel: (opt) => {
+            const { zoom } = this.props;
+            if (zoom) {
+                const delta = opt.e.deltaY;
+                let zoomRatio = this.canvas.getZoom();
+                if (delta > 0) {
+                    zoomRatio -= 0.01;
+                } else {
+                    zoomRatio += 0.01;
+                }
+                this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoomRatio);
+                opt.e.preventDefault();
+                opt.e.stopPropagation();
+            }
+        },
+        selection: (opt) => {
             const { onSelect } = this.props;
             if (onSelect) {
-                this.canvas.on('mouse:down', (opt) => {
-                    onSelect(opt.target);
-                });
+                onSelect(opt);
             }
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
@@ -365,9 +407,14 @@ class Canvas extends Component {
             type: 'map',
         });
         this.canvas.add(this.mainRect);
-        const { mousewheel, mousedown } = this.events;
-        mousewheel();
-        mousedown();
+        const { modified, mousewheel, selection } = this.events;
+        this.canvas.on({
+            'object:modified': modified,
+            'mouse:wheel': mousewheel,
+            'selection:cleared': selection,
+            'selection:created': selection,
+            'selection:updated': selection,
+        });
     }
 
     componentWillReceiveProps(nextProps) {

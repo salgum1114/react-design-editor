@@ -1,1 +1,1 @@
-import('./rde.less');
+import('./index.less');

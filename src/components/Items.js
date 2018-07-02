@@ -19,6 +19,8 @@ const MARKER = [
             text: '\uf041', // map-marker
             fontFamily: 'FontAwesome',
             fontSize: 60,
+            width: 30,
+            height: 30,
             editable: false,
             name: 'New marker',
         },

@@ -17,36 +17,33 @@ class Editor extends Component {
                     Object.assign(newItems, this.state.items, {
                         [obj.id]: obj,
                     });
-                })
+                });
                 this.setState({
                     items: newItems,
                 }, () => {
                     this.handlers.onSelect(null);
                 });
-            } else {
-                const newItems = Object.assign({}, this.state.items, {
-                    [obj.id]: obj,
-                });
-                this.setState({
-                    items: newItems,
-                }, () => {
-                    this.handlers.onSelect(obj);
-                });
+                return;
             }
+            const newItems = Object.assign({}, this.state.items, {
+                [obj.id]: obj,
+            });
+            this.setState({
+                items: newItems,
+            }, () => {
+                this.canvasRef.current.handlers.select(obj);
+            });
         },
-        onSelect: (obj) => {
-            if (obj && !obj._objects) {
+        onSelect: (opt) => {
+            if (opt && opt.selected && opt.selected.length === 1) {
                 this.setState({
-                    selectedItem: obj,
+                    selectedItem: opt.selected[0],
                 });
-                if (obj.id) {
-                    this.canvasRef.current.handlers.select(obj);
-                }
-            } else {
-                this.setState({
-                    selectedItem: this.canvasRef.current.mainRect,
-                });
+                return;
             }
+            this.setState({
+                selectedItem: this.canvasRef.current.mainRect,
+            });
         },
         onRemove: (obj) => {
             delete this.state.items[obj.id];
@@ -55,6 +52,45 @@ class Editor extends Component {
             }, () => {
                 this.handlers.onSelect(null);
             });
+        },
+        onModified: (opt) => {
+            if (opt.target) {
+                if (opt.target.type === 'activeSelection') {
+                    const newItems = {};
+                    opt.target.forEachObject((obj) => {
+                        Object.assign(newItems, this.state.items, {
+                            [obj.id]: obj,
+                        });
+                    });
+                    this.setState({
+                        items: newItems,
+                    });
+                    return;
+                }
+                const newItems = Object.assign({}, this.state.items, {
+                    [opt.target.id]: opt.target,
+                });
+                this.setState({
+                    items: newItems,
+                });
+                return;
+            }
+            const newItems = Object.assign({}, this.state.items, {
+                [opt.id]: opt,
+            });
+            this.setState({
+                items: newItems,
+            });
+        },
+        onChange: (selectedItem, changedValues, allValues) => {
+            console.log(selectedItem, changedValues);
+            const changedKey = Object.keys(changedValues)[0];
+            const changedValue = changedValues[changedKey];
+            if (changedKey === 'width' || changedKey === 'height') {
+                this.canvasRef.current.handlers.scaleToResize(allValues.width, allValues.height);
+            } else {
+                this.canvasRef.current.handlers.set(changedKey, changedValue);
+            }
         },
     }
 
@@ -82,11 +118,14 @@ class Editor extends Component {
                 canvasRect,
             });
         });
+        this.setState({
+            selectedItem: this.canvasRef.current.mainRect,
+        });
     }
 
     render() {
         const { items, selectedItem, canvasRect } = this.state;
-        const { onAdd, onRemove, onSelect } = this.handlers;
+        const { onAdd, onRemove, onSelect, onModified, onChange } = this.handlers;
         return (
             <div className="rde-editor">
                 <nav className="rde-wireframe">
@@ -103,6 +142,7 @@ class Editor extends Component {
                         ref={this.canvasRef}
                         width={canvasRect.width}
                         height={canvasRect.height}
+                        onModified={onModified}
                         onAdd={onAdd}
                         onRemove={onRemove}
                         onSelect={onSelect}
@@ -115,7 +155,7 @@ class Editor extends Component {
                     <FooterToolbar />
                 </footer>
                 <aside className="rde-properties">
-                    <Properties selectedItem={selectedItem} />
+                    <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} />
                 </aside>
             </div>
         );

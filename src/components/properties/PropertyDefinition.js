@@ -13,13 +13,13 @@ export default {
             title: 'Map',
             component: MapProperty,
         },
+        image: {
+            title: 'Image',
+            component: ImageProperty,
+        },
         tooltip: {
             title: 'Tooltip',
             component: TooltipProperty,
-        },
-        style: {
-            title: 'Style',
-            component: StyleProperty,
         },
     },
     'i-text': {

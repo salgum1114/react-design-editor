@@ -11,11 +11,10 @@ class HeaderToolbar extends Component {
         canvasRef: PropTypes.any,
         items: PropTypes.object,
         selectedItem: PropTypes.object,
-        onSelect: PropTypes.func,
     }
 
     render() {
-        const { canvasRef, onSelect, items, selectedItem } = this.props;
+        const { canvasRef, items, selectedItem } = this.props;
         return (
             <FlexBox className="rde-canvas-toolbar-container" flex="1">
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-list">
@@ -23,7 +22,7 @@ class HeaderToolbar extends Component {
                         <Icon name="sitemap" />
                     </Button>
                     <div className="rde-canvas-list">
-                        <CanvasList canvasRef={canvasRef} onSelect={onSelect} items={items} selectedItem={selectedItem} />
+                        <CanvasList canvasRef={canvasRef} items={items} selectedItem={selectedItem} />
                     </div>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">

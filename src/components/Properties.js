@@ -11,6 +11,10 @@ class Properties extends Component {
         selectedItem: PropTypes.object,
     }
 
+    componentWillReceiveProps(nextProps) {
+        nextProps.form.resetFields();
+    }
+
     render() {
         const { selectedItem, form } = this.props;
         const showArrow = false;
@@ -24,9 +28,15 @@ class Properties extends Component {
                                     <Panel key={key} header={PropertyDefinition[selectedItem.type][key].title} showArrow={showArrow}>
                                         {PropertyDefinition[selectedItem.type][key].component.render(form, selectedItem)}
                                     </Panel>
-                                )
+                                );
                             })
-                        ) : null
+                        ) : Object.keys(PropertyDefinition.map).map((key) => {
+                            return (
+                                <Panel key={key} header={PropertyDefinition.map[key].title} showArrow={showArrow}>
+                                    {PropertyDefinition.map[key].component.render(form, selectedItem)}
+                                </Panel>
+                            );
+                        })
                     }
                 </Collapse>
             </Form>
@@ -35,7 +45,8 @@ class Properties extends Component {
 }
 
 export default Form.create({
-    onFieldsChange: (props, changedFields) => {
-        console.log(props, changedFields);
+    onValuesChange: (props, changedValues, allValues) => {
+        const { onChange, selectedItem } = props;
+        onChange(selectedItem, changedValues, allValues);
     },
 })(Properties);

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Divider } from 'antd';
+import { Button } from 'antd';
 
 import Icon from './Icon';
 import { FlexBox, FlexItem } from './flex';
@@ -10,7 +10,6 @@ class CanvasList extends Component {
         canvasRef: PropTypes.any,
         items: PropTypes.object,
         selectedItem: PropTypes.object,
-        onSelect: PropTypes.func,
     }
 
     renderActions = () => {
@@ -33,8 +32,7 @@ class CanvasList extends Component {
     }
 
     renderItem = () => {
-        const { canvasRef, items, onSelect, selectedItem } = this.props;
-        console.log(items);
+        const { canvasRef, items, selectedItem } = this.props;
         return (
             Object.values(items).map((item) => {
                 let icon;
@@ -63,10 +61,12 @@ class CanvasList extends Component {
                     className += ' selected-item';
                 }
                 return (
-                    <FlexItem key={item.id} className={className} flex="1" onClick={() => onSelect(item)}>
+                    <FlexItem key={item.id} className={className} flex="1" onClick={() => canvasRef.current.handlers.select(item)}>
                         <FlexBox alignItems="center">
                             <Icon className="rde-canvas-list-item-icon" name={icon} size={1.5} style={{ width: 32 }} />
-                            <div className="rde-canvas-list-item-text">{title}</div>
+                            <div className="rde-canvas-list-item-text">
+                                {title}
+                            </div>
                             <FlexBox className="rde-canvas-list-item-actions" flex="1" justifyContent="flex-end">
                                 <Button shape="circle" onClick={() => canvasRef.current.handlers.duplicateById(item.id)}>
                                     <Icon name="clone" />
@@ -77,7 +77,7 @@ class CanvasList extends Component {
                             </FlexBox>
                         </FlexBox>
                     </FlexItem>
-                )
+                );
             })
         );
     }

@@ -61,7 +61,7 @@ export default {
                                         required: true,
                                         message: 'Please input width',
                                     }],
-                                    initialValue: data.width,
+                                    initialValue: data.width * data.scaleX,
                                 })(
                                     <InputNumber />,
                                 )
@@ -76,7 +76,7 @@ export default {
                                         required: true,
                                         message: 'Please input height',
                                     }],
-                                    initialValue: data.height,
+                                    initialValue: data.height * data.scaleY,
                                 })(
                                     <InputNumber />,
                                 )
@@ -118,13 +118,13 @@ export default {
                 </Row>
                 <Form.Item label="Rotation" colon={false}>
                     {
-                        getFieldDecorator('rotation', {
+                        getFieldDecorator('angle', {
                             rules: [{
                                 type: 'number',
                                 required: true,
                                 message: 'Please input rotation',
                             }],
-                            initialValue: 0,
+                            initialValue: data.angle,
                         })(
                             <Slider />,
                         )
