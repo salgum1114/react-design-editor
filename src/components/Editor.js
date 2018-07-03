@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
+import debounce from 'lodash/debounce';
 
 import Wireframe from './Wireframe';
 import Items from './Items';
@@ -53,7 +54,7 @@ class Editor extends Component {
                 this.handlers.onSelect(null);
             });
         },
-        onModified: (opt) => {
+        onModified: debounce((opt) => {
             if (opt.target) {
                 if (opt.target.type === 'activeSelection') {
                     const newItems = {};
@@ -81,7 +82,7 @@ class Editor extends Component {
             this.setState({
                 items: newItems,
             });
-        },
+        }, 300),
         onChange: (selectedItem, changedValues, allValues) => {
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
