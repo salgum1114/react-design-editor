@@ -148,6 +148,7 @@ class Items extends Component {
             if (dt.types.length && dt.types[0] === 'Files') {
                 const { files } = dt;
                 Array.from(files).forEach((file) => {
+                    file.uid = uuid();
                     const { type } = file;
                     if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
                         const item = {
