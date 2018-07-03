@@ -1,64 +1,34 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import difference from 'lodash/difference';
 import { fabric } from 'fabric';
+import uuid from 'uuid/v4';
 
-const MARKER = {
-    default: {
-        create: (id) => new fabric.IText('\uf041', {
-            id,
-            fontSize: 60,
-            fontFamily: 'FontAwesome',
-            editable: false,
+const FabricObject = {
+    itext: {
+        create: ({ text, ...option }) => new fabric.IText(text, {
+            ...option,
         }),
     },
-};
-
-const TEXT = {
-    default: {
-        create: (id) => new fabric.Textbox('Input Text', {
-            id,
-            charSpacing:1000,
-        }),
-    }
-};
-
-const IMAGE = {
-    default: {
-        create: (id) => new fabric.Image(null, {
-            id,
+    textbox: {
+        create: ({ text, ...option }) => new fabric.Textbox(text, {
+            ...option,
         }),
     },
-};
-
-const DRAWING = {
     triangle: {
-        create: (id) => new fabric.Triangle({
-            id,
-            width: 30,
-            height: 30,
+        create: option => new fabric.Triangle({
+            ...option,
         }),
     },
     circle: {
-        create: (id) => new fabric.Circle({
-            id,
-            radius: 40,
+        create: option => new fabric.Circle({
+            ...option,
         }),
     },
     rect: {
-        create: (id) => new fabric.Rect({
-            id,
-            width: 40,
-            height: 40,
+        create: option => new fabric.Rect({
+            ...option,
         }),
     },
-};
-
-const ITEM_TEMPLATE = {
-    MARKER,
-    TEXT,
-    IMAGE,
-    DRAWING,
 };
 
 const canvasSize = {
@@ -70,30 +40,311 @@ class Canvas extends Component {
     static propsTypes = {
         width: PropTypes.width,
         height: PropTypes.height,
+        zoom: PropTypes.bool,
+        responsive: PropTypes.bool,
+        onModified: PropTypes.func,
         onAdd: PropTypes.func,
-        onDelete: PropTypes.func,
-        onDuplicate: PropTypes.func,
+        onRemove: PropTypes.func,
         onSelect: PropTypes.func,
+        onMoved: PropTypes.func,
+    }
+
+    static defaultProps = {
+        width: 0,
+        height: 0,
+        zoom: true,
+        responsive: false,
     }
 
     handlers = {
-        add: (key, item) => {
-            const newItem = ITEM_TEMPLATE[item.type][item.key].create(key);
-            this.canvas.add(newItem);
-            this.canvas.centerObject(newItem);
-        },
-        delete: (key) => {
-
-        },
-        duplicate: (key) => {
-            console.log(this.canvas.getActiveObject());
-        },
-        select: (item) => {
-            console.log(item);
-            const { onSelect } = this.props;
-            if (onSelect) {
-                onSelect(item);
+        add: (obj) => {
+            if (obj.type === 'image') {
+                const newImg = new Image();
+                const { src, ...otherOption } = obj.option;
+                newImg.onload = (e) => {
+                    const imgObject = new fabric.Image(newImg, {
+                        ...otherOption,
+                    });
+                    this.canvas.add(imgObject)
+                    this.canvas.centerObject(imgObject);
+                    const { onAdd } = this.props;
+                    if (onAdd) {
+                        onAdd(imgObject);
+                    }
+                }
+                newImg.src = src;
+                return;
             }
+            const newObject = FabricObject[obj.type].create(obj.option);
+            this.canvas.add(newObject);
+            this.canvas.centerObject(newObject);
+            const { onAdd } = this.props;
+            if (onAdd) {
+                onAdd(newObject);
+            }
+        },
+        remove: () => {
+            const activeObject = this.canvas.getActiveObject();
+            const { onRemove } = this.props;
+            if (activeObject.type !== 'activeSelection') {
+                this.canvas.discardActiveObject();
+                if (onRemove) {
+                    onRemove(activeObject);
+                }
+                this.canvas.remove(activeObject);
+            } else {
+                const activeObjects = activeObject._objects;
+                this.canvas.discardActiveObject();
+                activeObjects.forEach((object) => {
+                    if (onRemove) {
+                        onRemove(object);
+                    }
+                    this.canvas.remove(object);
+                });
+            }
+        },
+        removeById: (id) => {
+            const findObject = this.handlers.findById(id);
+            if (findObject) {
+                this.canvas.discardActiveObject();
+                const { onRemove } = this.props;
+                if (onRemove) {
+                    onRemove(findObject);
+                }
+                this.canvas.remove(findObject);
+            }
+        },
+        duplicate: () => {
+            const { onAdd } = this.props;
+            const activeObject = this.canvas.getActiveObject();
+            activeObject.clone((clonedObj) => {
+                this.canvas.discardActiveObject();
+                clonedObj.set({
+                    left: clonedObj.left + 10,
+                    top: clonedObj.top + 10,
+                    evented: true,
+                });
+                if (clonedObj.type === 'activeSelection') {
+                    clonedObj.canvas = this.canvas;
+                    clonedObj.forEachObject((obj) => {
+                        obj.set('id', uuid());
+                        this.canvas.add(obj);
+                    });
+                    if (onAdd) {
+                        onAdd(clonedObj);
+                    }
+                    clonedObj.setCoords();
+                } else {
+                    clonedObj.set('id', uuid());
+                    this.canvas.add(clonedObj);
+                    if (onAdd) {
+                        onAdd(clonedObj);
+                    }
+                }
+                this.canvas.setActiveObject(clonedObj);
+                this.canvas.requestRenderAll();
+            });
+        },
+        duplicateById: (id) => {
+            const { onAdd } = this.props;
+            const findObject = this.handlers.findById(id);
+            if (findObject) {
+                findObject.clone((cloned) => {
+                    cloned.set({
+                        left: cloned.left + 10,
+                        top: cloned.top + 10,
+                        id: uuid(),
+                        evented: true,
+                    });
+                    this.canvas.add(cloned);
+                    if (onAdd) {
+                        onAdd(cloned);
+                    }
+                    this.canvas.setActiveObject(cloned);
+                    this.canvas.requestRenderAll();
+                });
+            }
+        },
+        copy: () => {
+            this.canvas.getActiveObject().clone((cloned) => {
+                this.setState({
+                    clipboard: cloned,
+                });
+            });
+        },
+        paste: () => {
+            const { onAdd } = this.props;
+            this.state.clipboard.clone((clonedObj) => {
+                this.canvas.discardActiveObject();
+                clonedObj.set({
+                    left: clonedObj.left + 10,
+                    top: clonedObj.top + 10,
+                    evented: true,
+                });
+                if (clonedObj.type === 'activeSelection') {
+                    clonedObj.canvas = this.canvas;
+                    clonedObj.forEachObject((obj) => {
+                        obj.set('id', uuid());
+                        this.canvas.add(obj);
+                        if (onAdd) {
+                            onAdd(obj);
+                        }
+                    });
+                    clonedObj.setCoords();
+                } else {
+                    clonedObj.set('id', uuid());
+                    this.canvas.add(clonedObj);
+                    if (onAdd) {
+                        onAdd(clonedObj);
+                    }
+                }
+                const newClipboard = Object.assign({}, this.state.clipboard, {
+                    top: top + 10,
+                    left: left + 10,
+                });
+                this.setState({
+                    clipboard: newClipboard,
+                });
+                this.canvas.setActiveObject(clonedObj);
+                this.canvas.requestRenderAll();
+            });
+        },
+        getActiveObject: () => this.canvas.getActiveObject(),
+        getActiveObjects: () => this.canvas.getActiveObjects(),
+        set: (key, value) => {
+            const activeObject = this.canvas.getActiveObject();
+            activeObject.set(key, value);
+            activeObject.setCoords();
+            this.canvas.requestRenderAll();
+            const { onModified } = this.props;
+            if (onModified) {
+                onModified(activeObject);
+            }
+        },
+        setObject: (obj) => {
+            const activeObject = this.canvas.getActiveObject();
+            Object.keys(obj).forEach((key) => {
+                if (obj[key] !== activeObject[key]) {
+                    activeObject.set(key, obj[key]);
+                    activeObject.setCoords();
+                }
+            });
+            this.canvas.requestRenderAll();
+            const { onModified } = this.props;
+            if (onModified) {
+                onModified(activeObject);
+            }
+        },
+        setByObject: (obj, key, value) => {
+            obj.set(key, value);
+            obj.setCoords();
+            this.canvas.requestRenderAll();
+            const { onModified } = this.props;
+            if (onModified) {
+                onModified(obj);
+            }
+        },
+        setById: (id, key, value) => {
+            const findObject = this.handlers.findObjectById(id);
+            this.handlers.setByObject(findObject, key, value);
+        },
+        setByName: (name, key, value) => {
+            const findObject = this.handlers.findObjectByName(name);
+            this.handlers.setByObject(findObject, key, value);
+        },
+        loadImage: (obj, src) => {
+            if (obj.type === 'image') {
+                const newImg = new Image();
+                newImg.onload = () => {
+                    obj.setElement(newImg);
+                    this.canvas.requestRenderAll();
+                };
+                newImg.src = src;
+                return;
+            }
+            fabric.util.loadImage(src, (source) => {
+                obj.setPatternFill({
+                    source,
+                    repeat: 'repeat',
+                });
+                this.canvas.requestRenderAll();
+            });
+        },
+        setImage: (obj, src) => {
+            if (typeof src === 'string') {
+                this.handlers.loadImage(obj, src);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.handlers.loadImage(obj, e.target.result);
+                };
+                reader.readAsDataURL(src);
+            }
+        },
+        setImageById: (id, source) => {
+            const findObject = this.handlers.findById(id);
+            this.handlers.setImage(findObject, source);
+        },
+        setImageByObject: (obj, source) => {
+            this.handlers.setImage(obj, source);
+        },
+        find: obj => this.handlers.findById(obj.id),
+        findById: (id) => {
+            let findObject;
+            const exist = this.canvas.getObjects().some((obj) => {
+                if (obj.id === id) {
+                    findObject = obj;
+                    return true;
+                }
+                return false;
+            });
+            if (!exist) {
+                console.warn('Not found object by id.');
+                return exist;
+            }
+            return findObject;
+        },
+        findByName: (name) => {
+            let findObject;
+            const exist = this.canvas.getObjects().some((obj) => {
+                if (obj.name === name) {
+                    findObject = obj;
+                    return true;
+                }
+                return false;
+            });
+            if (!exist) {
+                console.warn('Not found object by name.');
+                return exist;
+            }
+            return findObject;
+        },
+        select: (obj) => {
+            const findObject = this.handlers.find(obj);
+            if (findObject) {
+                this.canvas.discardActiveObject();
+                this.canvas.setActiveObject(findObject);
+                this.canvas.requestRenderAll();
+            }
+        },
+        selectById: (id) => {
+            const findObject = this.handlers.findById(id);
+            this.handlers.select(findObject);
+        },
+        selectByName: (name) => {
+            const findObject = this.handlers.findByName(name);
+            this.handlers.select(findObject);
+        },
+        scaleToResize: (width, height) => {
+            const activeObject = this.handlers.getActiveObject();
+            const obj = {
+                id: activeObject.id,
+                scaleX: width / activeObject.width,
+                scaleY: height / activeObject.height,
+            };
+            this.handlers.setObject(obj);
+            activeObject.setCoords();
+            this.canvas.requestRenderAll();
         },
         import: () => {
 
@@ -107,25 +358,36 @@ class Canvas extends Component {
     }
 
     events = {
-        mousewheel: () => {
-            this.canvas.on('mouse:wheel', (opt) => {
-                const delta = opt.e.deltaY;
-                let zoom = this.canvas.getZoom();
-                if (delta > 0) {
-                    zoom -= 0.01;
-                } else {
-                    zoom += 0.01;
+        modified: (opt) => {
+            const { onModified } = this.props;
+            if (onModified) {
+                const { target } = opt;
+                if (!target) {
+                    return;
                 }
-                this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoom);
+                onModified(opt);
+            }
+        },
+        mousewheel: (opt) => {
+            const { zoom } = this.props;
+            if (zoom) {
+                const delta = opt.e.deltaY;
+                let zoomRatio = this.canvas.getZoom();
+                if (delta > 0) {
+                    zoomRatio -= 0.01;
+                } else {
+                    zoomRatio += 0.01;
+                }
+                this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoomRatio);
                 opt.e.preventDefault();
                 opt.e.stopPropagation();
-            });
+            }
         },
-        mousedown: () => {
-            const { select } = this.handlers;
-            this.canvas.on('mouse:down', (opt) => {
-                select(opt.target);
-            });
+        selection: (opt) => {
+            const { onSelect } = this.props;
+            if (onSelect) {
+                onSelect(opt);
+            }
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
             this.canvas.setWidth(nextWidth).setHeight(nextHeight);
@@ -143,14 +405,13 @@ class Canvas extends Component {
         },
     }
 
-    static defaultProps = {
-        width: 0,
-        height: 0,
-    }
-
     constructor(props) {
         super(props);
         this.container = React.createRef();
+    }
+
+    state = {
+        clipboard: null,
     }
 
     componentDidMount() {
@@ -172,24 +433,25 @@ class Canvas extends Component {
             top: 0,
             left: 0,
             hoverCursor: 'default',
+            name: '',
+            type: 'map',
         });
         this.canvas.add(this.mainRect);
-        const { mousewheel, mousedown } = this.events;
-        mousewheel();
-        mousedown();
+        const { modified, mousewheel, selection } = this.events;
+        this.canvas.on({
+            'object:modified': modified,
+            'mouse:wheel': mousewheel,
+            'selection:cleared': selection,
+            'selection:created': selection,
+            'selection:updated': selection,
+        });
     }
 
-    componentWillReceiveProps(nextProps) {
-        const prevKeys = Object.keys(this.props.items);
-        const nextKeys = Object.keys(nextProps.items);
-        const differenceKeys = difference(nextKeys, prevKeys);
-        if (this.props.width !== nextProps.width || this.props.height !== nextProps.height) {
-            this.events.resize(this.props.width, this.props.height, nextProps.width, nextProps.height);
-        }
-        if (differenceKeys.length) {
-            const { add } = this.handlers;
-            const key = differenceKeys[0];
-            add(key, nextProps.items[key]);
+    componentDidUpdate(prevProps, prevState) {
+        const { width: currentWidth, height: currentHeight } = this.props;
+        const { width: prevWidth, height: prevHeight } = prevProps;
+        if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
+            this.events.resize(prevWidth, prevHeight, currentWidth, currentHeight);
         }
     }
 

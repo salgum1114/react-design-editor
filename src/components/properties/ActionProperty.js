@@ -2,9 +2,9 @@ import React from 'react';
 import { Form, Radio, Select, Switch, Input } from 'antd';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
-        const actionType = 'map';
+        const actionType = data.actionType || 'map';
         return (
             <React.Fragment>
                 <Form.Item label="Action Enabled" colon={false}>
@@ -26,7 +26,7 @@ export default {
                                 // required: true,
                                 // message: 'Please select icon',
                             }],
-                            initialValue: 'map',
+                            initialValue: actionType,
                         })(
                             <Radio.Group size="large">
                                 <Radio.Button value="map">MAP</Radio.Button>
@@ -44,11 +44,11 @@ export default {
                                         required: true,
                                         message: 'Please select map',
                                     }],
-                                    initialValue: '1',
+                                    initialValue: data.map || '1',
                                 })(
                                     <Select>
                                         <Select.Option value="1">Map#1</Select.Option>
-                                        <Select.Option value="2">Map#1</Select.Option>
+                                        <Select.Option value="2">Map#2</Select.Option>
                                     </Select>,
                                 )
                             }
@@ -61,6 +61,7 @@ export default {
                                         required: true,
                                         message: 'Please input url',
                                     }],
+                                    initialValue: data.url || '',
                                 })(
                                     <Input />,
                                 )

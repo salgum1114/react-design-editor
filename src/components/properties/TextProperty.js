@@ -3,7 +3,7 @@ import { Form, Slider, Col, Button, Select } from 'antd';
 import Icon from 'polestar-icons';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>

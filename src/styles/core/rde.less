@@ -1,0 +1,232 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body, #root {
+    height: 100%;
+    width: 100%;
+}
+
+.rde-main {
+    overflow: hidden;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    .rde-title {
+        position: absolute;
+        width: 100%;
+        height: 60px;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+    }
+    .rde-content {
+        -webkit-box-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        height: 100vh;
+        padding-top: 60px;
+    }
+}
+
+.rde-editor {
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    height: 100vh;
+    .rde-wireframe {
+        position: relative;
+        left: 0;
+        height: calc(100% - 60px);
+        width: 160px;
+        -webkit-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+    .rde-items {
+        position: relative;
+        height: calc(100% - 60px);
+        min-width: 200px;
+        width: 200px;
+        -webkit-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+        z-index: 900;
+        .rde-item {
+            width: 80px;
+            height: 80px;
+            text-align: center;
+            transition: .5s ease;
+            border: 0 solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            i {
+                line-height: 1.5em;
+            }
+            .rde-item-text {
+                line-height: 0;
+                font-size: 16px;
+            }
+            &:hover {
+                background: rgba(0, 0, 0, .2);
+                box-shadow: 0 0 11px rgba(33, 33, 33, .2); 
+            }
+        }
+        z-index: 10;
+    }
+    .rde-canvas-container {
+        position: relative;
+        -webkit-box-flex: 0;
+        -ms-flex: none;
+        flex: none;
+        flex: 1;
+        height: calc(100% - 60px);
+        z-index: 0;
+        .rde-canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+    }
+    .rde-canvas-header {
+        background: rgba(0, 0, 0, 0.05);
+        transition: width .05s linear;
+        display: flex;
+        height: 40px;
+        left: 360px;
+        position: absolute;
+        width: 100%;
+        z-index: 800;
+        -webkit-box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.5);
+        -moz-box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 10px -5px rgba(0, 0, 0, 0.5);
+        .rde-canvas-list {
+            position: absolute;
+            display: none;
+            width: 300px;
+            height: calc(100vh - 150px);
+            top: 40px;
+            left: -4px;
+            z-index: 0;
+            -webkit-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+            -moz-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+            box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+            &-actions {
+            }
+            &-items {
+            }
+            &-item {
+                position: relative;
+                margin: 8px 8px;
+                text-align: center;
+                &-icon {
+                    margin: 0 8px 0 4px;
+                }
+                &-text {
+                    font-size: 16px;
+                }
+                &-actions {
+                    margin: 0 4px 0 8px;
+                }
+                &.selected-item {
+                    background: rgba(0, 0, 0, .2);
+                    box-shadow: 0 0 11px rgba(33, 33, 33, .2);     
+                }
+                &:hover {
+                    cursor: pointer;
+                    background: rgba(0, 0, 0, .2);
+                    box-shadow: 0 0 11px rgba(33, 33, 33, .2); 
+                }
+                &::after {
+                    position: absolute;
+                    left: 0;
+                    bottom: -4px;;
+                    background: #fff;
+                    width: 100%;
+                    height: 1px;
+                    content: '',
+                }
+            }
+        }
+    }
+    .rde-canvas-footer {
+        background: rgba(0, 0, 0, 0.05);
+        transition: width .05s linear;
+        display: flex;
+        height: 50px;
+        left: 360px;
+        bottom: 0;
+        position: absolute;
+        width: 100%;
+        z-index: 800;
+        -webkit-box-shadow: 0 -5px 10px -5px rgba(0, 0, 0, .5);
+        -moz-box-shadow: 0 -5px 10px -5px rgba(0, 0, 0, .5);
+        box-shadow: 0 -5px 10px -5px rgba(0, 0, 0, .5);
+    }
+    .rde-canvas-toolbar-container {
+        .rde-canvas-toolbar {
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-left: 4px;
+            margin-right: 4px;
+            &:not(:last-child):after {
+                background-color: #fff;
+                position: absolute;
+                right: -5px;
+                width: 1px;
+                height: 20px;
+                content: "";
+            }
+            &-list {
+                &:hover {
+                    .rde-canvas-list {
+                        background: rgba(0, 0, 0, 0.05);
+                        display: block;
+                        z-index: 1;
+                        -webkit-animation: slide-right .3s linear;
+                        -moz-animation: slide-right .3s linear;
+                    }
+                }
+            }
+            &-history {
+                flex: 1;
+                justify-content: flex-end;
+            }
+            &-action {
+                flex: 1;
+                justify-content: flex-end;
+            }
+        }
+    }
+    .rde-properties {
+        overflow-y: auto;
+        position: relative;
+        height: calc(100% - 60px);
+        width: 300px;
+        right: 0;
+        z-index: 1000;
+        background: #fff;
+        -webkit-box-shadow: -5px 0 5px -5px rgba(0, 0, 0, .5);
+        -moz-box-shadow: -5px 0 5px -5px rgba(0, 0, 0, .5);
+        box-shadow: -5px 0 5px -5px rgba(0, 0, 0, .5);
+    }
+}

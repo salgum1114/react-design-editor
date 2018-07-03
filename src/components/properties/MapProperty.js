@@ -1,9 +1,12 @@
 import React from 'react';
-import { Form, Input, Slider, Switch, Col, InputNumber } from 'antd';
+import { Form, Input, Slider, Switch, Row, Col, InputNumber } from 'antd';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
+        if (!data) {
+            return null;
+        }
         return (
             <React.Fragment>
                 <Form.Item label="Responsive" colon={false}>
@@ -14,6 +17,7 @@ export default {
                                 // required: true,
                                 // message: 'Please input rotation',
                             }],
+                            initialValue: false,
                         })(
                             <Switch defaultChecked />,
                         )
@@ -26,51 +30,54 @@ export default {
                                 required: false,
                                 message: 'Please input name',
                             }],
+                            initialValue: data.name || '',
                         })(
                             <Input />,
                         )
                     }
                 </Form.Item>
-                <Col span={12}>
-                    <Form.Item label="Width" colon={false}>
-                        {
-                            getFieldDecorator('width', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input width',
-                                }],
-                                initialValue: 0,
-                            })(
-                                <InputNumber />,
-                            )
-                        }
-                    </Form.Item>
-                </Col>
-                <Col span={12}>
-                    <Form.Item label="Height" colon={false}>
-                        {
-                            getFieldDecorator('height', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input height',
-                                }],
-                                initialValue: 0,
-                            })(
-                                <InputNumber />,
-                            )
-                        }
-                    </Form.Item>
-                </Col>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item label="Width" colon={false}>
+                            {
+                                getFieldDecorator('width', {
+                                    rules: [{
+                                        required: true,
+                                        message: 'Please input width',
+                                    }],
+                                    initialValue: data.width,
+                                })(
+                                    <InputNumber />,
+                                )
+                            }
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label="Height" colon={false}>
+                            {
+                                getFieldDecorator('height', {
+                                    rules: [{
+                                        required: true,
+                                        message: 'Please input height',
+                                    }],
+                                    initialValue: data.height,
+                                })(
+                                    <InputNumber />,
+                                )
+                            }
+                        </Form.Item>
+                    </Col>
+                </Row>
                 <Form.Item label="Rotation" colon={false}>
                     {
-                        getFieldDecorator('rotation', {
+                        getFieldDecorator('angle', {
                             rules: [{
                                 required: true,
                                 message: 'Please input rotation',
                             }],
-                            initialValue: 0,
+                            initialValue: data.angle,
                         })(
-                            <Slider />,
+                            <Slider min={0} max={360} />,
                         )
                     }
                 </Form.Item>

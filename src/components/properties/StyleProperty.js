@@ -1,41 +1,39 @@
 import React from 'react';
-import { Form, Slider, Popover, Button, Select, Col, Row } from 'antd';
-import { SketchPicker } from 'react-color';
+import { Form, Slider, Select, Col, Row } from 'antd';
+import ColorPicker from '../ColorPicker';
 
 export default {
-    render(form) {
+    render(form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
                 <Form.Item label="Fill Color" colon={false}>
                     {
-                        getFieldDecorator('fillColor', {
+                        getFieldDecorator('fill', {
                             rules: [{
+                                type: 'hex',
                                 // required: true,
                                 // message: 'Please select fill color',
                             }],
+                            initialValue: data.fill,
                         })(
-                            <Popover
-                                trigger="click"
-                                placement="bottom"
-                                content={<SketchPicker />}
-                            >
-                                <Button shape="circle" />
-                            </Popover>,
+                            <ColorPicker />,
                         )
                     }
                 </Form.Item>
                 <Form.Item label="Fill Opacity" colon={false}>
                     {
-                        getFieldDecorator('fillOpacity', {
+                        getFieldDecorator('opacity', {
                             rules: [{
                                 type: 'number',
                                 // required: true,
                                 // message: 'Please input fill opacity',
+                                min: 0,
+                                max: 1,
                             }],
-                            initialValue: 0,
+                            initialValue: data.opacity,
                         })(
-                            <Slider />,
+                            <Slider min={0} max={1} step={0.1} />,
                         )
                     }
                 </Form.Item>
@@ -43,17 +41,13 @@ export default {
                     {
                         getFieldDecorator('storke', {
                             rules: [{
+                                type: 'hex',
                                 // required: true,
                                 // message: 'Please select fill color',
                             }],
+                            initialValue: data.fill,
                         })(
-                            <Popover
-                                trigger="click"
-                                placement="bottom"
-                                content={<SketchPicker />}
-                            >
-                                <Button shape="circle" />
-                            </Popover>,
+                            <ColorPicker />,
                         )
                     }
                 </Form.Item>
