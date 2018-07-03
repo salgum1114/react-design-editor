@@ -47,8 +47,6 @@ const IMAGE = [
         icon: 'picture-o',
         title: 'Image',
         option: {
-            width: 400,
-            height: 400,
             name: 'New image',
             src: '/images/sample/transparentBg.png',
         },

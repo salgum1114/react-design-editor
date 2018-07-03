@@ -30,7 +30,7 @@ export default {
                                 required: false,
                                 message: 'Please input name',
                             }],
-                            initialValue: '',
+                            initialValue: data.name || '',
                         })(
                             <Input />,
                         )
@@ -77,7 +77,7 @@ export default {
                             }],
                             initialValue: data.angle,
                         })(
-                            <Slider min={0} max={360}/>,
+                            <Slider min={0} max={360} />,
                         )
                     }
                 </Form.Item>

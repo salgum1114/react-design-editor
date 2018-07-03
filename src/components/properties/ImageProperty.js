@@ -1,5 +1,7 @@
 import React from 'react';
-import { Form, Button, Radio, Input } from 'antd';
+import { Form, Button, Radio } from 'antd';
+import UrlModal from '../UrlModal';
+import ImageUpload from '../ImageUpload';
 
 export default {
     render(form, data) {
@@ -7,6 +9,7 @@ export default {
         if (!data) {
             return null;
         }
+        console.log(data.imageUrl);
         const imageLoadType = data.imageLoadType || 'fileUpload';
         return (
             <React.Fragment>
@@ -28,30 +31,30 @@ export default {
                 </Form.Item>
                 {
                     imageLoadType === 'fileUpload' ? (
-                        <Form.Item label="Image" colon={false}>
+                        <Form.Item label="File" colon={false}>
                             {
-                                getFieldDecorator('image', {
+                                getFieldDecorator('file', {
                                     rules: [{
                                         required: true,
                                         message: 'Please select image',
                                     }],
-                                    initialValue: data.image || '',
+                                    initialValue: data.file || '',
                                 })(
-                                    <Button>Choose Local Image</Button>,
+                                    <ImageUpload fileList={data.file ? [data.file] : []} />,
                                 )
                             }
                         </Form.Item>
                     ) : (
-                        <Form.Item label="Image" colon={false}>
+                        <Form.Item>
                             {
-                                getFieldDecorator('image', {
+                                getFieldDecorator('imageUrl', {
                                     rules: [{
                                         required: true,
-                                        message: 'Please input image url',
+                                        message: 'Please select image',
                                     }],
-                                    initialValue: data.image || '',
+                                    initialValue: data.imageUrl || '',
                                 })(
-                                    <Input />,
+                                    <UrlModal form={form} url={data.imageUrl} />,
                                 )
                             }
                         </Form.Item>

@@ -16,6 +16,8 @@ export default {
                                         // required: true,
                                         // message: 'Please input rotation',
                                     }],
+                                    valuePropName: 'checked',
+                                    initialValue: data.lock,
                                 })(
                                     <Switch />,
                                 )

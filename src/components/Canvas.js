@@ -223,20 +223,16 @@ class Canvas extends Component {
         },
         setObject: (obj) => {
             const activeObject = this.canvas.getActiveObject();
-            if (obj.id === activeObject.id) {
-                Object.keys(obj).forEach((key) => {
-                    if (obj[key] !== activeObject[key]) {
-                        activeObject.set(key, obj[key]);
-                        activeObject.setCoords();
-                    }
-                });
-                this.canvas.requestRenderAll();
-                const { onModified } = this.props;
-                if (onModified) {
-                    onModified(activeObject);
+            Object.keys(obj).forEach((key) => {
+                if (obj[key] !== activeObject[key]) {
+                    activeObject.set(key, obj[key]);
+                    activeObject.setCoords();
                 }
-            } else {
-                console.warn('Object id not equal active object id.');
+            });
+            this.canvas.requestRenderAll();
+            const { onModified } = this.props;
+            if (onModified) {
+                onModified(activeObject);
             }
         },
         setByObject: (obj, key, value) => {
@@ -256,23 +252,34 @@ class Canvas extends Component {
             const findObject = this.handlers.findObjectByName(name);
             this.handlers.setByObject(findObject, key, value);
         },
-        setImage: (obj, source) => {
+        loadImage: (obj, src) => {
             if (obj.type === 'image') {
                 const newImg = new Image();
                 newImg.onload = () => {
                     obj.setElement(newImg);
                     this.canvas.requestRenderAll();
-                }
-                newImg.src = source;
+                };
+                newImg.src = src;
                 return;
             }
-            fabric.util.loadImage(source, (source) => {
+            fabric.util.loadImage(src, (source) => {
                 obj.setPatternFill({
                     source,
-                    repeat: 'repeat'
+                    repeat: 'repeat',
                 });
                 this.canvas.requestRenderAll();
             });
+        },
+        setImage: (obj, src) => {
+            if (typeof src === 'string') {
+                this.handlers.loadImage(obj, src);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.handlers.loadImage(obj, e.target.result);
+                };
+                reader.readAsDataURL(src);
+            }
         },
         setImageById: (id, source) => {
             const findObject = this.handlers.findById(id);

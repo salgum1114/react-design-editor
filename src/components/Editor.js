@@ -92,16 +92,23 @@ class Editor extends Component {
             }
             if (changedKey === 'width' || changedKey === 'height') {
                 this.canvasRef.current.handlers.scaleToResize(allValues.width, allValues.height);
-            } else if (changedKey === 'image') {
-                this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
-            } else {
-                this.canvasRef.current.handlers.set(changedKey, changedValue);
+                return;
             }
+            if (changedKey === 'lock') {
+                this.canvasRef.current.handlers.setObject({
+                    lockMovementX: changedValue,
+                    lockMovementY: changedValue,
+                    hasControls: !changedValue,
+                    hoverCursor: changedValue ? 'pointer' : 'move',
+                });
+            } else if (changedKey === 'file' || changedKey === 'imageUrl') {
+                this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
+            }
+            this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
         onChangeCanvas: (changedKey, changedValue) => {
-            if (changedKey === 'image') {
+            if (changedKey === 'file' || changedKey === 'imageUrl') {
                 this.canvasRef.current.handlers.setImageByObject(this.canvasRef.current.mainRect, changedValue);
-                return;
             }
             this.canvasRef.current.mainRect.set(changedKey, changedValue);
             this.canvasRef.current.canvas.centerObject(this.canvasRef.current.mainRect);
