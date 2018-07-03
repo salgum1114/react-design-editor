@@ -4,7 +4,7 @@ import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 
 const FabricObject = {
-    itext: {
+    'i-text': {
         create: ({ text, ...option }) => new fabric.IText(text, {
             ...option,
         }),
@@ -57,31 +57,54 @@ class Canvas extends Component {
     }
 
     handlers = {
+        centerObject: (obj, centered) => {
+            if (centered) {
+                this.canvas.centerObject(obj);
+            } else {
+                this.handlers.setByObject(obj, 'left', obj.left - (obj.width / 2));
+                this.handlers.setByObject(obj, 'top', obj.top - (obj.height / 2));
+            }
+        },
         add: (obj, centered = true) => {
             if (obj.type === 'image') {
                 const newImg = new Image();
-                const { src, ...otherOption } = obj.option;
-                newImg.onload = (e) => {
-                    const imgObject = new fabric.Image(newImg, {
-                        ...otherOption,
-                    });
-                    this.canvas.add(imgObject);
-                    if (centered) {
-                        this.canvas.centerObject(imgObject);
-                    }
-                    const { onAdd } = this.props;
-                    if (onAdd) {
-                        onAdd(imgObject);
-                    }
+                const { src, file, ...otherOption } = obj;
+                if (src) {
+                    newImg.onload = () => {
+                        const imgObject = new fabric.Image(newImg, {
+                            ...otherOption,
+                        });
+                        this.handlers.centerObject(imgObject, centered);
+                        this.canvas.add(imgObject);
+                        const { onAdd } = this.props;
+                        if (onAdd) {
+                            onAdd(imgObject);
+                        }
+                    };
+                    newImg.src = src;
+                    return;
                 }
-                newImg.src = src;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    newImg.onload = () => {
+                        const imgObject = new fabric.Image(newImg, {
+                            ...otherOption,
+                        });
+                        this.handlers.centerObject(imgObject, centered);
+                        this.canvas.add(imgObject);
+                        const { onAdd } = this.props;
+                        if (onAdd) {
+                            onAdd(imgObject);
+                        }
+                    };
+                    newImg.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
                 return;
             }
-            const newObject = FabricObject[obj.type].create(obj.option);
+            const newObject = FabricObject[obj.type].create(obj);
+            this.handlers.centerObject(newObject, centered);
             this.canvas.add(newObject);
-            if (centered) {
-                this.canvas.centerObject(newObject);
-            }
             const { onAdd } = this.props;
             if (onAdd) {
                 onAdd(newObject);

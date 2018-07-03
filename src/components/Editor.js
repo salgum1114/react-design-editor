@@ -101,13 +101,13 @@ class Editor extends Component {
                     hasControls: !changedValue,
                     hoverCursor: changedValue ? 'pointer' : 'move',
                 });
-            } else if (changedKey === 'file' || changedKey === 'imageUrl') {
+            } else if (changedKey === 'file' || changedKey === 'src') {
                 this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
             }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
         onChangeCanvas: (changedKey, changedValue) => {
-            if (changedKey === 'file' || changedKey === 'imageUrl') {
+            if (changedKey === 'file' || changedKey === 'src') {
                 this.canvasRef.current.handlers.setImageByObject(this.canvasRef.current.mainRect, changedValue);
             }
             this.canvasRef.current.mainRect.set(changedKey, changedValue);

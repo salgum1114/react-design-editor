@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Collapse } from 'antd';
+import { Collapse, notification } from 'antd';
 import uuid from 'uuid/v4';
 
-import { FlexBox, FlexItem } from './flex';
+import { FlexBox } from './flex';
 
 import Icon from './Icon';
 
@@ -16,6 +16,7 @@ const MARKER = [
         icon: 'map-marker',
         title: 'Marker',
         option: {
+            type: 'i-text',
             text: '\uf041', // map-marker
             fontFamily: 'FontAwesome',
             fontSize: 60,
@@ -34,6 +35,7 @@ const TEXT = [
         icon: 'font',
         title: 'Text',
         option: {
+            type: 'textbox',
             text: 'Input text',
             name: 'New text',
         },
@@ -47,6 +49,7 @@ const IMAGE = [
         icon: 'picture-o',
         title: 'Image',
         option: {
+            type: 'image',
             name: 'New image',
             src: '/images/sample/transparentBg.png',
         },
@@ -70,6 +73,7 @@ const SHAPE = [
         icon: 'picture-o',
         title: 'Triangle',
         option: {
+            type: 'triangle',
             width: 30,
             height: 30,
             name: 'New shape',
@@ -81,6 +85,7 @@ const SHAPE = [
         icon: 'picture-o',
         title: 'Rectangle',
         option: {
+            type: 'rect',
             width: 40,
             height: 40,
             name: 'New shape',
@@ -92,6 +97,7 @@ const SHAPE = [
         icon: 'picture-o',
         title: 'Circle',
         option: {
+            type: 'circle',
             radius: 30,
             name: 'New shape',
         },
@@ -104,8 +110,7 @@ class Items extends Component {
             const { canvasRef } = this.props;
             const id = uuid();
             const option = Object.assign({}, item.option, { id });
-            const newItem = Object.assign({}, item, { option });
-            canvasRef.current.handlers.add(newItem, centered);
+            canvasRef.current.handlers.add(option, centered);
         },
     }
 
@@ -141,11 +146,31 @@ class Items extends Component {
             if (e.stopPropagation) {
                 e.stopPropagation();
             }
-            const { target, clientX, clientY } = e;
-            const { left, top } = this.offset(target);
-            const x = clientX - (left + this.offsetX);
-            const y = clientY - (top + this.offsetY);
-            const option = Object.assign({}, this.item.option, { left: x, top: y });
+            const { layerX, layerY } = e;
+            const dt = e.dataTransfer;
+            if (dt.types.length && dt.types[0] === 'Files') {
+                const { files } = dt;
+                Array.from(files).forEach((file) => {
+                    const { type } = file;
+                    if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
+                        const item = {
+                            option: {
+                                type: 'image',
+                                file,
+                                left: layerX,
+                                top: layerY,
+                            },
+                        };
+                        this.handlers.onAddItem(item, false);
+                    } else {
+                        notification.warn({
+                            message: 'Not supported file type',
+                        });
+                    }
+                });
+                return false;
+            }
+            const option = Object.assign({}, this.item.option, { left: layerX, top: layerY });
             const newItem = Object.assign({}, this.item, { option });
             this.handlers.onAddItem(newItem, false);
             return false;
@@ -153,6 +178,16 @@ class Items extends Component {
         onDragEnd: (e) => {
             this.item = null;
             e.target.classList.remove('dragging');
+        },
+        onPaste: (e) => {
+            e = e || window.event;
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            console.log(e.clipboardData || window.clipboardData);
         },
     }
 
@@ -185,7 +220,6 @@ class Items extends Component {
     };
 
     attachEventListener = (canvas) => {
-        console.log(canvas.current.container.current);
         canvas.current.container.current.addEventListener('dragenter', this.events.onDragEnter, false);
         canvas.current.container.current.addEventListener('dragover', this.events.onDragOver, false);
         canvas.current.container.current.addEventListener('dragleave', this.events.onDragLeave, false);
