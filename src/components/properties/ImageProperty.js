@@ -46,14 +46,14 @@ export default {
                     ) : (
                         <Form.Item>
                             {
-                                getFieldDecorator('imageUrl', {
+                                getFieldDecorator('src', {
                                     rules: [{
                                         required: true,
                                         message: 'Please select image',
                                     }],
-                                    initialValue: data.imageUrl || '',
+                                    initialValue: data.src || '',
                                 })(
-                                    <UrlModal form={form} url={data.imageUrl} />,
+                                    <UrlModal form={form} url={data.src} />,
                                 )
                             }
                         </Form.Item>
