@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Button, Radio } from 'antd';
+import { Form, Radio } from 'antd';
 import UrlModal from '../UrlModal';
 import ImageUpload from '../ImageUpload';
 
@@ -9,7 +9,6 @@ export default {
         if (!data) {
             return null;
         }
-        console.log(data.imageUrl);
         const imageLoadType = data.imageLoadType || 'fileUpload';
         return (
             <React.Fragment>

@@ -57,7 +57,7 @@ class Canvas extends Component {
     }
 
     handlers = {
-        add: (obj) => {
+        add: (obj, centered = true) => {
             if (obj.type === 'image') {
                 const newImg = new Image();
                 const { src, ...otherOption } = obj.option;
@@ -65,8 +65,10 @@ class Canvas extends Component {
                     const imgObject = new fabric.Image(newImg, {
                         ...otherOption,
                     });
-                    this.canvas.add(imgObject)
-                    this.canvas.centerObject(imgObject);
+                    this.canvas.add(imgObject);
+                    if (centered) {
+                        this.canvas.centerObject(imgObject);
+                    }
                     const { onAdd } = this.props;
                     if (onAdd) {
                         onAdd(imgObject);
@@ -77,7 +79,9 @@ class Canvas extends Component {
             }
             const newObject = FabricObject[obj.type].create(obj.option);
             this.canvas.add(newObject);
-            this.canvas.centerObject(newObject);
+            if (centered) {
+                this.canvas.centerObject(newObject);
+            }
             const { onAdd } = this.props;
             if (onAdd) {
                 onAdd(newObject);
@@ -459,6 +463,7 @@ class Canvas extends Component {
         return (
             <div
                 ref={this.container}
+                id="rde-canvas"
                 className="rde-canvas"
             >
                 <canvas id="c" />
