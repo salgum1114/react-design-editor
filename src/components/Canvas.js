@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 
@@ -46,7 +47,6 @@ class Canvas extends Component {
         onAdd: PropTypes.func,
         onRemove: PropTypes.func,
         onSelect: PropTypes.func,
-        onMoved: PropTypes.func,
     }
 
     static defaultProps = {
@@ -72,6 +72,8 @@ class Canvas extends Component {
                 if (src) {
                     newImg.onload = () => {
                         const imgObject = new fabric.Image(newImg, {
+                            id: uuid(),
+                            src,
                             ...otherOption,
                         });
                         this.handlers.centerObject(imgObject, centered);
@@ -88,6 +90,8 @@ class Canvas extends Component {
                 reader.onload = (e) => {
                     newImg.onload = () => {
                         const imgObject = new fabric.Image(newImg, {
+                            id: uuid(),
+                            file,
                             ...otherOption,
                         });
                         this.handlers.centerObject(imgObject, centered);
@@ -102,7 +106,7 @@ class Canvas extends Component {
                 reader.readAsDataURL(file);
                 return;
             }
-            const newObject = FabricObject[obj.type].create(obj);
+            const newObject = FabricObject[obj.type].create({ id: uuid(), ...obj });
             this.handlers.centerObject(newObject, centered);
             this.canvas.add(newObject);
             const { onAdd } = this.props;
@@ -430,6 +434,56 @@ class Canvas extends Component {
             });
             this.canvas.renderAll();
         },
+        paste: (e) => {
+            if (this.canvas.wrapperEl !== document.activeElement) {
+                return false;
+            }
+            e = e || window.event;
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            const clipboardData = e.clipboardData || window.clipboardData;
+            if (clipboardData.types.length) {
+                clipboardData.types.forEach((clipboardType) => {
+                    if (clipboardType === 'text/plain') {
+                        const textPlain = clipboardData.getData('text/plain');
+                        const item = {
+                            type: 'textbox',
+                            text: textPlain,
+                        };
+                        this.handlers.add(item, true);
+                    } else if (clipboardType === 'text/html') {
+                        // Todo ...
+                        // const textHtml = clipboardData.getData('text/html');
+                        // console.log(textHtml);
+                    } else if (clipboardType === 'Files') {
+                        Array.from(clipboardData.files).forEach((file) => {
+                            const { type } = file;
+                            if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
+                                const item = {
+                                    type: 'image',
+                                    file,
+                                };
+                                this.handlers.add(item, true);
+                            } else {
+                                notification.warn({
+                                    message: 'Not supported file type',
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+            return false;
+        },
+        keydown: (e) => {
+            if (e.code === 'Delete') {
+                console.log(e);
+            }
+        },
     }
 
     constructor(props) {
@@ -472,6 +526,7 @@ class Canvas extends Component {
             'selection:created': selection,
             'selection:updated': selection,
         });
+        this.attachEventListener();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -480,6 +535,22 @@ class Canvas extends Component {
         if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
             this.events.resize(prevWidth, prevHeight, currentWidth, currentHeight);
         }
+    }
+
+    componentWillUnmount() {
+        this.detachEventListener();
+    }
+
+    attachEventListener = () => {
+        // if add canvas wrapper element event, tabIndex = 1000;
+        this.canvas.wrapperEl.tabIndex = 1000;
+        this.canvas.wrapperEl.addEventListener('keydown', this.events.keydown, false);
+        document.addEventListener('paste', this.events.paste, false);
+    }
+
+    detachEventListener = () => {
+        this.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
+        document.removeEventListener('paste', this.events.paste);
     }
 
     render() {

@@ -117,11 +117,8 @@ class Items extends Component {
     events = {
         onDragStart: (e, item) => {
             this.item = item;
-            const { target, clientX, clientY } = e;
-            const { left, top } = this.offset(target);
+            const { target } = e;
             target.classList.add('dragging');
-            this.offsetX = clientX - left;
-            this.offsetY = clientY - top;
         },
         onDragOver: (e) => {
             if (e.preventDefault) {
@@ -179,16 +176,6 @@ class Items extends Component {
             this.item = null;
             e.target.classList.remove('dragging');
         },
-        onPaste: (e) => {
-            e = e || window.event;
-            if (e.preventDefault) {
-                e.preventDefault();
-            }
-            if (e.stopPropagation) {
-                e.stopPropagation();
-            }
-            console.log(e.clipboardData || window.clipboardData);
-        },
     }
 
     static propTypes = {
@@ -198,6 +185,11 @@ class Items extends Component {
     componentDidMount() {
         const { canvasRef } = this.props;
         this.waitForCanvasRender(canvasRef);
+    }
+
+    componentWillUnmount() {
+        const { canvasRef } = this.props;
+        this.detachEventListener(canvasRef);
     }
 
     offset = (target) => {
@@ -220,14 +212,17 @@ class Items extends Component {
     };
 
     attachEventListener = (canvas) => {
-        canvas.current.container.current.addEventListener('dragenter', this.events.onDragEnter, false);
-        canvas.current.container.current.addEventListener('dragover', this.events.onDragOver, false);
-        canvas.current.container.current.addEventListener('dragleave', this.events.onDragLeave, false);
-        canvas.current.container.current.addEventListener('drop', this.events.onDrop, false);
+        canvas.current.canvas.wrapperEl.addEventListener('dragenter', this.events.onDragEnter, false);
+        canvas.current.canvas.wrapperEl.addEventListener('dragover', this.events.onDragOver, false);
+        canvas.current.canvas.wrapperEl.addEventListener('dragleave', this.events.onDragLeave, false);
+        canvas.current.canvas.wrapperEl.addEventListener('drop', this.events.onDrop, false);
     }
 
-    detachEventListener = () => {
-
+    detachEventListener = (canvas) => {
+        canvas.current.canvas.wrapperEl.removeEventListener('dragenter', this.events.onDragEnter);
+        canvas.current.canvas.wrapperEl.removeEventListener('dragover', this.events.onDragOver);
+        canvas.current.canvas.wrapperEl.removeEventListener('dragleave', this.events.onDragLeave);
+        canvas.current.canvas.wrapperEl.removeEventListener('drop', this.events.onDrop);
     }
 
     renderItems = items => (
