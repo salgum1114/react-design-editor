@@ -178,9 +178,9 @@ export default {
                                     // required: false,
                                     // message: 'Please input name',
                                 }],
-                                initialValue: 0,
+                                initialValue: data.lineHeight,
                             })(
-                                <Slider />,
+                                <Slider min={0} max={100} />,
                             )
                         }
                     </Form.Item>
@@ -194,9 +194,9 @@ export default {
                                     // required: true,
                                     // message: 'Please input width',
                                 }],
-                                initialValue: 0,
+                                initialValue: data.charSpacing,
                             })(
-                                <Slider />,
+                                <Slider min={0} max={100} />,
                             )
                         }
                     </Form.Item>

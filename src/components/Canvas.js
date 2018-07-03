@@ -73,7 +73,6 @@ class Canvas extends Component {
                 if (src) {
                     newImg.onload = () => {
                         const imgObject = new fabric.Image(newImg, {
-                            id: uuid(),
                             src,
                             ...otherOption,
                         });
@@ -91,7 +90,6 @@ class Canvas extends Component {
                 reader.onload = (e) => {
                     newImg.onload = () => {
                         const imgObject = new fabric.Image(newImg, {
-                            id: uuid(),
                             file,
                             ...otherOption,
                         });
@@ -362,6 +360,19 @@ class Canvas extends Component {
             }
             return findObject;
         },
+        allSelect: () => {
+            this.canvas.discardActiveObject();
+            const activeSelection = new fabric.ActiveSelection(this.canvas.getObjects().filter((obj) => {
+                if (obj.type === 'map') {
+                    return false;
+                }
+                return true;
+            }), {
+                canvas: this.canvas,
+            });
+            this.canvas.setActiveObject(activeSelection);
+            this.canvas.requestRenderAll();
+        },
         select: (obj) => {
             const findObject = this.handlers.find(obj);
             if (findObject) {
@@ -372,11 +383,19 @@ class Canvas extends Component {
         },
         selectById: (id) => {
             const findObject = this.handlers.findById(id);
-            this.handlers.select(findObject);
+            if (findObject) {
+                this.canvas.discardActiveObject();
+                this.canvas.setActiveObject(findObject);
+                this.canvas.requestRenderAll();
+            }
         },
         selectByName: (name) => {
             const findObject = this.handlers.findByName(name);
-            this.handlers.select(findObject);
+            if (findObject) {
+                this.canvas.discardActiveObject();
+                this.canvas.setActiveObject(findObject);
+                this.canvas.requestRenderAll();
+            }
         },
         scaleToResize: (width, height) => {
             const activeObject = this.handlers.getActiveObject();
@@ -489,6 +508,7 @@ class Canvas extends Component {
                     if (clipboardType === 'text/plain') {
                         const textPlain = clipboardData.getData('text/plain');
                         const item = {
+                            id: uuid(),
                             type: 'textbox',
                             text: textPlain,
                         };
@@ -502,6 +522,7 @@ class Canvas extends Component {
                             const { type } = file;
                             if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
                                 const item = {
+                                    id: uuid(),
                                     type: 'image',
                                     file,
                                 };
@@ -522,6 +543,9 @@ class Canvas extends Component {
                 this.handlers.remove();
             } else if (e.code.includes('Arrow')) {
                 this.events.moving(e);
+            } else if (e.ctrlKey && e.code === 'KeyA') {
+                e.preventDefault();
+                this.handlers.allSelect();
             }
         },
     }
