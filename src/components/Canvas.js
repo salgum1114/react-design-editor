@@ -607,6 +607,7 @@ class Canvas extends Component {
 
     attachEventListener = () => {
         // if add canvas wrapper element event, tabIndex = 1000;
+        this.canvas.wrapperEl.tabIndex = 1000;
         document.addEventListener('keydown', this.events.keydown, false);
         document.addEventListener('paste', this.events.paste, false);
     }
