@@ -68,10 +68,10 @@ class CanvasList extends Component {
                                 {title}
                             </div>
                             <FlexBox className="rde-canvas-list-item-actions" flex="1" justifyContent="flex-end">
-                                <Button shape="circle" onClick={() => canvasRef.current.handlers.duplicateById(item.id)}>
+                                <Button shape="circle" onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.duplicateById(item.id); }}>
                                     <Icon name="clone" />
                                 </Button>
-                                <Button shape="circle" onClick={() => canvasRef.current.handlers.removeById(item.id)}>
+                                <Button shape="circle" onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.removeById(item.id); }}>
                                     <Icon name="trash" />
                                 </Button>
                             </FlexBox>

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
+import debounce from 'lodash/debounce';
 
 const FabricObject = {
     'i-text': {
@@ -72,7 +73,6 @@ class Canvas extends Component {
                 if (src) {
                     newImg.onload = () => {
                         const imgObject = new fabric.Image(newImg, {
-                            id: uuid(),
                             src,
                             ...otherOption,
                         });
@@ -90,7 +90,6 @@ class Canvas extends Component {
                 reader.onload = (e) => {
                     newImg.onload = () => {
                         const imgObject = new fabric.Image(newImg, {
-                            id: uuid(),
                             file,
                             ...otherOption,
                         });
@@ -116,6 +115,9 @@ class Canvas extends Component {
         },
         remove: () => {
             const activeObject = this.canvas.getActiveObject();
+            if (!activeObject) {
+                return false;
+            }
             const { onRemove } = this.props;
             if (activeObject.type !== 'activeSelection') {
                 this.canvas.discardActiveObject();
@@ -244,6 +246,9 @@ class Canvas extends Component {
         getActiveObjects: () => this.canvas.getActiveObjects(),
         set: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
+            if (!activeObject) {
+                return false;
+            }
             activeObject.set(key, value);
             activeObject.setCoords();
             this.canvas.requestRenderAll();
@@ -254,6 +259,9 @@ class Canvas extends Component {
         },
         setObject: (obj) => {
             const activeObject = this.canvas.getActiveObject();
+            if (!activeObject) {
+                return false;
+            }
             Object.keys(obj).forEach((key) => {
                 if (obj[key] !== activeObject[key]) {
                     activeObject.set(key, obj[key]);
@@ -304,10 +312,12 @@ class Canvas extends Component {
         setImage: (obj, src) => {
             if (typeof src === 'string') {
                 this.handlers.loadImage(obj, src);
+                obj.set('file', null);
             } else {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.handlers.loadImage(obj, e.target.result);
+                    obj.set('src', null);
                 };
                 reader.readAsDataURL(src);
             }
@@ -350,6 +360,19 @@ class Canvas extends Component {
             }
             return findObject;
         },
+        allSelect: () => {
+            this.canvas.discardActiveObject();
+            const activeSelection = new fabric.ActiveSelection(this.canvas.getObjects().filter((obj) => {
+                if (obj.type === 'map') {
+                    return false;
+                }
+                return true;
+            }), {
+                canvas: this.canvas,
+            });
+            this.canvas.setActiveObject(activeSelection);
+            this.canvas.requestRenderAll();
+        },
         select: (obj) => {
             const findObject = this.handlers.find(obj);
             if (findObject) {
@@ -360,11 +383,19 @@ class Canvas extends Component {
         },
         selectById: (id) => {
             const findObject = this.handlers.findById(id);
-            this.handlers.select(findObject);
+            if (findObject) {
+                this.canvas.discardActiveObject();
+                this.canvas.setActiveObject(findObject);
+                this.canvas.requestRenderAll();
+            }
         },
         selectByName: (name) => {
             const findObject = this.handlers.findByName(name);
-            this.handlers.select(findObject);
+            if (findObject) {
+                this.canvas.discardActiveObject();
+                this.canvas.setActiveObject(findObject);
+                this.canvas.requestRenderAll();
+            }
         },
         scaleToResize: (width, height) => {
             const activeObject = this.handlers.getActiveObject();
@@ -397,6 +428,32 @@ class Canvas extends Component {
                     return;
                 }
                 onModified(opt);
+            }
+        },
+        moving: (e) => {
+            const activeObject = this.handlers.getActiveObject();
+            if (!activeObject) {
+                return false;
+            }
+            if (e.code === 'ArrowUp') {
+                activeObject.set('top', activeObject.top - 2);
+                activeObject.setCoords();
+                this.canvas.renderAll();
+            } else if (e.code === 'ArrowDown') {
+                activeObject.set('top', activeObject.top + 2);
+                activeObject.setCoords();
+                this.canvas.renderAll();
+            } else if (e.code === 'ArrowLeft') {
+                activeObject.set('left', activeObject.left - 2);
+                activeObject.setCoords();
+                this.canvas.renderAll();
+            } else if (e.code === 'ArrowRight') {
+                activeObject.set('left', activeObject.left + 2);
+                activeObject.setCoords();
+                this.canvas.renderAll();
+            }
+            if (this.props.onModified) {
+                this.props.onModified({ target: activeObject });
             }
         },
         mousewheel: (opt) => {
@@ -451,6 +508,7 @@ class Canvas extends Component {
                     if (clipboardType === 'text/plain') {
                         const textPlain = clipboardData.getData('text/plain');
                         const item = {
+                            id: uuid(),
                             type: 'textbox',
                             text: textPlain,
                         };
@@ -464,6 +522,7 @@ class Canvas extends Component {
                             const { type } = file;
                             if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
                                 const item = {
+                                    id: uuid(),
                                     type: 'image',
                                     file,
                                 };
@@ -481,7 +540,12 @@ class Canvas extends Component {
         },
         keydown: (e) => {
             if (e.code === 'Delete') {
-                console.log(e);
+                this.handlers.remove();
+            } else if (e.code.includes('Arrow')) {
+                this.events.moving(e);
+            } else if (e.ctrlKey && e.code === 'KeyA') {
+                e.preventDefault();
+                this.handlers.allSelect();
             }
         },
     }
@@ -544,12 +608,12 @@ class Canvas extends Component {
     attachEventListener = () => {
         // if add canvas wrapper element event, tabIndex = 1000;
         this.canvas.wrapperEl.tabIndex = 1000;
-        this.canvas.wrapperEl.addEventListener('keydown', this.events.keydown, false);
+        document.addEventListener('keydown', this.events.keydown, false);
         document.addEventListener('paste', this.events.paste, false);
     }
 
     detachEventListener = () => {
-        this.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
+        document.removeEventListener('keydown', this.events.keydown);
         document.removeEventListener('paste', this.events.paste);
     }
 
