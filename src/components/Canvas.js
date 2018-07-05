@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
-import debounce from 'lodash/debounce';
 
 const FabricObject = {
     'i-text': {
@@ -31,6 +30,12 @@ const FabricObject = {
             ...option,
         }),
     },
+    polygon: {
+        create: ({ points, option }) => new fabric.Polygon(points, {
+            id: uuid(),
+            ...option,
+        }),
+    },
 };
 
 const canvasSize = {
@@ -43,6 +48,7 @@ class Canvas extends Component {
         width: PropTypes.width,
         height: PropTypes.height,
         zoom: PropTypes.bool,
+        propertiesToInclude: PropTypes.array,
         responsive: PropTypes.bool,
         onModified: PropTypes.func,
         onAdd: PropTypes.func,
@@ -54,6 +60,7 @@ class Canvas extends Component {
         width: 0,
         height: 0,
         zoom: true,
+        propertiesToInclude: [],
         responsive: false,
     }
 
@@ -105,8 +112,10 @@ class Canvas extends Component {
                 reader.readAsDataURL(file);
                 return;
             }
-            const newObject = FabricObject[obj.type].create({ id: uuid(), ...obj });
-            this.handlers.centerObject(newObject, centered);
+            const newObject = FabricObject[obj.type].create({ ...obj });
+            if (obj.type !== 'polygon') {
+                this.handlers.centerObject(newObject, centered);
+            }
             this.canvas.add(newObject);
             const { onAdd } = this.props;
             if (onAdd) {
@@ -118,22 +127,19 @@ class Canvas extends Component {
             if (!activeObject) {
                 return false;
             }
-            const { onRemove } = this.props;
             if (activeObject.type !== 'activeSelection') {
                 this.canvas.discardActiveObject();
-                if (onRemove) {
-                    onRemove(activeObject);
-                }
                 this.canvas.remove(activeObject);
             } else {
                 const activeObjects = activeObject._objects;
                 this.canvas.discardActiveObject();
                 activeObjects.forEach((object) => {
-                    if (onRemove) {
-                        onRemove(object);
-                    }
                     this.canvas.remove(object);
                 });
+            }
+            const { onRemove } = this.props;
+            if (onRemove) {
+                onRemove(activeObject);
             }
         },
         removeById: (id) => {
@@ -148,7 +154,7 @@ class Canvas extends Component {
             }
         },
         duplicate: () => {
-            const { onAdd } = this.props;
+            const { onAdd, propertiesToInclude } = this.props;
             const activeObject = this.canvas.getActiveObject();
             activeObject.clone((clonedObj) => {
                 this.canvas.discardActiveObject();
@@ -160,7 +166,6 @@ class Canvas extends Component {
                 if (clonedObj.type === 'activeSelection') {
                     clonedObj.canvas = this.canvas;
                     clonedObj.forEachObject((obj) => {
-                        obj.set('id', uuid());
                         this.canvas.add(obj);
                     });
                     if (onAdd) {
@@ -176,10 +181,10 @@ class Canvas extends Component {
                 }
                 this.canvas.setActiveObject(clonedObj);
                 this.canvas.requestRenderAll();
-            });
+            }, propertiesToInclude);
         },
         duplicateById: (id) => {
-            const { onAdd } = this.props;
+            const { onAdd, propertiesToInclude } = this.props;
             const findObject = this.handlers.findById(id);
             if (findObject) {
                 findObject.clone((cloned) => {
@@ -195,7 +200,7 @@ class Canvas extends Component {
                     }
                     this.canvas.setActiveObject(cloned);
                     this.canvas.requestRenderAll();
-                });
+                }, propertiesToInclude);
             }
         },
         copy: () => {
@@ -408,14 +413,133 @@ class Canvas extends Component {
             activeObject.setCoords();
             this.canvas.requestRenderAll();
         },
-        import: () => {
+        importJSON: (json, callback) => this.canvas.loadFromJSON(json, callback),
+        exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude),
+        exportPNG: () => this.canvas.toDataURL({
+            format: 'png',
+            quality: 0.8,
+        }),
+    }
 
+    drawingHandlers = {
+        drawPolygon: () => {
+            this.polygonMode = true;
+            this.pointArray = [];
+            this.lineArray = [];
+            this.activeLine = null;
+            this.activeShape = null;
         },
-        export: () => {
-
+        addPoint: (opt) => {
+            const id = uuid();
+            const { e } = opt;
+            const { layerX, layerY } = e;
+            const zoom = this.canvas.getZoom();
+            const circle = new fabric.Circle({
+                id,
+                radius: 5,
+                fill: '#ffffff',
+                stroke: '#333333',
+                strokeWidth: 0.5,
+                left: layerX / zoom,
+                top: layerY / zoom,
+                selectable: false,
+                hasBorders: false,
+                hasControls: false,
+                originX: 'center',
+                originY: 'center',
+                hoverCursor: 'pointer',
+            });
+            if (!this.pointArray.length) {
+                circle.set({
+                    fill: 'red',
+                });
+            }
+            const x = layerX / zoom;
+            const y = layerY / zoom;
+            const points = [x, y, x, y];
+            const line = new fabric.Line(points, {
+                strokeWidth: 2,
+                fill: '#999999',
+                stroke: '#999999',
+                class: 'line',
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                hasBorders: false,
+                hasControls: false,
+                evented: false,
+            });
+            if (this.activeShape) {
+                const position = this.canvas.getPointer(e);
+                const activeShapePoints = this.activeShape.get('points');
+                activeShapePoints.push({
+                    x: position.x,
+                    y: position.y,
+                });
+                const polygon = new fabric.Polygon(activeShapePoints, {
+                    stroke: '#333333',
+                    strokeWidth: 1,
+                    fill: '#cccccc',
+                    opacity: 0.1,
+                    selectable: false,
+                    hasBorders: false,
+                    hasControls: false,
+                    evented: false,
+                });
+                this.canvas.remove(this.activeShape);
+                this.canvas.add(polygon);
+                this.activeShape = polygon;
+                this.canvas.renderAll();
+            } else {
+                const polyPoint = [{ x, y }];
+                const polygon = new fabric.Polygon(polyPoint, {
+                    stroke: '#333333',
+                    strokeWidth: 1,
+                    fill: '#cccccc',
+                    opacity: 0.1,
+                    selectable: false,
+                    hasBorders: false,
+                    hasControls: false,
+                    evented: false,
+                });
+                this.activeShape = polygon;
+                this.canvas.add(polygon);
+            }
+            this.activeLine = line;
+            this.pointArray.push(circle);
+            this.lineArray.push(line);
+            this.canvas.add(line);
+            this.canvas.add(circle);
+            this.canvas.selection = false;
         },
-        submit: () => {
-
+        generatePolygon: (pointArray) => {
+            const points = [];
+            pointArray.forEach((point) => {
+                points.push({
+                    x: point.left,
+                    y: point.top,
+                });
+                this.canvas.remove(point);
+            });
+            this.lineArray.forEach((line) => {
+                this.canvas.remove(line);
+            });
+            this.canvas.remove(this.activeShape).remove(this.activeLine);
+            const option = {
+                points,
+                type: 'polygon',
+                stroke: '#333333',
+                strokeWidth: 0.5,
+                fill: 'red',
+                opacity: 1,
+                hasBorders: true,
+                hasControls: true,
+            };
+            this.handlers.add(option, false);
+            this.activeLine = null;
+            this.activeShape = null;
+            this.polygonMode = false;
+            this.canvas.selection = true;
         },
     }
 
@@ -470,6 +594,31 @@ class Canvas extends Component {
                 opt.e.preventDefault();
                 opt.e.stopPropagation();
             }
+        },
+        mousedown: (opt) => {
+            if (this.polygonMode) {
+                if (opt.target && this.pointArray.length && opt.target.id === this.pointArray[0].id) {
+                    this.drawingHandlers.generatePolygon(this.pointArray);
+                } else {
+                    this.drawingHandlers.addPoint(opt);
+                }
+            }
+        },
+        mousemove: (opt) => {
+            if (this.activeLine && this.activeLine.class === 'line') {
+                const pointer = this.canvas.getPointer(opt.e);
+                this.activeLine.set({ x2: pointer.x, y2: pointer.y });
+                const points = this.activeShape.get('points');
+                points[this.pointArray.length] = {
+                    x: pointer.x,
+                    y: pointer.y,
+                };
+                this.activeShape.set({
+                    points,
+                });
+                this.canvas.renderAll();
+            }
+            this.canvas.renderAll();
         },
         selection: (opt) => {
             const { onSelect } = this.props;
@@ -582,10 +731,12 @@ class Canvas extends Component {
             type: 'map',
         });
         this.canvas.add(this.mainRect);
-        const { modified, mousewheel, selection } = this.events;
+        const { modified, mousewheel, mousedown, mousemove, selection } = this.events;
         this.canvas.on({
             'object:modified': modified,
             'mouse:wheel': mousewheel,
+            'mouse:down': mousedown,
+            'mouse:move': mousemove,
             'selection:cleared': selection,
             'selection:created': selection,
             'selection:updated': selection,

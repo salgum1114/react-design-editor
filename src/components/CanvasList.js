@@ -48,13 +48,16 @@ class CanvasList extends Component {
                     title = 'Image';
                 } else if (item.type === 'triangle') {
                     icon = 'picture-o';
-                    title = 'triangle';
+                    title = 'Triangle';
                 } else if (item.type === 'rect') {
                     icon = 'picture-o';
-                    title = 'rect';
+                    title = 'Rect';
                 } else if (item.type === 'circle') {
                     icon = 'picture-o';
-                    title = 'circle';
+                    title = 'Circle';
+                } else if (item.type === 'polygon') {
+                    icon = 'picture-o';
+                    title = 'Polygon';
                 }
                 let className = 'rde-canvas-list-item';
                 if (selectedItem && selectedItem.id === item.id) {

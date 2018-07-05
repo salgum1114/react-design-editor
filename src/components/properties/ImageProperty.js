@@ -9,7 +9,7 @@ export default {
         if (!data) {
             return null;
         }
-        const imageLoadType = data.imageLoadType || 'fileUpload';
+        const imageLoadType = data.imageLoadType || 'file';
         return (
             <React.Fragment>
                 <Form.Item label="Image Load Type" colon={false}>
@@ -22,14 +22,14 @@ export default {
                             initialValue: imageLoadType,
                         })(
                             <Radio.Group size="large">
-                                <Radio.Button value="fileUpload">File Upload</Radio.Button>
-                                <Radio.Button value="imageUrl">Image URL</Radio.Button>
+                                <Radio.Button value="file">File Upload</Radio.Button>
+                                <Radio.Button value="src">Image URL</Radio.Button>
                             </Radio.Group>,
                         )
                     }
                 </Form.Item>
                 {
-                    imageLoadType === 'fileUpload' ? (
+                    imageLoadType === 'file' ? (
                         <Form.Item label="File" colon={false}>
                             {
                                 getFieldDecorator('file', {
