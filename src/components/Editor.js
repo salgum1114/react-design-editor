@@ -9,6 +9,15 @@ import Properties from './Properties';
 import FooterToolbar from './FooterToolbar';
 import HeaderToolbar from './HeaderToolbar';
 
+const propertiesToInclude = [
+    'id',
+    'name',
+    'lock',
+    'file',
+    'actionType',
+    'imageLoadType',
+];
+
 class Editor extends Component {
     handlers = {
         onAdd: (obj) => {
@@ -47,6 +56,19 @@ class Editor extends Component {
             });
         },
         onRemove: (obj) => {
+            console.log(obj);
+            if (obj.type === 'activeSelection') {
+                obj.forEachObject((object) => {
+                    delete this.state.items[object.id];
+                });
+                this.setState({
+                    items: this.state.items,
+                }, () => {
+                    console.log(this.state.items);
+                    this.handlers.onSelect(null);
+                });
+                return;
+            }
             delete this.state.items[obj.id];
             this.setState({
                 items: this.state.items,
@@ -165,6 +187,7 @@ class Editor extends Component {
                         ref={this.canvasRef}
                         width={canvasRect.width}
                         height={canvasRect.height}
+                        propertiesToInclude={propertiesToInclude}
                         onModified={onModified}
                         onAdd={onAdd}
                         onRemove={onRemove}

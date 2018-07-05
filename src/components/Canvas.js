@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
-import debounce from 'lodash/debounce';
 
 const FabricObject = {
     'i-text': {
@@ -105,7 +104,7 @@ class Canvas extends Component {
                 reader.readAsDataURL(file);
                 return;
             }
-            const newObject = FabricObject[obj.type].create({ id: uuid(), ...obj });
+            const newObject = FabricObject[obj.type].create({ ...obj });
             this.handlers.centerObject(newObject, centered);
             this.canvas.add(newObject);
             const { onAdd } = this.props;
@@ -118,22 +117,19 @@ class Canvas extends Component {
             if (!activeObject) {
                 return false;
             }
-            const { onRemove } = this.props;
             if (activeObject.type !== 'activeSelection') {
                 this.canvas.discardActiveObject();
-                if (onRemove) {
-                    onRemove(activeObject);
-                }
                 this.canvas.remove(activeObject);
             } else {
                 const activeObjects = activeObject._objects;
                 this.canvas.discardActiveObject();
                 activeObjects.forEach((object) => {
-                    if (onRemove) {
-                        onRemove(object);
-                    }
                     this.canvas.remove(object);
                 });
+            }
+            const { onRemove } = this.props;
+            if (onRemove) {
+                onRemove(activeObject);
             }
         },
         removeById: (id) => {
@@ -148,7 +144,7 @@ class Canvas extends Component {
             }
         },
         duplicate: () => {
-            const { onAdd } = this.props;
+            const { onAdd, propertiesToInclude } = this.props;
             const activeObject = this.canvas.getActiveObject();
             activeObject.clone((clonedObj) => {
                 this.canvas.discardActiveObject();
@@ -160,7 +156,6 @@ class Canvas extends Component {
                 if (clonedObj.type === 'activeSelection') {
                     clonedObj.canvas = this.canvas;
                     clonedObj.forEachObject((obj) => {
-                        obj.set('id', uuid());
                         this.canvas.add(obj);
                     });
                     if (onAdd) {
@@ -176,10 +171,10 @@ class Canvas extends Component {
                 }
                 this.canvas.setActiveObject(clonedObj);
                 this.canvas.requestRenderAll();
-            });
+            }, propertiesToInclude);
         },
         duplicateById: (id) => {
-            const { onAdd } = this.props;
+            const { onAdd, propertiesToInclude } = this.props;
             const findObject = this.handlers.findById(id);
             if (findObject) {
                 findObject.clone((cloned) => {
@@ -195,7 +190,7 @@ class Canvas extends Component {
                     }
                     this.canvas.setActiveObject(cloned);
                     this.canvas.requestRenderAll();
-                });
+                }, propertiesToInclude);
             }
         },
         copy: () => {
@@ -408,19 +403,12 @@ class Canvas extends Component {
             activeObject.setCoords();
             this.canvas.requestRenderAll();
         },
-        import: () => {
-
-        },
-        exportJSON: () => {
-
-        },
+        importJSON: (json, callback) => this.canvas.loadFromJSON(json, callback),
+        exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude),
         exportPNG: () => this.canvas.toDataURL({
             format: 'png',
             quality: 0.8,
         }),
-        submit: () => {
-
-        },
     }
 
     events = {
