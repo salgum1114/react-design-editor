@@ -142,4 +142,40 @@ export default {
             component: StyleProperty,
         },
     },
+    polygon: {
+        general: {
+            title: 'General',
+            component: GeneralProperty,
+        },
+        action: {
+            title: 'Action',
+            component: ActionProperty,
+        },
+        tooltip: {
+            title: 'Tooltip',
+            component: TooltipProperty,
+        },
+        style: {
+            title: 'Style',
+            component: StyleProperty,
+        },
+    },
+    line: {
+        general: {
+            title: 'General',
+            component: GeneralProperty,
+        },
+        action: {
+            title: 'Action',
+            component: ActionProperty,
+        },
+        tooltip: {
+            title: 'Tooltip',
+            component: TooltipProperty,
+        },
+        style: {
+            title: 'Style',
+            component: StyleProperty,
+        },
+    },
 };

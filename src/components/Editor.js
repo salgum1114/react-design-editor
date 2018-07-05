@@ -56,7 +56,6 @@ class Editor extends Component {
             });
         },
         onRemove: (obj) => {
-            console.log(obj);
             if (obj.type === 'activeSelection') {
                 obj.forEachObject((object) => {
                     delete this.state.items[object.id];
@@ -64,7 +63,6 @@ class Editor extends Component {
                 this.setState({
                     items: this.state.items,
                 }, () => {
-                    console.log(this.state.items);
                     this.handlers.onSelect(null);
                 });
                 return;

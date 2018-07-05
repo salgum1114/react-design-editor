@@ -104,6 +104,18 @@ const SHAPE = [
     },
 ];
 
+const DRWAING = [
+    {
+        key: 'polygon',
+        type: 'polygon',
+        icon: 'picture-o',
+        title: 'Polygon',
+        option: {
+            type: 'polygon',
+        },
+    },
+];
+
 class Items extends Component {
     handlers = {
         onAddItem: (item, centered) => {
@@ -111,6 +123,10 @@ class Items extends Component {
             const id = uuid();
             const option = Object.assign({}, item.option, { id });
             canvasRef.current.handlers.add(option, centered);
+        },
+        onDrawingItem: (item) => {
+            const { canvasRef } = this.props;
+            canvasRef.current.drawingHandlers.drawPolygon();
         },
     }
 
@@ -226,25 +242,42 @@ class Items extends Component {
         canvas.current.canvas.wrapperEl.removeEventListener('drop', this.events.onDrop);
     }
 
-    renderItems = items => (
+    renderItems = (type, items) => (
         <FlexBox flexWrap="wrap">
             {
-                items.map(item => (
-                    <div
-                        key={item.key}
-                        draggable
-                        onClick={e => this.handlers.onAddItem(item)}
-                        onDragStart={e => this.events.onDragStart(e, item)}
-                        onDragEnd={e => this.events.onDragEnd(e, item)}
-                        className="rde-item"
-                        style={{ flex: '0 1 auto' }}
-                    >
-                        <Icon name={item.icon} size={3} />
-                        <div className="rde-item-text">
-                            {item.title}
+                type === 'DRAWING' ? (
+                    items.map(item => (
+                        <div
+                            key={item.key}
+                            draggable
+                            onClick={e => this.handlers.onDrawingItem(item)}
+                            className="rde-item"
+                            style={{ flex: '0 1 auto' }}
+                        >
+                            <Icon name={item.icon} size={3} />
+                            <div className="rde-item-text">
+                                {item.title}
+                            </div>
                         </div>
-                    </div>
-                ))
+                    ))
+                ) : (
+                    items.map(item => (
+                        <div
+                            key={item.key}
+                            draggable
+                            onClick={e => this.handlers.onAddItem(item)}
+                            onDragStart={e => this.events.onDragStart(e, item)}
+                            onDragEnd={e => this.events.onDragEnd(e, item)}
+                            className="rde-item"
+                            style={{ flex: '0 1 auto' }}
+                        >
+                            <Icon name={item.icon} size={3} />
+                            <div className="rde-item-text">
+                                {item.title}
+                            </div>
+                        </div>
+                    ))
+                )
             }
         </FlexBox>
     )
@@ -255,16 +288,19 @@ class Items extends Component {
             <div>
                 <Collapse bordered={false}>
                     <Panel showArrow={showArrow} header="Marker">
-                        {this.renderItems(MARKER)}
+                        {this.renderItems('MARKER', MARKER)}
                     </Panel>
                     <Panel showArrow={showArrow} header="Text">
-                        {this.renderItems(TEXT)}
+                        {this.renderItems('TEXT', TEXT)}
                     </Panel>
                     <Panel showArrow={showArrow} header="Image">
-                        {this.renderItems(IMAGE)}
+                        {this.renderItems('IMAGE', IMAGE)}
                     </Panel>
                     <Panel showArrow={showArrow} header="Shape">
-                        {this.renderItems(SHAPE)}
+                        {this.renderItems('SHAPE', SHAPE)}
+                    </Panel>
+                    <Panel showArrow={showArrow} header="Drawing">
+                        {this.renderItems('DRAWING', DRWAING)}
                     </Panel>
                 </Collapse>
             </div>
