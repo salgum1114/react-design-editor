@@ -411,9 +411,13 @@ class Canvas extends Component {
         import: () => {
 
         },
-        export: () => {
+        exportJSON: () => {
 
         },
+        exportPNG: () => this.canvas.toDataURL({
+            format: 'png',
+            quality: 0.8,
+        }),
         submit: () => {
 
         },

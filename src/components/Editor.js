@@ -152,7 +152,7 @@ class Editor extends Component {
         return (
             <div className="rde-editor">
                 <nav className="rde-wireframe">
-                    <Wireframe />
+                    <Wireframe canvasRef={this.canvasRef} />
                 </nav>
                 <aside className="rde-items">
                     <Items canvasRef={this.canvasRef} />
