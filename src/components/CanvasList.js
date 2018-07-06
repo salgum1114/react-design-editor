@@ -58,6 +58,9 @@ class CanvasList extends Component {
                 } else if (item.type === 'polygon') {
                     icon = 'picture-o';
                     title = 'Polygon';
+                } else if (item.type === 'polyline') {
+                    icon = 'picture-o';
+                    title = 'Polyline';
                 }
                 let className = 'rde-canvas-list-item';
                 if (selectedItem && selectedItem.id === item.id) {

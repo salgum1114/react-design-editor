@@ -52,7 +52,7 @@ class Editor extends Component {
                 return;
             }
             this.setState({
-                selectedItem: this.canvasRef.current.mainRect,
+                selectedItem: this.canvasRef.current.workarea,
             });
         },
         onRemove: (obj) => {
@@ -104,6 +104,7 @@ class Editor extends Component {
             });
         }, 300),
         onChange: (selectedItem, changedValues, allValues) => {
+            console.log(this.state.items);
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
             console.log(selectedItem, changedKey, changedValue);
@@ -129,10 +130,10 @@ class Editor extends Component {
         },
         onChangeCanvas: (changedKey, changedValue) => {
             if (changedKey === 'file' || changedKey === 'src') {
-                this.canvasRef.current.handlers.setImageByObject(this.canvasRef.current.mainRect, changedValue);
+                this.canvasRef.current.handlers.setImageByObject(this.canvasRef.current.workarea, changedValue);
             }
-            this.canvasRef.current.mainRect.set(changedKey, changedValue);
-            this.canvasRef.current.canvas.centerObject(this.canvasRef.current.mainRect);
+            this.canvasRef.current.workarea.set(changedKey, changedValue);
+            this.canvasRef.current.canvas.centerObject(this.canvasRef.current.workarea);
             this.canvasRef.current.canvas.requestRenderAll();
         },
     }
@@ -162,7 +163,7 @@ class Editor extends Component {
             });
         });
         this.setState({
-            selectedItem: this.canvasRef.current.mainRect,
+            selectedItem: this.canvasRef.current.workarea,
         });
     }
 

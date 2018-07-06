@@ -126,7 +126,7 @@ class Items extends Component {
         },
         onDrawingItem: (item) => {
             const { canvasRef } = this.props;
-            canvasRef.current.drawingHandlers.drawPolygon();
+            canvasRef.current.drawingHandlers.initDraw();
         },
     }
 
