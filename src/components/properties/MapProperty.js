@@ -9,20 +9,6 @@ export default {
         }
         return (
             <React.Fragment>
-                <Form.Item label="Responsive" colon={false}>
-                    {
-                        getFieldDecorator('responsive', {
-                            rules: [{
-                                type: 'boolean',
-                                // required: true,
-                                // message: 'Please input rotation',
-                            }],
-                            initialValue: false,
-                        })(
-                            <Switch defaultChecked />,
-                        )
-                    }
-                </Form.Item>
                 <Form.Item label="Name" colon={false}>
                     {
                         getFieldDecorator('name', {
@@ -33,6 +19,21 @@ export default {
                             initialValue: data.name || '',
                         })(
                             <Input />,
+                        )
+                    }
+                </Form.Item>
+                <Form.Item label="Responsive" colon={false}>
+                    {
+                        getFieldDecorator('responsive', {
+                            rules: [{
+                                type: 'boolean',
+                                // required: true,
+                                // message: 'Please input rotation',
+                            }],
+                            valuePropName: 'checked',
+                            initialValue: data.responsive,
+                        })(
+                            <Switch />,
                         )
                     }
                 </Form.Item>

@@ -33,9 +33,10 @@ export default {
                                         // required: true,
                                         // message: 'Please input rotation',
                                     }],
+                                    valuePropName: 'checked',
                                     initialValue: data.visible,
                                 })(
-                                    <Switch defaultChecked />,
+                                    <Switch />,
                                 )
                             }
                         </Form.Item>
