@@ -8,6 +8,7 @@ import Canvas from './Canvas';
 import Properties from './Properties';
 import FooterToolbar from './FooterToolbar';
 import HeaderToolbar from './HeaderToolbar';
+import Title from './Title';
 
 const propertiesToInclude = [
     'id',
@@ -104,7 +105,6 @@ class Editor extends Component {
             });
         }, 300),
         onChange: (selectedItem, changedValues, allValues) => {
-            console.log(this.state.items);
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
             console.log(selectedItem, changedKey, changedValue);
@@ -171,37 +171,44 @@ class Editor extends Component {
         const { items, selectedItem, canvasRect } = this.state;
         const { onAdd, onRemove, onSelect, onModified, onChange } = this.handlers;
         return (
-            <div className="rde-editor">
-                <nav className="rde-wireframe">
-                    <Wireframe canvasRef={this.canvasRef} />
-                </nav>
-                <aside className="rde-items">
-                    <Items canvasRef={this.canvasRef} />
-                </aside>
-                <main
-                    ref={(c) => { this.container = c; }}
-                    className="rde-canvas-container"
-                >
-                    <Canvas
-                        ref={this.canvasRef}
-                        width={canvasRect.width}
-                        height={canvasRect.height}
-                        propertiesToInclude={propertiesToInclude}
-                        onModified={onModified}
-                        onAdd={onAdd}
-                        onRemove={onRemove}
-                        onSelect={onSelect}
-                    />
-                </main>
-                <header style={{ width: canvasRect.width }} className="rde-canvas-header">
-                    <HeaderToolbar canvasRef={this.canvasRef} items={items} selectedItem={selectedItem} onSelect={onSelect} />
-                </header>
-                <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
-                    <FooterToolbar />
-                </footer>
-                <aside className="rde-properties">
-                    <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} />
-                </aside>
+            <div className="rde-main">
+                <div className="rde-title">
+                    <Title propertiesRef={this.propertiesRef} />
+                </div>
+                <div className="rde-content">
+                    <div className="rde-editor">
+                        <nav className="rde-wireframe">
+                            <Wireframe canvasRef={this.canvasRef} />
+                        </nav>
+                        <aside className="rde-items">
+                            <Items canvasRef={this.canvasRef} />
+                        </aside>
+                        <main
+                            ref={(c) => { this.container = c; }}
+                            className="rde-canvas-container"
+                        >
+                            <Canvas
+                                ref={this.canvasRef}
+                                width={canvasRect.width}
+                                height={canvasRect.height}
+                                propertiesToInclude={propertiesToInclude}
+                                onModified={onModified}
+                                onAdd={onAdd}
+                                onRemove={onRemove}
+                                onSelect={onSelect}
+                            />
+                        </main>
+                        <header style={{ width: canvasRect.width }} className="rde-canvas-header">
+                            <HeaderToolbar canvasRef={this.canvasRef} items={items} selectedItem={selectedItem} onSelect={onSelect} />
+                        </header>
+                        <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
+                            <FooterToolbar />
+                        </footer>
+                        <aside className="rde-properties">
+                            <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} />
+                        </aside>
+                    </div>
+                </div>
             </div>
         );
     }

@@ -27,7 +27,7 @@ class FooterToolbar extends Component {
                     </Button>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-action">
-                    <span>Preview</span>
+                    <span style={{ marginRight: 8 }}>Preview</span>
                     <Switch />
                 </FlexItem>
             </FlexBox>

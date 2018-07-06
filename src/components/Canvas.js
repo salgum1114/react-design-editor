@@ -155,6 +155,9 @@ class Canvas extends Component {
         duplicate: () => {
             const { onAdd, propertiesToInclude } = this.props;
             const activeObject = this.canvas.getActiveObject();
+            if (!activeObject) {
+                return false;
+            }
             activeObject.clone((clonedObj) => {
                 this.canvas.discardActiveObject();
                 clonedObj.set({
@@ -300,8 +303,6 @@ class Canvas extends Component {
                 const newImg = new Image();
                 newImg.onload = () => {
                     obj.setElement(newImg);
-                    obj.scaleToHeight(400);
-                    obj.scaleToWidth(600);
                     this.canvas.requestRenderAll();
                 };
                 newImg.src = src;

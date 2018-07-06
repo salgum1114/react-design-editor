@@ -49,10 +49,10 @@ class HeaderToolbar extends Component {
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
                     <Button>
-                        <Icon name="rotate-left" />Undo
+                        <Icon name="rotate-left" style={{ marginRight: 8 }} />Undo
                     </Button>
                     <Button>
-                        Redo<Icon name="rotate-right" />
+                        Redo<Icon name="rotate-right" style={{ marginLeft: 8 }} />
                     </Button>
                 </FlexItem>
             </FlexBox>
