@@ -122,6 +122,7 @@ class Editor extends Component {
                     lockMovementY: changedValue,
                     hasControls: !changedValue,
                     hoverCursor: changedValue ? 'pointer' : 'move',
+                    editable: !changedValue,
                 });
             } else if (changedKey === 'file' || changedKey === 'src') {
                 this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);

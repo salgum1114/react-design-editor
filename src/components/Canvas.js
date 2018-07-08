@@ -83,7 +83,6 @@ class Canvas extends Component {
                             ...otherOption,
                         });
                         this.handlers.centerObject(imgObject, centered);
-                        // imgObject.scale(this.ratio);
                         this.canvas.add(imgObject);
                         const { onAdd } = this.props;
                         if (onAdd) {
@@ -101,7 +100,6 @@ class Canvas extends Component {
                             ...otherOption,
                         });
                         this.handlers.centerObject(imgObject, centered);
-                        // imgObject.scale(this.ratio);
                         this.canvas.add(imgObject);
                         const { onAdd } = this.props;
                         if (onAdd) {
@@ -117,7 +115,6 @@ class Canvas extends Component {
             if (obj.type !== 'polygon') {
                 this.handlers.centerObject(newObject, centered);
             }
-            // newObject.scale(this.ratio);
             this.canvas.add(newObject);
             const { onAdd } = this.props;
             if (onAdd) {
@@ -687,13 +684,10 @@ class Canvas extends Component {
                     object.set('left', object.left + diffWidth);
                     object.set('top', object.top + diffHeight);
                     object.setCoords();
-                    // object.scale(this.ratio);
                 }
             });
-            // this.canvas.setViewportTransform([this.ratio, 0, 0, this.ratio, 0, 0]);
             this.canvas.centerObject(this.workarea);
             this.workarea.setCoords();
-            // this.workarea.scale(this.ratio);
             this.canvas.renderAll();
         },
         paste: (e) => {
