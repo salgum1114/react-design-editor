@@ -202,7 +202,7 @@ class Editor extends Component {
                             <HeaderToolbar canvasRef={this.canvasRef} items={items} selectedItem={selectedItem} onSelect={onSelect} />
                         </header>
                         <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
-                            <FooterToolbar />
+                            <FooterToolbar canvasRef={this.canvasRef} />
                         </footer>
                         <aside className="rde-properties">
                             <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} />

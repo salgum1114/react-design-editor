@@ -13,16 +13,17 @@ class CanvasList extends Component {
     }
 
     renderActions = () => {
+        const { canvasRef } = this.props;
         return (
             <FlexItem className="rde-canvas-list-actions" flex="0 1 auto">
                 <FlexBox justifyContent="space-between" alignItems="center">
                     <FlexBox flex="1" justifyContent="center">
-                        <Button style={{ width: '100%', height: 30 }}>
+                        <Button style={{ width: '100%', height: 30 }} onClick={e => canvasRef.current.handlers.sendBackwards()}>
                             <Icon name="arrow-up" />
                         </Button>
                     </FlexBox>
                     <FlexBox flex="1" justifyContent="center">
-                        <Button style={{ width: '100%', height: 30 }}>
+                        <Button style={{ width: '100%', height: 30 }} onClick={e => canvasRef.current.handlers.bringForward()}>
                             <Icon name="arrow-down" />
                         </Button>
                     </FlexBox>
