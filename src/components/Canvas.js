@@ -334,6 +334,7 @@ class Canvas extends Component {
                     });
                     obj.set({
                         ...img,
+                        selectable: false,
                     });
                     canvas.renderAll();
                 });
@@ -351,6 +352,7 @@ class Canvas extends Component {
                     });
                     obj.set({
                         ...img,
+                        selectable: false,
                     });
                     canvas.renderAll();
                 });
@@ -476,7 +478,7 @@ class Canvas extends Component {
         allSelect: () => {
             this.canvas.discardActiveObject();
             const activeSelection = new fabric.ActiveSelection(this.canvas.getObjects().filter((obj) => {
-                if (obj.type === 'map') {
+                if (obj.id === 'workarea') {
                     return false;
                 }
                 return true;
@@ -931,10 +933,13 @@ class Canvas extends Component {
 
         });
         if (editable) {
-            this.workarea = new fabric.Image(0, {
+            this.workarea = new fabric.Image(null, {
+                lockScalingX: true,
+                lockScalingY: true,
                 backgroundColor: '#fff',
                 width: canvasSize.width,
                 height: canvasSize.height,
+                hasBorders: false,
                 hasControls: false,
                 selectable: false,
                 lockMovementX: true,
