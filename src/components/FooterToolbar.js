@@ -8,10 +8,12 @@ import { FlexBox, FlexItem } from './flex';
 class FooterToolbar extends Component {
     static propTypes = {
         canvasRef: PropTypes.any,
+        preview: PropTypes.bool,
+        onChangePreview: PropTypes.func,
     }
 
     render() {
-        const { canvasRef } = this.props;
+        const { canvasRef, preview, onChangePreview } = this.props;
         return (
             <FlexBox className="rde-canvas-toolbar-container" flex="1">
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-zoom">
@@ -34,7 +36,7 @@ class FooterToolbar extends Component {
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-action">
                     <span style={{ marginRight: 8 }}>Preview</span>
-                    <Switch />
+                    <Switch checked={preview} onChange={onChangePreview} />
                 </FlexItem>
             </FlexBox>
         );

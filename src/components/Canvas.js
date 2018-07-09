@@ -72,7 +72,7 @@ class Canvas extends Component {
                 this.handlers.setByObject(obj, 'top', obj.top - (obj.height / 2));
             }
         },
-        add: (obj, centered = true) => {
+        add: (obj, centered = true, loaded = false) => {
             if (obj.type === 'image') {
                 const newImg = new Image();
                 const { src, file, ...otherOption } = obj;
@@ -85,7 +85,7 @@ class Canvas extends Component {
                         this.handlers.centerObject(imgObject, centered);
                         this.canvas.add(imgObject);
                         const { onAdd } = this.props;
-                        if (onAdd) {
+                        if (onAdd && !loaded) {
                             onAdd(imgObject);
                         }
                     };
@@ -102,7 +102,7 @@ class Canvas extends Component {
                         this.handlers.centerObject(imgObject, centered);
                         this.canvas.add(imgObject);
                         const { onAdd } = this.props;
-                        if (onAdd) {
+                        if (onAdd && !loaded) {
                             onAdd(imgObject);
                         }
                     };
@@ -117,7 +117,7 @@ class Canvas extends Component {
             }
             this.canvas.add(newObject);
             const { onAdd } = this.props;
-            if (onAdd) {
+            if (onAdd && !loaded) {
                 onAdd(newObject);
             }
         },
@@ -168,6 +168,7 @@ class Canvas extends Component {
                 if (clonedObj.type === 'activeSelection') {
                     clonedObj.canvas = this.canvas;
                     clonedObj.forEachObject((obj) => {
+                        obj.set('id', uuid());
                         this.canvas.add(obj);
                     });
                     if (onAdd) {
@@ -415,7 +416,17 @@ class Canvas extends Component {
             activeObject.setCoords();
             this.canvas.requestRenderAll();
         },
-        importJSON: (json, callback) => this.canvas.loadFromJSON(json, callback),
+        importJSON: (json, callback) => {
+            if (typeof json === 'string') {
+                json = JSON.parse(json);
+            }
+            json.forEach((obj) => {
+                this.handlers.add(obj, false, true);
+            });
+            if (callback) {
+                callback(this.canvas);
+            }
+        },
         exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude),
         exportPNG: () => this.canvas.toDataURL({
             format: 'png',
@@ -767,12 +778,14 @@ class Canvas extends Component {
     }
 
     state = {
+        id: `id_${uuid()}`,
         clipboard: null,
     }
 
     componentDidMount() {
+        const { id } = this.state;
         const { width, height } = this.props;
-        this.canvas = new fabric.Canvas('c', {
+        this.canvas = new fabric.Canvas(id, {
             preserveObjectStacking: true,
             width,
             height,
@@ -805,6 +818,7 @@ class Canvas extends Component {
             'selection:updated': selection,
         });
         this.attachEventListener();
+        // console.log(this.canvas.getObjects());
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -832,13 +846,14 @@ class Canvas extends Component {
     }
 
     render() {
+        const { id } = this.state;
         return (
             <div
                 ref={this.container}
                 id="rde-canvas"
                 className="rde-canvas"
             >
-                <canvas id="c" />
+                <canvas id={id} />
             </div>
         );
     }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
 import debounce from 'lodash/debounce';
+import classnames from 'classnames';
 
 import Wireframe from './Wireframe';
 import Items from './Items';
@@ -9,6 +10,7 @@ import Properties from './Properties';
 import FooterToolbar from './FooterToolbar';
 import HeaderToolbar from './HeaderToolbar';
 import Title from './Title';
+import Preview from './Preview';
 
 const propertiesToInclude = [
     'id',
@@ -20,10 +22,10 @@ const propertiesToInclude = [
 ];
 
 class Editor extends Component {
-    handlers = {
+    canvasHandlers = {
         onAdd: (obj) => {
             if (obj.type === 'activeSelection') {
-                this.handlers.onSelect(null);
+                this.canvasHandlers.onSelect(null);
                 return;
             }
             this.canvasRef.current.handlers.select(obj);
@@ -40,7 +42,7 @@ class Editor extends Component {
             });
         },
         onRemove: (obj) => {
-            this.handlers.onSelect(null);
+            this.canvasHandlers.onSelect(null);
         },
         onModified: debounce((opt) => {
             if (opt.type !== 'activeSelection') {
@@ -58,7 +60,7 @@ class Editor extends Component {
             const changedValue = changedValues[changedKey];
             console.log(selectedItem, changedKey, changedValue);
             if (!selectedItem.id) {
-                this.handlers.onChangeCanvas(changedKey, changedValue);
+                this.canvasHandlers.onChangeCanvas(changedKey, changedValue);
                 return;
             }
             if (changedKey === 'width' || changedKey === 'height') {
@@ -88,6 +90,14 @@ class Editor extends Component {
         },
     }
 
+    handlers = {
+        onChangePreview: (checked) => {
+            this.setState({
+                preview: typeof checked === 'object' ? false : checked,
+            });
+        },
+    }
+
     constructor(props) {
         super(props);
         this.canvasRef = React.createRef();
@@ -100,6 +110,7 @@ class Editor extends Component {
             width: 0,
             height: 0,
         },
+        preview: false,
     }
 
     componentDidMount() {
@@ -118,8 +129,10 @@ class Editor extends Component {
     }
 
     render() {
-        const { items, selectedItem, canvasRect } = this.state;
-        const { onAdd, onRemove, onSelect, onModified, onChange } = this.handlers;
+        const { preview, selectedItem, canvasRect } = this.state;
+        const { onAdd, onRemove, onSelect, onModified, onChange } = this.canvasHandlers;
+        const { onChangePreview } = this.handlers;
+        const previewClassName = classnames('rde-canvas-preview', { preview });
         return (
             <div className="rde-main">
                 <div className="rde-title">
@@ -127,9 +140,9 @@ class Editor extends Component {
                 </div>
                 <div className="rde-content">
                     <div className="rde-editor">
-                        <nav className="rde-wireframe">
+                        {/* <nav className="rde-wireframe">
                             <Wireframe canvasRef={this.canvasRef} />
-                        </nav>
+                        </nav> */}
                         <aside className="rde-items">
                             <Items canvasRef={this.canvasRef} />
                         </aside>
@@ -152,12 +165,15 @@ class Editor extends Component {
                             <HeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} onSelect={onSelect} />
                         </header>
                         <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
-                            <FooterToolbar canvasRef={this.canvasRef} />
+                            <FooterToolbar canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} />
                         </footer>
                         <aside className="rde-properties">
                             <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} />
                         </aside>
                     </div>
+                </div>
+                <div className={previewClassName}>
+                    <Preview canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} />
                 </div>
             </div>
         );

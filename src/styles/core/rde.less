@@ -39,6 +39,24 @@ html, body, #root {
         height: 100vh;
         padding-top: 60px;
     }
+    .rde-canvas-preview {
+        position: absolute;
+        transform: scale(0);
+        transition: transform 0.3s linear;
+        transform-origin: bottom right;
+        &.preview {
+            width: 100%;
+            height: 100%;
+            transform: scale(1);
+            background: #fff;
+            z-index: 5000;
+        }
+        &-close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+        }
+    }
 }
 
 .rde-editor {
@@ -49,16 +67,16 @@ html, body, #root {
     display: -ms-flexbox;
     display: flex;
     height: 100vh;
-    .rde-wireframe {
-        position: relative;
-        left: 0;
-        height: calc(100% - 60px);
-        width: 160px;
-        -webkit-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
-        -moz-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
-        box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-    }
+    // .rde-wireframe {
+    //     position: relative;
+    //     left: 0;
+    //     height: calc(100% - 60px);
+    //     width: 160px;
+    //     -webkit-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+    //     -moz-box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+    //     box-shadow: 5px 0 5px -5px rgba(0, 0, 0, 0.5);
+    //     z-index: 1000;
+    // }
     .rde-items {
         position: relative;
         height: calc(100% - 60px);
@@ -111,7 +129,8 @@ html, body, #root {
         transition: width .05s linear;
         display: flex;
         height: 40px;
-        left: 360px;
+        // left: 360px;
+        left: 200px;
         position: absolute;
         width: 100%;
         z-index: 800;
@@ -173,7 +192,8 @@ html, body, #root {
         transition: width .05s linear;
         display: flex;
         height: 50px;
-        left: 360px;
+        // left: 360px;
+        left: 200px;
         bottom: 0;
         position: absolute;
         width: 100%;
