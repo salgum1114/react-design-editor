@@ -73,7 +73,51 @@ class Canvas extends Component {
                 this.handlers.setByObject(obj, 'top', obj.top - (obj.height / 2));
             }
         },
-        add: (obj, centered = true, loaded = false) => {
+        load: (obj) => {
+            if (obj.type === 'image') {
+                const newImg = new Image();
+                const { src, file, ...otherOption } = obj;
+                if (src) {
+                    newImg.onload = () => {
+                        const imgObject = new fabric.Image(newImg, {
+                            src,
+                            ...otherOption,
+                        });
+                        this.canvas.add(imgObject);
+                        const { onAdd } = this.props;
+                        if (onAdd) {
+                            onAdd(imgObject);
+                        }
+                    };
+                    newImg.src = src;
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    newImg.onload = () => {
+                        const imgObject = new fabric.Image(newImg, {
+                            file,
+                            ...otherOption,
+                        });
+                        this.canvas.add(imgObject);
+                        const { onAdd } = this.props;
+                        if (onAdd) {
+                            onAdd(imgObject);
+                        }
+                    };
+                    newImg.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+            const newObject = FabricObject[obj.type].create({ ...obj });
+            this.canvas.add(newObject);
+            const { onAdd } = this.props;
+            if (onAdd) {
+                onAdd(newObject);
+            }
+        },
+        add: (obj, centered = true) => {
             if (obj.type === 'image') {
                 const newImg = new Image();
                 const { src, file, ...otherOption } = obj;
@@ -86,7 +130,7 @@ class Canvas extends Component {
                         this.handlers.centerObject(imgObject, centered);
                         this.canvas.add(imgObject);
                         const { onAdd } = this.props;
-                        if (onAdd && !loaded) {
+                        if (onAdd) {
                             onAdd(imgObject);
                         }
                     };
@@ -103,7 +147,7 @@ class Canvas extends Component {
                         this.handlers.centerObject(imgObject, centered);
                         this.canvas.add(imgObject);
                         const { onAdd } = this.props;
-                        if (onAdd && !loaded) {
+                        if (onAdd) {
                             onAdd(imgObject);
                         }
                     };
@@ -118,7 +162,7 @@ class Canvas extends Component {
             }
             this.canvas.add(newObject);
             const { onAdd } = this.props;
-            if (onAdd && !loaded) {
+            if (onAdd) {
                 onAdd(newObject);
             }
         },
@@ -422,7 +466,7 @@ class Canvas extends Component {
                 json = JSON.parse(json);
             }
             json.forEach((obj) => {
-                this.handlers.add(obj, false, true);
+                this.handlers.load(obj);
             });
             if (callback) {
                 callback(this.canvas);
@@ -827,6 +871,7 @@ class Canvas extends Component {
         });
         // this.canvas.backgroundImage = this.workarea;
         this.canvas.add(this.workarea);
+        this.canvas.centerObject(this.workarea);
         const { modified, mousewheel, mousedown, mousemove, selection } = this.events;
         this.canvas.on({
             'object:modified': modified,

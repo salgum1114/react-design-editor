@@ -4,7 +4,7 @@ import { Form, Radio, Select, Switch, Input } from 'antd';
 export default {
     render(form, data) {
         const { getFieldDecorator } = form;
-        const actionType = data.actionType || 'map';
+        const actionType = data.actionType || 'dashboard';
         return (
             <React.Fragment>
                 <Form.Item label="Action Enabled" colon={false}>
@@ -36,19 +36,19 @@ export default {
                     }
                 </Form.Item>
                 {
-                    actionType === 'map' ? (
-                        <Form.Item label="Map Select" colon={false}>
+                    actionType === 'dashboard' ? (
+                        <Form.Item label="Dashboard Select" colon={false}>
                             {
-                                getFieldDecorator('map', {
+                                getFieldDecorator('dashboard', {
                                     rules: [{
                                         required: true,
-                                        message: 'Please select map',
+                                        message: 'Please select dashboard',
                                     }],
                                     initialValue: data.map || '1',
                                 })(
                                     <Select>
-                                        <Select.Option value="1">Map#1</Select.Option>
-                                        <Select.Option value="2">Map#2</Select.Option>
+                                        <Select.Option value="1">Dashboard#1</Select.Option>
+                                        <Select.Option value="2">Dashboard#2</Select.Option>
                                     </Select>,
                                 )
                             }

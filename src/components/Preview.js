@@ -38,7 +38,31 @@ class Preview extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.preview) {
-            const json = JSON.stringify(nextProps.canvasRef.current.handlers.exportJSON().objects.filter(obj => obj.type !== 'map'));
+            const main = nextProps.canvasRef.current.workarea;
+            const leftRatio = this.state.canvasRect.width / main.width;
+            const topRatio = this.state.canvasRect.height / main.height;
+            console.log(leftRatio, topRatio);
+            const data = nextProps.canvasRef.current.handlers.exportJSON().objects.map((obj) => {
+                const scaleX = obj.scaleX * leftRatio;
+                const scaleY = obj.scaleY * topRatio;
+                return {
+                    ...obj,
+                    scaleX,
+                    scaleY,
+                };
+            });
+            // const option = {
+            //     left: 0,
+            //     top: 0,
+            //     width: main.width * leftRatio,
+            //     height: main.height * topRatio,
+            //     scaleX: main.scaleX * leftRatio,
+            //     scaleY: main.scaleY * topRatio,
+            //     type: 'image',
+            //     file: main.file,
+            // };
+            // this.canvasPreviewRef.handlers.load(option);
+            const json = JSON.stringify(data.filter(obj => obj.type !== 'map'));
             this.canvasPreviewRef.handlers.importJSON(json);
             return;
         }
