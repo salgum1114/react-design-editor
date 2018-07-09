@@ -9,12 +9,11 @@ import CanvasList from './CanvasList';
 class HeaderToolbar extends Component {
     static propTypes = {
         canvasRef: PropTypes.any,
-        items: PropTypes.object,
         selectedItem: PropTypes.object,
     }
 
     render() {
-        const { canvasRef, items, selectedItem } = this.props;
+        const { canvasRef, selectedItem } = this.props;
         return (
             <FlexBox className="rde-canvas-toolbar-container" flex="1">
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-list">
@@ -22,8 +21,19 @@ class HeaderToolbar extends Component {
                         <Icon name="sitemap" />
                     </Button>
                     <div className="rde-canvas-list">
-                        <CanvasList canvasRef={canvasRef} items={items} selectedItem={selectedItem} />
+                        <CanvasList canvasRef={canvasRef} selectedItem={selectedItem} />
                     </div>
+                </FlexItem>
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
+                    <Button shape="circle" onClick={e => canvasRef.current.handlers.sendBackwards()}>
+                        <Icon name="arrow-up" />
+                    </Button>
+                    <Button shape="circle" onClick={e => canvasRef.current.handlers.bringForward()}>
+                        <Icon name="arrow-down" />
+                    </Button>
+                    {/* <Button shape="circle"></Button>
+                    <Button shape="circle"></Button>
+                    <Button shape="circle"></Button> */}
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
                     <Button shape="circle">
@@ -35,9 +45,9 @@ class HeaderToolbar extends Component {
                     <Button shape="circle">
                         <Icon name="align-right" />
                     </Button>
+                    {/* <Button shape="circle"></Button>
                     <Button shape="circle"></Button>
-                    <Button shape="circle"></Button>
-                    <Button shape="circle"></Button>
+                    <Button shape="circle"></Button> */}
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-operation">
                     <Button shape="circle" onClick={() => canvasRef.current.handlers.duplicate()}>

@@ -425,12 +425,20 @@ class Canvas extends Component {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
                 this.canvas.bringForward(activeObject);
+                const { onModified } = this.props;
+                if (onModified) {
+                    onModified(activeObject);
+                }
             }
         },
         sendBackwards: () => {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
                 this.canvas.sendBackwards(activeObject);
+                const { onModified } = this.props;
+                if (onModified) {
+                    onModified(activeObject);
+                }
             }
         },
     }
@@ -599,7 +607,7 @@ class Canvas extends Component {
                 if (!target) {
                     return;
                 }
-                onModified(opt);
+                onModified(opt.target);
             }
         },
         moving: (e) => {

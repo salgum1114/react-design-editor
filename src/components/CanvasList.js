@@ -8,7 +8,6 @@ import { FlexBox, FlexItem } from './flex';
 class CanvasList extends Component {
     static propTypes = {
         canvasRef: PropTypes.any,
-        items: PropTypes.object,
         selectedItem: PropTypes.object,
     }
 
@@ -33,52 +32,55 @@ class CanvasList extends Component {
     }
 
     renderItem = () => {
-        const { canvasRef, items, selectedItem } = this.props;
-        return (
-            Object.values(items).map((item) => {
+        const { canvasRef, selectedItem } = this.props;
+        return canvasRef.current ? (
+            canvasRef.current.canvas.getObjects().filter(obj => obj.type !== 'map').map((obj) => {
                 let icon;
                 let title = '';
-                if (item.type === 'i-text') {
+                if (obj.type === 'i-text') {
                     icon = 'map-marker';
                     title = 'Marker';
-                } else if (item.type === 'textbox') {
+                } else if (obj.type === 'textbox') {
                     icon = 'font';
                     title = 'Text';
-                } else if (item.type === 'image') {
+                } else if (obj.type === 'image') {
                     icon = 'picture-o';
                     title = 'Image';
-                } else if (item.type === 'triangle') {
+                } else if (obj.type === 'triangle') {
                     icon = 'picture-o';
                     title = 'Triangle';
-                } else if (item.type === 'rect') {
+                } else if (obj.type === 'rect') {
                     icon = 'picture-o';
                     title = 'Rect';
-                } else if (item.type === 'circle') {
+                } else if (obj.type === 'circle') {
                     icon = 'picture-o';
                     title = 'Circle';
-                } else if (item.type === 'polygon') {
+                } else if (obj.type === 'polygon') {
                     icon = 'picture-o';
                     title = 'Polygon';
-                } else if (item.type === 'line') {
+                } else if (obj.type === 'line') {
                     icon = 'picture-o';
                     title = 'Line';
+                } else {
+                    icon = 'picture-o';
+                    title = 'Default';
                 }
                 let className = 'rde-canvas-list-item';
-                if (selectedItem && selectedItem.id === item.id) {
+                if (selectedItem && selectedItem.id === obj.id) {
                     className += ' selected-item';
                 }
                 return (
-                    <FlexItem key={item.id} className={className} flex="1" onClick={() => canvasRef.current.handlers.select(item)}>
+                    <FlexItem key={obj.id} className={className} flex="1" onClick={() => canvasRef.current.handlers.select(obj)}>
                         <FlexBox alignItems="center">
                             <Icon className="rde-canvas-list-item-icon" name={icon} size={1.5} style={{ width: 32 }} />
                             <div className="rde-canvas-list-item-text">
                                 {title}
                             </div>
                             <FlexBox className="rde-canvas-list-item-actions" flex="1" justifyContent="flex-end">
-                                <Button shape="circle" onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.duplicateById(item.id); }}>
+                                <Button shape="circle" onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.duplicateById(obj.id); }}>
                                     <Icon name="clone" />
                                 </Button>
-                                <Button shape="circle" onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.removeById(item.id); }}>
+                                <Button shape="circle" onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.removeById(obj.id); }}>
                                     <Icon name="trash" />
                                 </Button>
                             </FlexBox>
@@ -86,7 +88,7 @@ class CanvasList extends Component {
                     </FlexItem>
                 );
             })
-        );
+        ) : null;
     }
 
     render() {

@@ -23,27 +23,10 @@ class Editor extends Component {
     handlers = {
         onAdd: (obj) => {
             if (obj.type === 'activeSelection') {
-                const newItems = {};
-                obj.forEachObject((obj) => {
-                    Object.assign(newItems, this.state.items, {
-                        [obj.id]: obj,
-                    });
-                });
-                this.setState({
-                    items: newItems,
-                }, () => {
-                    this.handlers.onSelect(null);
-                });
+                this.handlers.onSelect(null);
                 return;
             }
-            const newItems = Object.assign({}, this.state.items, {
-                [obj.id]: obj,
-            });
-            this.setState({
-                items: newItems,
-            }, () => {
-                this.canvasRef.current.handlers.select(obj);
-            });
+            this.canvasRef.current.handlers.select(obj);
         },
         onSelect: (opt) => {
             if (opt && opt.selected && opt.selected.length === 1) {
@@ -57,51 +40,17 @@ class Editor extends Component {
             });
         },
         onRemove: (obj) => {
-            if (obj.type === 'activeSelection') {
-                obj.forEachObject((object) => {
-                    delete this.state.items[object.id];
-                });
-                this.setState({
-                    items: this.state.items,
-                }, () => {
-                    this.handlers.onSelect(null);
-                });
-                return;
-            }
-            delete this.state.items[obj.id];
-            this.setState({
-                items: this.state.items,
-            }, () => {
-                this.handlers.onSelect(null);
-            });
+            this.handlers.onSelect(null);
         },
         onModified: debounce((opt) => {
-            if (opt.target) {
-                if (opt.target.type === 'activeSelection') {
-                    const newItems = {};
-                    opt.target.forEachObject((obj) => {
-                        Object.assign(newItems, this.state.items, {
-                            [obj.id]: obj,
-                        });
-                    });
-                    this.setState({
-                        items: newItems,
-                    });
-                    return;
-                }
-                const newItems = Object.assign({}, this.state.items, {
-                    [opt.target.id]: opt.target,
-                });
+            if (opt.type !== 'activeSelection') {
                 this.setState({
-                    items: newItems,
+                    selectedItem: opt,
                 });
                 return;
             }
-            const newItems = Object.assign({}, this.state.items, {
-                [opt.id]: opt,
-            });
             this.setState({
-                items: newItems,
+                selectedItem: this.canvasRef.current.workarea,
             });
         }, 300),
         onChange: (selectedItem, changedValues, allValues) => {
@@ -200,7 +149,7 @@ class Editor extends Component {
                             />
                         </main>
                         <header style={{ width: canvasRect.width }} className="rde-canvas-header">
-                            <HeaderToolbar canvasRef={this.canvasRef} items={items} selectedItem={selectedItem} onSelect={onSelect} />
+                            <HeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} onSelect={onSelect} />
                         </header>
                         <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
                             <FooterToolbar canvasRef={this.canvasRef} />
