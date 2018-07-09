@@ -55,6 +55,11 @@ class Editor extends Component {
                 selectedItem: this.canvasRef.current.workarea,
             });
         }, 300),
+        onZoom: (zoom) => {
+            this.setState({
+                zoomRatio: zoom,
+            });
+        },
         onChange: (selectedItem, changedValues, allValues) => {
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
@@ -106,6 +111,7 @@ class Editor extends Component {
     state = {
         items: {},
         selectedItem: null,
+        zoomRatio: 1,
         canvasRect: {
             width: 0,
             height: 0,
@@ -129,8 +135,8 @@ class Editor extends Component {
     }
 
     render() {
-        const { preview, selectedItem, canvasRect } = this.state;
-        const { onAdd, onRemove, onSelect, onModified, onChange } = this.canvasHandlers;
+        const { preview, selectedItem, canvasRect, zoomRatio } = this.state;
+        const { onAdd, onRemove, onSelect, onModified, onChange, onZoom } = this.canvasHandlers;
         const { onChangePreview } = this.handlers;
         const previewClassName = classnames('rde-canvas-preview', { preview });
         return (
@@ -159,13 +165,14 @@ class Editor extends Component {
                                 onAdd={onAdd}
                                 onRemove={onRemove}
                                 onSelect={onSelect}
+                                onZoom={onZoom}
                             />
                         </main>
                         <header style={{ width: canvasRect.width }} className="rde-canvas-header">
                             <HeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} onSelect={onSelect} />
                         </header>
                         <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
-                            <FooterToolbar canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} />
+                            <FooterToolbar canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} zoomRatio={zoomRatio} />
                         </footer>
                         <aside className="rde-properties">
                             <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} />

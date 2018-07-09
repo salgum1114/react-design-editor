@@ -10,18 +10,23 @@ class FooterToolbar extends Component {
         canvasRef: PropTypes.any,
         preview: PropTypes.bool,
         onChangePreview: PropTypes.func,
+        zoomRatio: PropTypes.number,
     }
 
     render() {
-        const { canvasRef, preview, onChangePreview } = this.props;
+        const { canvasRef, preview, zoomRatio, onChangePreview } = this.props;
+        if (!canvasRef.current) {
+            return null;
+        }
+        const zoomValue = parseInt(zoomRatio * 100, 10);
         return (
             <FlexBox className="rde-canvas-toolbar-container" flex="1">
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-zoom">
-                    <Button shape="circle" onClick={e => canvasRef.current.zoomOut()}>
+                    <Button shape="circle" onClick={e => canvasRef.current.handlers.zoomOut()}>
                         <Icon name="search-minus" />
                     </Button>
-                    <div>100%</div>
-                    <Button shape="circle" onClick={e => canvasRef.current.zoomIn()}>
+                    <div>{zoomValue}%</div>
+                    <Button shape="circle" onClick={e => canvasRef.current.handlers.zoomIn()}>
                         <Icon name="search-plus" />
                     </Button>
                 </FlexItem>

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Button } from 'antd';
 import { ResizeSensor } from 'css-element-queries';
 
-import { FlexBox } from './flex';
 import Icon from './Icon';
 import Canvas from './Canvas';
 

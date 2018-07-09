@@ -29,7 +29,7 @@ export default {
                             initialValue: actionType,
                         })(
                             <Radio.Group size="large">
-                                <Radio.Button value="map">MAP</Radio.Button>
+                                <Radio.Button value="dashboard">Dashboard</Radio.Button>
                                 <Radio.Button value="url">URL</Radio.Button>
                             </Radio.Group>,
                         )

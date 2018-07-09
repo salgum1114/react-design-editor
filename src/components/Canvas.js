@@ -53,6 +53,7 @@ class Canvas extends Component {
         onAdd: PropTypes.func,
         onRemove: PropTypes.func,
         onSelect: PropTypes.func,
+        onZoom: PropTypes.func,
     }
 
     static defaultProps = {
@@ -452,6 +453,22 @@ class Canvas extends Component {
                 }
             }
         },
+        zoomIn: () => {
+            let zoomRatio = this.canvas.getZoom();
+            zoomRatio += 0.01;
+            this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoomRatio);
+            if (this.props.onZoom) {
+                this.props.onZoom(zoomRatio);
+            }
+        },
+        zoomOut: () => {
+            let zoomRatio = this.canvas.getZoom();
+            zoomRatio -= 0.01;
+            this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoomRatio);
+            if (this.props.onZoom) {
+                this.props.onZoom(zoomRatio);
+            }
+        },
     }
 
     drawingHandlers = {
@@ -648,7 +665,7 @@ class Canvas extends Component {
             }
         },
         mousewheel: (opt) => {
-            const { zoom } = this.props;
+            const { zoom, onZoom } = this.props;
             if (zoom) {
                 const delta = opt.e.deltaY;
                 let zoomRatio = this.canvas.getZoom();
@@ -660,6 +677,9 @@ class Canvas extends Component {
                 this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoomRatio);
                 opt.e.preventDefault();
                 opt.e.stopPropagation();
+                if (onZoom) {
+                    onZoom(zoomRatio);
+                }
             }
         },
         mousedown: (opt) => {
