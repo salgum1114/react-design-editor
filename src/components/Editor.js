@@ -64,7 +64,7 @@ class Editor extends Component {
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
             console.log(selectedItem, changedKey, changedValue);
-            if (!selectedItem.id) {
+            if (selectedItem.id === 'workarea') {
                 this.canvasHandlers.onChangeCanvas(changedKey, changedValue);
                 return;
             }
@@ -87,7 +87,7 @@ class Editor extends Component {
         },
         onChangeCanvas: (changedKey, changedValue) => {
             if (changedKey === 'file' || changedKey === 'src') {
-                this.canvasRef.current.handlers.setImageByObject(this.canvasRef.current.workarea, changedValue);
+                this.canvasRef.current.handlers.setWorkareaImage(this.canvasRef.current.workarea, changedValue);
             }
             this.canvasRef.current.workarea.set(changedKey, changedValue);
             this.canvasRef.current.canvas.centerObject(this.canvasRef.current.workarea);

@@ -44,6 +44,7 @@ const canvasSize = {
 
 class Canvas extends Component {
     static propsTypes = {
+        editable: PropTypes.bool,
         width: PropTypes.width,
         height: PropTypes.height,
         zoom: PropTypes.bool,
@@ -57,6 +58,7 @@ class Canvas extends Component {
     }
 
     static defaultProps = {
+        editable: true,
         width: 0,
         height: 0,
         zoom: true,
@@ -73,7 +75,19 @@ class Canvas extends Component {
                 this.handlers.setByObject(obj, 'top', obj.top - (obj.height / 2));
             }
         },
-        load: (obj) => {
+        add: (obj, centered = true, loaded = false) => {
+            const { editable } = this.props;
+            if (obj.type === 'i-text') {
+                obj.editable = false;
+            } else {
+                obj.editable = editable;
+            }
+            obj.hasControls = editable;
+            obj.hasBorders = editable;
+            obj.selection = editable;
+            obj.lockMovementX = !editable;
+            obj.lockMovementY = !editable;
+            obj.hoverCursor = !editable ? 'pointer' : 'move';
             if (obj.type === 'image') {
                 const newImg = new Image();
                 const { src, file, ...otherOption } = obj;
@@ -83,9 +97,17 @@ class Canvas extends Component {
                             src,
                             ...otherOption,
                         });
+                        if (!loaded) {
+                            this.handlers.centerObject(imgObject, centered);
+                        }
                         this.canvas.add(imgObject);
+                        if (!editable) {
+                            imgObject.on('mousedown', this.events.object.mousedown);
+                            imgObject.on('mouseover', this.events.object.mouseover);
+                            imgObject.on('mouseout', this.events.object.mouseout);
+                        }
                         const { onAdd } = this.props;
-                        if (onAdd) {
+                        if (onAdd && !loaded) {
                             onAdd(imgObject);
                         }
                     };
@@ -99,9 +121,17 @@ class Canvas extends Component {
                             file,
                             ...otherOption,
                         });
+                        if (!loaded) {
+                            this.handlers.centerObject(imgObject, centered);
+                        }
                         this.canvas.add(imgObject);
+                        if (!editable) {
+                            imgObject.on('mousedown', this.events.object.mousedown);
+                            imgObject.on('mouseover', this.events.object.mouseover);
+                            imgObject.on('mouseout', this.events.object.mouseout);
+                        }
                         const { onAdd } = this.props;
-                        if (onAdd) {
+                        if (onAdd && !loaded) {
                             onAdd(imgObject);
                         }
                     };
@@ -111,58 +141,17 @@ class Canvas extends Component {
                 return;
             }
             const newObject = FabricObject[obj.type].create({ ...obj });
-            this.canvas.add(newObject);
-            const { onAdd } = this.props;
-            if (onAdd) {
-                onAdd(newObject);
-            }
-        },
-        add: (obj, centered = true) => {
-            if (obj.type === 'image') {
-                const newImg = new Image();
-                const { src, file, ...otherOption } = obj;
-                if (src) {
-                    newImg.onload = () => {
-                        const imgObject = new fabric.Image(newImg, {
-                            src,
-                            ...otherOption,
-                        });
-                        this.handlers.centerObject(imgObject, centered);
-                        this.canvas.add(imgObject);
-                        const { onAdd } = this.props;
-                        if (onAdd) {
-                            onAdd(imgObject);
-                        }
-                    };
-                    newImg.src = src;
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    newImg.onload = () => {
-                        const imgObject = new fabric.Image(newImg, {
-                            file,
-                            ...otherOption,
-                        });
-                        this.handlers.centerObject(imgObject, centered);
-                        this.canvas.add(imgObject);
-                        const { onAdd } = this.props;
-                        if (onAdd) {
-                            onAdd(imgObject);
-                        }
-                    };
-                    newImg.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-                return;
-            }
-            const newObject = FabricObject[obj.type].create({ ...obj });
-            if (obj.type !== 'polygon') {
+            if (obj.type !== 'polygon' && !loaded) {
                 this.handlers.centerObject(newObject, centered);
             }
             this.canvas.add(newObject);
+            if (!editable) {
+                newObject.on('mousedown', this.events.object.mousedown);
+                newObject.on('mouseover', this.events.object.mouseover);
+                newObject.on('mouseout', this.events.object.mouseout);
+            }
             const { onAdd } = this.props;
-            if (onAdd) {
+            if (onAdd && !loaded) {
                 onAdd(newObject);
             }
         },
@@ -297,6 +286,77 @@ class Canvas extends Component {
         },
         getActiveObject: () => this.canvas.getActiveObject(),
         getActiveObjects: () => this.canvas.getActiveObjects(),
+        setCanvasBackgroundImage: (obj) => {
+            const canvas = this.canvas;
+            if (obj.type === 'image') {
+                const { src, file, ...otherOption } = obj;
+                if (src) {
+                    fabric.Image.fromURL(src, function (img) {
+                        img.set({
+                            originX: 'left',
+                            originY: 'top'
+                        });
+                        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                            scaleX: canvas.width / img.width,
+                            scaleY: canvas.height / img.height,
+                        });
+                    });
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const src = e.target.result;
+                    fabric.Image.fromURL(src, function (img) {
+                        img.set({
+                            originX: 'left',
+                            originY: 'top'
+                        });
+                        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
+                            scaleX: canvas.width / img.width,
+                            scaleY: canvas.height / img.height,
+                        });
+                    });
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+            console.warn('Object type not image');
+        },
+        setWorkareaImage: (obj, source) => {
+            const canvas = this.canvas;
+            if (typeof source === 'string') {
+                fabric.Image.fromURL(src, function (img) {
+                    img.set({
+                        originX: 'left',
+                        originY: 'top',
+                        scaleX: obj.width / img.width,
+                        scaleY: obj.height / img.height,
+                    });
+                    obj.set({
+                        ...img,
+                    });
+                    canvas.renderAll();
+                });
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const src = e.target.result;
+                fabric.Image.fromURL(src, function (img) {
+                    img.set({
+                        originX: 'left',
+                        originY: 'top',
+                        scaleX: obj.width / img.width,
+                        scaleY: obj.height / img.height,
+                    });
+                    obj.set({
+                        ...img,
+                    });
+                    canvas.renderAll();
+                });
+            };
+            reader.readAsDataURL(source);
+        },
         set: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
             if (!activeObject) {
@@ -466,7 +526,7 @@ class Canvas extends Component {
                 json = JSON.parse(json);
             }
             json.forEach((obj) => {
-                this.handlers.load(obj);
+                this.handlers.add(obj, false, true);
             });
             if (callback) {
                 callback(this.canvas);
@@ -672,6 +732,17 @@ class Canvas extends Component {
     }
 
     events = {
+        object: {
+            mousedown: (opt) => {
+                console.log('objectmousedown', opt);
+            },
+            mouseover: (opt) => {
+                console.log('objectmouseover', opt);
+            },
+            mouseout: (opt) => {
+                console.log('objectmouseout', opt);
+            },
+        },
         modified: (opt) => {
             const { onModified } = this.props;
             if (onModified) {
@@ -759,6 +830,10 @@ class Canvas extends Component {
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
             this.canvas.setWidth(nextWidth).setHeight(nextHeight);
+            if (this.props.editable) {
+                this.canvas.centerObject(this.workarea);
+                this.workarea.setCoords();
+            }
             this.ratio = nextWidth / nextHeight;
             const diffWidth = (nextWidth / 2) - (currentWidth / 2);
             const diffHeight = (nextHeight / 2) - (currentHeight / 2);
@@ -769,8 +844,6 @@ class Canvas extends Component {
                     object.setCoords();
                 }
             });
-            this.canvas.centerObject(this.workarea);
-            this.workarea.setCoords();
             this.canvas.renderAll();
         },
         paste: (e) => {
@@ -848,42 +921,43 @@ class Canvas extends Component {
 
     componentDidMount() {
         const { id } = this.state;
-        const { width, height } = this.props;
+        const { editable, width, height } = this.props;
         this.canvas = new fabric.Canvas(id, {
             preserveObjectStacking: true,
             width,
             height,
             backgroundColor: '#f3f3f3',
+            selection: editable,
+
         });
-        this.workarea = new fabric.Rect({
-            width: canvasSize.width,
-            height: canvasSize.height,
-            fill: '#fff',
-            hasControls: false,
-            selectable: false,
-            lockMovementX: true,
-            lockMovementY: true,
-            top: 0,
-            left: 0,
-            hoverCursor: 'default',
-            name: '',
-            type: 'map',
-        });
-        // this.canvas.backgroundImage = this.workarea;
-        this.canvas.add(this.workarea);
-        this.canvas.centerObject(this.workarea);
-        const { modified, mousewheel, mousedown, mousemove, selection } = this.events;
-        this.canvas.on({
-            'object:modified': modified,
-            'mouse:wheel': mousewheel,
-            'mouse:down': mousedown,
-            'mouse:move': mousemove,
-            'selection:cleared': selection,
-            'selection:created': selection,
-            'selection:updated': selection,
-        });
-        this.attachEventListener();
-        // console.log(this.canvas.getObjects());
+        if (editable) {
+            this.workarea = new fabric.Image(0, {
+                backgroundColor: '#fff',
+                width: canvasSize.width,
+                height: canvasSize.height,
+                hasControls: false,
+                selectable: false,
+                lockMovementX: true,
+                lockMovementY: true,
+                hoverCursor: 'default',
+                name: '',
+                id: 'workarea',
+                type: 'image',
+            });
+            this.canvas.add(this.workarea);
+            this.canvas.centerObject(this.workarea);
+            const { modified, mousewheel, mousedown, mousemove, selection } = this.events;
+            this.canvas.on({
+                'object:modified': modified,
+                'mouse:wheel': mousewheel,
+                'mouse:down': mousedown,
+                'mouse:move': mousemove,
+                'selection:cleared': selection,
+                'selection:created': selection,
+                'selection:updated': selection,
+            });
+            this.attachEventListener();
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {

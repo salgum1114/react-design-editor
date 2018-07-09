@@ -22,7 +22,7 @@ class Properties extends Component {
             <Form layout="horizontal">
                 <Collapse bordered={false}>
                     {
-                        selectedItem ? (
+                        selectedItem && selectedItem.id !== 'workarea' ? (
                             Object.keys(PropertyDefinition[selectedItem.type]).map((key) => {
                                 return (
                                     <Panel key={key} header={PropertyDefinition[selectedItem.type][key].title} showArrow={showArrow}>
