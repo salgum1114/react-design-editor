@@ -97,8 +97,16 @@ class Editor extends Component {
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
         onChangeCanvas: (changedKey, changedValue, allValues) => {
+            if (changedKey === 'layout') {
+                this.canvasRef.current.handlers.setWorkareaLayout(changedKey, changedValue);
+                return;
+            }
             if (changedKey === 'file' || changedKey === 'src') {
-                this.canvasRef.current.handlers.setWorkareaImage(this.canvasRef.current.workarea, changedValue);
+                if (allValues.layout === 'responsive') {
+                    this.canvasRef.current.handlers.setWorkareaResponsiveImage(changedValue);
+                    return;
+                }
+                this.canvasRef.current.handlers.setWorkareaImage(changedValue);
                 return;
             }
             if (changedKey === 'width' || changedKey === 'height') {

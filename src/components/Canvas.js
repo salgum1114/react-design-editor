@@ -21,6 +21,8 @@ const workareaOption = {
     name: '',
     id: 'workarea',
     type: 'image',
+    layout: 'fixed', // fixed, responsive, fullscreen
+    action: {},
     tooltip: {
         enabled: true,
     },
@@ -47,7 +49,7 @@ class Canvas extends Component {
         width: 0,
         height: 0,
         zoom: true,
-        propertiesToInclude: ['id', 'name', 'action', 'tooltip'],
+        propertiesToInclude: ['id', 'name', 'action', 'tooltip', 'layout'],
         responsive: false,
     }
 
@@ -313,19 +315,79 @@ class Canvas extends Component {
             }
             console.warn('Object type not image');
         },
-        setWorkareaImage: (obj, source) => {
+        setWorkareaLayout: (key, value) => {
+            this.workarea.set(key, value);
+            if (key === 'fixed') {
+                this.workarea.set('width', workareaOption.width);
+                this.workarea.set('height', workareaOption.height);
+                this.canvas.centerObject(this.workarea);
+                this.workarea.setCoords();
+                this.canvas.renderAll();
+                return;
+            } else if (key === 'responsive') {
+                this.canvas.centerObject(this.workarea);
+                return;
+            }
+            this.workarea.set('left', 0);
+            this.workarea.set('top', 0);
+            this.workarea.set('width', this.canvas.getWidth());
+            this.workarea.set('height', this.canvas.getHeight());
+            this.workarea.setCoords();
+            this.canvas.renderAll();
+
+        },
+        setWorkareaResponsiveImage: (source) => {
             const { canvas } = this;
-            const originWidth = obj.width * obj.scaleX;
-            const originHeight = obj.height * obj.scaleY;
             if (typeof source === 'string') {
                 fabric.Image.fromURL(source, (img) => {
                     img.set({
                         originX: 'left',
                         originY: 'top',
+                    });
+                    this.workarea.set({
+                        ...img,
+                        src: source,
+                        selectable: false,
+                    });
+                    this.canvas.centerObject(this.workarea);
+                    canvas.renderAll();
+                });
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const src = e.target.result;
+                fabric.Image.fromURL(src, (img) => {
+                    img.set({
+                        originX: 'left',
+                        originY: 'top',
+                    });
+                    this.workarea.set({
+                        ...img,
+                        file: source,
+                        selectable: false,
+                    });
+                    this.canvas.centerObject(this.workarea);
+                    canvas.renderAll();
+                });
+            };
+            reader.readAsDataURL(source);
+        },
+        setWorkareaImage: (source) => {
+            const { canvas } = this;
+            const originWidth = this.workarea.width * this.workarea.scaleX;
+            const originHeight = this.workarea.height * this.workarea.scaleY;
+            if (typeof source === 'string') {
+                fabric.Image.fromURL(source, (img) => {
+                    img.set({
+                        originX: 'left',
+                        originY: 'top',
+                        originScaleX: originWidth / img.width,
+                        originScaleY: originHeight / img.height,
                         scaleX: originWidth / img.width,
                         scaleY: originHeight / img.height,
                     });
-                    obj.set({
+                    this.workarea.set({
                         ...img,
                         src: source,
                         selectable: false,
@@ -341,10 +403,12 @@ class Canvas extends Component {
                     img.set({
                         originX: 'left',
                         originY: 'top',
+                        originScaleX: originWidth / img.width,
+                        originScaleY: originHeight / img.height,
                         scaleX: originWidth / img.width,
                         scaleY: originHeight / img.height,
                     });
-                    obj.set({
+                    this.workarea.set({
                         ...img,
                         file: source,
                         selectable: false,
@@ -871,20 +935,72 @@ class Canvas extends Component {
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
             this.canvas.setWidth(nextWidth).setHeight(nextHeight);
-            const { editable } = this.props;
-            if (editable) {
+            if (!this.workarea) {
+                return;
+            }
+            if (this.workarea.layout === 'fixed') {
+                const diffWidth = (nextWidth / 2) - (currentWidth / 2);
+                const diffHeight = (nextHeight / 2) - (currentHeight / 2);
                 this.canvas.centerObject(this.workarea);
                 this.workarea.setCoords();
-            }
-            const diffWidth = (nextWidth / 2) - (currentWidth / 2);
-            const diffHeight = (nextHeight / 2) - (currentHeight / 2);
-            this.canvas.getObjects().forEach((object, index) => {
-                if (index !== 0) {
-                    object.set('left', object.left + diffWidth);
-                    object.set('top', object.top + diffHeight);
-                    object.setCoords();
+                this.canvas.getObjects().forEach((object, index) => {
+                    if (index !== 0) {
+                        object.set('left', object.left + diffWidth);
+                        object.set('top', object.top + diffHeight);
+                        object.setCoords();
+                    }
+                });
+                this.canvas.renderAll();
+                return;
+            } else if (this.workarea.layout === 'responsive') {
+                this.workarea.setCoords();
+                const diffWidth = nextWidth - this.workarea.width;
+                const scaleX = nextWidth / this.workarea.width;
+                if (scaleX <= 1) {
+                    this.workarea.set({
+                        scaleX,
+                        scaleY: scaleX,
+                    });
+                } else {
+                    this.workarea.set({
+                        scaleX,
+                        scaleY: scaleX,
+                    })
                 }
-            });
+                this.canvas.centerObject(this.workarea);
+                this.canvas.renderAll();
+                return;
+            }
+            if (!this.workarea._element) {
+                this.workarea.set({
+                    width: nextWidth,
+                    height: nextHeight,
+                });
+            } else {
+                const scaleX = nextWidth / this.workarea.width;
+                const scaleY = nextHeight / this.workarea.height;
+                const diffScaleX = nextWidth / (this.workarea.width * this.workarea.scaleX);
+                const diffScaleY = nextHeight / (this.workarea.height * this.workarea.scaleY);
+                const originDiffScaleX = nextWidth / (this.workarea.width * this.workarea.originScaleX);
+                const originDiffScaleY = nextHeight / (this.workarea.height * this.workarea.originScaleY);
+                this.workarea.set({
+                    scaleX,
+                    scaleY,
+                });
+                const diffRatio = scaleX / this.workarea.originScaleX;
+                this.workarea.setCoords();
+                this.canvas.getObjects().forEach((object, index) => {
+                    if (index !== 0) {
+                        object.set({
+                            scaleX: originDiffScaleX,
+                            scaleY: originDiffScaleY,
+                            left: object.left * diffScaleX,
+                            top: object.top * diffScaleY,
+                        })
+                        object.setCoords();
+                    }
+                });
+            }
             this.canvas.renderAll();
         },
         paste: (e) => {

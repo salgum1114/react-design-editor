@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Input, Slider, Switch, Row, Col, InputNumber } from 'antd';
+import { Form, Input, Radio, Row, Col, InputNumber } from 'antd';
 
 export default {
     render(form, data) {
@@ -7,7 +7,7 @@ export default {
         if (!data) {
             return null;
         }
-        const responsive = data.responsive || false;
+        const layout = data.layout || 'fixed';
         return (
             <React.Fragment>
                 <Form.Item label="Name" colon={false}>
@@ -25,21 +25,19 @@ export default {
                 </Form.Item>
                 <Form.Item label="Responsive" colon={false}>
                     {
-                        getFieldDecorator('responsive', {
-                            rules: [{
-                                type: 'boolean',
-                                // required: true,
-                                // message: 'Please input rotation',
-                            }],
-                            valuePropName: 'checked',
-                            initialValue: data.responsive,
+                        getFieldDecorator('layout', {
+                            initialValue: layout,
                         })(
-                            <Switch />,
+                            <Radio.Group>
+                                <Radio.Button value="fixed">Fixed</Radio.Button>
+                                <Radio.Button value="responsive">Responsive</Radio.Button>
+                                <Radio.Button value="fullscreen">FullScreen</Radio.Button>
+                            </Radio.Group>,
                         )
                     }
                 </Form.Item>
                 {
-                    responsive ? null : (
+                    layout === 'fixed' ? (
                         <React.Fragment>
                             <Row>
                                 <Col span={12}>
@@ -73,21 +71,8 @@ export default {
                                     </Form.Item>
                                 </Col>
                             </Row>
-                            <Form.Item label="Rotation" colon={false}>
-                                {
-                                    getFieldDecorator('angle', {
-                                        rules: [{
-                                            required: true,
-                                            message: 'Please input rotation',
-                                        }],
-                                        initialValue: data.angle,
-                                    })(
-                                        <Slider min={0} max={360} />,
-                                    )
-                                }
-                            </Form.Item>
                         </React.Fragment>
-                    )
+                    ) : null
                 }
             </React.Fragment>
         );
