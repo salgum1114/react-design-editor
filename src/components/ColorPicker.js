@@ -15,7 +15,13 @@ class ColorPicker extends Component {
     }
 
     state = {
-        color: this.props.value,
+        color: this.props.value || '#fff',
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            color: nextProps.value || this.state.value,
+        });
     }
 
     render() {

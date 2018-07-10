@@ -10,9 +10,6 @@ export default {
                 <Form.Item label="Fill Color" colon={false}>
                     {
                         getFieldDecorator('fill', {
-                            rules: [{
-                                type: 'object',
-                            }],
                             initialValue: data.fill,
                         })(
                             <ColorPicker />,
@@ -36,9 +33,6 @@ export default {
                 <Form.Item label="Stroke Color" colon={false}>
                     {
                         getFieldDecorator('stroke', {
-                            rules: [{
-                                type: 'object',
-                            }],
                             initialValue: data.stroke,
                         })(
                             <ColorPicker />,

@@ -46,7 +46,7 @@ export default {
                                         required: true,
                                         message: 'Please input width',
                                     }],
-                                    initialValue: data.width,
+                                    initialValue: data.width * data.scaleX,
                                 })(
                                     <InputNumber />,
                                 )
@@ -61,7 +61,7 @@ export default {
                                         required: true,
                                         message: 'Please input height',
                                     }],
-                                    initialValue: data.height,
+                                    initialValue: data.height * data.scaleY,
                                 })(
                                     <InputNumber />,
                                 )

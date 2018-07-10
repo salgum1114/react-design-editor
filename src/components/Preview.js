@@ -36,9 +36,9 @@ class Preview extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.preview) {
-            const { workarea } = nextProps.canvasRef.current;
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.preview) {
+            const { workarea } = this.props.canvasRef.current;
             const leftRatio = this.state.canvasRect.width / (workarea.width * workarea.scaleX);
             const topRatio = this.state.canvasRect.height / (workarea.height * workarea.scaleY);
             if (workarea.file || workarea.src) {
@@ -48,10 +48,10 @@ class Preview extends Component {
                     file: workarea.file,
                     src: workarea.src,
                     type: 'image',
-                }
+                };
                 this.canvasPreviewRef.handlers.setCanvasBackgroundImage(option);
             }
-            const data = nextProps.canvasRef.current.handlers.exportJSON().objects.map((obj) => {
+            const data = this.props.canvasRef.current.handlers.exportJSON().objects.map((obj) => {
                 const scaleX = obj.scaleX * leftRatio;
                 const scaleY = obj.scaleY * topRatio;
                 const left = (obj.left - workarea.left) * leftRatio;
@@ -77,7 +77,7 @@ class Preview extends Component {
         return (
             <div ref={(c) => { this.container = c; }} style={{ display: 'flex', flex: '1', height: '100%' }}>
                 <Canvas editable={false} width={canvasRect.width} height={canvasRect.height} ref={(c) => { this.canvasPreviewRef = c; }} />
-                <Button className="rde-canvas-preview-close-btn" onClick={onChangePreview}>
+                <Button className="rde-action-btn rde-canvas-preview-close-btn" onClick={onChangePreview}>
                     <Icon name="times" size={1.5} />
                 </Button>
             </div>

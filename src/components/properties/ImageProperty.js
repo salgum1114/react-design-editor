@@ -37,9 +37,10 @@ export default {
                                         required: true,
                                         message: 'Please select image',
                                     }],
-                                    initialValue: data.file || '',
+                                    initialValue: data.file,
                                 })(
-                                    <ImageUpload fileList={data.file ? [data.file] : []} />,
+                                    // <ImageUpload fileList={data.file ? [data.file] : []} />,
+                                    <ImageUpload />,
                                 )
                             }
                         </Form.Item>
@@ -51,9 +52,9 @@ export default {
                                         required: true,
                                         message: 'Please select image',
                                     }],
-                                    initialValue: data.src || '',
+                                    initialValue: data.src,
                                 })(
-                                    <UrlModal form={form} url={data.src} />,
+                                    <UrlModal form={form} />,
                                 )
                             }
                         </Form.Item>

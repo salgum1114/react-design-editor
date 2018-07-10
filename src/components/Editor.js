@@ -65,7 +65,7 @@ class Editor extends Component {
             const changedValue = changedValues[changedKey];
             console.log(selectedItem, changedKey, changedValue);
             if (selectedItem.id === 'workarea') {
-                this.canvasHandlers.onChangeCanvas(changedKey, changedValue);
+                this.canvasHandlers.onChangeCanvas(changedKey, changedValue, allValues);
                 return;
             }
             if (changedKey === 'width' || changedKey === 'height') {
@@ -85,9 +85,15 @@ class Editor extends Component {
             }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
-        onChangeCanvas: (changedKey, changedValue) => {
+        onChangeCanvas: (changedKey, changedValue, allValues) => {
             if (changedKey === 'file' || changedKey === 'src') {
                 this.canvasRef.current.handlers.setWorkareaImage(this.canvasRef.current.workarea, changedValue);
+                return;
+            }
+            if (changedKey === 'width' || changedKey === 'height') {
+                this.canvasRef.current.handlers.originScaleToResize(this.canvasRef.current.workarea, allValues.width, allValues.height);
+                this.canvasRef.current.canvas.centerObject(this.canvasRef.current.workarea);
+                return;
             }
             this.canvasRef.current.workarea.set(changedKey, changedValue);
             this.canvasRef.current.canvas.centerObject(this.canvasRef.current.workarea);

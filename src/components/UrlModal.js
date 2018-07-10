@@ -35,18 +35,16 @@ class UrlModal extends Component {
         },
     }
 
-    static propTypes = {
-        url: PropTypes.string,
-    }
-
-    static defaultProps = {
-        url: '',
-    }
-
     state = {
-        url: this.props.url,
+        url: this.props.value || '',
         tempUrl: '',
         visible: false,
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            url: nextProps.value || '',
+        });
     }
 
     render() {
@@ -85,7 +83,7 @@ class UrlModal extends Component {
                     visible={visible}
                 >
                     <Form.Item label="URL" colon={false}>
-                        <Input onChange={(e) => { this.setState({ tempUrl: e.target.value }) }} />
+                        <Input onChange={(e) => { this.setState({ tempUrl: e.target.value }); }} />
                     </Form.Item>
                 </Modal>
             </React.Fragment>

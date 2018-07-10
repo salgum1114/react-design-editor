@@ -17,7 +17,7 @@ class HeaderToolbar extends Component {
         return (
             <FlexBox className="rde-canvas-toolbar-container" flex="1">
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-list">
-                    <Button className="rde-canvas-toolbar-list-btn" shape="circle">
+                    <Button className="rde-action-btn" shape="circle">
                         <Icon name="sitemap" />
                     </Button>
                     <div className="rde-canvas-list">
@@ -25,10 +25,10 @@ class HeaderToolbar extends Component {
                     </div>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
-                    <Button shape="circle" onClick={e => canvasRef.current.handlers.sendBackwards()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.handlers.sendBackwards()}>
                         <Icon name="arrow-up" />
                     </Button>
-                    <Button shape="circle" onClick={e => canvasRef.current.handlers.bringForward()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.handlers.bringForward()}>
                         <Icon name="arrow-down" />
                     </Button>
                     {/* <Button shape="circle"></Button>
@@ -36,13 +36,13 @@ class HeaderToolbar extends Component {
                     <Button shape="circle"></Button> */}
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
-                    <Button shape="circle">
+                    <Button className="rde-action-btn" shape="circle">
                         <Icon name="align-left" />
                     </Button>
-                    <Button shape="circle">
+                    <Button className="rde-action-btn" shape="circle">
                         <Icon name="align-center" />
                     </Button>
-                    <Button shape="circle">
+                    <Button className="rde-action-btn" shape="circle">
                         <Icon name="align-right" />
                     </Button>
                     {/* <Button shape="circle"></Button>
@@ -50,18 +50,18 @@ class HeaderToolbar extends Component {
                     <Button shape="circle"></Button> */}
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-operation">
-                    <Button shape="circle" onClick={() => canvasRef.current.handlers.duplicate()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.handlers.duplicate()}>
                         <Icon name="clone" />
                     </Button>
-                    <Button shape="circle" onClick={() => canvasRef.current.handlers.remove()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.handlers.remove()}>
                         <Icon name="trash" />
                     </Button>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
-                    <Button>
+                    <Button className="rde-action-btn">
                         <Icon name="rotate-left" style={{ marginRight: 8 }} />Undo
                     </Button>
-                    <Button>
+                    <Button className="rde-action-btn">
                         Redo<Icon name="rotate-right" style={{ marginLeft: 8 }} />
                     </Button>
                 </FlexItem>

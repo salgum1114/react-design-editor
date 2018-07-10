@@ -4,46 +4,28 @@ import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 
-const FabricObject = {
-    'i-text': {
-        create: ({ text, ...option }) => new fabric.IText(text, {
-            ...option,
-        }),
-    },
-    textbox: {
-        create: ({ text, ...option }) => new fabric.Textbox(text, {
-            ...option,
-        }),
-    },
-    triangle: {
-        create: option => new fabric.Triangle({
-            ...option,
-        }),
-    },
-    circle: {
-        create: option => new fabric.Circle({
-            ...option,
-        }),
-    },
-    rect: {
-        create: option => new fabric.Rect({
-            ...option,
-        }),
-    },
-    polygon: {
-        create: ({ points, ...option }) => new fabric.Polygon(points, {
-            ...option,
-        }),
-    },
-};
+import CanvasObject from './canvas/CanvasObject';
 
-const canvasSize = {
+const workareaOption = {
     width: 600,
     height: 400,
+    lockScalingX: true,
+    lockScalingY: true,
+    backgroundColor: '#fff',
+    hasBorders: false,
+    hasControls: false,
+    selectable: false,
+    lockMovementX: true,
+    lockMovementY: true,
+    hoverCursor: 'default',
+    name: '',
+    id: 'workarea',
+    type: 'image',
 };
 
 class Canvas extends Component {
     static propsTypes = {
+        fabricObjects: PropTypes.object,
         editable: PropTypes.bool,
         width: PropTypes.width,
         height: PropTypes.height,
@@ -140,7 +122,7 @@ class Canvas extends Component {
                 reader.readAsDataURL(file);
                 return;
             }
-            const newObject = FabricObject[obj.type].create({ ...obj });
+            const newObject = this.fabricObjects[obj.type].create({ ...obj });
             if (obj.type !== 'polygon' && !loaded) {
                 this.handlers.centerObject(newObject, centered);
             }
@@ -287,14 +269,14 @@ class Canvas extends Component {
         getActiveObject: () => this.canvas.getActiveObject(),
         getActiveObjects: () => this.canvas.getActiveObjects(),
         setCanvasBackgroundImage: (obj) => {
-            const canvas = this.canvas;
+            const { canvas } = this;
             if (obj.type === 'image') {
-                const { src, file, ...otherOption } = obj;
+                const { src, file } = obj;
                 if (src) {
-                    fabric.Image.fromURL(src, function (img) {
+                    fabric.Image.fromURL(src, (img) => {
                         img.set({
                             originX: 'left',
-                            originY: 'top'
+                            originY: 'top',
                         });
                         canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
                             scaleX: canvas.width / img.width,
@@ -305,11 +287,11 @@ class Canvas extends Component {
                 }
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    const src = e.target.result;
-                    fabric.Image.fromURL(src, function (img) {
+                    const { result } = e.target;
+                    fabric.Image.fromURL(result, (img) => {
                         img.set({
                             originX: 'left',
-                            originY: 'top'
+                            originY: 'top',
                         });
                         canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
                             scaleX: canvas.width / img.width,
@@ -323,17 +305,20 @@ class Canvas extends Component {
             console.warn('Object type not image');
         },
         setWorkareaImage: (obj, source) => {
-            const canvas = this.canvas;
+            const { canvas } = this;
+            const originWidth = obj.width * obj.scaleX;
+            const originHeight = obj.height * obj.scaleY;
             if (typeof source === 'string') {
-                fabric.Image.fromURL(src, function (img) {
+                fabric.Image.fromURL(source, (img) => {
                     img.set({
                         originX: 'left',
                         originY: 'top',
-                        scaleX: obj.width / img.width,
-                        scaleY: obj.height / img.height,
+                        scaleX: originWidth / img.width,
+                        scaleY: originHeight / img.height,
                     });
                     obj.set({
                         ...img,
+                        src: source,
                         selectable: false,
                     });
                     canvas.renderAll();
@@ -343,15 +328,16 @@ class Canvas extends Component {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const src = e.target.result;
-                fabric.Image.fromURL(src, function (img) {
+                fabric.Image.fromURL(src, (img) => {
                     img.set({
                         originX: 'left',
                         originY: 'top',
-                        scaleX: obj.width / img.width,
-                        scaleY: obj.height / img.height,
+                        scaleX: originWidth / img.width,
+                        scaleY: originHeight / img.height,
                     });
                     obj.set({
                         ...img,
+                        file: source,
                         selectable: false,
                     });
                     canvas.renderAll();
@@ -390,6 +376,9 @@ class Canvas extends Component {
             }
         },
         setByObject: (obj, key, value) => {
+            if (!obj) {
+                return;
+            }
             obj.set(key, value);
             obj.setCoords();
             this.canvas.requestRenderAll();
@@ -399,11 +388,11 @@ class Canvas extends Component {
             }
         },
         setById: (id, key, value) => {
-            const findObject = this.handlers.findObjectById(id);
+            const findObject = this.handlers.findById(id);
             this.handlers.setByObject(findObject, key, value);
         },
         setByName: (name, key, value) => {
-            const findObject = this.handlers.findObjectByName(name);
+            const findObject = this.handlers.findByName(name);
             this.handlers.setByObject(findObject, key, value);
         },
         loadImage: (obj, src) => {
@@ -411,7 +400,8 @@ class Canvas extends Component {
                 const newImg = new Image();
                 newImg.onload = () => {
                     obj.setElement(newImg);
-                    this.canvas.requestRenderAll();
+                    obj.setCoords();
+                    this.canvas.renderAll();
                 };
                 newImg.src = src;
                 return;
@@ -421,7 +411,8 @@ class Canvas extends Component {
                     source,
                     repeat: 'repeat',
                 });
-                this.canvas.requestRenderAll();
+                obj.setCoords();
+                this.canvas.renderAll();
             });
         },
         setImage: (obj, src) => {
@@ -511,6 +502,10 @@ class Canvas extends Component {
                 this.canvas.setActiveObject(findObject);
                 this.canvas.requestRenderAll();
             }
+        },
+        originScaleToResize: (obj, width, height) => {
+            this.handlers.setById(obj.id, 'scaleX', width / obj.width);
+            this.handlers.setById(obj.id, 'scaleY', height / obj.height);
         },
         scaleToResize: (width, height) => {
             const activeObject = this.handlers.getActiveObject();
@@ -896,6 +891,9 @@ class Canvas extends Component {
             return false;
         },
         keydown: (e) => {
+            if (this.canvas.wrapperEl !== document.activeElement) {
+                return false;
+            }
             if (e.code === 'Delete') {
                 this.handlers.remove();
             } else if (e.code.includes('Arrow')) {
@@ -913,6 +911,7 @@ class Canvas extends Component {
 
     constructor(props) {
         super(props);
+        this.fabricObjects = CanvasObject(props.fabricObjects);
         this.container = React.createRef();
     }
 
@@ -934,20 +933,7 @@ class Canvas extends Component {
         });
         if (editable) {
             this.workarea = new fabric.Image(null, {
-                lockScalingX: true,
-                lockScalingY: true,
-                backgroundColor: '#fff',
-                width: canvasSize.width,
-                height: canvasSize.height,
-                hasBorders: false,
-                hasControls: false,
-                selectable: false,
-                lockMovementX: true,
-                lockMovementY: true,
-                hoverCursor: 'default',
-                name: '',
-                id: 'workarea',
-                type: 'image',
+                ...workareaOption,
             });
             this.canvas.add(this.workarea);
             this.canvas.centerObject(this.workarea);
