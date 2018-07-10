@@ -30,6 +30,14 @@ class FooterToolbar extends Component {
                         <Icon name="search-plus" />
                     </Button>
                 </FlexItem>
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-zoom">
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.handlers.zoomOneToOne()}>
+                        1:1
+                    </Button>
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.handlers.zoomTiFit()}>
+                        Fit
+                    </Button>
+                </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-pager">
                     <Button className="rde-action-btn" shape="circle">
                         <Icon name="angle-left" />

@@ -564,6 +564,19 @@ class Canvas extends Component {
                 }
             }
         },
+        zoomOneToOne: () => {
+            const zoomRatio = this.canvas.getZoom();
+            console.log(zoomRatio);
+            this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, 1.0);
+            if (this.props.onZoom) {
+                this.props.onZoom(1.0);
+            }
+        },
+        zoomToFit: () => {
+            if (this.props.onZoom) {
+                this.props.onZoom(zoomRatio);
+            }
+        },
         zoomIn: () => {
             let zoomRatio = this.canvas.getZoom();
             zoomRatio += 0.01;
