@@ -4,7 +4,7 @@ import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 
-import CanvasObject from './canvas/CanvasObject';
+import CanvasObjects from './canvas/CanvasObjects';
 
 const workareaOption = {
     width: 600,
@@ -21,6 +21,9 @@ const workareaOption = {
     name: '',
     id: 'workarea',
     type: 'image',
+    tooltip: {
+        enabled: true,
+    },
 };
 
 class Canvas extends Component {
@@ -44,7 +47,7 @@ class Canvas extends Component {
         width: 0,
         height: 0,
         zoom: true,
-        propertiesToInclude: [],
+        propertiesToInclude: ['id', 'name', 'action', 'tooltip'],
         responsive: false,
     }
 
@@ -73,21 +76,26 @@ class Canvas extends Component {
             if (obj.type === 'image') {
                 const newImg = new Image();
                 const { src, file, ...otherOption } = obj;
+                const defaultOptions = {
+                    action: {},
+                    tooltip: {},
+                };
                 if (src) {
                     newImg.onload = () => {
                         const imgObject = new fabric.Image(newImg, {
                             src,
                             ...otherOption,
+                            ...defaultOptions,
                         });
                         if (!loaded) {
                             this.handlers.centerObject(imgObject, centered);
                         }
-                        this.canvas.add(imgObject);
                         if (!editable) {
                             imgObject.on('mousedown', this.events.object.mousedown);
                             imgObject.on('mouseover', this.events.object.mouseover);
                             imgObject.on('mouseout', this.events.object.mouseout);
                         }
+                        this.canvas.add(imgObject);
                         const { onAdd } = this.props;
                         if (onAdd && !loaded) {
                             onAdd(imgObject);
@@ -102,16 +110,17 @@ class Canvas extends Component {
                         const imgObject = new fabric.Image(newImg, {
                             file,
                             ...otherOption,
+                            ...defaultOptions,
                         });
                         if (!loaded) {
                             this.handlers.centerObject(imgObject, centered);
                         }
-                        this.canvas.add(imgObject);
                         if (!editable) {
                             imgObject.on('mousedown', this.events.object.mousedown);
                             imgObject.on('mouseover', this.events.object.mouseover);
                             imgObject.on('mouseout', this.events.object.mouseout);
                         }
+                        this.canvas.add(imgObject);
                         const { onAdd } = this.props;
                         if (onAdd && !loaded) {
                             onAdd(imgObject);
@@ -126,12 +135,12 @@ class Canvas extends Component {
             if (obj.type !== 'polygon' && !loaded) {
                 this.handlers.centerObject(newObject, centered);
             }
-            this.canvas.add(newObject);
             if (!editable) {
                 newObject.on('mousedown', this.events.object.mousedown);
                 newObject.on('mouseover', this.events.object.mouseover);
                 newObject.on('mouseout', this.events.object.mouseout);
             }
+            this.canvas.add(newObject);
             const { onAdd } = this.props;
             if (onAdd && !loaded) {
                 onAdd(newObject);
@@ -523,6 +532,7 @@ class Canvas extends Component {
                 json = JSON.parse(json);
             }
             json.forEach((obj) => {
+                console.log(obj);
                 this.handlers.add(obj, false, true);
             });
             if (callback) {
@@ -731,13 +741,34 @@ class Canvas extends Component {
     events = {
         object: {
             mousedown: (opt) => {
-                console.log('objectmousedown', opt);
+                const { target } = opt;
+                if (target && target.action.enabled) {
+                    const { action } = target;
+                    if (action.type === 'dashboard') {
+                        console.log(opt.target);
+                    } else if (action.type === 'url') {
+                        if (action.state === 'current') {
+                            document.location.href = action.url;
+                            return;
+                        }
+                        window.open(action.url);
+                    }
+                }
             },
             mouseover: (opt) => {
-                console.log('objectmouseover', opt);
+                if (opt.target && opt.target.tooltip.enabled) {
+                    console.log(opt.target);
+                    if (opt.target.tooltip.formatter) {
+                        opt.target.action.formatter(opt);
+                    }
+                }
             },
             mouseout: (opt) => {
-                console.log('objectmouseout', opt);
+                if (opt.target && opt.target.tooltip.enabled) {
+                    if (opt.target.tooltip.formatter) {
+                        opt.target.action.formatter(opt);
+                    }
+                }
             },
         },
         modified: (opt) => {
@@ -827,11 +858,11 @@ class Canvas extends Component {
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
             this.canvas.setWidth(nextWidth).setHeight(nextHeight);
-            if (this.props.editable) {
+            const { editable } = this.props;
+            if (editable) {
                 this.canvas.centerObject(this.workarea);
                 this.workarea.setCoords();
             }
-            this.ratio = nextWidth / nextHeight;
             const diffWidth = (nextWidth / 2) - (currentWidth / 2);
             const diffHeight = (nextHeight / 2) - (currentHeight / 2);
             this.canvas.getObjects().forEach((object, index) => {
@@ -911,25 +942,25 @@ class Canvas extends Component {
 
     constructor(props) {
         super(props);
-        this.fabricObjects = CanvasObject(props.fabricObjects);
+        this.fabricObjects = CanvasObjects(props.fabricObjects);
         this.container = React.createRef();
+        this.tooltipRef = React.createRef();
     }
 
     state = {
-        id: `id_${uuid()}`,
+        id: uuid(),
         clipboard: null,
     }
 
     componentDidMount() {
         const { id } = this.state;
         const { editable, width, height } = this.props;
-        this.canvas = new fabric.Canvas(id, {
+        this.canvas = new fabric.Canvas(`canvas_${id}`, {
             preserveObjectStacking: true,
             width,
             height,
             backgroundColor: '#f3f3f3',
             selection: editable,
-
         });
         if (editable) {
             this.workarea = new fabric.Image(null, {
@@ -983,7 +1014,8 @@ class Canvas extends Component {
                 id="rde-canvas"
                 className="rde-canvas"
             >
-                <canvas id={id} />
+                <canvas id={`canvas_${id}`} />
+                <div ref={this.tooltipRef} id={`tooltip_${id}`} className="rde-canvas-tooltip" />
             </div>
         );
     }

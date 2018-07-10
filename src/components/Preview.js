@@ -21,8 +21,9 @@ class Preview extends Component {
     }
 
     componentDidMount() {
-        new ResizeSensor(this.container, (e) => {
-            const canvasRect = Object.assign({}, this.state.canvasRect, {
+        this.resizeSensor = new ResizeSensor(this.container, (e) => {
+            const { canvasRect: currentCanvasRect } = this.state;
+            const canvasRect = Object.assign({}, currentCanvasRect, {
                 width: this.container.clientWidth,
                 height: this.container.clientHeight,
             });
@@ -30,28 +31,27 @@ class Preview extends Component {
                 canvasRect,
             });
         });
-        if (this.canvasPreviewRef) {
-            const json = JSON.stringify(this.props.canvasRef.current.handlers.exportJSON().objects.filter(obj => obj.id !== 'workarea'));
-            this.canvasPreviewRef.handlers.importJSON(json);
-        }
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.preview) {
-            const { workarea } = this.props.canvasRef.current;
-            const leftRatio = this.state.canvasRect.width / (workarea.width * workarea.scaleX);
-            const topRatio = this.state.canvasRect.height / (workarea.height * workarea.scaleY);
+        const { preview, canvasRef } = this.props;
+        const { canvasRect } = this.state;
+        if (preview) {
+            this.canvasPreviewRef.canvas.clear();
+            const { workarea } = canvasRef.current;
+            const leftRatio = canvasRect.width / (workarea.width * workarea.scaleX);
+            const topRatio = canvasRect.height / (workarea.height * workarea.scaleY);
             if (workarea.file || workarea.src) {
                 const option = {
-                    width: this.state.canvasRect.width,
-                    height: this.state.canvasRect.height,
+                    width: canvasRect.width,
+                    height: canvasRect.height,
                     file: workarea.file,
                     src: workarea.src,
                     type: 'image',
                 };
                 this.canvasPreviewRef.handlers.setCanvasBackgroundImage(option);
             }
-            const data = this.props.canvasRef.current.handlers.exportJSON().objects.map((obj) => {
+            const data = canvasRef.current.handlers.exportJSON().objects.map((obj) => {
                 const scaleX = obj.scaleX * leftRatio;
                 const scaleY = obj.scaleY * topRatio;
                 const left = (obj.left - workarea.left) * leftRatio;
@@ -64,18 +64,21 @@ class Preview extends Component {
                     scaleY,
                 };
             });
-            const json = JSON.stringify(data.filter(obj => obj.id !== 'workarea'));
+            const json = JSON.stringify(data.filter(obj => obj.id !== 'workarea'), function (key, val) {
+                if (typeof val === 'function') {
+                    return val.toString();
+                }
+                return val;
+            });
             this.canvasPreviewRef.handlers.importJSON(json);
-            return;
         }
-        this.canvasPreviewRef.canvas.clear();
     }
 
     render() {
         const { canvasRect } = this.state;
         const { onChangePreview } = this.props;
         return (
-            <div ref={(c) => { this.container = c; }} style={{ display: 'flex', flex: '1', height: '100%' }}>
+            <div ref={(c) => { this.container = c; }} style={{ overvlow: 'hidden', display: 'flex', flex: '1', height: '100%' }}>
                 <Canvas editable={false} width={canvasRect.width} height={canvasRect.height} ref={(c) => { this.canvasPreviewRef = c; }} />
                 <Button className="rde-action-btn rde-canvas-preview-close-btn" onClick={onChangePreview}>
                     <Icon name="times" size={1.5} />

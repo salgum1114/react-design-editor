@@ -4,24 +4,29 @@ import { Form, Switch, Select } from 'antd';
 export default {
     render(form, data) {
         const { getFieldDecorator } = form;
+        if (!data) {
+            return null;
+        }
         return (
             <React.Fragment>
                 <Form.Item label="Enable Tooltip" colon={false}>
                     {
-                        getFieldDecorator('enabled', {
+                        getFieldDecorator('tooltip.enabled', {
                             rules: [{
                                 type: 'boolean',
                                 // required: true,
                                 // message: 'Please input rotation',
                             }],
+                            valuePropName: 'checked',
+                            initialValue: data.tooltip.enabled || false,
                         })(
-                            <Switch defaultChecked />,
+                            <Switch />,
                         )
                     }
                 </Form.Item>
-                <Form.Item label="Show Tooltips on" colon={false}>
+                {/* <Form.Item label="Show Tooltips on" colon={false}>
                     {
-                        getFieldDecorator('showTooltipsOn', {
+                        getFieldDecorator('tooltip.showTooltipsOn', {
                             rules: [{
                                 // required: true,
                                 // message: 'Please input rotation',
@@ -34,7 +39,7 @@ export default {
                             </Select>,
                         )
                     }
-                </Form.Item>
+                </Form.Item> */}
             </React.Fragment>
         );
     },

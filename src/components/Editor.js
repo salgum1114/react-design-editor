@@ -17,8 +17,8 @@ const propertiesToInclude = [
     'name',
     'lock',
     'file',
-    'actionType',
-    'imageLoadType',
+    'action',
+    'tooltip',
 ];
 
 class Editor extends Component {
@@ -80,8 +80,19 @@ class Editor extends Component {
                     hoverCursor: changedValue ? 'pointer' : 'move',
                     editable: !changedValue,
                 });
-            } else if (changedKey === 'file' || changedKey === 'src') {
+                return;
+            }
+            if (changedKey === 'file' || changedKey === 'src') {
                 this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
+                return;
+            }
+            if (changedKey === 'action') {
+                this.canvasRef.current.handlers.set(changedKey, allValues.action);
+                return;
+            }
+            if (changedKey === 'tooltip') {
+                this.canvasRef.current.handlers.set(changedKey, allValues.tooltip);
+                return;
             }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
@@ -107,6 +118,9 @@ class Editor extends Component {
                 preview: typeof checked === 'object' ? false : checked,
             });
         },
+        onClickObject: (opt) => {
+            console.log(opt);
+        },
     }
 
     constructor(props) {
@@ -115,7 +129,6 @@ class Editor extends Component {
     }
 
     state = {
-        items: {},
         selectedItem: null,
         zoomRatio: 1,
         canvasRect: {
@@ -126,8 +139,9 @@ class Editor extends Component {
     }
 
     componentDidMount() {
-        new ResizeSensor(this.container, (e) => {
-            const canvasRect = Object.assign({}, this.state.canvasRect, {
+        this.resizeSensor = new ResizeSensor(this.container, (e) => {
+            const { canvasRect: currentCanvasRect } = this.state;
+            const canvasRect = Object.assign({}, currentCanvasRect, {
                 width: this.container.clientWidth,
                 height: this.container.clientHeight,
             });
