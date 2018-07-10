@@ -7,6 +7,7 @@ export default {
         if (!data) {
             return null;
         }
+        const responsive = data.responsive || false;
         return (
             <React.Fragment>
                 <Form.Item label="Name" colon={false}>
@@ -37,51 +38,57 @@ export default {
                         )
                     }
                 </Form.Item>
-                <Row>
-                    <Col span={12}>
-                        <Form.Item label="Width" colon={false}>
-                            {
-                                getFieldDecorator('width', {
-                                    rules: [{
-                                        required: true,
-                                        message: 'Please input width',
-                                    }],
-                                    initialValue: data.width * data.scaleX,
-                                })(
-                                    <InputNumber />,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item label="Height" colon={false}>
-                            {
-                                getFieldDecorator('height', {
-                                    rules: [{
-                                        required: true,
-                                        message: 'Please input height',
-                                    }],
-                                    initialValue: data.height * data.scaleY,
-                                })(
-                                    <InputNumber />,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Form.Item label="Rotation" colon={false}>
-                    {
-                        getFieldDecorator('angle', {
-                            rules: [{
-                                required: true,
-                                message: 'Please input rotation',
-                            }],
-                            initialValue: data.angle,
-                        })(
-                            <Slider min={0} max={360} />,
-                        )
-                    }
-                </Form.Item>
+                {
+                    responsive ? null : (
+                        <React.Fragment>
+                            <Row>
+                                <Col span={12}>
+                                    <Form.Item label="Width" colon={false}>
+                                        {
+                                            getFieldDecorator('width', {
+                                                rules: [{
+                                                    required: true,
+                                                    message: 'Please input width',
+                                                }],
+                                                initialValue: data.width * data.scaleX,
+                                            })(
+                                                <InputNumber />,
+                                            )
+                                        }
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item label="Height" colon={false}>
+                                        {
+                                            getFieldDecorator('height', {
+                                                rules: [{
+                                                    required: true,
+                                                    message: 'Please input height',
+                                                }],
+                                                initialValue: data.height * data.scaleY,
+                                            })(
+                                                <InputNumber />,
+                                            )
+                                        }
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                            <Form.Item label="Rotation" colon={false}>
+                                {
+                                    getFieldDecorator('angle', {
+                                        rules: [{
+                                            required: true,
+                                            message: 'Please input rotation',
+                                        }],
+                                        initialValue: data.angle,
+                                    })(
+                                        <Slider min={0} max={360} />,
+                                    )
+                                }
+                            </Form.Item>
+                        </React.Fragment>
+                    )
+                }
             </React.Fragment>
         );
     },
