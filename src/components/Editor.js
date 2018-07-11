@@ -180,6 +180,9 @@ class Editor extends Component {
                         <aside className="rde-items">
                             <Items canvasRef={this.canvasRef} />
                         </aside>
+                        <header style={{ width: canvasRect.width }} className="rde-canvas-header">
+                            <HeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} onSelect={onSelect} />
+                        </header>
                         <main
                             ref={(c) => { this.container = c; }}
                             className="rde-canvas-container"
@@ -196,9 +199,6 @@ class Editor extends Component {
                                 onZoom={onZoom}
                             />
                         </main>
-                        <header style={{ width: canvasRect.width }} className="rde-canvas-header">
-                            <HeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} onSelect={onSelect} />
-                        </header>
                         <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
                             <FooterToolbar canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} zoomRatio={zoomRatio} />
                         </footer>

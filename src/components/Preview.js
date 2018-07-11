@@ -38,38 +38,7 @@ class Preview extends Component {
         const { canvasRect } = this.state;
         if (preview) {
             this.canvasPreviewRef.canvas.clear();
-            const { workarea } = canvasRef.current;
-            const leftRatio = canvasRect.width / (workarea.width * workarea.scaleX);
-            const topRatio = canvasRect.height / (workarea.height * workarea.scaleY);
-            if (workarea.file || workarea.src) {
-                const option = {
-                    width: canvasRect.width,
-                    height: canvasRect.height,
-                    file: workarea.file,
-                    src: workarea.src,
-                    type: 'image',
-                };
-                this.canvasPreviewRef.handlers.setCanvasBackgroundImage(option);
-            }
-            const data = canvasRef.current.handlers.exportJSON().objects.map((obj) => {
-                const scaleX = obj.scaleX * leftRatio;
-                const scaleY = obj.scaleY * topRatio;
-                const left = (obj.left - workarea.left) * leftRatio;
-                const top = (obj.top - workarea.top) * topRatio;
-                return {
-                    ...obj,
-                    left,
-                    top,
-                    scaleX,
-                    scaleY,
-                };
-            });
-            const json = JSON.stringify(data.filter(obj => obj.id !== 'workarea'), function (key, val) {
-                if (typeof val === 'function') {
-                    return val.toString();
-                }
-                return val;
-            });
+            const json = JSON.stringify(canvasRef.current.handlers.exportJSON().objects);
             this.canvasPreviewRef.handlers.importJSON(json);
         }
     }
