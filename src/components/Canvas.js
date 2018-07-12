@@ -9,8 +9,12 @@ import CanvasObjects from './canvas/CanvasObjects';
 const workareaOption = {
     width: 600,
     height: 400,
+    workareaWidth: 600,
+    workareaHeight: 400,
     lockScalingX: true,
     lockScalingY: true,
+    scaleX: 1,
+    scaleY: 1,
     backgroundColor: '#fff',
     hasBorders: false,
     hasControls: false,
@@ -48,7 +52,7 @@ class Canvas extends Component {
         width: 0,
         height: 0,
         zoom: true,
-        propertiesToInclude: ['id', 'name', 'action', 'tooltip', 'layout'],
+        propertiesToInclude: ['id', 'name', 'action', 'tooltip', 'layout', 'workareaWidth', 'workareaHeight'],
     }
 
     handlers = {
@@ -340,207 +344,6 @@ class Canvas extends Component {
             }
             console.warn('Object type not image');
         },
-        setWorkareaLayout: (key, value) => {
-            this.workarea.set(key, value);
-            const { _element } = this.workarea;
-            this.canvas.getObjects().forEach((obj) => {
-                if (obj.id !== 'workarea') {
-                    obj.set({
-                        scaleX: 1,
-                        scaleY: 1,
-                    });
-                }
-            });
-            if (value === 'fixed') {
-                if (_element) {
-                    this.workarea.set({
-                        width: _element.width,
-                        height: _element.height,
-                        scaleX: workareaOption.width / _element.width,
-                        scaleY: workareaOption.height / _element.height,
-                    });
-                } else {
-                    this.workarea.set({
-                        width: workareaOption.width,
-                        height: workareaOption.height,
-                    });
-                }
-                this.canvas.centerObject(this.workarea);
-                const center = this.canvas.getCenter();
-                const point = {
-                    x: center.left,
-                    y: center.top,
-                };
-                this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                this.handlers.zoomToPoint(point, 1);
-                this.canvas.renderAll();
-                return;
-            }
-            if (value === 'responsive') {
-                if (_element) {
-                    let scaleX = this.canvas.getWidth() / _element.width;
-                    const scaleY = this.canvas.getHeight() / _element.height;
-                    if (scaleY > 1) {
-                        scaleX = scaleY;
-                    }
-                    const center = this.canvas.getCenter();
-                    const point = {
-                        x: center.left,
-                        y: center.top,
-                    };
-                    this.workarea.set({
-                        scaleX: 1,
-                        scaleY: 1,
-                    });
-                    this.handlers.zoomToPoint(point, scaleX);
-                } else {
-                    this.workarea.set({
-                        width: 0,
-                        height: 0,
-                    });
-                }
-                this.canvas.centerObject(this.workarea);
-                this.canvas.renderAll();
-                return;
-            }
-            if (_element) {
-                const scaleX = this.canvas.getWidth() / _element.width;
-                const scaleY = this.canvas.getHeight() / _element.height;
-                this.workarea.set({
-                    width: _element.width,
-                    height: _element.height,
-                    scaleX,
-                    scaleY,
-                    originScaleX: scaleX,
-                    originScaleY: scaleY,
-                });
-            } else {
-                this.workarea.set({
-                    width: this.canvas.getWidth(),
-                    height: this.canvas.getHeight(),
-                });
-            }
-            this.canvas.centerObject(this.workarea);
-            const center = this.canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-            this.handlers.zoomToPoint(point, 1);
-            this.workarea.set({
-                left: 0,
-                top: 0,
-            });
-            this.workarea.setCoords();
-            this.canvas.renderAll();
-        },
-        setWorkareaResponsiveImage: (source) => {
-            const { canvas } = this;
-            if (typeof source === 'string') {
-                fabric.Image.fromURL(source, (img) => {
-                    let scaleX = canvas.getWidth() / img.width;
-                    const scaleY = canvas.getHeight() / img.height;
-                    if (scaleY > 1) {
-                        scaleX = scaleY;
-                    }
-                    img.set({
-                        originX: 'left',
-                        originY: 'top',
-                    });
-                    this.workarea.set({
-                        ...img,
-                        src: source,
-                        selectable: false,
-                    });
-                    this.canvas.centerObject(this.workarea);
-                    const center = this.canvas.getCenter();
-                    const point = {
-                        x: center.left,
-                        y: center.top,
-                    };
-                    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                    this.handlers.zoomToPoint(point, scaleX);
-                    canvas.renderAll();
-                });
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const src = e.target.result;
-                fabric.Image.fromURL(src, (img) => {
-                    let scaleX = canvas.getWidth() / img.width;
-                    const scaleY = canvas.getHeight() / img.height;
-                    if (img.height > img.width) {
-                        scaleX = scaleY;
-                    }
-                    img.set({
-                        originX: 'left',
-                        originY: 'top',
-                    });
-                    this.workarea.set({
-                        ...img,
-                        file: source,
-                        selectable: false,
-                    });
-                    this.canvas.centerObject(this.workarea);
-                    const center = this.canvas.getCenter();
-                    const point = {
-                        x: center.left,
-                        y: center.top,
-                    };
-                    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                    this.handlers.zoomToPoint(point, scaleX);
-                    canvas.renderAll();
-                });
-            };
-            reader.readAsDataURL(source);
-        },
-        setWorkareaImage: (source) => {
-            const { canvas } = this;
-            const width = this.workarea.width * this.workarea.scaleX;
-            const height = this.workarea.height * this.workarea.scaleY;
-            if (typeof source === 'string') {
-                fabric.Image.fromURL(source, (img) => {
-                    img.set({
-                        originX: 'left',
-                        originY: 'top',
-                        originScaleX: width / img.width,
-                        originScaleY: height / img.height,
-                        scaleX: width / img.width,
-                        scaleY: height / img.height,
-                    });
-                    this.workarea.set({
-                        ...img,
-                        src: source,
-                        selectable: false,
-                    });
-                    canvas.renderAll();
-                });
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const src = e.target.result;
-                fabric.Image.fromURL(src, (img) => {
-                    img.set({
-                        originX: 'left',
-                        originY: 'top',
-                        originScaleX: width / img.width,
-                        originScaleY: height / img.height,
-                        scaleX: width / img.width,
-                        scaleY: height / img.height,
-                    });
-                    this.workarea.set({
-                        ...img,
-                        file: source,
-                        selectable: false,
-                    });
-                    canvas.renderAll();
-                });
-            };
-            reader.readAsDataURL(source);
-        },
         set: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
             if (!activeObject) {
@@ -681,6 +484,10 @@ class Canvas extends Component {
             }
         },
         originScaleToResize: (obj, width, height) => {
+            if (obj.id === 'workarea') {
+                this.handlers.setById(obj.id, 'workareaWidth', obj.width);
+                this.handlers.setById(obj.id, 'workareaHeight', obj.height);
+            }
             this.handlers.setById(obj.id, 'scaleX', width / obj.width);
             this.handlers.setById(obj.id, 'scaleY', height / obj.height);
         },
@@ -699,16 +506,36 @@ class Canvas extends Component {
             if (typeof json === 'string') {
                 json = JSON.parse(json);
             }
+            let prevLeft;
+            let prevTop;
             json.forEach((obj) => {
                 if (obj.id === 'workarea') {
-                    this.workarea.set({
-                        ...obj,
-                    });
-                    this.canvas.renderAll();
+                    prevLeft = obj.left;
+                    prevTop = obj.top;
+                    this.workarea.set(obj);
+                    this.canvas.add(this.workarea);
+                    this.canvas.centerObject(this.workarea);
+                    this.workareaHandlers.setImage(obj.src);
+                    this.workarea.setCoords();
                     return;
+                }
+                const canvasWidth = this.canvas.getWidth();
+                const canvasHeight = this.canvas.getHeight();
+                const { width, height, scaleX, scaleY, layout, left, top } = this.workarea;
+                if (layout === 'fullscreen') {
+                    const leftRatio = canvasWidth / (width * scaleX);
+                    const topRatio = canvasHeight / (height * scaleY);
+                    obj.left *= leftRatio;
+                    obj.top *= topRatio;
+                } else {
+                    const diffLeft = left - prevLeft;
+                    const diffTop = top - prevTop;
+                    obj.left += diffLeft;
+                    obj.top += diffTop;
                 }
                 this.handlers.add(obj, false, true);
             });
+            this.canvas.setZoom(1);
             if (callback) {
                 callback(this.canvas);
             }
@@ -750,7 +577,6 @@ class Canvas extends Component {
                 x: center.left,
                 y: center.top,
             };
-            // this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, 1.0);
             this.handlers.zoomToPoint(point, 1);
         },
         zoomToFit: () => {
@@ -766,7 +592,6 @@ class Canvas extends Component {
                 x: center.left,
                 y: center.top,
             };
-            // this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoomRatio);
             this.handlers.zoomToPoint(point, zoomRatio);
         },
         zoomOut: () => {
@@ -777,8 +602,240 @@ class Canvas extends Component {
                 x: center.left,
                 y: center.top,
             };
-            // this.canvas.zoomToPoint({ x: this.canvas.getCenter().left, y: this.canvas.getCenter().top }, zoomRatio);
             this.handlers.zoomToPoint(point, zoomRatio);
+        },
+    }
+
+    workareaHandlers = {
+        setLayout: (value) => {
+            this.workarea.set('layout', value);
+            const { _element } = this.workarea;
+            this.canvas.getObjects().forEach((obj) => {
+                if (obj.id !== 'workarea') {
+                    obj.set({
+                        scaleX: 1,
+                        scaleY: 1,
+                    });
+                }
+            });
+            if (value === 'fixed') {
+                if (_element) {
+                    this.workarea.set({
+                        width: _element.width,
+                        height: _element.height,
+                        scaleX: this.workarea.workareaWidth / _element.width,
+                        scaleY: this.workarea.workareaHeight / _element.height,
+                    });
+                } else {
+                    this.workarea.set({
+                        width: this.workarea.workareaWidth,
+                        height: this.workarea.workareaHeight,
+                    });
+                }
+                this.canvas.centerObject(this.workarea);
+                const center = this.canvas.getCenter();
+                const point = {
+                    x: center.left,
+                    y: center.top,
+                };
+                this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+                this.handlers.zoomToPoint(point, 1);
+                this.canvas.renderAll();
+                return;
+            }
+            if (value === 'responsive') {
+                if (_element) {
+                    let scaleX = this.canvas.getWidth() / _element.width;
+                    const scaleY = this.canvas.getHeight() / _element.height;
+                    if (_element.height > _element.width) {
+                        scaleX = scaleY;
+                    }
+                    const center = this.canvas.getCenter();
+                    const point = {
+                        x: center.left,
+                        y: center.top,
+                    };
+                    this.workarea.set({
+                        scaleX: 1,
+                        scaleY: 1,
+                    });
+                    this.handlers.zoomToPoint(point, scaleX);
+                } else {
+                    this.workarea.set({
+                        width: 0,
+                        height: 0,
+                    });
+                }
+                this.canvas.centerObject(this.workarea);
+                this.canvas.renderAll();
+                return;
+            }
+            if (_element) {
+                const scaleX = this.canvas.getWidth() / _element.width;
+                const scaleY = this.canvas.getHeight() / _element.height;
+                this.workarea.set({
+                    width: _element.width,
+                    height: _element.height,
+                    scaleX,
+                    scaleY,
+                    originScaleX: scaleX,
+                    originScaleY: scaleY,
+                });
+            } else {
+                this.workarea.set({
+                    width: this.canvas.getWidth(),
+                    height: this.canvas.getHeight(),
+                });
+            }
+            const center = this.canvas.getCenter();
+            const point = {
+                x: center.left,
+                y: center.top,
+            };
+            this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+            this.handlers.zoomToPoint(point, 1);
+            this.workarea.set({
+                left: 0,
+                top: 0,
+            });
+            this.workarea.setCoords();
+            this.canvas.renderAll();
+        },
+        setResponsiveImage: (source) => {
+            const { canvas } = this;
+            if (typeof source === 'string') {
+                fabric.Image.fromURL(source, (img) => {
+                    let scaleX = canvas.getWidth() / img.width;
+                    const scaleY = canvas.getHeight() / img.height;
+                    if (img.height > img.width) {
+                        scaleX = scaleY;
+                    }
+                    img.set({
+                        originX: 'left',
+                        originY: 'top',
+                    });
+                    this.workarea.set({
+                        ...img,
+                        src: source,
+                        selectable: false,
+                    });
+                    this.canvas.centerObject(this.workarea);
+                    const center = this.canvas.getCenter();
+                    const point = {
+                        x: center.left,
+                        y: center.top,
+                    };
+                    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+                    this.handlers.zoomToPoint(point, scaleX);
+                    canvas.renderAll();
+                });
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const src = e.target.result;
+                fabric.Image.fromURL(src, (img) => {
+                    let scaleX = canvas.getWidth() / img.width;
+                    const scaleY = canvas.getHeight() / img.height;
+                    if (img.height > img.width) {
+                        scaleX = scaleY;
+                    }
+                    img.set({
+                        originX: 'left',
+                        originY: 'top',
+                    });
+                    this.workarea.set({
+                        ...img,
+                        file: source,
+                        selectable: false,
+                    });
+                    this.canvas.centerObject(this.workarea);
+                    const center = this.canvas.getCenter();
+                    const point = {
+                        x: center.left,
+                        y: center.top,
+                    };
+                    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+                    this.handlers.zoomToPoint(point, scaleX);
+                    canvas.renderAll();
+                });
+            };
+            reader.readAsDataURL(source);
+        },
+        setImage: (source) => {
+            if (this.workarea.layout === 'responsive') {
+                this.workareaHandlers.setResponsiveImage(source);
+                return;
+            }
+            const { canvas, handlers } = this;
+            if (typeof source === 'string') {
+                fabric.Image.fromURL(source, (img) => {
+                    let width = this.canvas.getWidth();
+                    let height = this.canvas.getHeight();
+                    if (this.workarea.layout === 'fixed') {
+                        width = this.workarea.width * this.workarea.scaleX;
+                        height = this.workarea.height * this.workarea.scaleY;
+                    }
+                    img.set({
+                        originX: 'left',
+                        originY: 'top',
+                        originScaleX: width / img.width,
+                        originScaleY: height / img.height,
+                        scaleX: width / img.width,
+                        scaleY: height / img.height,
+                    });
+                    this.workarea.set({
+                        ...img,
+                        src: source,
+                        selectable: false,
+                    });
+                    this.canvas.centerObject(this.workarea);
+                    const center = canvas.getCenter();
+                    const point = {
+                        x: center.left,
+                        y: center.top,
+                    };
+                    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+                    handlers.zoomToPoint(point, 1);
+                    canvas.renderAll();
+                });
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const src = e.target.result;
+                fabric.Image.fromURL(src, (img) => {
+                    let width = this.canvas.getWidth();
+                    let height = this.canvas.getHeight();
+                    if (this.workarea.layout === 'fixed') {
+                        width = this.workarea.width * this.workarea.scaleX;
+                        height = this.workarea.height * this.workarea.scaleY;
+                    }
+                    img.set({
+                        originX: 'left',
+                        originY: 'top',
+                        originScaleX: width / img.width,
+                        originScaleY: height / img.height,
+                        scaleX: width / img.width,
+                        scaleY: height / img.height,
+                    });
+                    this.workarea.set({
+                        ...img,
+                        file: source,
+                        selectable: false,
+                    });
+                    this.canvas.centerObject(this.workarea);
+                    const center = canvas.getCenter();
+                    const point = {
+                        x: center.left,
+                        y: center.top,
+                    };
+                    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+                    handlers.zoomToPoint(point, 1);
+                    canvas.renderAll();
+                });
+            };
+            reader.readAsDataURL(source);
         },
     }
 
@@ -1085,10 +1142,8 @@ class Canvas extends Component {
                 }
                 const diffWidth = (nextWidth / 2) - (currentWidth / 2);
                 const diffHeight = (nextHeight / 2) - (currentHeight / 2);
-                this.deltaWidth += diffWidth;
-                this.deltaHeight += diffHeight;
-                this.deltaPoint = new fabric.Point(diffWidth, diffHeight);
-                this.canvas.relativePan(this.deltaPoint);
+                const deltaPoint = new fabric.Point(diffWidth, diffHeight);
+                this.canvas.relativePan(deltaPoint);
                 const center = this.canvas.getCenter();
                 const point = {
                     x: center.left,
@@ -1197,8 +1252,6 @@ class Canvas extends Component {
         this.fabricObjects = CanvasObjects(props.fabricObjects);
         this.container = React.createRef();
         this.tooltipRef = React.createRef();
-        this.deltaWidth = 0;
-        this.deltaHeight = 0;
     }
 
     state = {

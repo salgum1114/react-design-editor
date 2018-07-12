@@ -2,15 +2,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'antd';
 import { ResizeSensor } from 'css-element-queries';
+import classnames from 'classnames';
 
 import Icon from './Icon';
 import Canvas from './Canvas';
 
 class Preview extends Component {
     static propTypes = {
-        canvasRef: PropTypes.any,
         preview: PropTypes.bool,
         onChangePreview: PropTypes.func,
+    }
+
+    constructor(props) {
+        super(props);
+        this.canvasRef = React.createRef();
     }
 
     state = {
@@ -33,25 +38,18 @@ class Preview extends Component {
         });
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        const { preview, canvasRef } = this.props;
-        const { canvasRect } = this.state;
-        if (preview) {
-            this.canvasPreviewRef.canvas.clear();
-            const json = JSON.stringify(canvasRef.current.handlers.exportJSON().objects);
-            this.canvasPreviewRef.handlers.importJSON(json);
-        }
-    }
-
     render() {
         const { canvasRect } = this.state;
-        const { onChangePreview } = this.props;
+        const { onChangePreview, preview } = this.props;
+        const previewClassName = classnames('rde-canvas-preview', { preview });
         return (
-            <div ref={(c) => { this.container = c; }} style={{ overvlow: 'hidden', display: 'flex', flex: '1', height: '100%' }}>
-                <Canvas editable={false} width={canvasRect.width} height={canvasRect.height} ref={(c) => { this.canvasPreviewRef = c; }} />
-                <Button className="rde-action-btn rde-canvas-preview-close-btn" onClick={onChangePreview}>
-                    <Icon name="times" size={1.5} />
-                </Button>
+            <div className={previewClassName}>
+                <div ref={(c) => { this.container = c; }} style={{ overvlow: 'hidden', display: 'flex', flex: '1', height: '100%' }}>
+                    <Canvas editable={false} width={canvasRect.width} height={canvasRect.height} ref={this.canvasRef} />
+                    <Button className="rde-action-btn rde-canvas-preview-close-btn" onClick={onChangePreview}>
+                        <Icon name="times" size={1.5} />
+                    </Button>
+                </div>
             </div>
         );
     }

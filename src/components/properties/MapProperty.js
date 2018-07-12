@@ -23,7 +23,7 @@ export default {
                         )
                     }
                 </Form.Item>
-                <Form.Item label="Responsive" colon={false}>
+                <Form.Item label="Layout" colon={false}>
                     {
                         getFieldDecorator('layout', {
                             initialValue: layout,

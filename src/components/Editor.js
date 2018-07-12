@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
 import debounce from 'lodash/debounce';
-import classnames from 'classnames';
 
 import Wireframe from './Wireframe';
 import Items from './Items';
@@ -19,6 +18,9 @@ const propertiesToInclude = [
     'file',
     'action',
     'tooltip',
+    'layout',
+    'workareaWidth',
+    'workareaHeight',
 ];
 
 class Editor extends Component {
@@ -98,15 +100,11 @@ class Editor extends Component {
         },
         onChangeCanvas: (changedKey, changedValue, allValues) => {
             if (changedKey === 'layout') {
-                this.canvasRef.current.handlers.setWorkareaLayout(changedKey, changedValue);
+                this.canvasRef.current.workareaHandlers.setLayout(changedValue);
                 return;
             }
             if (changedKey === 'file' || changedKey === 'src') {
-                if (allValues.layout === 'responsive') {
-                    this.canvasRef.current.handlers.setWorkareaResponsiveImage(changedValue);
-                    return;
-                }
-                this.canvasRef.current.handlers.setWorkareaImage(changedValue);
+                this.canvasRef.current.workareaHandlers.setImage(changedValue);
                 return;
             }
             if (changedKey === 'width' || changedKey === 'height') {
@@ -124,10 +122,14 @@ class Editor extends Component {
         onChangePreview: (checked) => {
             this.setState({
                 preview: typeof checked === 'object' ? false : checked,
+            }, () => {
+                setTimeout(() => {
+                    this.preview.canvasRef.current.canvas.clear();
+                    const data = this.canvasRef.current.handlers.exportJSON().objects;
+                    const json = JSON.stringify(data);
+                    this.preview.canvasRef.current.handlers.importJSON(json);
+                }, 0);
             });
-        },
-        onClickObject: (opt) => {
-            console.log(opt);
         },
     }
 
@@ -166,7 +168,6 @@ class Editor extends Component {
         const { preview, selectedItem, canvasRect, zoomRatio } = this.state;
         const { onAdd, onRemove, onSelect, onModified, onChange, onZoom } = this.canvasHandlers;
         const { onChangePreview } = this.handlers;
-        const previewClassName = classnames('rde-canvas-preview', { preview });
         return (
             <div className="rde-main">
                 <div className="rde-title">
@@ -207,9 +208,7 @@ class Editor extends Component {
                         </aside>
                     </div>
                 </div>
-                <div className={previewClassName}>
-                    <Preview canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} />
-                </div>
+                <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} />
             </div>
         );
     }
