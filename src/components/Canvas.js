@@ -3,8 +3,14 @@ import PropTypes from 'prop-types';
 import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
+import debounce from 'lodash/debounce';
 
 import CanvasObjects from './canvas/CanvasObjects';
+
+notification.config({
+    top: 80,
+    duration: 2,
+});
 
 const workareaOption = {
     width: 600,
@@ -38,6 +44,7 @@ class Canvas extends Component {
         editable: PropTypes.bool,
         width: PropTypes.width,
         height: PropTypes.height,
+        tooltip: PropTypes.any,
         zoom: PropTypes.bool,
         propertiesToInclude: PropTypes.array,
         onModified: PropTypes.func,
@@ -51,6 +58,7 @@ class Canvas extends Component {
         editable: true,
         width: 0,
         height: 0,
+        tooltip: null,
         zoom: true,
         propertiesToInclude: ['id', 'name', 'action', 'tooltip', 'layout', 'workareaWidth', 'workareaHeight'],
     }
@@ -66,11 +74,8 @@ class Canvas extends Component {
             }
         },
         add: (obj, centered = true, loaded = false) => {
-            if (this.workarea.layout === 'response') {
+            if (this.workarea.layout === 'responsive') {
                 if (!this.workarea._element) {
-                    notification.warn({
-                        message: 'Please your select background image',
-                    });
                     return;
                 }
             }
@@ -102,8 +107,6 @@ class Canvas extends Component {
                         });
                         if (!editable) {
                             imgObject.on('mousedown', this.events.object.mousedown);
-                            imgObject.on('mouseover', this.events.object.mouseover);
-                            imgObject.on('mouseout', this.events.object.mouseout);
                         }
                         if (this.workarea.layout === 'responsive') {
                             imgObject.set({
@@ -133,8 +136,6 @@ class Canvas extends Component {
                         });
                         if (!editable) {
                             imgObject.on('mousedown', this.events.object.mousedown);
-                            imgObject.on('mouseover', this.events.object.mouseover);
-                            imgObject.on('mouseout', this.events.object.mouseout);
                         }
                         if (this.workarea.layout === 'responsive') {
                             imgObject.set({
@@ -159,8 +160,6 @@ class Canvas extends Component {
             const newObject = this.fabricObjects[obj.type].create({ ...obj });
             if (!editable) {
                 newObject.on('mousedown', this.events.object.mousedown);
-                newObject.on('mouseover', this.events.object.mouseover);
-                newObject.on('mouseout', this.events.object.mouseout);
             }
             if (this.workarea.layout === 'responsive') {
                 newObject.set({
@@ -604,6 +603,32 @@ class Canvas extends Component {
             };
             this.handlers.zoomToPoint(point, zoomRatio);
         },
+        getAbsoluteCoords: obj => ({
+            left: obj.left + this.canvas._offset.left,
+            top: obj.top + this.canvas._offset.top,
+        }),
+        showTooltip: debounce((opt) => {
+            if (opt.target.tooltip.enabled) {
+                while (this.tooltipRef.current.hasChildNodes()) {
+                    this.tooltipRef.current.removeChild(this.tooltipRef.current.firstChild);
+                }
+                const tooltip = document.createElement('div');
+                tooltip.className = 'rde-canvas-tooltip-container';
+                tooltip.append(this.props.tooltip || opt.target.name);
+                console.log(opt);
+                this.tooltipRef.current.appendChild(tooltip);
+                this.tooltipRef.current.classList.remove('tooltip-hidden');
+                const { left, top } = this.handlers.getAbsoluteCoords(opt.target);
+                const zoom = this.canvas.getZoom();
+                const { width, height } = opt.target;
+                this.tooltipRef.current.style.left = `${left + (width * zoom)}px`;
+                this.tooltipRef.current.style.top = `${top + ((height / 2) * zoom)}px`;
+            }
+        }, 100),
+        hiddenTooltip: debounce((opt) => {
+            console.log('taweata');
+            this.tooltipRef.current.classList.add('tooltip-hidden');
+        }, 100),
     }
 
     workareaHandlers = {
@@ -767,6 +792,9 @@ class Canvas extends Component {
                 this.workareaHandlers.setResponsiveImage(source);
                 return;
             }
+            if (!source) {
+                return;
+            }
             const { canvas, handlers } = this;
             if (typeof source === 'string') {
                 fabric.Image.fromURL(source, (img) => {
@@ -849,6 +877,14 @@ class Canvas extends Component {
         },
         finishDraw: () => {
             this.polygonMode = false;
+            this.pointArray.forEach((point) => {
+                this.canvas.remove(point);
+            });
+            this.lineArray.forEach((line) => {
+                this.canvas.remove(line);
+            });
+            this.canvas.remove(this.activeLine);
+            this.canvas.remove(this.activeShape);
             this.pointArray = [];
             this.lineArray = [];
             this.activeLine = null;
@@ -878,17 +914,16 @@ class Canvas extends Component {
         polygon: {
             addPoint: (opt) => {
                 const id = uuid();
-                const { e } = opt;
-                const { layerX, layerY } = e;
-                const zoom = this.canvas.getZoom();
+                const { e, absolutePointer } = opt;
+                const { x, y } = absolutePointer;
                 const circle = new fabric.Circle({
                     id,
                     radius: 5,
                     fill: '#ffffff',
                     stroke: '#333333',
                     strokeWidth: 0.5,
-                    left: layerX / zoom,
-                    top: layerY / zoom,
+                    left: x,
+                    top: y,
                     selectable: false,
                     hasBorders: false,
                     hasControls: false,
@@ -901,8 +936,6 @@ class Canvas extends Component {
                         fill: 'red',
                     });
                 }
-                const x = layerX / zoom;
-                const y = layerY / zoom;
                 const points = [x, y, x, y];
                 const line = new fabric.Line(points, {
                     strokeWidth: 2,
@@ -1012,21 +1045,30 @@ class Canvas extends Component {
                     }
                 }
             },
-            mouseover: (opt) => {
-                if (opt.target && opt.target.tooltip.enabled) {
-                    console.log(opt.target);
-                    if (opt.target.tooltip.formatter) {
-                        opt.target.action.formatter(opt);
-                    }
-                }
-            },
-            mouseout: (opt) => {
-                if (opt.target && opt.target.tooltip.enabled) {
-                    if (opt.target.tooltip.formatter) {
-                        opt.target.action.formatter(opt);
-                    }
-                }
-            },
+            // mouseover: (opt) => {
+            //     if (opt.target && opt.target.tooltip.enabled) {
+            //         while (this.tooltipRef.current.hasChildNodes()) {
+            //             this.tooltipRef.current.removeChild(this.tooltipRef.current.firstChild);
+            //         }
+            //         const tooltip = document.createElement('div');
+            //         tooltip.className = 'rde-canvas-tooltip-container';
+            //         tooltip.append(this.props.tooltip || opt.target.name);
+            //         console.log(tooltip);
+            //         console.log(opt);
+            //         this.tooltipRef.current.appendChild(tooltip);
+            //         this.tooltipRef.current.classList.remove('tooltip-hidden');
+            //         const { left, top } = this.handlers.getAbsoluteCoords(opt.target);
+            //         const { width, height } = opt.target;
+            //         this.tooltipRef.current.style.left = `${left + width}px`;
+            //         this.tooltipRef.current.style.top = `${top + (height / 2)}px`;
+            //     }
+            // },
+            // mouseout: (opt) => {
+            //     if (opt.target && opt.target.tooltip.enabled) {
+            //         console.log(opt);
+            //         this.tooltipRef.current.classList.add('tooltip-hidden');
+            //     }
+            // },
         },
         modified: (opt) => {
             const { onModified } = this.props;
@@ -1093,6 +1135,13 @@ class Canvas extends Component {
             }
         },
         mousemove: (opt) => {
+            if (!this.props.editable) {
+                if (opt.target && opt.target.id !== 'workarea') {
+                    this.handlers.showTooltip(opt);
+                } else {
+                    this.handlers.hiddenTooltip(opt);
+                }
+            }
             if (this.activeLine && this.activeLine.class === 'line') {
                 const pointer = this.canvas.getPointer(opt.e);
                 this.activeLine.set({ x2: pointer.x, y2: pointer.y });
@@ -1239,7 +1288,7 @@ class Canvas extends Component {
             } else if (e.ctrlKey && e.code === 'KeyA') {
                 e.preventDefault();
                 this.handlers.allSelect();
-            } else if (e.code === 'Esc') {
+            } else if (e.code === 'Escape') {
                 if (this.polygonMode) {
                     this.drawingHandlers.finishDraw();
                 }
@@ -1274,8 +1323,8 @@ class Canvas extends Component {
         });
         this.canvas.add(this.workarea);
         this.canvas.centerObject(this.workarea);
+        const { modified, mousewheel, mousedown, mousemove, selection } = this.events;
         if (editable) {
-            const { modified, mousewheel, mousedown, mousemove, selection } = this.events;
             this.canvas.on({
                 'object:modified': modified,
                 'mouse:wheel': mousewheel,
@@ -1286,6 +1335,10 @@ class Canvas extends Component {
                 'selection:updated': selection,
             });
             this.attachEventListener();
+        } else {
+            this.canvas.on({
+                'mouse:move': mousemove,
+            });
         }
     }
 
@@ -1314,7 +1367,15 @@ class Canvas extends Component {
     }
 
     render() {
+        const { editable } = this.props;
         const { id } = this.state;
+        const tooltipRender = editable ? null : (
+            <div
+                ref={this.tooltipRef}
+                id={`tooltip_${id}`}
+                className="rde-canvas-tooltip tooltip-hidden"
+            />
+        );
         return (
             <div
                 ref={this.container}
@@ -1322,7 +1383,7 @@ class Canvas extends Component {
                 className="rde-canvas"
             >
                 <canvas id={`canvas_${id}`} />
-                <div ref={this.tooltipRef} id={`tooltip_${id}`} className="rde-canvas-tooltip" />
+                {tooltipRender}
             </div>
         );
     }

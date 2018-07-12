@@ -65,7 +65,6 @@ class Editor extends Component {
         onChange: (selectedItem, changedValues, allValues) => {
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
-            console.log(selectedItem, changedKey, changedValue);
             if (selectedItem.id === 'workarea') {
                 this.canvasHandlers.onChangeCanvas(changedKey, changedValue, allValues);
                 return;

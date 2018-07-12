@@ -18,7 +18,7 @@ export default {
                                 // message: 'Please input rotation',
                             }],
                             valuePropName: 'checked',
-                            initialValue: data.tooltip.enabled || false,
+                            initialValue: data.tooltip.enabled,
                         })(
                             <Switch />,
                         )

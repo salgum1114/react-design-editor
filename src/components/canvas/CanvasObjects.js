@@ -2,7 +2,9 @@ import { fabric } from 'fabric';
 export default (mergeObjects) => {
     const defaultOptions = {
         action: {},
-        tooltip: {},
+        tooltip: {
+            enabled: true,
+        },
     };
     const fabricObjects = {
         'i-text': {

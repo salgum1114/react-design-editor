@@ -7,6 +7,10 @@ import { FlexBox } from './flex';
 
 import Icon from './Icon';
 
+notification.config({
+    top: 80,
+    duration: 2,
+});
 const { Panel } = Collapse;
 
 const MARKER = [
@@ -120,12 +124,28 @@ class Items extends Component {
     handlers = {
         onAddItem: (item, centered) => {
             const { canvasRef } = this.props;
+            if (canvasRef.current.workarea.layout === 'responsive') {
+                if (!canvasRef.current.workarea._element) {
+                    notification.warn({
+                        message: 'Please your select background image',
+                    });
+                    return;
+                }
+            }
             const id = uuid();
             const option = Object.assign({}, item.option, { id });
             canvasRef.current.handlers.add(option, centered);
         },
         onDrawingItem: (item) => {
             const { canvasRef } = this.props;
+            if (canvasRef.current.workarea.layout === 'responsive') {
+                if (!canvasRef.current.workarea._element) {
+                    notification.warn({
+                        message: 'Please your select background image',
+                    });
+                    return;
+                }
+            }
             canvasRef.current.drawingHandlers.initDraw();
         },
     }
@@ -161,6 +181,7 @@ class Items extends Component {
             }
             const { layerX, layerY } = e;
             const dt = e.dataTransfer;
+            const { canvasRef: { current } } = this.props;
             if (dt.types.length && dt.types[0] === 'Files') {
                 const { files } = dt;
                 Array.from(files).forEach((file) => {
@@ -184,9 +205,9 @@ class Items extends Component {
                 });
                 return false;
             }
-            const option = Object.assign({}, this.item.option, { left: layerX, top: layerY });
-            const newItem = Object.assign({}, this.item, { option });
-            this.handlers.onAddItem(newItem, false);
+            // const option = Object.assign({}, this.item.option, { left: layerX, top: layerY });
+            // const newItem = Object.assign({}, this.item, { option });
+            // this.handlers.onAddItem(newItem, false);
             return false;
         },
         onDragEnd: (e) => {

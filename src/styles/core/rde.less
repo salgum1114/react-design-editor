@@ -124,9 +124,6 @@ html, body, #root {
             height: 100%;
             top: 0;
             left: 0;
-            .rde-canvas-tooltip {
-                position: absolute;
-            }
         }
     }
     .rde-canvas-header {
@@ -230,6 +227,7 @@ html, body, #root {
                         z-index: 1;
                         -webkit-animation: slide-right .3s linear;
                         -moz-animation: slide-right .3s linear;
+                        animation: slide-right .3s linear;
                     }
                 }
             }
@@ -254,6 +252,22 @@ html, body, #root {
         -webkit-box-shadow: -5px 0 5px -5px rgba(0, 0, 0, .5);
         -moz-box-shadow: -5px 0 5px -5px rgba(0, 0, 0, .5);
         box-shadow: -5px 0 5px -5px rgba(0, 0, 0, .5);
+    }
+}
+
+.rde-canvas-tooltip {
+    position: fixed;
+    -moz-animation: visibility .3s linear;
+    -webkit-animation: visibility .3s linear;
+    animation: visibility .3s linear;
+    .rde-canvas-tooltip-container {
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.35);
+    }
+    &.tooltip-hidden {
+        display: none;
+        top: 0;
+        left: 0;
     }
 }
 
