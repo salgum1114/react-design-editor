@@ -38,14 +38,20 @@ export default (mergeObjects) => {
                 ...option,
             }),
         },
+        image: {
+            create: ({ imgElement, ...option }) => new fabric.Image(imgElement, {
+                ...defaultOptions,
+                ...option,
+            }),
+        },
         polygon: {
             create: ({ points, ...option }) => new fabric.Polygon(points, {
                 ...defaultOptions,
                 ...option,
             }),
         },
-        image: {
-            create: ({ imgElement, ...option }) => new fabric.Image(imgElement, {
+        line: {
+            create: ({ points, ...option }) => new fabric.Line(points, {
                 ...defaultOptions,
                 ...option,
             }),

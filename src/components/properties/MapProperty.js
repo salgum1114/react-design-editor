@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Input, Radio, Row, Col, InputNumber } from 'antd';
 
 export default {
-    render(form, data) {
+    render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         if (!data) {
             return null;

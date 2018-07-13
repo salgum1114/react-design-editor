@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Switch, Select } from 'antd';
 
 export default {
-    render(form, data) {
+    render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         if (!data) {
             return null;

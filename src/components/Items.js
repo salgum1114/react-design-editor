@@ -181,7 +181,6 @@ class Items extends Component {
             }
             const { layerX, layerY } = e;
             const dt = e.dataTransfer;
-            const { canvasRef: { current } } = this.props;
             if (dt.types.length && dt.types[0] === 'Files') {
                 const { files } = dt;
                 Array.from(files).forEach((file) => {
@@ -205,9 +204,9 @@ class Items extends Component {
                 });
                 return false;
             }
-            // const option = Object.assign({}, this.item.option, { left: layerX, top: layerY });
-            // const newItem = Object.assign({}, this.item, { option });
-            // this.handlers.onAddItem(newItem, false);
+            const option = Object.assign({}, this.item.option, { left: layerX, top: layerY });
+            const newItem = Object.assign({}, this.item, { option });
+            this.handlers.onAddItem(newItem, false);
             return false;
         },
         onDragEnd: (e) => {

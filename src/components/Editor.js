@@ -65,6 +65,7 @@ class Editor extends Component {
         onChange: (selectedItem, changedValues, allValues) => {
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
+            console.log(selectedItem, changedValues);
             if (selectedItem.id === 'workarea') {
                 this.canvasHandlers.onChangeCanvas(changedKey, changedValue, allValues);
                 return;
@@ -80,6 +81,7 @@ class Editor extends Component {
                     hasControls: !changedValue,
                     hoverCursor: changedValue ? 'pointer' : 'move',
                     editable: !changedValue,
+                    lock: changedValue,
                 });
                 return;
             }
@@ -112,7 +114,7 @@ class Editor extends Component {
                 return;
             }
             this.canvasRef.current.workarea.set(changedKey, changedValue);
-            this.canvasRef.current.canvas.centerObject(this.canvasRef.current.workarea);
+            // this.canvasRef.current.canvas.centerObject(this.canvasRef.current.workarea);
             this.canvasRef.current.canvas.requestRenderAll();
         },
     }
@@ -124,7 +126,12 @@ class Editor extends Component {
             }, () => {
                 setTimeout(() => {
                     this.preview.canvasRef.current.canvas.clear();
-                    const data = this.canvasRef.current.handlers.exportJSON().objects;
+                    const data = this.canvasRef.current.handlers.exportJSON().objects.filter((obj) => {
+                        if (!obj.id) {
+                            return false;
+                        }
+                        return true;
+                    });
                     const json = JSON.stringify(data);
                     this.preview.canvasRef.current.handlers.importJSON(json);
                 }, 0);
@@ -203,7 +210,7 @@ class Editor extends Component {
                             <FooterToolbar canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} zoomRatio={zoomRatio} />
                         </footer>
                         <aside className="rde-properties">
-                            <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} />
+                            <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} canvasRef={this.canvasRef} />
                         </aside>
                     </div>
                 </div>

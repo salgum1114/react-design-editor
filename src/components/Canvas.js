@@ -96,7 +96,9 @@ class Canvas extends Component {
                 const { src, file, ...otherOption } = obj;
                 const defaultOptions = {
                     action: {},
-                    tooltip: {},
+                    tooltip: {
+                        enabled: true,
+                    },
                 };
                 if (src) {
                     newImg.onload = () => {
@@ -107,12 +109,6 @@ class Canvas extends Component {
                         });
                         if (!editable) {
                             imgObject.on('mousedown', this.events.object.mousedown);
-                        }
-                        if (this.workarea.layout === 'responsive') {
-                            imgObject.set({
-                                scaleX: this.workarea.scaleX,
-                                scaleY: this.workarea.scaleY,
-                            });
                         }
                         this.canvas.add(imgObject);
                         if (!loaded) {
@@ -137,12 +133,6 @@ class Canvas extends Component {
                         if (!editable) {
                             imgObject.on('mousedown', this.events.object.mousedown);
                         }
-                        if (this.workarea.layout === 'responsive') {
-                            imgObject.set({
-                                scaleX: this.workarea.scaleX,
-                                scaleY: this.workarea.scaleY,
-                            });
-                        }
                         this.canvas.add(imgObject);
                         if (!loaded) {
                             this.handlers.centerObject(imgObject, centered);
@@ -160,12 +150,6 @@ class Canvas extends Component {
             const newObject = this.fabricObjects[obj.type].create({ ...obj });
             if (!editable) {
                 newObject.on('mousedown', this.events.object.mousedown);
-            }
-            if (this.workarea.layout === 'responsive') {
-                newObject.set({
-                    scaleX: this.workarea.scaleX,
-                    scaleY: this.workarea.scaleY,
-                });
             }
             this.canvas.add(newObject);
             if (obj.type !== 'polygon' && !loaded) {
@@ -451,6 +435,9 @@ class Canvas extends Component {
                 if (obj.id === 'workarea') {
                     return false;
                 }
+                if (obj.lock) {
+                    return false;
+                }
                 return true;
             }), {
                 canvas: this.canvas,
@@ -532,7 +519,10 @@ class Canvas extends Component {
                     obj.left += diffLeft;
                     obj.top += diffTop;
                 }
+                console.log(canvasWidth, canvasHeight);
+                console.log(obj);
                 this.handlers.add(obj, false, true);
+                this.canvas.renderAll();
             });
             this.canvas.setZoom(1);
             if (callback) {
@@ -607,26 +597,44 @@ class Canvas extends Component {
             left: obj.left + this.canvas._offset.left,
             top: obj.top + this.canvas._offset.top,
         }),
+    }
+
+    tooltipHandlers = {
         showTooltip: debounce((opt) => {
-            if (opt.target.tooltip.enabled) {
+            if (opt.target.tooltip && opt.target.tooltip.enabled) {
+                console.log(opt);
                 while (this.tooltipRef.current.hasChildNodes()) {
                     this.tooltipRef.current.removeChild(this.tooltipRef.current.firstChild);
                 }
                 const tooltip = document.createElement('div');
                 tooltip.className = 'rde-canvas-tooltip-container';
                 tooltip.append(this.props.tooltip || opt.target.name);
-                console.log(opt);
                 this.tooltipRef.current.appendChild(tooltip);
                 this.tooltipRef.current.classList.remove('tooltip-hidden');
                 const { left, top } = this.handlers.getAbsoluteCoords(opt.target);
                 const zoom = this.canvas.getZoom();
-                const { width, height } = opt.target;
-                this.tooltipRef.current.style.left = `${left + (width * zoom)}px`;
-                this.tooltipRef.current.style.top = `${top + ((height / 2) * zoom)}px`;
+                const { clientHeight } = this.tooltipRef.current;
+                const { width, height, scaleX, scaleY } = opt.target;
+                const objWidthDiff = (width * scaleX) * zoom;
+                const objHeightDiff = (((height * scaleY) * zoom) / 2) - ((clientHeight / 2) * zoom);
+                // console.log('canvas width', this.canvas.getWidth(), 'height', this.canvas.getHeight());
+                // console.log('canvas center x', this.workarea.getCenterPoint().x, 'y', this.workarea.getCenterPoint().y);
+                console.log('workarea width', this.workarea.width, 'height', this.workarea.height);
+                // console.log('workarea left', this.workarea.left, 'top', this.workarea.top);
+                console.log('zoom', zoom);
+                console.log(this.workarea.getViewportTransform());
+                const absoulteX = this.workarea.getCenterPoint().x - (this.workarea.width / 2);
+                const absoulteY = this.workarea.getCenterPoint().y - (this.workarea.height / 2);
+                if (zoom < 1 || zoom > 1) {
+                    this.tooltipRef.current.style.left = `${((left - absoulteX) + (width * scaleX)) * zoom}px`;
+                    this.tooltipRef.current.style.top = `${((top - absoulteY) + ((height * scaleY) / 2)) * zoom}px`;
+                } else {
+                    this.tooltipRef.current.style.left = `${left + objWidthDiff}px`;
+                    this.tooltipRef.current.style.top = `${top + objHeightDiff}px`;
+                }
             }
         }, 100),
         hiddenTooltip: debounce((opt) => {
-            console.log('taweata');
             this.tooltipRef.current.classList.add('tooltip-hidden');
         }, 100),
     }
@@ -744,13 +752,32 @@ class Canvas extends Component {
                         src: source,
                         selectable: false,
                     });
-                    this.canvas.centerObject(this.workarea);
-                    const center = this.canvas.getCenter();
+                    canvas.centerObject(this.workarea);
+                    const center = canvas.getCenter();
                     const point = {
                         x: center.left,
                         y: center.top,
                     };
-                    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+                    const line1 = new fabric.Line([
+                        0, this.workarea.getCenterPoint().y,
+                        canvas.getWidth(), this.workarea.getCenterPoint().y,
+                    ], {
+                        fill: 'red',
+                        stroke: 'red',
+                        strokeWidth: 5,
+                        selectable: false,
+                    });
+                    const line2 = new fabric.Line([
+                        this.workarea.getCenterPoint().x, 0,
+                        this.workarea.getCenterPoint().x, canvas.getHeight(),
+                    ], {
+                        fill: 'red',
+                        stroke: 'red',
+                        strokeWidth: 5,
+                        selectable: false,
+                    });
+                    canvas.add(line1, line2);
+                    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
                     this.handlers.zoomToPoint(point, scaleX);
                     canvas.renderAll();
                 });
@@ -774,13 +801,32 @@ class Canvas extends Component {
                         file: source,
                         selectable: false,
                     });
-                    this.canvas.centerObject(this.workarea);
-                    const center = this.canvas.getCenter();
+                    canvas.centerObject(this.workarea);
+                    const center = canvas.getCenter();
                     const point = {
                         x: center.left,
                         y: center.top,
                     };
-                    this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+                    const line1 = new fabric.Line([
+                        0, this.workarea.getCenterPoint().y,
+                        canvas.getWidth(), this.workarea.getCenterPoint().y,
+                    ], {
+                        fill: 'red',
+                        stroke: 'red',
+                        strokeWidth: 5,
+                        selectable: false,
+                    });
+                    const line2 = new fabric.Line([
+                        this.workarea.getCenterPoint().x, 0,
+                        this.workarea.getCenterPoint().x, canvas.getHeight(),
+                    ], {
+                        fill: 'red',
+                        stroke: 'red',
+                        strokeWidth: 5,
+                        selectable: false,
+                    });
+                    canvas.add(line1, line2);
+                    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
                     this.handlers.zoomToPoint(point, scaleX);
                     canvas.renderAll();
                 });
@@ -1103,7 +1149,7 @@ class Canvas extends Component {
                 this.canvas.renderAll();
             }
             if (this.props.onModified) {
-                this.props.onModified({ target: activeObject });
+                this.props.onModified(activeObject);
             }
         },
         mousewheel: (opt) => {
@@ -1137,9 +1183,9 @@ class Canvas extends Component {
         mousemove: (opt) => {
             if (!this.props.editable) {
                 if (opt.target && opt.target.id !== 'workarea') {
-                    this.handlers.showTooltip(opt);
+                    this.tooltipHandlers.showTooltip(opt);
                 } else {
-                    this.handlers.hiddenTooltip(opt);
+                    this.tooltipHandlers.hiddenTooltip(opt);
                 }
             }
             if (this.activeLine && this.activeLine.class === 'line') {
@@ -1164,6 +1210,7 @@ class Canvas extends Component {
             }
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
+            this.currentWidth = currentWidth;
             this.canvas.setWidth(nextWidth).setHeight(nextHeight);
             if (!this.workarea) {
                 return;
@@ -1192,7 +1239,10 @@ class Canvas extends Component {
                 const diffWidth = (nextWidth / 2) - (currentWidth / 2);
                 const diffHeight = (nextHeight / 2) - (currentHeight / 2);
                 const deltaPoint = new fabric.Point(diffWidth, diffHeight);
-                this.canvas.relativePan(deltaPoint);
+                this.deltaPoint = deltaPoint;
+                const test = this.canvas.relativePan(deltaPoint);
+                console.log(this.workarea.getBoundingRect());
+                console.log(this.workarea.getViewportTransform());
                 const center = this.canvas.getCenter();
                 const point = {
                     x: center.left,
@@ -1208,8 +1258,19 @@ class Canvas extends Component {
             const originDiffScaleY = nextHeight / (this.workarea.height * this.workarea.originScaleY);
             if (!this.workarea._element) {
                 this.workarea.set({
-                    width: nextWidth,
-                    height: nextHeight,
+                    scaleX,
+                    scaleY,
+                });
+                this.canvas.getObjects().forEach((obj, index) => {
+                    if (index !== 0) {
+                        obj.set({
+                            scaleX,
+                            scaleY,
+                            left: obj.left * diffScaleX,
+                            top: obj.top * diffScaleY,
+                        });
+                        obj.setCoords();
+                    }
                 });
             } else {
                 this.workarea.set({
@@ -1228,6 +1289,17 @@ class Canvas extends Component {
                     }
                 });
             }
+            // this.canvas.getObjects().forEach((obj, index) => {
+            //     if (index !== 0) {
+            //         const isLeft = obj.left < nextWidth / 2;
+            //         const isTop = obj.top < nextHeight / 2;
+            //         obj.set({
+            //             left: isLeft ? obj.left : obj.left + (nextWidth - currentWidth),
+            //             top: isTop ? obj.top : obj.top + (nextHeight - currentHeight),
+            //         });
+            //         obj.setCoords();
+            //     }
+            // });
             this.canvas.renderAll();
         },
         paste: (e) => {

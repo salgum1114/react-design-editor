@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Radio, Select, Switch, Input } from 'antd';
 
 export default {
-    render(form, data) {
+    render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         const actionEnabled = data.action.enabled || false;
         const actionType = data.action.type || 'dashboard';

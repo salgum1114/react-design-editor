@@ -3,7 +3,7 @@ import { Form, Slider, Select, Col, Row } from 'antd';
 import ColorPicker from '../ColorPicker';
 
 export default {
-    render(form, data) {
+    render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>

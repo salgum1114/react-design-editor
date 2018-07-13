@@ -34,7 +34,15 @@ class CanvasList extends Component {
     renderItem = () => {
         const { canvasRef, selectedItem } = this.props;
         return canvasRef.current ? (
-            canvasRef.current.canvas.getObjects().filter(obj => obj.id !== 'workarea').map((obj) => {
+            canvasRef.current.canvas.getObjects().filter((obj) => {
+                if (obj.id === 'workarea') {
+                    return false;
+                }
+                if (obj.id) {
+                    return true;
+                }
+                return false;
+            }).map((obj) => {
                 let icon;
                 let title = '';
                 if (obj.type === 'i-text') {

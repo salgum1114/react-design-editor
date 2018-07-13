@@ -4,7 +4,7 @@ import UrlModal from '../UrlModal';
 import ImageUpload from '../ImageUpload';
 
 export default {
-    render(form, data) {
+    render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         if (!data) {
             return null;
