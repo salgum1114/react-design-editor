@@ -17,10 +17,6 @@ export default {
             title: 'Image',
             component: ImageProperty,
         },
-        tooltip: {
-            title: 'Tooltip',
-            component: TooltipProperty,
-        },
     },
     'i-text': {
         general: {

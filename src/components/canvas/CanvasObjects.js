@@ -22,7 +22,6 @@ export default (mergeObjects) => {
         triangle: {
             create: option => new fabric.Triangle({
                 ...defaultOptions,
-                action: {},
                 ...option,
             }),
         },

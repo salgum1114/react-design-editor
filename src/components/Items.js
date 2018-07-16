@@ -54,8 +54,13 @@ const IMAGE = [
         title: 'Image',
         option: {
             type: 'image',
+            width: 80,
+            height: 80,
             name: 'New image',
             src: '/images/sample/transparentBg.png',
+            formatter: (opt) => {
+                return <div>test</div>
+            },
         },
     },
 ];

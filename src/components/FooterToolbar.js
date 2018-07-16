@@ -22,19 +22,19 @@ class FooterToolbar extends Component {
         return (
             <FlexBox className="rde-canvas-toolbar-container" flex="1">
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-zoom">
-                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoomHandlers.zoomOut()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoom.zoomOut()}>
                         <Icon name="search-minus" />
                     </Button>
                     <div>{zoomValue}%</div>
-                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoomHandlers.zoomIn()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoom.zoomIn()}>
                         <Icon name="search-plus" />
                     </Button>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-zoom">
-                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoomHandlers.zoomOneToOne()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoom.zoomOneToOne()}>
                         1:1
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoomHandlers.zoomToFit()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoom.zoomToFit()}>
                         Fit
                     </Button>
                 </FlexItem>
