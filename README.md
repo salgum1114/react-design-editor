@@ -22,3 +22,21 @@ React.js + ant.design + fabric.js
 # Preview mode
 
 ![image](https://user-images.githubusercontent.com/19975642/42750820-9739ea94-8923-11e8-9d03-017a041c55d6.png)
+
+# Supported Function
+- [x] Add
+- [x] Remove
+- [x] Clone
+- [x] Tooltip
+- [x] Reorder
+- [x] Zoom
+- [x] Preview
+- [x] Copy & Paste
+- [x] External Copy & Paste
+- [x] Drag & Drop
+- [x] Image Upload (Local/External)
+- [x] External Drag & Drop Upload
+- [x] Alignments
+- [x] Drawing - Polygon
+- [ ] Image Cropping - development
+- [ ] Undo / Redo - development
