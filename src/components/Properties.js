@@ -8,6 +8,7 @@ const { Panel } = Collapse;
 
 class Properties extends Component {
     static propTypes = {
+        canvasRef: PropTypes.any,
         selectedItem: PropTypes.object,
     }
 
@@ -16,24 +17,24 @@ class Properties extends Component {
     }
 
     render() {
-        const { selectedItem, form } = this.props;
+        const { canvasRef, selectedItem, form } = this.props;
         const showArrow = false;
         return (
             <Form layout="horizontal">
                 <Collapse bordered={false}>
                     {
-                        selectedItem ? (
+                        selectedItem && selectedItem.id !== 'workarea' ? (
                             Object.keys(PropertyDefinition[selectedItem.type]).map((key) => {
                                 return (
                                     <Panel key={key} header={PropertyDefinition[selectedItem.type][key].title} showArrow={showArrow}>
-                                        {PropertyDefinition[selectedItem.type][key].component.render(form, selectedItem)}
+                                        {PropertyDefinition[selectedItem.type][key].component.render(canvasRef, form, selectedItem)}
                                     </Panel>
                                 );
                             })
                         ) : Object.keys(PropertyDefinition.map).map((key) => {
                             return (
                                 <Panel key={key} header={PropertyDefinition.map[key].title} showArrow={showArrow}>
-                                    {PropertyDefinition.map[key].component.render(form, selectedItem)}
+                                    {PropertyDefinition.map[key].component.render(canvasRef, form, selectedItem)}
                                 </Panel>
                             );
                         })

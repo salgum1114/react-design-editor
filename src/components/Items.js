@@ -7,6 +7,10 @@ import { FlexBox } from './flex';
 
 import Icon from './Icon';
 
+notification.config({
+    top: 80,
+    duration: 2,
+});
 const { Panel } = Collapse;
 
 const MARKER = [
@@ -120,13 +124,29 @@ class Items extends Component {
     handlers = {
         onAddItem: (item, centered) => {
             const { canvasRef } = this.props;
+            if (canvasRef.current.workarea.layout === 'responsive') {
+                if (!canvasRef.current.workarea._element) {
+                    notification.warn({
+                        message: 'Please your select background image',
+                    });
+                    return;
+                }
+            }
             const id = uuid();
             const option = Object.assign({}, item.option, { id });
             canvasRef.current.handlers.add(option, centered);
         },
         onDrawingItem: (item) => {
             const { canvasRef } = this.props;
-            canvasRef.current.drawingHandlers.drawPolygon();
+            if (canvasRef.current.workarea.layout === 'responsive') {
+                if (!canvasRef.current.workarea._element) {
+                    notification.warn({
+                        message: 'Please your select background image',
+                    });
+                    return;
+                }
+            }
+            canvasRef.current.drawingHandlers.initDraw();
         },
     }
 

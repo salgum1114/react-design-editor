@@ -1,20 +1,17 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Upload, Icon } from 'antd';
 
 const { Dragger } = Upload;
 
 class ImageUpload extends Component {
-    static propTypes = {
-        fileList: PropTypes.array,
-    }
-
-    static defaultProps = {
-        fileList: [],
-    }
-
     state = {
-        fileList: this.props.fileList,
+        fileList: this.props.value ? [this.props.value] : [],
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            fileList: nextProps.value ? [nextProps.value] : [],
+        });
     }
 
     render() {

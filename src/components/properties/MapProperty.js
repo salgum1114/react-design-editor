@@ -1,28 +1,15 @@
 import React from 'react';
-import { Form, Input, Slider, Switch, Row, Col, InputNumber } from 'antd';
+import { Form, Input, Radio, Row, Col, InputNumber } from 'antd';
 
 export default {
-    render(form, data) {
+    render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         if (!data) {
             return null;
         }
+        const layout = data.layout || 'fixed';
         return (
             <React.Fragment>
-                <Form.Item label="Responsive" colon={false}>
-                    {
-                        getFieldDecorator('responsive', {
-                            rules: [{
-                                type: 'boolean',
-                                // required: true,
-                                // message: 'Please input rotation',
-                            }],
-                            initialValue: false,
-                        })(
-                            <Switch defaultChecked />,
-                        )
-                    }
-                </Form.Item>
                 <Form.Item label="Name" colon={false}>
                     {
                         getFieldDecorator('name', {
@@ -36,51 +23,57 @@ export default {
                         )
                     }
                 </Form.Item>
-                <Row>
-                    <Col span={12}>
-                        <Form.Item label="Width" colon={false}>
-                            {
-                                getFieldDecorator('width', {
-                                    rules: [{
-                                        required: true,
-                                        message: 'Please input width',
-                                    }],
-                                    initialValue: data.width,
-                                })(
-                                    <InputNumber />,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item label="Height" colon={false}>
-                            {
-                                getFieldDecorator('height', {
-                                    rules: [{
-                                        required: true,
-                                        message: 'Please input height',
-                                    }],
-                                    initialValue: data.height,
-                                })(
-                                    <InputNumber />,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Form.Item label="Rotation" colon={false}>
+                <Form.Item label="Layout" colon={false}>
                     {
-                        getFieldDecorator('angle', {
-                            rules: [{
-                                required: true,
-                                message: 'Please input rotation',
-                            }],
-                            initialValue: data.angle,
+                        getFieldDecorator('layout', {
+                            initialValue: layout,
                         })(
-                            <Slider min={0} max={360} />,
+                            <Radio.Group>
+                                <Radio.Button value="fixed">Fixed</Radio.Button>
+                                <Radio.Button value="responsive">Responsive</Radio.Button>
+                                <Radio.Button value="fullscreen">FullScreen</Radio.Button>
+                            </Radio.Group>,
                         )
                     }
                 </Form.Item>
+                {
+                    layout === 'fixed' ? (
+                        <React.Fragment>
+                            <Row>
+                                <Col span={12}>
+                                    <Form.Item label="Width" colon={false}>
+                                        {
+                                            getFieldDecorator('width', {
+                                                rules: [{
+                                                    required: true,
+                                                    message: 'Please input width',
+                                                }],
+                                                initialValue: data.width * data.scaleX,
+                                            })(
+                                                <InputNumber />,
+                                            )
+                                        }
+                                    </Form.Item>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Item label="Height" colon={false}>
+                                        {
+                                            getFieldDecorator('height', {
+                                                rules: [{
+                                                    required: true,
+                                                    message: 'Please input height',
+                                                }],
+                                                initialValue: data.height * data.scaleY,
+                                            })(
+                                                <InputNumber />,
+                                            )
+                                        }
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+                        </React.Fragment>
+                    ) : null
+                }
             </React.Fragment>
         );
     },

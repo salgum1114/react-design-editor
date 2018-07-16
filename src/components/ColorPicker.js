@@ -6,27 +6,22 @@ class ColorPicker extends Component {
     handlers = {
         onChange: (color) => {
             const { onChange } = this.props;
-            const { type } = this.props['data-__meta'].rules[0];
-            let newColor;
-            if (type === 'hex') {
-                newColor = color.hex;
-            } else if (type === 'rgb') {
-                newColor = `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b})`;
-            } else if (type === 'rgba') {
-                newColor = `rgb(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`;
-            } else {
-                newColor = color;
-            }
             this.setState({
-                color: newColor,
+                color: `rgba(${color.rgb.r},${color.rgb.g},${color.rgb.b},${color.rgb.a})`,
             }, () => {
-                onChange(newColor);
+                onChange(`rgba(${color.rgb.r},${color.rgb.g},${color.rgb.b},${color.rgb.a})`);
             });
         },
     }
 
     state = {
-        color: this.props.value,
+        color: this.props.value || '#fff',
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            color: nextProps.value || this.state.value,
+        });
     }
 
     render() {

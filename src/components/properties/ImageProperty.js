@@ -4,7 +4,7 @@ import UrlModal from '../UrlModal';
 import ImageUpload from '../ImageUpload';
 
 export default {
-    render(form, data) {
+    render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         if (!data) {
             return null;
@@ -37,9 +37,10 @@ export default {
                                         required: true,
                                         message: 'Please select image',
                                     }],
-                                    initialValue: data.file || '',
+                                    initialValue: data.file,
                                 })(
-                                    <ImageUpload fileList={data.file ? [data.file] : []} />,
+                                    // <ImageUpload fileList={data.file ? [data.file] : []} />,
+                                    <ImageUpload />,
                                 )
                             }
                         </Form.Item>
@@ -51,9 +52,9 @@ export default {
                                         required: true,
                                         message: 'Please select image',
                                     }],
-                                    initialValue: data.src || '',
+                                    initialValue: data.src,
                                 })(
-                                    <UrlModal form={form} url={data.src} />,
+                                    <UrlModal form={form} />,
                                 )
                             }
                         </Form.Item>

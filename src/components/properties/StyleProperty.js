@@ -3,31 +3,24 @@ import { Form, Slider, Select, Col, Row } from 'antd';
 import ColorPicker from '../ColorPicker';
 
 export default {
-    render(form, data) {
+    render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
                 <Form.Item label="Fill Color" colon={false}>
                     {
                         getFieldDecorator('fill', {
-                            rules: [{
-                                type: 'hex',
-                                // required: true,
-                                // message: 'Please select fill color',
-                            }],
                             initialValue: data.fill,
                         })(
                             <ColorPicker />,
                         )
                     }
                 </Form.Item>
-                <Form.Item label="Fill Opacity" colon={false}>
+                <Form.Item label="Opacity" colon={false}>
                     {
                         getFieldDecorator('opacity', {
                             rules: [{
                                 type: 'number',
-                                // required: true,
-                                // message: 'Please input fill opacity',
                                 min: 0,
                                 max: 1,
                             }],
@@ -39,13 +32,8 @@ export default {
                 </Form.Item>
                 <Form.Item label="Stroke Color" colon={false}>
                     {
-                        getFieldDecorator('storke', {
-                            rules: [{
-                                type: 'hex',
-                                // required: true,
-                                // message: 'Please select fill color',
-                            }],
-                            initialValue: data.fill,
+                        getFieldDecorator('stroke', {
+                            initialValue: data.stroke,
                         })(
                             <ColorPicker />,
                         )
@@ -56,14 +44,15 @@ export default {
                         <Form.Item label="Stroke Width" colon={false}>
                             {
                                 getFieldDecorator('strokeWidth', {
-                                    rules: [{
-                                        // required: true,
-                                        // message: 'Please input fill opacity',
-                                    }],
-                                    initialValue: '12',
+                                    initialValue: data.strokeWidth,
                                 })(
-                                    <Select>
-                                        <Select.Option value="12">12</Select.Option>
+                                    <Select showSearch>
+                                        {
+                                            Array.from({ length: 12 }, (v, k) => {
+                                                const value = k + 1;
+                                                return <Select.Option key={value} value={value}>{value}</Select.Option>
+                                            })
+                                        }
                                     </Select>,
                                 )
                             }
