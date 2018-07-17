@@ -38,5 +38,6 @@ React.js + ant.design + fabric.js
 - [x] External Drag & Drop Upload
 - [x] Alignments
 - [x] Drawing - Polygon
+- [ ] Video - development
 - [ ] Image Cropping - development
 - [ ] Undo / Redo - development
