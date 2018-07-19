@@ -1,5 +1,14 @@
 # react-design-editor
-React.js + ant.design + fabric.js
+It is a simple design editor such as power point, slides.
+
+# Dependencies
+- React.js
+- ant.design
+- fabric.js
+- mediaelement.js
+- interact.js
+- webpack4
+- babel
 
 # Getting Started
 - git clone https://github.com/salgum1114/react-design-editor.git - Clone the project
@@ -39,6 +48,9 @@ React.js + ant.design + fabric.js
 - [x] Alignments
 - [x] Drawing - Polygon
 - [x] Export / Import - JSON, PNG
-- [ ] Video - development
+- [x] Video - development
+- [ ] Multiple Map - development
+- [ ] Dom Element - development
+- [ ] iframe - development
 - [ ] Image Cropping - development
 - [ ] Undo / Redo - development
