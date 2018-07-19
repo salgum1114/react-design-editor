@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
+import { Badge, Button } from 'antd';
 import debounce from 'lodash/debounce';
 
 import Wireframe from './Wireframe';
@@ -16,11 +17,15 @@ const propertiesToInclude = [
     'name',
     'lock',
     'file',
+    'src',
     'action',
     'tooltip',
     'layout',
     'workareaWidth',
     'workareaHeight',
+    'autoplay',
+    'muted',
+    'loop',
 ];
 
 class Editor extends Component {
@@ -32,10 +37,22 @@ class Editor extends Component {
             }
             this.canvasRef.current.handlers.select(obj);
         },
-        onSelect: (opt) => {
-            if (opt && opt.selected && opt.selected.length === 1) {
+        onSelect: (type, target) => {
+            if (type === 'mousedown') {
+                if (target && target.id !== 'workarea' && target.type !== 'activeSelection') {
+                    this.setState({
+                        selectedItem: target,
+                    });
+                    return;
+                }
                 this.setState({
-                    selectedItem: opt.selected[0],
+                    selectedItem: this.canvasRef.current.workarea,
+                });
+                return;
+            }
+            if (target && target.type !== 'activeSelection') {
+                this.setState({
+                    selectedItem: target,
                 });
                 return;
             }
@@ -86,7 +103,11 @@ class Editor extends Component {
                 return;
             }
             if (changedKey === 'file' || changedKey === 'src') {
-                this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
+                if (selectedItem.type === 'image') {
+                    this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
+                } else {
+                    this.canvasRef.current.handlers.setVideoById(selectedItem.id, changedValue);
+                }
                 return;
             }
             if (changedKey === 'action') {
@@ -114,8 +135,11 @@ class Editor extends Component {
                 return;
             }
             this.canvasRef.current.workarea.set(changedKey, changedValue);
-            // this.canvasRef.current.canvas.centerObject(this.canvasRef.current.workarea);
             this.canvasRef.current.canvas.requestRenderAll();
+        },
+        onTooltip: (ref, opt) => {
+            const count = (Math.random() * 10) + 1;
+            return <div><div><div><Button>{opt.target.id}</Button><Badge count={count}/></div></div></div>;
         },
     }
 
@@ -124,17 +148,20 @@ class Editor extends Component {
             this.setState({
                 preview: typeof checked === 'object' ? false : checked,
             }, () => {
-                setTimeout(() => {
-                    this.preview.canvasRef.current.canvas.clear();
-                    const data = this.canvasRef.current.handlers.exportJSON().objects.filter((obj) => {
-                        if (!obj.id) {
-                            return false;
-                        }
-                        return true;
-                    });
-                    const json = JSON.stringify(data);
-                    this.preview.canvasRef.current.handlers.importJSON(json);
-                }, 0);
+                if (this.state.preview) {
+                    setTimeout(() => {
+                        const data = this.canvasRef.current.handlers.exportJSON().objects.filter((obj) => {
+                            if (!obj.id) {
+                                return false;
+                            }
+                            return true;
+                        });
+                        const json = JSON.stringify(data);
+                        this.preview.canvasRef.current.handlers.importJSON(json);
+                    }, 0);
+                    return;
+                }
+                this.preview.canvasRef.current.handlers.clear();
             });
         },
     }
@@ -172,7 +199,7 @@ class Editor extends Component {
 
     render() {
         const { preview, selectedItem, canvasRect, zoomRatio } = this.state;
-        const { onAdd, onRemove, onSelect, onModified, onChange, onZoom } = this.canvasHandlers;
+        const { onAdd, onRemove, onSelect, onModified, onChange, onZoom, onTooltip } = this.canvasHandlers;
         const { onChangePreview } = this.handlers;
         return (
             <div className="rde-main">
@@ -204,6 +231,7 @@ class Editor extends Component {
                                 onRemove={onRemove}
                                 onSelect={onSelect}
                                 onZoom={onZoom}
+                                onTooltip={onTooltip}
                             />
                         </main>
                         <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
@@ -214,7 +242,7 @@ class Editor extends Component {
                         </aside>
                     </div>
                 </div>
-                <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} />
+                <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} />
             </div>
         );
     }

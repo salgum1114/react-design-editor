@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 import debounce from 'lodash/debounce';
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
+import 'videojs-youtube';
+import 'mediaelement';
+import 'mediaelement/build/mediaelementplayer.min.css';
+import interact from 'interactjs';
 
 import CanvasObjects from './canvas/CanvasObjects';
 
@@ -52,6 +59,7 @@ class Canvas extends Component {
         onRemove: PropTypes.func,
         onSelect: PropTypes.func,
         onZoom: PropTypes.func,
+        onTooltip: PropTypes.func,
     }
 
     static defaultProps = {
@@ -74,12 +82,6 @@ class Canvas extends Component {
             }
         },
         add: (obj, centered = true, loaded = false) => {
-            console.log(obj);
-            if (this.workarea.layout === 'responsive') {
-                if (!this.workarea._element) {
-                    return;
-                }
-            }
             const { editable } = this.props;
             if (obj.type === 'i-text') {
                 obj.editable = false;
@@ -93,59 +95,19 @@ class Canvas extends Component {
             obj.lockMovementY = !editable;
             obj.hoverCursor = !editable ? 'pointer' : 'move';
             if (obj.type === 'image') {
-                const newImg = new Image();
-                const { src, file, ...otherOption } = obj;
-                const defaultOptions = {
-                    action: {},
-                    tooltip: {
-                        enabled: true,
-                    },
-                };
-                if (src) {
-                    newImg.onload = () => {
-                        const imgObject = new fabric.Image(newImg, {
-                            src,
-                            ...otherOption,
-                            ...defaultOptions,
-                        });
-                        if (!editable) {
-                            imgObject.on('mousedown', this.events.object.mousedown);
-                        }
-                        this.canvas.add(imgObject);
-                        if (!loaded) {
-                            this.handlers.centerObject(imgObject, centered);
-                        }
-                        const { onAdd } = this.props;
-                        if (onAdd && !loaded) {
-                            onAdd(imgObject);
-                        }
-                    };
-                    newImg.src = src;
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    newImg.onload = () => {
-                        const imgObject = new fabric.Image(newImg, {
-                            file,
-                            ...otherOption,
-                            ...defaultOptions,
-                        });
-                        if (!editable) {
-                            imgObject.on('mousedown', this.events.object.mousedown);
-                        }
-                        this.canvas.add(imgObject);
-                        if (!loaded) {
-                            this.handlers.centerObject(imgObject, centered);
-                        }
-                        const { onAdd } = this.props;
-                        if (onAdd && !loaded) {
-                            onAdd(imgObject);
-                        }
-                    };
-                    newImg.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                this.handlers.addImage(obj, centered, loaded);
+                return;
+            }
+            if (obj.type === 'video') {
+                this.handlers.addVideo(obj, centered, loaded);
+                return;
+            }
+            if (obj.type === 'element') {
+                this.handlers.addElement(obj, centered, loaded);
+                return;
+            }
+            if (obj.type === 'iframe') {
+                this.handlers.addIFrame(obj, centered, loaded);
                 return;
             }
             const newObject = this.fabricObjects[obj.type].create({ ...obj });
@@ -161,6 +123,100 @@ class Canvas extends Component {
                 onAdd(newObject);
             }
         },
+        addImage: (obj, centered = true, loaded = false) => {
+            const { editable } = this.props;
+            const newImg = new Image();
+            const { src, file, ...otherOption } = obj;
+            const defaultOptions = {
+                action: {},
+                tooltip: {
+                    enabled: true,
+                },
+            };
+            if (src) {
+                newImg.onload = () => {
+                    const imgObject = new fabric.Image(newImg, {
+                        src,
+                        ...otherOption,
+                        ...defaultOptions,
+                    });
+                    if (!editable) {
+                        imgObject.on('mousedown', this.events.object.mousedown);
+                    }
+                    this.canvas.add(imgObject);
+                    if (!loaded) {
+                        this.handlers.centerObject(imgObject, centered);
+                    }
+                    const { onAdd } = this.props;
+                    if (onAdd && !loaded) {
+                        onAdd(imgObject);
+                    }
+                };
+                newImg.src = src;
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                newImg.onload = () => {
+                    const imgObject = new fabric.Image(newImg, {
+                        file,
+                        ...otherOption,
+                        ...defaultOptions,
+                    });
+                    if (!editable) {
+                        imgObject.on('mousedown', this.events.object.mousedown);
+                    }
+                    this.canvas.add(imgObject);
+                    if (!loaded) {
+                        this.handlers.centerObject(imgObject, centered);
+                    }
+                    const { onAdd } = this.props;
+                    if (onAdd && !loaded) {
+                        onAdd(imgObject);
+                    }
+                };
+                newImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+        addVideo: (obj, centered = true, loaded = false) => {
+            const { canvas } = this;
+            const { editable } = this.props;
+            const { src, file, ...otherOption } = obj;
+            const defaultOptions = {
+                action: {},
+                tooltip: {
+                    enabled: true,
+                },
+            };
+            const videoObject = new fabric.Rect({
+                src,
+                file,
+                ...otherOption,
+                ...defaultOptions,
+                fill: 'rgba(255, 255, 255, 0)',
+            });
+            if (!editable) {
+                videoObject.on('mousedown', this.events.object.mousedown);
+            }
+            canvas.add(videoObject);
+            if (src || file) {
+                this.handlers.setVideo(videoObject, src || file);
+            }
+            if (!loaded) {
+                this.handlers.centerObject(videoObject, centered);
+            }
+            const { onAdd } = this.props;
+            if (onAdd && !loaded) {
+                onAdd(videoObject);
+            }
+        },
+        addElement: (obj, centered = true, loaded = false) => {
+
+        },
+        addIFrame: (obj, centered = true, loaded = false) => {
+
+        },
         remove: () => {
             const activeObject = this.canvas.getActiveObject();
             if (!activeObject) {
@@ -168,11 +224,17 @@ class Canvas extends Component {
             }
             if (activeObject.type !== 'activeSelection') {
                 this.canvas.discardActiveObject();
+                if (activeObject.type === 'video' || activeObject.type === 'element' || activeObject.type === 'iframe') {
+                    this.elementHandlers.removeById(activeObject.id);
+                }
                 this.canvas.remove(activeObject);
             } else {
                 const activeObjects = activeObject._objects;
                 this.canvas.discardActiveObject();
                 activeObjects.forEach((object) => {
+                    if (object.type === 'video' || object.type === 'element' || object.type === 'iframe') {
+                        this.elementHandlers.removeById(findObject.id);
+                    }
                     this.canvas.remove(object);
                 });
             }
@@ -188,6 +250,9 @@ class Canvas extends Component {
                 const { onRemove } = this.props;
                 if (onRemove) {
                     onRemove(findObject);
+                }
+                if (findObject.type === 'video' || findObject.type === 'element' || findObject.type === 'iframe') {
+                    this.elementHandlers.removeById(findObject.id);
                 }
                 this.canvas.remove(findObject);
             }
@@ -251,15 +316,20 @@ class Canvas extends Component {
                 this.setState({
                     clipboard: cloned,
                 });
-            });
+            }, this.props.propertiesToInclude);
         },
         paste: () => {
-            const { onAdd } = this.props;
-            this.state.clipboard.clone((clonedObj) => {
+            const { onAdd, propertiesToInclude } = this.props;
+            const { clipboard } = this.state;
+            if (!clipboard) {
+                return false;
+            }
+            clipboard.clone((clonedObj) => {
                 this.canvas.discardActiveObject();
                 clonedObj.set({
                     left: clonedObj.left + 10,
                     top: clonedObj.top + 10,
+                    id: uuid(),
                     evented: true,
                 });
                 if (clonedObj.type === 'activeSelection') {
@@ -267,10 +337,10 @@ class Canvas extends Component {
                     clonedObj.forEachObject((obj) => {
                         obj.set('id', uuid());
                         this.canvas.add(obj);
-                        if (onAdd) {
-                            onAdd(obj);
-                        }
                     });
+                    if (onAdd) {
+                        onAdd(clonedObj);
+                    }
                     clonedObj.setCoords();
                 } else {
                     clonedObj.set('id', uuid());
@@ -279,55 +349,19 @@ class Canvas extends Component {
                         onAdd(clonedObj);
                     }
                 }
-                const newClipboard = Object.assign({}, this.state.clipboard, {
-                    top: top + 10,
-                    left: left + 10,
+                const newClipboard = clipboard.set({
+                    top: clonedObj.top,
+                    left: clonedObj.left,
                 });
                 this.setState({
                     clipboard: newClipboard,
                 });
                 this.canvas.setActiveObject(clonedObj);
                 this.canvas.requestRenderAll();
-            });
+            }, propertiesToInclude);
         },
         getActiveObject: () => this.canvas.getActiveObject(),
         getActiveObjects: () => this.canvas.getActiveObjects(),
-        setCanvasBackgroundImage: (obj) => {
-            const { canvas } = this;
-            if (obj.type === 'image') {
-                const { src, file } = obj;
-                if (src) {
-                    fabric.Image.fromURL(src, (img) => {
-                        img.set({
-                            originX: 'left',
-                            originY: 'top',
-                        });
-                        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-                            scaleX: canvas.width / img.width,
-                            scaleY: canvas.height / img.height,
-                        });
-                    });
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const { result } = e.target;
-                    fabric.Image.fromURL(result, (img) => {
-                        img.set({
-                            originX: 'left',
-                            originY: 'top',
-                        });
-                        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-                            scaleX: canvas.width / img.width,
-                            scaleY: canvas.height / img.height,
-                        });
-                    });
-                };
-                reader.readAsDataURL(file);
-                return;
-            }
-            console.warn('Object type not image');
-        },
         set: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
             if (!activeObject) {
@@ -411,8 +445,45 @@ class Canvas extends Component {
             const findObject = this.handlers.findById(id);
             this.handlers.setImage(findObject, source);
         },
-        setImageByObject: (obj, source) => {
-            this.handlers.setImage(obj, source);
+        loadVideo: (obj, src) => {
+            const { canvas } = this;
+            const { editable } = this.props;
+            if (editable) {
+                this.elementHandlers.removeById(obj.id);
+            }
+            this.videoHandlers.create(obj, src);
+            this.canvas.renderAll();
+            fabric.util.requestAnimFrame(function render() {
+                canvas.renderAll();
+                fabric.util.requestAnimFrame(render);
+            });
+        },
+        setVideo: (obj, src) => {
+            let newSrc;
+            if (typeof src === 'string') {
+                obj.set('file', null);
+                obj.set('src', src);
+                newSrc = {
+                    src,
+                };
+                this.handlers.loadVideo(obj, newSrc);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    obj.set('file', src);
+                    obj.set('src', e.target.result);
+                    newSrc = {
+                        src: e.target.result,
+                        type: src.type,
+                    };
+                    this.handlers.loadVideo(obj, newSrc);
+                };
+                reader.readAsDataURL(src);
+            }
+        },
+        setVideoById: (id, source) => {
+            const findObject = this.handlers.findById(id);
+            this.handlers.setVideo(findObject, source);
         },
         find: obj => this.handlers.findById(obj.id),
         findById: (id) => {
@@ -434,6 +505,9 @@ class Canvas extends Component {
             this.canvas.discardActiveObject();
             const activeSelection = new fabric.ActiveSelection(this.canvas.getObjects().filter((obj) => {
                 if (obj.id === 'workarea') {
+                    return false;
+                }
+                if (obj.type === 'video') {
                     return false;
                 }
                 if (obj.lock) {
@@ -520,6 +594,9 @@ class Canvas extends Component {
                     obj.left += diffLeft;
                     obj.top += diffTop;
                 }
+                if (obj.type === 'video' || obj.type === 'element' || obj.type === 'iframe') {
+                    obj.id = uuid();
+                }
                 this.handlers.add(obj, false, true);
                 this.canvas.renderAll();
             });
@@ -553,82 +630,114 @@ class Canvas extends Component {
                 }
             }
         },
-    }
-
-    zoomHandlers = {
-        zoomToPoint: (point, zoom) => {
-            this.canvas.zoomToPoint(point, zoom);
-            if (this.props.onZoom) {
-                this.props.onZoom(zoom);
-            }
-        },
-        zoomOneToOne: () => {
-            const center = this.canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            this.zoomHandlers.zoomToPoint(point, 1);
-        },
-        zoomToFit: () => {
-            let scaleX = this.canvas.getWidth() / this.workarea.width;
-            const scaleY = this.canvas.getHeight() / this.workarea.height;
-            if (this.workarea.height > this.workarea.width) {
-                scaleX = scaleY;
-            }
-            const center = this.canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            this.zoomHandlers.zoomToPoint(point, scaleX);
-        },
-        zoomIn: () => {
-            let zoomRatio = this.canvas.getZoom();
-            zoomRatio += 0.01;
-            const center = this.canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            this.zoomHandlers.zoomToPoint(point, zoomRatio);
-        },
-        zoomOut: () => {
-            let zoomRatio = this.canvas.getZoom();
-            zoomRatio -= 0.01;
-            const center = this.canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            this.zoomHandlers.zoomToPoint(point, zoomRatio);
-        },
-    }
-
-    tooltipHandlers = {
-        showTooltip: debounce((opt) => {
-            if (opt.target.tooltip && opt.target.tooltip.enabled) {
-                while (this.tooltipRef.current.hasChildNodes()) {
-                    this.tooltipRef.current.removeChild(this.tooltipRef.current.firstChild);
+        clear: () => {
+            const { canvas } = this;
+            const ids = canvas.getObjects().reduce((prev, curr) => {
+                if (curr.type === 'video' || curr.type === 'element' || curr.type === 'iframe') {
+                    prev.push(curr.id);
+                    return prev;
                 }
-                const tooltip = document.createElement('div');
-                tooltip.className = 'rde-canvas-tooltip-container';
-                tooltip.append(this.props.tooltip || opt.target.name);
-                this.tooltipRef.current.appendChild(tooltip);
-                this.tooltipRef.current.classList.remove('tooltip-hidden');
-                const zoom = this.canvas.getZoom();
-                const { clientHeight } = this.tooltipRef.current;
-                const { width, height, scaleX, scaleY } = opt.target;
-                const { left, top } = opt.target.getBoundingRect();
-                const objWidthDiff = (width * scaleX) * zoom;
-                const objHeightDiff = (((height * scaleY) * zoom) / 2) - ((clientHeight / 2) * zoom);
-                this.tooltipRef.current.style.left = `${left + objWidthDiff}px`;
-                this.tooltipRef.current.style.top = `${top + objHeightDiff}px`;
+                return prev;
+            }, []);
+            this.elementHandlers.removeByIds(ids);
+            canvas.clear();
+        }
+    }
+
+    videoHandlers = {
+        create: (obj, src) => {
+            const { editable } = this.props;
+            const { id, autoplay, muted, loop } = obj;
+            const videoElement = fabric.util.makeElement('video', {
+                id,
+                autoplay,
+                muted,
+                loop,
+                preload: 'none',
+                controls: false,
+            });
+            const width = obj.width * obj.scaleX;
+            const height = obj.height * obj.scaleY;
+            const angle = obj.angle;
+            const zoom = this.canvas.getZoom();
+            const video = fabric.util.wrapElement(videoElement, 'div', {
+                id: `${obj.id}_container`,
+                style: `transform: rotate(${angle}deg);
+                        width: ${width}px;
+                        height: ${height}px;
+                        left: ${obj.left}px;
+                        top: ${obj.top}px;
+                        position: absolute;
+                        zoom: ${zoom}`,
+            });
+            this.container.current.appendChild(video);
+            const player = new MediaElementPlayer(obj.id, {
+                pauseOtherPlayers: false,
+                videoWidth: '100%',
+                videoHeight: '100%',
+                success: function (mediaeElement, originalNode, instance) {
+                    if (editable) {
+
+                    }
+                    // console.log(mediaeElement, originalNode, instance);
+                },
+            });
+            player.setPlayerSize(width, height);
+            player.setSrc(src.src);
+            if (editable) {
+                this.elementHandlers.draggable(video, obj);
+                video.addEventListener('mousedown', (e) => {
+                    this.canvas.setActiveObject(obj);
+                }, false);
             }
-        }, 100),
-        hiddenTooltip: debounce((opt) => {
-            this.tooltipRef.current.classList.add('tooltip-hidden');
-        }, 100),
+            obj.setCoords();
+            obj.set('player', player);
+        },
+    }
+
+    elementHandlers = {
+        findElementById: (id) => {
+            return document.getElementById(`${id}_container`);
+        },
+        removeById: (id) => {
+            const el = this.elementHandlers.findElementById(id);
+            if (!el) {
+                return;
+            }
+            this.container.current.removeChild(el);
+        },
+        removeByIds: (ids) => {
+            ids.forEach((id) => {
+                this.elementHandlers.removeById(id);
+            });
+        },
+        draggable: (el, obj) => {
+            return interact(el)
+                .draggable({
+                    restrict: {
+                        restriction: 'parent',
+                        // elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
+                    },
+                    onmove: (e) => {
+                        const { dx, dy, target } = e;
+                        // keep the dragged position in the data-x/data-y attributes
+                        const x = (parseFloat(target.getAttribute('data-x')) || 0) + dx;
+                        const y = (parseFloat(target.getAttribute('data-y')) || 0) + dy;
+                        // translate the element
+                        target.style.webkitTransform = `translate(${x}px, ${y}px)`;
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+                        // update the posiion attributes
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+                        // update canvas object the position
+                        obj.set({
+                            left: obj.left + dx,
+                            top: obj.top + dy,
+                        });
+                        obj.setCoords();
+                    },
+                });
+        },
     }
 
     workareaHandlers = {
@@ -664,7 +773,7 @@ class Canvas extends Component {
                     y: center.top,
                 };
                 this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                this.zoomHandlers.zoomToPoint(point, 1);
+                this.zoom.zoomToPoint(point, 1);
                 this.canvas.renderAll();
                 return;
             }
@@ -684,7 +793,7 @@ class Canvas extends Component {
                         scaleX: 1,
                         scaleY: 1,
                     });
-                    this.zoomHandlers.zoomToPoint(point, scaleX);
+                    this.zoom.zoomToPoint(point, scaleX);
                 } else {
                     this.workarea.set({
                         width: 0,
@@ -718,7 +827,7 @@ class Canvas extends Component {
                 y: center.top,
             };
             this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-            this.zoomHandlers.zoomToPoint(point, 1);
+            this.zoom.zoomToPoint(point, 1);
             this.workarea.set({
                 left: 0,
                 top: 0,
@@ -727,7 +836,7 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         setResponsiveImage: (source) => {
-            const { canvas, workarea, zoomHandlers } = this;
+            const { canvas, workarea, zoom } = this;
             if (typeof source === 'string') {
                 fabric.Image.fromURL(source, (img) => {
                     let scaleX = canvas.getWidth() / img.width;
@@ -751,7 +860,7 @@ class Canvas extends Component {
                         y: center.top,
                     };
                     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                    zoomHandlers.zoomToPoint(point, scaleX);
+                    zoom.zoomToPoint(point, scaleX);
                     canvas.renderAll();
                 });
                 return;
@@ -781,7 +890,7 @@ class Canvas extends Component {
                         y: center.top,
                     };
                     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                    zoomHandlers.zoomToPoint(point, scaleX);
+                    zoom.zoomToPoint(point, scaleX);
                     canvas.renderAll();
                 });
             };
@@ -791,7 +900,7 @@ class Canvas extends Component {
             if (!source) {
                 return;
             }
-            const { canvas, workarea, zoomHandlers, workareaHandlers } = this;
+            const { canvas, workarea, zoom, workareaHandlers } = this;
             if (workarea.layout === 'responsive') {
                 workareaHandlers.setResponsiveImage(source);
                 return;
@@ -824,7 +933,7 @@ class Canvas extends Component {
                         y: center.top,
                     };
                     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                    zoomHandlers.zoomToPoint(point, 1);
+                    zoom.zoomToPoint(point, 1);
                     canvas.renderAll();
                 });
                 return;
@@ -859,7 +968,7 @@ class Canvas extends Component {
                         y: center.top,
                     };
                     canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                    zoomHandlers.zoomToPoint(point, 1);
+                    zoom.zoomToPoint(point, 1);
                     canvas.renderAll();
                 });
             };
@@ -1028,6 +1137,128 @@ class Canvas extends Component {
         },
     }
 
+    alignments = {
+        left: () => {
+            const activeObject = this.canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'activeSelection') {
+                const activeObjectLeft = -(activeObject.width / 2);
+                activeObject.forEachObject((obj) => {
+                    obj.set({
+                        left: activeObjectLeft,
+                    });
+                    obj.setCoords();
+                    this.canvas.renderAll();
+                });
+            }
+        },
+        center: () => {
+            const activeObject = this.canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'activeSelection') {
+                activeObject.forEachObject((obj) => {
+                    obj.set({
+                        left: 0 - (obj.width / 2),
+                    });
+                    obj.setCoords();
+                    this.canvas.renderAll();
+                });
+            }
+        },
+        right: () => {
+            const activeObject = this.canvas.getActiveObject();
+            if (activeObject && activeObject.type === 'activeSelection') {
+                const activeObjectLeft = (activeObject.width / 2);
+                activeObject.forEachObject((obj) => {
+                    obj.set({
+                        left: activeObjectLeft - obj.width,
+                    });
+                    obj.setCoords();
+                    this.canvas.renderAll();
+                });
+            }
+        },
+    }
+
+    zoom = {
+        zoomToPoint: (point, zoom) => {
+            this.canvas.zoomToPoint(point, zoom);
+            if (this.props.onZoom) {
+                this.props.onZoom(zoom);
+            }
+        },
+        zoomOneToOne: () => {
+            const center = this.canvas.getCenter();
+            const point = {
+                x: center.left,
+                y: center.top,
+            };
+            this.zoom.zoomToPoint(point, 1);
+        },
+        zoomToFit: () => {
+            let scaleX = this.canvas.getWidth() / this.workarea.width;
+            const scaleY = this.canvas.getHeight() / this.workarea.height;
+            if (this.workarea.height > this.workarea.width) {
+                scaleX = scaleY;
+            }
+            const center = this.canvas.getCenter();
+            const point = {
+                x: center.left,
+                y: center.top,
+            };
+            this.zoom.zoomToPoint(point, scaleX);
+        },
+        zoomIn: () => {
+            let zoomRatio = this.canvas.getZoom();
+            zoomRatio += 0.01;
+            const center = this.canvas.getCenter();
+            const point = {
+                x: center.left,
+                y: center.top,
+            };
+            this.zoom.zoomToPoint(point, zoomRatio);
+        },
+        zoomOut: () => {
+            let zoomRatio = this.canvas.getZoom();
+            zoomRatio -= 0.01;
+            const center = this.canvas.getCenter();
+            const point = {
+                x: center.left,
+                y: center.top,
+            };
+            this.zoom.zoomToPoint(point, zoomRatio);
+        },
+    }
+
+    tooltip = {
+        showTooltip: debounce((opt) => {
+            if (opt.target.tooltip && opt.target.tooltip.enabled) {
+                while (this.tooltipRef.current.hasChildNodes()) {
+                    this.tooltipRef.current.removeChild(this.tooltipRef.current.firstChild);
+                }
+                const tooltip = document.createElement('div');
+                tooltip.className = 'rde-canvas-tooltip-container';
+                let element = opt.target.name;
+                if (this.props.onTooltip) {
+                    element = this.props.onTooltip(this.tooltipRef, opt);
+                }
+                tooltip.innerHTML = element;
+                this.tooltipRef.current.appendChild(tooltip);
+                ReactDOM.render(element, tooltip);
+                this.tooltipRef.current.classList.remove('tooltip-hidden');
+                const zoom = this.canvas.getZoom();
+                const { clientHeight } = this.tooltipRef.current;
+                const { width, height, scaleX, scaleY } = opt.target;
+                const { left, top } = opt.target.getBoundingRect();
+                const objWidthDiff = (width * scaleX) * zoom;
+                const objHeightDiff = (((height * scaleY) * zoom) / 2) - ((clientHeight / 2) * zoom);
+                this.tooltipRef.current.style.left = `${left + objWidthDiff}px`;
+                this.tooltipRef.current.style.top = `${top + objHeightDiff}px`;
+            }
+        }, 100),
+        hiddenTooltip: debounce((opt) => {
+            this.tooltipRef.current.classList.add('tooltip-hidden');
+        }, 100),
+    }
+
     events = {
         object: {
             mousedown: (opt) => {
@@ -1045,30 +1276,6 @@ class Canvas extends Component {
                     }
                 }
             },
-            // mouseover: (opt) => {
-            //     if (opt.target && opt.target.tooltip.enabled) {
-            //         while (this.tooltipRef.current.hasChildNodes()) {
-            //             this.tooltipRef.current.removeChild(this.tooltipRef.current.firstChild);
-            //         }
-            //         const tooltip = document.createElement('div');
-            //         tooltip.className = 'rde-canvas-tooltip-container';
-            //         tooltip.append(this.props.tooltip || opt.target.name);
-            //         console.log(tooltip);
-            //         console.log(opt);
-            //         this.tooltipRef.current.appendChild(tooltip);
-            //         this.tooltipRef.current.classList.remove('tooltip-hidden');
-            //         const { left, top } = this.handlers.getAbsoluteCoords(opt.target);
-            //         const { width, height } = opt.target;
-            //         this.tooltipRef.current.style.left = `${left + width}px`;
-            //         this.tooltipRef.current.style.top = `${top + (height / 2)}px`;
-            //     }
-            // },
-            // mouseout: (opt) => {
-            //     if (opt.target && opt.target.tooltip.enabled) {
-            //         console.log(opt);
-            //         this.tooltipRef.current.classList.add('tooltip-hidden');
-            //     }
-            // },
         },
         modified: (opt) => {
             const { onModified } = this.props;
@@ -1080,24 +1287,52 @@ class Canvas extends Component {
                 onModified(opt.target);
             }
         },
+        scaling: (opt) => {
+            const { target } = opt;
+            if (target.type === 'video' || target.type === 'element' || target.type === 'iframe') {
+                const zoom = this.canvas.getZoom();
+                const width = target.width * target.scaleX * zoom;
+                const height = target.height * target.scaleY * zoom;
+                const el = this.elementHandlers.findElementById(target.id);
+                // update the element
+                el.style.width = `${width}px`;
+                el.style.height = `${height}px`;
+                el.style.left = `${target.left}px`;
+                el.style.top = `${target.top}px`;
+                el.style.transform = null;
+                el.setAttribute('data-x', 0);
+                el.setAttribute('data-y', 0);
+                if (target.type === 'video' && target.player) {
+                    target.player.setPlayerSize(width, height);
+                }
+            }
+        },
+        rotating: (opt) => {
+            const { target } = opt;
+            if (target.type === 'video' && target.player) {
+                const el = this.elementHandlers.findElementById(target.id);
+                // update the element
+                el.style.transform = `rotate(${target.angle}deg)`;
+            }
+        },
         moving: (e) => {
             const activeObject = this.handlers.getActiveObject();
             if (!activeObject) {
                 return false;
             }
-            if (e.code === 'ArrowUp') {
+            if (e.keyCode === 38) {
                 activeObject.set('top', activeObject.top - 2);
                 activeObject.setCoords();
                 this.canvas.renderAll();
-            } else if (e.code === 'ArrowDown') {
+            } else if (e.keyCode === 40) {
                 activeObject.set('top', activeObject.top + 2);
                 activeObject.setCoords();
                 this.canvas.renderAll();
-            } else if (e.code === 'ArrowLeft') {
+            } else if (e.keyCode === 37) {
                 activeObject.set('left', activeObject.left - 2);
                 activeObject.setCoords();
                 this.canvas.renderAll();
-            } else if (e.code === 'ArrowRight') {
+            } else if (e.keyCode === 39) {
                 activeObject.set('left', activeObject.left + 2);
                 activeObject.setCoords();
                 this.canvas.renderAll();
@@ -1125,6 +1360,9 @@ class Canvas extends Component {
             }
         },
         mousedown: (opt) => {
+            if (!this.polygonMode && this.props.editable) {
+                this.props.onSelect('mousedown', opt.target);
+            }
             if (this.polygonMode) {
                 if (opt.target && this.pointArray.length && opt.target.id === this.pointArray[0].id) {
                     this.drawingHandlers.polygon.generatePolygon(this.pointArray);
@@ -1136,9 +1374,9 @@ class Canvas extends Component {
         mousemove: (opt) => {
             if (!this.props.editable) {
                 if (opt.target && opt.target.id !== 'workarea') {
-                    this.tooltipHandlers.showTooltip(opt);
+                    this.tooltip.showTooltip(opt);
                 } else {
-                    this.tooltipHandlers.hiddenTooltip(opt);
+                    this.tooltip.hiddenTooltip(opt);
                 }
             }
             if (this.activeLine && this.activeLine.class === 'line') {
@@ -1159,7 +1397,7 @@ class Canvas extends Component {
         selection: (opt) => {
             const { onSelect } = this.props;
             if (onSelect) {
-                onSelect(opt);
+                onSelect('selection', opt.target);
             }
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
@@ -1168,9 +1406,9 @@ class Canvas extends Component {
             if (!this.workarea) {
                 return;
             }
+            const diffWidth = (nextWidth / 2) - (currentWidth / 2);
+            const diffHeight = (nextHeight / 2) - (currentHeight / 2);
             if (this.workarea.layout === 'fixed') {
-                const diffWidth = (nextWidth / 2) - (currentWidth / 2);
-                const diffHeight = (nextHeight / 2) - (currentHeight / 2);
                 this.canvas.centerObject(this.workarea);
                 this.workarea.setCoords();
                 this.canvas.getObjects().forEach((obj, index) => {
@@ -1189,17 +1427,14 @@ class Canvas extends Component {
                 if (this.workarea.height > this.workarea.width) {
                     scaleX = scaleY;
                 }
-                const diffWidth = (nextWidth / 2) - (currentWidth / 2);
-                const diffHeight = (nextHeight / 2) - (currentHeight / 2);
                 const deltaPoint = new fabric.Point(diffWidth, diffHeight);
-                this.deltaPoint = deltaPoint;
                 this.canvas.relativePan(deltaPoint);
                 const center = this.canvas.getCenter();
                 const point = {
                     x: center.left,
                     y: center.top,
                 };
-                this.zoomHandlers.zoomToPoint(point, scaleX);
+                this.zoom.zoomToPoint(point, scaleX);
                 this.canvas.renderAll();
                 return;
             }
@@ -1301,17 +1536,24 @@ class Canvas extends Component {
             return false;
         },
         keydown: (e) => {
-            if (this.canvas.wrapperEl !== document.activeElement) {
+            if (!document.activeElement.id.includes('mep')
+            && this.canvas.wrapperEl !== document.activeElement) {
                 return false;
             }
-            if (e.code === 'Delete') {
+            if (e.keyCode === 46) {
                 this.handlers.remove();
             } else if (e.code.includes('Arrow')) {
                 this.events.moving(e);
-            } else if (e.ctrlKey && e.code === 'KeyA') {
+            } else if (e.ctrlKey && e.keyCode === 65) {
                 e.preventDefault();
                 this.handlers.allSelect();
-            } else if (e.code === 'Escape') {
+            } else if (e.ctrlKey && e.keyCode === 67) {
+                e.preventDefault();
+                this.handlers.copy();
+            } else if (e.ctrlKey && e.keyCode === 86) {
+                e.preventDefault();
+                this.handlers.paste();
+            } else if (e.code === 27) {
                 if (this.polygonMode) {
                     this.drawingHandlers.finishDraw();
                 }
@@ -1346,10 +1588,12 @@ class Canvas extends Component {
         });
         this.canvas.add(this.workarea);
         this.canvas.centerObject(this.workarea);
-        const { modified, mousewheel, mousedown, mousemove, selection } = this.events;
+        const { modified, scaling, rotating, mousewheel, mousedown, mousemove, selection } = this.events;
         if (editable) {
             this.canvas.on({
                 'object:modified': modified,
+                'object:scaling': scaling,
+                'object:rotating': rotating,
                 'mouse:wheel': mousewheel,
                 'mouse:down': mousedown,
                 'mouse:move': mousemove,

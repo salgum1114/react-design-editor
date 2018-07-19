@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Radio } from 'antd';
 import UrlModal from '../UrlModal';
-import ImageUpload from '../ImageUpload';
+import FileUpload from '../FileUpload';
 
 export default {
     render(canvasRef, form, data) {
@@ -39,8 +39,8 @@ export default {
                                     }],
                                     initialValue: data.file,
                                 })(
-                                    // <ImageUpload fileList={data.file ? [data.file] : []} />,
-                                    <ImageUpload />,
+                                    // <FileUpload fileList={data.file ? [data.file] : []} />,
+                                    <FileUpload />,
                                 )
                             }
                         </Form.Item>

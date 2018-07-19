@@ -2,6 +2,7 @@ import MarkerProperty from './MarkerProperty';
 import GeneralProperty from './GeneralProperty';
 import StyleProperty from './StyleProperty';
 import TooltipProperty from './TooltipProperty';
+import VideoProperty from './VideoProperty';
 import ImageProperty from './ImageProperty';
 import TextProperty from './TextProperty';
 import MapProperty from './MapProperty';
@@ -16,10 +17,6 @@ export default {
         image: {
             title: 'Image',
             component: ImageProperty,
-        },
-        tooltip: {
-            title: 'Tooltip',
-            component: TooltipProperty,
         },
     },
     'i-text': {
@@ -86,6 +83,16 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
+        },
+    },
+    video: {
+        general: {
+            title: 'General',
+            component: GeneralProperty,
+        },
+        video: {
+            title: 'Video',
+            component: VideoProperty,
         },
     },
     triangle: {

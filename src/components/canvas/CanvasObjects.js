@@ -22,7 +22,6 @@ export default (mergeObjects) => {
         triangle: {
             create: option => new fabric.Triangle({
                 ...defaultOptions,
-                action: {},
                 ...option,
             }),
         },
@@ -40,6 +39,12 @@ export default (mergeObjects) => {
         },
         image: {
             create: ({ imgElement, ...option }) => new fabric.Image(imgElement, {
+                ...defaultOptions,
+                ...option,
+            }),
+        },
+        video: {
+            create: ({ videoElement, ...option }) => new fabric.Image(videoElement, {
                 ...defaultOptions,
                 ...option,
             }),

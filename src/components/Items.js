@@ -46,16 +46,66 @@ const TEXT = [
     },
 ];
 
-const IMAGE = [
+const MULTIMEDIA = [
     {
-        key: 'default',
+        key: 'image',
         type: 'image',
         icon: 'picture-o',
         title: 'Image',
         option: {
             type: 'image',
+            width: 80,
+            height: 80,
             name: 'New image',
             src: '/images/sample/transparentBg.png',
+        },
+    },
+    {
+        key: 'video',
+        type: 'multidedia',
+        icon: 'picture-o',
+        title: 'Video',
+        option: {
+            type: 'video',
+            width: 480,
+            height: 270,
+            name: 'New video',
+            autoplay: true,
+            muted: true,
+            loop: true,
+        },
+    },
+];
+
+const DOM_ELEMENT = [
+    {
+        key: 'custom',
+        type: 'dom_element',
+        icon: 'picture-o',
+        title: 'Element',
+        option: {
+            type: 'element',
+            width: 480,
+            height: 270,
+            name: 'New video',
+            autoplay: true,
+            muted: true,
+            loop: true,
+        },
+    },
+    {
+        key: 'iframe',
+        type: 'dom_element',
+        icon: 'picture-o',
+        title: 'IFrame',
+        option: {
+            type: 'iframe',
+            width: 480,
+            height: 270,
+            name: 'New video',
+            autoplay: true,
+            muted: true,
+            loop: true,
         },
     },
 ];
@@ -313,8 +363,11 @@ class Items extends Component {
                     <Panel showArrow={showArrow} header="Text">
                         {this.renderItems('TEXT', TEXT)}
                     </Panel>
-                    <Panel showArrow={showArrow} header="Image">
-                        {this.renderItems('IMAGE', IMAGE)}
+                    <Panel showArrow={showArrow} header="Dom Element">
+                        {this.renderItems('DOM_ELEMENT', DOM_ELEMENT)}
+                    </Panel>
+                    <Panel showArrow={showArrow} header="Multimedia">
+                        {this.renderItems('MULTIMEDIA', MULTIMEDIA)}
                     </Panel>
                     <Panel showArrow={showArrow} header="Shape">
                         {this.renderItems('SHAPE', SHAPE)}
