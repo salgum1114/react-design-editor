@@ -460,7 +460,7 @@ class Canvas extends Component {
         },
         loadVideo: (obj, src) => {
             const { canvas } = this;
-            this.videoHandlers.mediaelement(obj, src);
+            this.videoHandlers.create(obj, src);
             this.canvas.renderAll();
             fabric.util.requestAnimFrame(function render() {
                 canvas.renderAll();
@@ -639,7 +639,7 @@ class Canvas extends Component {
     }
 
     videoHandlers = {
-        mediaelement: (obj, src) => {
+        create: (obj, src) => {
             const { id, autoplay, muted, loop } = obj;
             const videoElement = fabric.util.makeElement('video', {
                 id,
