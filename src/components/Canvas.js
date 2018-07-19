@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import ReactDOMServer from 'react-dom/server';
 import PropTypes from 'prop-types';
 import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 import debounce from 'lodash/debounce';
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
+import 'videojs-youtube';
+import 'mediaelement';
+import 'mediaelement/build/mediaelementplayer.min.css';
+import interact from 'interactjs';
 
 import CanvasObjects from './canvas/CanvasObjects';
 
@@ -90,59 +95,11 @@ class Canvas extends Component {
             obj.lockMovementY = !editable;
             obj.hoverCursor = !editable ? 'pointer' : 'move';
             if (obj.type === 'image') {
-                const newImg = new Image();
-                const { src, file, ...otherOption } = obj;
-                const defaultOptions = {
-                    action: {},
-                    tooltip: {
-                        enabled: true,
-                    },
-                };
-                if (src) {
-                    newImg.onload = () => {
-                        const imgObject = new fabric.Image(newImg, {
-                            src,
-                            ...otherOption,
-                            ...defaultOptions,
-                        });
-                        if (!editable) {
-                            imgObject.on('mousedown', this.events.object.mousedown);
-                        }
-                        this.canvas.add(imgObject);
-                        if (!loaded) {
-                            this.handlers.centerObject(imgObject, centered);
-                        }
-                        const { onAdd } = this.props;
-                        if (onAdd && !loaded) {
-                            onAdd(imgObject);
-                        }
-                    };
-                    newImg.src = src;
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    newImg.onload = () => {
-                        const imgObject = new fabric.Image(newImg, {
-                            file,
-                            ...otherOption,
-                            ...defaultOptions,
-                        });
-                        if (!editable) {
-                            imgObject.on('mousedown', this.events.object.mousedown);
-                        }
-                        this.canvas.add(imgObject);
-                        if (!loaded) {
-                            this.handlers.centerObject(imgObject, centered);
-                        }
-                        const { onAdd } = this.props;
-                        if (onAdd && !loaded) {
-                            onAdd(imgObject);
-                        }
-                    };
-                    newImg.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                this.handlers.addImage(obj, centered, loaded);
+                return;
+            }
+            if (obj.type === 'video') {
+                this.handlers.addVideo(obj, centered, loaded);
                 return;
             }
             const newObject = this.fabricObjects[obj.type].create({ ...obj });
@@ -157,6 +114,94 @@ class Canvas extends Component {
             if (onAdd && !loaded) {
                 onAdd(newObject);
             }
+        },
+        addImage: (obj, centered = true, loaded = false) => {
+            const { editable } = this.props;
+            const newImg = new Image();
+            const { src, file, ...otherOption } = obj;
+            const defaultOptions = {
+                action: {},
+                tooltip: {
+                    enabled: true,
+                },
+            };
+            if (src) {
+                newImg.onload = () => {
+                    const imgObject = new fabric.Image(newImg, {
+                        src,
+                        ...otherOption,
+                        ...defaultOptions,
+                    });
+                    if (!editable) {
+                        imgObject.on('mousedown', this.events.object.mousedown);
+                    }
+                    this.canvas.add(imgObject);
+                    if (!loaded) {
+                        this.handlers.centerObject(imgObject, centered);
+                    }
+                    const { onAdd } = this.props;
+                    if (onAdd && !loaded) {
+                        onAdd(imgObject);
+                    }
+                };
+                newImg.src = src;
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                newImg.onload = () => {
+                    const imgObject = new fabric.Image(newImg, {
+                        file,
+                        ...otherOption,
+                        ...defaultOptions,
+                    });
+                    if (!editable) {
+                        imgObject.on('mousedown', this.events.object.mousedown);
+                    }
+                    this.canvas.add(imgObject);
+                    if (!loaded) {
+                        this.handlers.centerObject(imgObject, centered);
+                    }
+                    const { onAdd } = this.props;
+                    if (onAdd && !loaded) {
+                        onAdd(imgObject);
+                    }
+                };
+                newImg.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        },
+        addVideo: (obj, centered = true, loaded = false) => {
+            const { canvas } = this;
+            const { editable } = this.props;
+            const { src, file, ...otherOption } = obj;
+            const defaultOptions = {
+                action: {},
+                tooltip: {
+                    enabled: true,
+                },
+            };
+            const videoObject = new fabric.Rect({
+                src,
+                file,
+                ...otherOption,
+                ...defaultOptions,
+                fill: 'rgba(255, 255, 255, 0)',
+            });
+            if (!editable) {
+                videoObject.on('mousedown', this.events.object.mousedown);
+            }
+            canvas.add(videoObject);
+            if (!loaded) {
+                this.handlers.centerObject(videoObject, centered);
+            }
+            const { onAdd } = this.props;
+            if (onAdd && !loaded) {
+                onAdd(videoObject);
+            }
+        },
+        addStreamingVideo: () => {
+
         },
         remove: () => {
             const activeObject = this.canvas.getActiveObject();
@@ -413,8 +458,41 @@ class Canvas extends Component {
             const findObject = this.handlers.findById(id);
             this.handlers.setImage(findObject, source);
         },
-        setImageByObject: (obj, source) => {
-            this.handlers.setImage(obj, source);
+        loadVideo: (obj, src) => {
+            const { canvas } = this;
+            this.videoHandlers.mediaelement(obj, src);
+            this.canvas.renderAll();
+            fabric.util.requestAnimFrame(function render() {
+                canvas.renderAll();
+                fabric.util.requestAnimFrame(render);
+            });
+        },
+        setVideo: (obj, src) => {
+            let newSrc;
+            if (typeof src === 'string') {
+                obj.set('file', null);
+                obj.set('src', src);
+                newSrc = {
+                    src,
+                };
+                this.handlers.loadVideo(obj, newSrc);
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    obj.set('file', src);
+                    obj.set('src', null);
+                    newSrc = {
+                        src: e.target.result,
+                        type: src.type,
+                    };
+                    this.handlers.loadVideo(obj, newSrc);
+                };
+                reader.readAsDataURL(src);
+            }
+        },
+        setVideoById: (id, source) => {
+            const findObject = this.handlers.findById(id);
+            this.handlers.setVideo(findObject, source);
         },
         find: obj => this.handlers.findById(obj.id),
         findById: (id) => {
@@ -436,6 +514,9 @@ class Canvas extends Component {
             this.canvas.discardActiveObject();
             const activeSelection = new fabric.ActiveSelection(this.canvas.getObjects().filter((obj) => {
                 if (obj.id === 'workarea') {
+                    return false;
+                }
+                if (obj.type === 'video') {
                     return false;
                 }
                 if (obj.lock) {
@@ -554,6 +635,65 @@ class Canvas extends Component {
                     onModified(activeObject);
                 }
             }
+        },
+    }
+
+    videoHandlers = {
+        mediaelement: (obj, src) => {
+            const { id, autoplay, muted, loop } = obj;
+            const videoElement = fabric.util.makeElement('video', {
+                id,
+                autoplay,
+                muted,
+                loop,
+                preload: 'none',
+                controls: false,
+            });
+            const video = fabric.util.wrapElement(videoElement, 'div', {
+                id: `${obj.id}_container`,
+                style: `width: ${obj.width}px; height: ${obj.height}px; left: ${obj.left}px; top: ${obj.top}px; position: absolute;`,
+            });
+            this.container.current.appendChild(video);
+            const player = new MediaElementPlayer(obj.id, {
+                pauseOtherPlayers: false,
+                videoWidth: '100%',
+                videoHeight: '100%',
+                success: function (mediaeElement, originalNode, instance) {
+                    // console.log(mediaeElement, originalNode, instance);
+                },
+            });
+            player.setPlayerSize(obj.width, obj.height);
+            player.setSrc(src.src);
+            video.addEventListener('mousedown', (e) => {
+                this.canvas.setActiveObject(obj);
+            }, false);
+            interact(video)
+                .draggable({
+                    restrict: {
+                        restriction: 'parent',
+                        elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
+                    },
+                    onmove: (e) => {
+                        const { dx, dy, target } = e;
+                        // keep the dragged position in the data-x/data-y attributes
+                        const x = (parseFloat(target.getAttribute('data-x')) || 0) + dx;
+                        const y = (parseFloat(target.getAttribute('data-y')) || 0) + dy;
+                        // translate the element
+                        target.style.webkitTransform = `translate(${x}px, ${y}px)`;
+                        target.style.transform = `translate(${x}px, ${y}px)`;
+                        // update the posiion attributes
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+                        // update canvas object the position
+                        obj.set({
+                            left: obj.left + dx,
+                            top: obj.top + dy,
+                        });
+                        obj.setCoords();
+                    },
+                });
+            obj.setCoords();
+            obj.set('player', player);
         },
     }
 
@@ -1104,6 +1244,30 @@ class Canvas extends Component {
                 onModified(opt.target);
             }
         },
+        scaling: (opt) => {
+            const zoom = this.canvas.getZoom();
+            const width = opt.target.width * opt.target.scaleX * zoom;
+            const height = opt.target.height * opt.target.scaleY * zoom;
+            if (opt.target.type === 'video' && opt.target.player) {
+                const target = document.getElementById(`${opt.target.id}_container`);
+                // update the element
+                target.style.width = `${width}px`;
+                target.style.height = `${height}px`;
+                target.style.left = `${opt.target.left}px`;
+                target.style.top = `${opt.target.top}px`;
+                target.style.transform = null;
+                target.setAttribute('data-x', 0);
+                target.setAttribute('data-y', 0);
+                opt.target.player.setPlayerSize(width, height);
+            }
+        },
+        rotating: (opt) => {
+            if (opt.target.type === 'video' && opt.target.player) {
+                const target = document.getElementById(`${opt.target.id}_container`);
+                // update the element
+                target.style.transform = `rotate(${opt.target.angle}deg)`;
+            }
+        },
         moving: (e) => {
             const activeObject = this.handlers.getActiveObject();
             if (!activeObject) {
@@ -1150,7 +1314,7 @@ class Canvas extends Component {
         },
         mousedown: (opt) => {
             if (!this.polygonMode && this.props.editable) {
-                this.props.onSelect('mousedown', opt);
+                this.props.onSelect('mousedown', opt.target);
             }
             if (this.polygonMode) {
                 if (opt.target && this.pointArray.length && opt.target.id === this.pointArray[0].id) {
@@ -1186,7 +1350,7 @@ class Canvas extends Component {
         selection: (opt) => {
             const { onSelect } = this.props;
             if (onSelect) {
-                onSelect('selection', opt);
+                onSelect('selection', opt.target);
             }
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
@@ -1379,10 +1543,12 @@ class Canvas extends Component {
         });
         this.canvas.add(this.workarea);
         this.canvas.centerObject(this.workarea);
-        const { modified, mousewheel, mousedown, mousemove, selection } = this.events;
+        const { modified, scaling, rotating, mousewheel, mousedown, mousemove, selection } = this.events;
         if (editable) {
             this.canvas.on({
                 'object:modified': modified,
+                'object:scaling': scaling,
+                'object:rotating': rotating,
                 'mouse:wheel': mousewheel,
                 'mouse:down': mousedown,
                 'mouse:move': mousemove,

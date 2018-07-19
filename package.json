@@ -38,7 +38,9 @@
     "i18next-browser-languagedetector": "^2.2.0",
     "i18next-xhr-backend": "^1.5.1",
     "immutability-helper": "^2.7.1",
+    "interactjs": "^1.3.4",
     "lodash": "^4.17.10",
+    "mediaelement": "^4.2.9",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
     "polestar-icons": "^0.9.15",
@@ -55,7 +57,10 @@
     "redux": "^4.0.0",
     "redux-actions": "^2.4.0",
     "redux-thunk": "^2.3.0",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "video.js": "^7.0.5",
+    "videojs-youtube": "^2.5.0",
+    "youtube-video-js": "^1.6.2"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

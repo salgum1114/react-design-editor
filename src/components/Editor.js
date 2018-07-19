@@ -33,11 +33,11 @@ class Editor extends Component {
             }
             this.canvasRef.current.handlers.select(obj);
         },
-        onSelect: (type, opt) => {
+        onSelect: (type, target) => {
             if (type === 'mousedown') {
-                if (opt.target && opt.target.id !== 'workarea' && opt.target.type !== 'activeSelection') {
+                if (target && target.id !== 'workarea' && target.type !== 'activeSelection') {
                     this.setState({
-                        selectedItem: opt.target,
+                        selectedItem: target,
                     });
                     return;
                 }
@@ -46,9 +46,9 @@ class Editor extends Component {
                 });
                 return;
             }
-            if (opt && opt.selected && opt.selected.length === 1) {
+            if (target && target.type !== 'activeSelection') {
                 this.setState({
-                    selectedItem: opt.selected[0],
+                    selectedItem: target,
                 });
                 return;
             }
@@ -99,7 +99,11 @@ class Editor extends Component {
                 return;
             }
             if (changedKey === 'file' || changedKey === 'src') {
-                this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
+                if (selectedItem.type === 'image') {
+                    this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
+                } else {
+                    this.canvasRef.current.handlers.setVideoById(selectedItem.id, changedValue);
+                }
                 return;
             }
             if (changedKey === 'action') {
@@ -231,7 +235,7 @@ class Editor extends Component {
                         </aside>
                     </div>
                 </div>
-                <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} />
+                {/* <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} /> */}
             </div>
         );
     }
