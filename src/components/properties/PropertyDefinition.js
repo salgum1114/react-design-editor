@@ -90,21 +90,9 @@ export default {
             title: 'General',
             component: GeneralProperty,
         },
-        image: {
+        video: {
             title: 'Video',
             component: VideoProperty,
-        },
-        action: {
-            title: 'Action',
-            component: ActionProperty,
-        },
-        tooltip: {
-            title: 'Tooltip',
-            component: TooltipProperty,
-        },
-        style: {
-            title: 'Style',
-            component: StyleProperty,
         },
     },
     triangle: {

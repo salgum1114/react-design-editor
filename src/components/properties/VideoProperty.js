@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Radio } from 'antd';
+import { Form, Radio, Row, Col, Switch } from 'antd';
 import UrlModal from '../UrlModal';
 import FileUpload from '../FileUpload';
 
@@ -12,6 +12,59 @@ export default {
         const videoLoadType = data.videoLoadType || 'file';
         return (
             <React.Fragment>
+                <Row>
+                    <Col span={8}>
+                        <Form.Item label="Auto Play" colon={false}>
+                            {
+                                getFieldDecorator('autoplay', {
+                                    rules: [{
+                                        type: 'boolean',
+                                        // required: true,
+                                        // message: 'Please input rotation',
+                                    }],
+                                    valuePropName: 'checked',
+                                    initialValue: data.autoplay,
+                                })(
+                                    <Switch />,
+                                )
+                            }
+                        </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                        <Form.Item label="Muted" colon={false}>
+                            {
+                                getFieldDecorator('muted', {
+                                    rules: [{
+                                        type: 'boolean',
+                                        // required: true,
+                                        // message: 'Please input rotation',
+                                    }],
+                                    valuePropName: 'checked',
+                                    initialValue: data.muted,
+                                })(
+                                    <Switch />,
+                                )
+                            }
+                        </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                        <Form.Item label="Loop" colon={false}>
+                            {
+                                getFieldDecorator('loop', {
+                                    rules: [{
+                                        type: 'boolean',
+                                        // required: true,
+                                        // message: 'Please input rotation',
+                                    }],
+                                    valuePropName: 'checked',
+                                    initialValue: data.loop,
+                                })(
+                                    <Switch />,
+                                )
+                            }
+                        </Form.Item>
+                    </Col>
+                </Row>
                 <Form.Item label="Video Load Type" colon={false}>
                     {
                         getFieldDecorator('videoLoadType', {

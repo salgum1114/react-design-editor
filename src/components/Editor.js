@@ -17,11 +17,15 @@ const propertiesToInclude = [
     'name',
     'lock',
     'file',
+    'src',
     'action',
     'tooltip',
     'layout',
     'workareaWidth',
     'workareaHeight',
+    'autoplay',
+    'muted',
+    'loop',
 ];
 
 class Editor extends Component {
@@ -144,17 +148,20 @@ class Editor extends Component {
             this.setState({
                 preview: typeof checked === 'object' ? false : checked,
             }, () => {
-                setTimeout(() => {
-                    this.preview.canvasRef.current.canvas.clear();
-                    const data = this.canvasRef.current.handlers.exportJSON().objects.filter((obj) => {
-                        if (!obj.id) {
-                            return false;
-                        }
-                        return true;
-                    });
-                    const json = JSON.stringify(data);
-                    this.preview.canvasRef.current.handlers.importJSON(json);
-                }, 0);
+                if (this.state.preview) {
+                    setTimeout(() => {
+                        const data = this.canvasRef.current.handlers.exportJSON().objects.filter((obj) => {
+                            if (!obj.id) {
+                                return false;
+                            }
+                            return true;
+                        });
+                        const json = JSON.stringify(data);
+                        this.preview.canvasRef.current.handlers.importJSON(json);
+                    }, 0);
+                    return;
+                }
+                this.preview.canvasRef.current.handlers.clear();
             });
         },
     }
@@ -235,7 +242,7 @@ class Editor extends Component {
                         </aside>
                     </div>
                 </div>
-                {/* <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} /> */}
+                <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} />
             </div>
         );
     }

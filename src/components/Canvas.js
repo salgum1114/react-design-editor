@@ -102,6 +102,14 @@ class Canvas extends Component {
                 this.handlers.addVideo(obj, centered, loaded);
                 return;
             }
+            if (obj.type === 'element') {
+                this.handlers.addElement(obj, centered, loaded);
+                return;
+            }
+            if (obj.type === 'iframe') {
+                this.handlers.addIFrame(obj, centered, loaded);
+                return;
+            }
             const newObject = this.fabricObjects[obj.type].create({ ...obj });
             if (!editable) {
                 newObject.on('mousedown', this.events.object.mousedown);
@@ -192,6 +200,9 @@ class Canvas extends Component {
                 videoObject.on('mousedown', this.events.object.mousedown);
             }
             canvas.add(videoObject);
+            if (src || file) {
+                this.handlers.setVideo(videoObject, src || file);
+            }
             if (!loaded) {
                 this.handlers.centerObject(videoObject, centered);
             }
@@ -200,7 +211,10 @@ class Canvas extends Component {
                 onAdd(videoObject);
             }
         },
-        addStreamingVideo: () => {
+        addElement: (obj, centered = true, loaded = false) => {
+
+        },
+        addIFrame: (obj, centered = true, loaded = false) => {
 
         },
         remove: () => {
@@ -210,11 +224,17 @@ class Canvas extends Component {
             }
             if (activeObject.type !== 'activeSelection') {
                 this.canvas.discardActiveObject();
+                if (activeObject.type === 'video' || activeObject.type === 'element' || activeObject.type === 'iframe') {
+                    this.elementHandlers.removeById(activeObject.id);
+                }
                 this.canvas.remove(activeObject);
             } else {
                 const activeObjects = activeObject._objects;
                 this.canvas.discardActiveObject();
                 activeObjects.forEach((object) => {
+                    if (object.type === 'video' || object.type === 'element' || object.type === 'iframe') {
+                        this.elementHandlers.removeById(findObject.id);
+                    }
                     this.canvas.remove(object);
                 });
             }
@@ -230,6 +250,9 @@ class Canvas extends Component {
                 const { onRemove } = this.props;
                 if (onRemove) {
                     onRemove(findObject);
+                }
+                if (findObject.type === 'video' || findObject.type === 'element' || findObject.type === 'iframe') {
+                    this.elementHandlers.removeById(findObject.id);
                 }
                 this.canvas.remove(findObject);
             }
@@ -339,42 +362,6 @@ class Canvas extends Component {
         },
         getActiveObject: () => this.canvas.getActiveObject(),
         getActiveObjects: () => this.canvas.getActiveObjects(),
-        setCanvasBackgroundImage: (obj) => {
-            const { canvas } = this;
-            if (obj.type === 'image') {
-                const { src, file } = obj;
-                if (src) {
-                    fabric.Image.fromURL(src, (img) => {
-                        img.set({
-                            originX: 'left',
-                            originY: 'top',
-                        });
-                        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-                            scaleX: canvas.width / img.width,
-                            scaleY: canvas.height / img.height,
-                        });
-                    });
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const { result } = e.target;
-                    fabric.Image.fromURL(result, (img) => {
-                        img.set({
-                            originX: 'left',
-                            originY: 'top',
-                        });
-                        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas), {
-                            scaleX: canvas.width / img.width,
-                            scaleY: canvas.height / img.height,
-                        });
-                    });
-                };
-                reader.readAsDataURL(file);
-                return;
-            }
-            console.warn('Object type not image');
-        },
         set: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
             if (!activeObject) {
@@ -460,6 +447,10 @@ class Canvas extends Component {
         },
         loadVideo: (obj, src) => {
             const { canvas } = this;
+            const { editable } = this.props;
+            if (editable) {
+                this.elementHandlers.removeById(obj.id);
+            }
             this.videoHandlers.create(obj, src);
             this.canvas.renderAll();
             fabric.util.requestAnimFrame(function render() {
@@ -480,7 +471,7 @@ class Canvas extends Component {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     obj.set('file', src);
-                    obj.set('src', null);
+                    obj.set('src', e.target.result);
                     newSrc = {
                         src: e.target.result,
                         type: src.type,
@@ -603,6 +594,9 @@ class Canvas extends Component {
                     obj.left += diffLeft;
                     obj.top += diffTop;
                 }
+                if (obj.type === 'video' || obj.type === 'element' || obj.type === 'iframe') {
+                    obj.id = uuid();
+                }
                 this.handlers.add(obj, false, true);
                 this.canvas.renderAll();
             });
@@ -636,10 +630,23 @@ class Canvas extends Component {
                 }
             }
         },
+        clear: () => {
+            const { canvas } = this;
+            const ids = canvas.getObjects().reduce((prev, curr) => {
+                if (curr.type === 'video' || curr.type === 'element' || curr.type === 'iframe') {
+                    prev.push(curr.id);
+                    return prev;
+                }
+                return prev;
+            }, []);
+            this.elementHandlers.removeByIds(ids);
+            canvas.clear();
+        }
     }
 
     videoHandlers = {
         create: (obj, src) => {
+            const { editable } = this.props;
             const { id, autoplay, muted, loop } = obj;
             const videoElement = fabric.util.makeElement('video', {
                 id,
@@ -649,9 +656,19 @@ class Canvas extends Component {
                 preload: 'none',
                 controls: false,
             });
+            const width = obj.width * obj.scaleX;
+            const height = obj.height * obj.scaleY;
+            const angle = obj.angle;
+            const zoom = this.canvas.getZoom();
             const video = fabric.util.wrapElement(videoElement, 'div', {
                 id: `${obj.id}_container`,
-                style: `width: ${obj.width}px; height: ${obj.height}px; left: ${obj.left}px; top: ${obj.top}px; position: absolute;`,
+                style: `transform: rotate(${angle}deg);
+                        width: ${width}px;
+                        height: ${height}px;
+                        left: ${obj.left}px;
+                        top: ${obj.top}px;
+                        position: absolute;
+                        zoom: ${zoom}`,
             });
             this.container.current.appendChild(video);
             const player = new MediaElementPlayer(obj.id, {
@@ -659,19 +676,47 @@ class Canvas extends Component {
                 videoWidth: '100%',
                 videoHeight: '100%',
                 success: function (mediaeElement, originalNode, instance) {
+                    if (editable) {
+
+                    }
                     // console.log(mediaeElement, originalNode, instance);
                 },
             });
-            player.setPlayerSize(obj.width, obj.height);
+            player.setPlayerSize(width, height);
             player.setSrc(src.src);
-            video.addEventListener('mousedown', (e) => {
-                this.canvas.setActiveObject(obj);
-            }, false);
-            interact(video)
+            if (editable) {
+                this.elementHandlers.draggable(video, obj);
+                video.addEventListener('mousedown', (e) => {
+                    this.canvas.setActiveObject(obj);
+                }, false);
+            }
+            obj.setCoords();
+            obj.set('player', player);
+        },
+    }
+
+    elementHandlers = {
+        findElementById: (id) => {
+            return document.getElementById(`${id}_container`);
+        },
+        removeById: (id) => {
+            const el = this.elementHandlers.findElementById(id);
+            if (!el) {
+                return;
+            }
+            this.container.current.removeChild(el);
+        },
+        removeByIds: (ids) => {
+            ids.forEach((id) => {
+                this.elementHandlers.removeById(id);
+            });
+        },
+        draggable: (el, obj) => {
+            return interact(el)
                 .draggable({
                     restrict: {
                         restriction: 'parent',
-                        elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
+                        // elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
                     },
                     onmove: (e) => {
                         const { dx, dy, target } = e;
@@ -692,8 +737,6 @@ class Canvas extends Component {
                         obj.setCoords();
                     },
                 });
-            obj.setCoords();
-            obj.set('player', player);
         },
     }
 
@@ -1245,27 +1288,31 @@ class Canvas extends Component {
             }
         },
         scaling: (opt) => {
-            const zoom = this.canvas.getZoom();
-            const width = opt.target.width * opt.target.scaleX * zoom;
-            const height = opt.target.height * opt.target.scaleY * zoom;
-            if (opt.target.type === 'video' && opt.target.player) {
-                const target = document.getElementById(`${opt.target.id}_container`);
+            const { target } = opt;
+            if (target.type === 'video' || target.type === 'element' || target.type === 'iframe') {
+                const zoom = this.canvas.getZoom();
+                const width = target.width * target.scaleX * zoom;
+                const height = target.height * target.scaleY * zoom;
+                const el = this.elementHandlers.findElementById(target.id);
                 // update the element
-                target.style.width = `${width}px`;
-                target.style.height = `${height}px`;
-                target.style.left = `${opt.target.left}px`;
-                target.style.top = `${opt.target.top}px`;
-                target.style.transform = null;
-                target.setAttribute('data-x', 0);
-                target.setAttribute('data-y', 0);
-                opt.target.player.setPlayerSize(width, height);
+                el.style.width = `${width}px`;
+                el.style.height = `${height}px`;
+                el.style.left = `${target.left}px`;
+                el.style.top = `${target.top}px`;
+                el.style.transform = null;
+                el.setAttribute('data-x', 0);
+                el.setAttribute('data-y', 0);
+                if (target.type === 'video' && target.player) {
+                    target.player.setPlayerSize(width, height);
+                }
             }
         },
         rotating: (opt) => {
-            if (opt.target.type === 'video' && opt.target.player) {
-                const target = document.getElementById(`${opt.target.id}_container`);
+            const { target } = opt;
+            if (target.type === 'video' && target.player) {
+                const el = this.elementHandlers.findElementById(target.id);
                 // update the element
-                target.style.transform = `rotate(${opt.target.angle}deg)`;
+                el.style.transform = `rotate(${target.angle}deg)`;
             }
         },
         moving: (e) => {
@@ -1359,9 +1406,9 @@ class Canvas extends Component {
             if (!this.workarea) {
                 return;
             }
+            const diffWidth = (nextWidth / 2) - (currentWidth / 2);
+            const diffHeight = (nextHeight / 2) - (currentHeight / 2);
             if (this.workarea.layout === 'fixed') {
-                const diffWidth = (nextWidth / 2) - (currentWidth / 2);
-                const diffHeight = (nextHeight / 2) - (currentHeight / 2);
                 this.canvas.centerObject(this.workarea);
                 this.workarea.setCoords();
                 this.canvas.getObjects().forEach((obj, index) => {
@@ -1380,10 +1427,7 @@ class Canvas extends Component {
                 if (this.workarea.height > this.workarea.width) {
                     scaleX = scaleY;
                 }
-                const diffWidth = (nextWidth / 2) - (currentWidth / 2);
-                const diffHeight = (nextHeight / 2) - (currentHeight / 2);
                 const deltaPoint = new fabric.Point(diffWidth, diffHeight);
-                this.deltaPoint = deltaPoint;
                 this.canvas.relativePan(deltaPoint);
                 const center = this.canvas.getCenter();
                 const point = {
@@ -1492,7 +1536,8 @@ class Canvas extends Component {
             return false;
         },
         keydown: (e) => {
-            if (this.canvas.wrapperEl !== document.activeElement) {
+            if (!document.activeElement.id.includes('mep')
+            && this.canvas.wrapperEl !== document.activeElement) {
                 return false;
             }
             if (e.keyCode === 46) {
