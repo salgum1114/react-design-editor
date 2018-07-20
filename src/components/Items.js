@@ -87,7 +87,7 @@ const DOM_ELEMENT = [
             type: 'element',
             width: 480,
             height: 270,
-            name: 'New video',
+            name: 'New Element',
             autoplay: true,
             muted: true,
             loop: true,
@@ -102,7 +102,7 @@ const DOM_ELEMENT = [
             type: 'iframe',
             width: 480,
             height: 270,
-            name: 'New video',
+            name: 'New IFrame',
             autoplay: true,
             muted: true,
             loop: true,
@@ -111,16 +111,6 @@ const DOM_ELEMENT = [
 ];
 
 const SHAPE = [
-    // {
-    //     key: 'line',
-    //     icon: 'picture-o',
-    //     title: 'Line',
-    // },
-    // {
-    //     key: 'polygon',
-    //     icon: 'picture-o',
-    //     title: 'Polygon',
-    // },
     {
         key: 'default-triangle',
         type: 'triangle',

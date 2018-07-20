@@ -2,11 +2,13 @@ import MarkerProperty from './MarkerProperty';
 import GeneralProperty from './GeneralProperty';
 import StyleProperty from './StyleProperty';
 import TooltipProperty from './TooltipProperty';
-import VideoProperty from './VideoProperty';
 import ImageProperty from './ImageProperty';
 import TextProperty from './TextProperty';
 import MapProperty from './MapProperty';
 import ActionProperty from './ActionProperty';
+import VideoProperty from './VideoProperty';
+import ElementProperty from './ElementProperty';
+import IFrameProperty from './IFrameProperty';
 
 export default {
     map: {
@@ -83,16 +85,6 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
-        },
-    },
-    video: {
-        general: {
-            title: 'General',
-            component: GeneralProperty,
-        },
-        video: {
-            title: 'Video',
-            component: VideoProperty,
         },
     },
     triangle: {
@@ -183,6 +175,36 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
+        },
+    },
+    video: {
+        general: {
+            title: 'General',
+            component: GeneralProperty,
+        },
+        video: {
+            title: 'Video',
+            component: VideoProperty,
+        },
+    },
+    element: {
+        general: {
+            title: 'General',
+            component: GeneralProperty,
+        },
+        video: {
+            title: 'Element',
+            component: ElementProperty,
+        },
+    },
+    iframe: {
+        general: {
+            title: 'General',
+            component: GeneralProperty,
+        },
+        video: {
+            title: 'IFrame',
+            component: IFrameProperty,
         },
     },
 };
