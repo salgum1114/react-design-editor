@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, Modal, Button, Input } from 'antd';
 import Icon from 'polestar-icons';
 
-class UrlModal extends Component {
+class AceModal extends Component {
     static propTypes = {
         value: PropTypes.any,
         onChange: PropTypes.func,
@@ -97,4 +97,4 @@ class UrlModal extends Component {
     }
 }
 
-export default UrlModal;
+export default AceModal;

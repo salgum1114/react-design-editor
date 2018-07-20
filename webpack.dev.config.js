@@ -42,6 +42,9 @@ module.exports = merge(baseConfig, {
                 ws: true,
             },
         },
+        headers: {
+            'X-Frame-Options': 'sameorigin', // used iframe
+        },
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(), // HMR을 사용하기 위한 플러그인

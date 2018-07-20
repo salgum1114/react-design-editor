@@ -37,20 +37,8 @@ class Editor extends Component {
             }
             this.canvasRef.current.handlers.select(obj);
         },
-        onSelect: (type, target) => {
-            if (type === 'mousedown') {
-                if (target && target.id !== 'workarea' && target.type !== 'activeSelection') {
-                    this.setState({
-                        selectedItem: target,
-                    });
-                    return;
-                }
-                this.setState({
-                    selectedItem: this.canvasRef.current.workarea,
-                });
-                return;
-            }
-            if (target && target.type !== 'activeSelection') {
+        onSelect: (target) => {
+            if (target && target.id !== 'workarea' && target.type !== 'activeSelection') {
                 this.setState({
                     selectedItem: target,
                 });
@@ -105,8 +93,8 @@ class Editor extends Component {
             if (changedKey === 'file' || changedKey === 'src') {
                 if (selectedItem.type === 'image') {
                     this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
-                } else {
-                    this.canvasRef.current.handlers.setVideoById(selectedItem.id, changedValue);
+                } else if (this.canvasRef.current.handlers.isElementType(selectedItem.type)) {
+                    this.canvasRef.current.elementHandlers.setElementById(selectedItem.id, changedValue);
                 }
                 return;
             }
