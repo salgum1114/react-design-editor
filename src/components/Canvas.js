@@ -1343,6 +1343,20 @@ class Canvas extends Component {
         zoomToPoint: (point, zoom) => {
             const { onZoom } = this.props;
             this.canvas.zoomToPoint(point, zoom);
+            this.canvas.getObjects().forEach((obj) => {
+                if (this.handlers.isElementType(obj.type)) {
+                    const width = obj.width * obj.scaleX * zoom;
+                    const height = obj.height * obj.scaleY * zoom;
+                    const el = this.elementHandlers.findById(obj.id);
+                    // update the element
+                    this.elementHandlers.setSize(el, width, height);
+                    const { left, top } = obj.getBoundingRect();
+                    this.elementHandlers.setPosition(el, left, top);
+                    if (obj.type === 'video' && obj.player) {
+                        obj.player.setPlayerSize(width, height);
+                    }
+                }
+            });
             if (onZoom) {
                 onZoom(zoom);
             }
@@ -1520,7 +1534,7 @@ class Canvas extends Component {
                 } else {
                     zoomRatio += 0.01;
                 }
-                this.canvas.zoomToPoint(new fabric.Point(this.canvas.width / 2, this.canvas.height / 2), zoomRatio);
+                this.zoomHandlers.zoomToPoint(new fabric.Point(this.canvas.width / 2, this.canvas.height / 2), zoomRatio);
                 opt.e.preventDefault();
                 opt.e.stopPropagation();
                 if (onZoom) {
