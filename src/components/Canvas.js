@@ -728,7 +728,11 @@ class Canvas extends Component {
                 styleElement.innerHTML = code.css;
                 document.head.appendChild(styleElement);
             }
-            element.innerHTML = code.html;
+            let html;
+            if (code.js) {
+                html = code.html + `<script type="text/javascript">'use strict';\n${code.js}</script>`;
+            }
+            element.innerHTML = html;
             this.container.current.appendChild(element);
             if (editable) {
                 this.elementHandlers.draggable(element, obj);

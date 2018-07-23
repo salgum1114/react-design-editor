@@ -24,7 +24,7 @@ class AceEditor extends Component {
                     this.props.onChangeHTML(value);
                 }
             });
-        }, 300),
+        }, 1000),
         onChangeCSS: debounce((value) => {
             this.setState({
                 css: value,
@@ -33,7 +33,7 @@ class AceEditor extends Component {
                     this.props.onChangeCSS(value);
                 }
             });
-        }, 300),
+        }, 1000),
         onChangeJS: debounce((value) => {
             this.setState({
                 js: value,
@@ -42,7 +42,7 @@ class AceEditor extends Component {
                     this.props.onChangeJS(value);
                 }
             });
-        }, 300),
+        }, 1000),
         getCodeValue: () => {
             const { html, css, js } = this.state;
             return {
@@ -147,7 +147,9 @@ class AceEditor extends Component {
                 {
                     isPreview ? (
                         <Col span={12} style={defaultStyle}>
-                            <AcePreview html={html} css={css} js={js} />
+                            <Form.Item label="Preview" colon={false}>
+                                <AcePreview html={html} css={css} js={js} />
+                            </Form.Item>
                         </Col>
                     ) : null
                 }
