@@ -24,7 +24,7 @@ class AceEditor extends Component {
                     this.props.onChangeHTML(value);
                 }
             });
-        }, 1000),
+        }, 500),
         onChangeCSS: debounce((value) => {
             this.setState({
                 css: value,
@@ -33,7 +33,7 @@ class AceEditor extends Component {
                     this.props.onChangeCSS(value);
                 }
             });
-        }, 1000),
+        }, 500),
         onChangeJS: debounce((value) => {
             this.setState({
                 js: value,
@@ -42,7 +42,7 @@ class AceEditor extends Component {
                     this.props.onChangeJS(value);
                 }
             });
-        }, 1000),
+        }, 500),
         getCodeValue: () => {
             const { html, css, js } = this.state;
             return {

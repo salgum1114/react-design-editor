@@ -130,6 +130,9 @@ class Editor extends Component {
             const count = (Math.random() * 10) + 1;
             return <div><div><div><Button>{opt.target.id}</Button><Badge count={count}/></div></div></div>;
         },
+        onAction: (canvas, opt) => {
+
+        },
     }
 
     handlers = {

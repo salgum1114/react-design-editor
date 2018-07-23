@@ -14,26 +14,35 @@ class AcePreview extends Component {
         js: '',
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidMount() {
         const { html, css, js } = this.props;
+        this.iframeRender(html, css, js);
+    }
+
+    componentDidUpdate(prevProps) {
         if (this.container) {
+            const { html, css, js } = this.props;
             if (html !== prevProps.html
-            || css !== prevProps.css
-            || js !== prevProps.js) {
-                while (this.container.hasChildNodes()) {
-                    this.container.removeChild(this.container.firstChild);
-                }
-                const iframe = document.createElement('iframe');
-                iframe.width = '100%';
-                iframe.height = '200px';
-                iframe.srcdoc = html + `<script type="text/javascript">'use strict';\n${js}</script>`;
-                this.container.appendChild(iframe);
-                const style = document.createElement('style');
-                style.type = 'text/css';
-                style.innerHTML = css;
-                iframe.contentDocument.head.appendChild(style);
+                || css !== prevProps.css
+                || js !== prevProps.js) {
+                this.iframeRender(html, css, js);
             }
         }
+    }
+
+    iframeRender = (html, css, js) => {
+        while (this.container.hasChildNodes()) {
+            this.container.removeChild(this.container.firstChild);
+        }
+        const iframe = document.createElement('iframe');
+        iframe.width = '100%';
+        iframe.height = '200px';
+        iframe.srcdoc = html + `<script type="text/javascript">'use strict';\n${js}</script>`;
+        this.container.appendChild(iframe);
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = css;
+        iframe.contentDocument.head.appendChild(style);
     }
 
     render() {

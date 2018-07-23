@@ -103,6 +103,17 @@ class AceModal extends Component {
                         )
                     }
                 </Form.Item>
+                <Form.Item label="JS" colon={false}>
+                    {
+                        getFieldDecorator('js', {
+                            initialValue: js || '',
+                        })(
+                            <span style={{ wordBreak: 'break-all' }}>
+                                {js}
+                            </span>,
+                        )
+                    }
+                </Form.Item>
                 <Modal
                     onCancel={onCancel}
                     onOk={onOk}

@@ -57,6 +57,7 @@ class Canvas extends Component {
         onSelect: PropTypes.func,
         onZoom: PropTypes.func,
         onTooltip: PropTypes.func,
+        onAction: PropTypes.func,
     }
 
     static defaultProps = {
@@ -212,6 +213,7 @@ class Canvas extends Component {
                 if (this.handlers.isElementType(activeObject.type)) {
                     this.elementHandlers.removeById(activeObject.id);
                     this.elementHandlers.removeStyleById(activeObject.id);
+                    this.elementHandlers.removeScriptById(activeObject.id);
                 }
                 this.canvas.remove(activeObject);
             } else {
@@ -221,6 +223,7 @@ class Canvas extends Component {
                     if (this.handlers.isElementType(obj.type)) {
                         this.elementHandlers.removeById(obj.id);
                         this.elementHandlers.removeStyleById(obj.id);
+                        this.elementHandlers.removeScriptById(obj.id);
                     }
                     this.canvas.remove(obj);
                 });
@@ -241,6 +244,7 @@ class Canvas extends Component {
                 if (this.handlers.isElementType(findObject.type)) {
                     this.elementHandlers.removeById(findObject.id);
                     this.elementHandlers.removeStyleById(findObject.id);
+                    this.elementHandlers.removeScriptById(findObject.id);
                 }
                 this.canvas.remove(findObject);
             }
@@ -589,7 +593,6 @@ class Canvas extends Component {
                 return prev;
             }, []);
             this.elementHandlers.removeByIds(ids);
-            this.elementHandlers.removeStyleByIds(ids);
             canvas.clear();
         },
         isElementType: (type) => {
@@ -708,6 +711,7 @@ class Canvas extends Component {
             if (editable) {
                 this.elementHandlers.removeById(id);
                 this.elementHandlers.removeStyleById(id);
+                this.elementHandlers.removeScriptById(id);
             }
             const zoom = this.canvas.getZoom();
             const width = obj.width * scaleX * zoom;
@@ -721,19 +725,23 @@ class Canvas extends Component {
                         top: ${top}px;
                         position: absolute;`,
             });
+            const { html, css, js } = code;
             if (code.css && code.css.length) {
                 const styleElement = document.createElement('style');
-                styleElement.setAttribute('id', `${id}_style`);
-                styleElement.setAttribute('type', 'text/css');
+                script.id = `${id}_style`;
+                script.type = 'text/css';
                 styleElement.innerHTML = code.css;
                 document.head.appendChild(styleElement);
             }
-            let html;
-            if (code.js) {
-                html = code.html + `<script type="text/javascript">'use strict';\n${code.js}</script>`;
+            this.container.current.appendChild(element);
+            if (code.js && code.js.length) {
+                const script = document.createElement('script');
+                script.id = `${id}_script`;
+                script.type = 'text/javascript';
+                script.innerHTML = js;
+                element.appendChild(script);
             }
             element.innerHTML = html;
-            this.container.current.appendChild(element);
             if (editable) {
                 this.elementHandlers.draggable(element, obj);
                 element.addEventListener('mousedown', (e) => {
@@ -780,6 +788,7 @@ class Canvas extends Component {
             }
             obj.setCoords();
         },
+        findScriptById: id => document.getElementById(`${id}_script`),
         findStyleById: id => document.getElementById(`${id}_style`),
         findById: id => document.getElementById(`${id}_container`),
         remove: (el) => {
@@ -795,10 +804,12 @@ class Canvas extends Component {
             }
             document.head.removeChild(style);
         },
-        removeStyleByIds: (ids) => {
-            ids.forEach((id) => {
-                this.elementHandlers.removeStyleById(id);
-            });
+        removeScriptById: (id) => {
+            const style = this.elementHandlers.findScriptById(id);
+            if (!style) {
+                return;
+            }
+            document.head.removeChild(style);
         },
         removeById: (id) => {
             const el = this.elementHandlers.findById(id);
@@ -807,6 +818,8 @@ class Canvas extends Component {
         removeByIds: (ids) => {
             ids.forEach((id) => {
                 this.elementHandlers.removeById(id);
+                this.elementHandlers.removeStyleById(id);
+                this.elementHandlers.removeScriptById(id);
             });
         },
         setPosition: (el, left, top) => {
