@@ -6,6 +6,7 @@ It is a simple design editor such as power point, slides.
 - ant.design
 - fabric.js
 - mediaelement.js
+- react-ace
 - interact.js
 - webpack4
 - babel
@@ -17,22 +18,25 @@ It is a simple design editor such as power point, slides.
 
 # Three layout mode
 ## 1. Fixed
+### Workarea fixed
 
-![rde_main](https://user-images.githubusercontent.com/19975642/42750666-ff9ba47a-8922-11e8-8278-c6d5c6314750.PNG)
+![image](https://user-images.githubusercontent.com/19975642/43051975-b878d336-8e5b-11e8-8e71-6d727bb4bbea.png)
 
 ## 2. Responsive
+### Preserves image quality
 
-![responsive](https://user-images.githubusercontent.com/19975642/42750776-6c1e0084-8923-11e8-85be-90f10c6feeb3.PNG)
+![image](https://user-images.githubusercontent.com/19975642/43051993-e1f916f8-8e5b-11e8-9ff4-8a619ef933ee.png)
 
 ## 3. Fullscreen
+#### Fills the container area
 
-![fullscreen](https://user-images.githubusercontent.com/19975642/42750789-7c3ce7e6-8923-11e8-8534-d074889b0e20.PNG)
+![image](https://user-images.githubusercontent.com/19975642/43051999-f4a124e4-8e5b-11e8-816d-62cb1162ae87.png)
 
 # Preview mode
 
 ![image](https://user-images.githubusercontent.com/19975642/42750820-9739ea94-8923-11e8-9d03-017a041c55d6.png)
 
-# Supported Function
+# Supported
 - [x] Add
 - [x] Remove
 - [x] Clone
@@ -40,8 +44,7 @@ It is a simple design editor such as power point, slides.
 - [x] Reorder
 - [x] Zoom
 - [x] Preview
-- [x] Copy & Paste
-- [x] External Copy & Paste
+- [x] Copy & Paste (Local/External)
 - [x] Drag & Drop
 - [x] Image Upload (Local/External)
 - [x] External Drag & Drop Upload
@@ -49,8 +52,9 @@ It is a simple design editor such as power point, slides.
 - [x] Drawing - Polygon
 - [x] Export / Import - JSON, PNG
 - [x] Video - development
+- [x] Dom Element - (Code Editor)
+- [x] iframe - development
 - [ ] Multiple Map - development
-- [ ] Dom Element - development
-- [ ] iframe - development
 - [ ] Image Cropping - development
 - [ ] Undo / Redo - development
+- [ ] Context menu
