@@ -739,12 +739,8 @@ class Canvas extends Component {
             }
             obj.setCoords();
         },
-        setIFrame: (obj, code) => {
-            if (typeof code === 'string') {
-                obj.set('src', code);
-            } else {
-                obj.set('code', code);
-            }
+        setIFrame: (obj, src) => {
+            obj.set('src', src);
             const { editable } = this.props;
             const { id, scaleX, scaleY, angle } = obj;
             if (editable) {
@@ -753,7 +749,7 @@ class Canvas extends Component {
             const { left, top } = obj.getBoundingRect();
             const iframeElement = fabric.util.makeElement('iframe', {
                 id,
-                code,
+                src,
                 width: '100%',
                 height: '100%',
             });
@@ -767,7 +763,8 @@ class Canvas extends Component {
                         height: ${height}px;
                         left: ${left}px;
                         top: ${top}px;
-                        position: absolute;`,
+                        position: absolute;
+                        z-index: 100000;`,
             });
             this.container.current.appendChild(iframe);
             if (editable) {

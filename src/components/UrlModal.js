@@ -89,7 +89,7 @@ class UrlModal extends Component {
                     visible={visible}
                 >
                     <Form.Item label="URL" colon={false}>
-                        <Input onChange={(e) => { this.setState({ tempUrl: e.target.value }); }} />
+                        <Input defaultValue={url} onChange={(e) => { this.setState({ tempUrl: e.target.value }); }} />
                     </Form.Item>
                 </Modal>
             </React.Fragment>
