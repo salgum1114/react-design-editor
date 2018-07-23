@@ -172,10 +172,11 @@ class Canvas extends Component {
                     enabled: true,
                 },
             };
-            const { src, file, ...otherOption } = obj;
+            const { src, file, code, ...otherOption } = obj;
             const createdObj = new fabric.Rect({
                 src,
                 file,
+                code,
                 ...otherOption,
                 ...defaultOptions,
                 fill: 'rgba(255, 255, 255, 0)',
@@ -184,13 +185,13 @@ class Canvas extends Component {
                 createdObj.on('mousedown', this.events.object.mousedown);
             }
             canvas.add(createdObj);
-            if (src || file) {
+            if (src || file || code) {
                 if (obj.type === 'video') {
                     this.videoHandlers.setVideo(createdObj, src || file);
                 } else if (obj.type === 'element') {
-                    this.elementHandlers.setElement(createdObj, src || file);
+                    this.elementHandlers.setElement(createdObj, src || code);
                 } else {
-                    this.elementHandlers.setIFrame(createdObj, src);
+                    this.elementHandlers.setIFrame(createdObj, src || code);
                 }
             }
             if (editable) {
@@ -210,6 +211,7 @@ class Canvas extends Component {
                 this.canvas.discardActiveObject();
                 if (this.handlers.isElementType(activeObject.type)) {
                     this.elementHandlers.removeById(activeObject.id);
+                    this.elementHandlers.removeStyleById(activeObject.id);
                 }
                 this.canvas.remove(activeObject);
             } else {
@@ -218,6 +220,7 @@ class Canvas extends Component {
                 activeObjects.forEach((obj) => {
                     if (this.handlers.isElementType(obj.type)) {
                         this.elementHandlers.removeById(obj.id);
+                        this.elementHandlers.removeStyleById(obj.id);
                     }
                     this.canvas.remove(obj);
                 });
@@ -237,6 +240,7 @@ class Canvas extends Component {
                 }
                 if (this.handlers.isElementType(findObject.type)) {
                     this.elementHandlers.removeById(findObject.id);
+                    this.elementHandlers.removeStyleById(findObject.id);
                 }
                 this.canvas.remove(findObject);
             }
@@ -585,6 +589,7 @@ class Canvas extends Component {
                 return prev;
             }, []);
             this.elementHandlers.removeByIds(ids);
+            this.elementHandlers.removeStyleByIds(ids);
             canvas.clear();
         },
         isElementType: (type) => {
@@ -637,6 +642,7 @@ class Canvas extends Component {
                 this.elementHandlers.draggable(video, obj);
                 video.addEventListener('mousedown', (e) => {
                     this.canvas.setActiveObject(obj);
+                    this.canvas.renderAll();
                 }, false);
             }
             obj.setCoords();
@@ -694,12 +700,14 @@ class Canvas extends Component {
                 this.elementHandlers.setIFrame(findObject, source);
             }
         },
-        setElement: (obj, src) => {
+        setElement: (obj, code) => {
+            obj.set('code', code);
             const { editable } = this.props;
             const { left, top } = obj.getBoundingRect();
             const { id, scaleX, scaleY, angle } = obj;
             if (editable) {
                 this.elementHandlers.removeById(id);
+                this.elementHandlers.removeStyleById(id);
             }
             const zoom = this.canvas.getZoom();
             const width = obj.width * scaleX * zoom;
@@ -713,17 +721,26 @@ class Canvas extends Component {
                         top: ${top}px;
                         position: absolute;`,
             });
-            element.innerHTML = src;
+            if (code.css && code.css.length) {
+                const styleElement = document.createElement('style');
+                styleElement.setAttribute('id', `${id}_style`);
+                styleElement.setAttribute('type', 'text/css');
+                styleElement.innerHTML = code.css;
+                document.head.appendChild(styleElement);
+            }
+            element.innerHTML = code.html;
             this.container.current.appendChild(element);
             if (editable) {
                 this.elementHandlers.draggable(element, obj);
                 element.addEventListener('mousedown', (e) => {
                     this.canvas.setActiveObject(obj);
+                    this.canvas.renderAll();
                 }, false);
             }
             obj.setCoords();
         },
         setIFrame: (obj, src) => {
+            obj.set('src', src);
             const { editable } = this.props;
             const { id, scaleX, scaleY, angle } = obj;
             if (editable) {
@@ -746,24 +763,38 @@ class Canvas extends Component {
                         height: ${height}px;
                         left: ${left}px;
                         top: ${top}px;
-                        position: absolute;`,
+                        position: absolute;
+                        z-index: 100000;`,
             });
             this.container.current.appendChild(iframe);
             if (editable) {
                 this.elementHandlers.draggable(iframe, obj);
                 iframe.addEventListener('mousedown', (e) => {
-                    console.log(e);
                     this.canvas.setActiveObject(obj);
+                    this.canvas.renderAll();
                 }, false);
             }
             obj.setCoords();
         },
+        findStyleById: id => document.getElementById(`${id}_style`),
         findById: id => document.getElementById(`${id}_container`),
         remove: (el) => {
             if (!el) {
                 return;
             }
             this.container.current.removeChild(el);
+        },
+        removeStyleById: (id) => {
+            const style = this.elementHandlers.findStyleById(id);
+            if (!style) {
+                return;
+            }
+            document.head.removeChild(style);
+        },
+        removeStyleByIds: (ids) => {
+            ids.forEach((id) => {
+                this.elementHandlers.removeStyleById(id);
+            });
         },
         removeById: (id) => {
             const el = this.elementHandlers.findById(id);

@@ -26,6 +26,7 @@ const propertiesToInclude = [
     'autoplay',
     'muted',
     'loop',
+    'code',
 ];
 
 class Editor extends Component {
@@ -90,7 +91,7 @@ class Editor extends Component {
                 });
                 return;
             }
-            if (changedKey === 'file' || changedKey === 'src') {
+            if (changedKey === 'file' || changedKey === 'src' || changedKey === 'code') {
                 if (selectedItem.type === 'image') {
                     this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
                 } else if (this.canvasRef.current.handlers.isElementType(selectedItem.type)) {
