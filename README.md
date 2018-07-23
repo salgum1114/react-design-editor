@@ -39,6 +39,7 @@ It is a simple design editor such as power point, slides.
 # Supported
 - [x] Add
 - [x] Remove
+- [x] Resize
 - [x] Clone
 - [x] Tooltip
 - [x] Reorder
