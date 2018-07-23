@@ -132,6 +132,9 @@ video {
             height: 100%;
             top: 0;
             left: 0;
+            iframe {
+                pointer-events: none;
+            }
         }
     }
     .rde-canvas-header {
@@ -316,8 +319,4 @@ video {
     -khtml-user-drag: element;
     -webkit-user-drag: element;
     cursor: move;
-}
-
-iframe {
-    pointer-events: none;
 }

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form } from 'antd';
 
 class AcePreview extends Component {
     static propTypes = {
@@ -15,23 +14,40 @@ class AcePreview extends Component {
         js: '',
     }
 
-    componentDidUpdate() {
+    componentDidMount() {
         const { html, css, js } = this.props;
-        if (this.previewRef) {
-            if (html.length || js.length) {
-                this.previewRef.contentWindow.document.body.innerHTML = `${html}<script>${js}</script>`;
-            }
-            if (css.length) {
-                this.previewRef.contentWindow.document.head.innerHTML = `<style type="text/css">${css}</style>`;
+        this.iframeRender(html, css, js);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.container) {
+            const { html, css, js } = this.props;
+            if (html !== prevProps.html
+                || css !== prevProps.css
+                || js !== prevProps.js) {
+                this.iframeRender(html, css, js);
             }
         }
     }
 
+    iframeRender = (html, css, js) => {
+        while (this.container.hasChildNodes()) {
+            this.container.removeChild(this.container.firstChild);
+        }
+        const iframe = document.createElement('iframe');
+        iframe.width = '100%';
+        iframe.height = '200px';
+        iframe.srcdoc = html + `<script type="text/javascript">'use strict';\n${js}</script>`;
+        this.container.appendChild(iframe);
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = css;
+        iframe.contentDocument.head.appendChild(style);
+    }
+
     render() {
         return (
-            <Form.Item label="Preview" colon={false}>
-                <iframe ref={(c) => { this.previewRef = c; }} width="100%" height="200px" />
-            </Form.Item>
+            <div ref={(c) => { this.container = c; }} id="code-preview" style={{ width: '100%', height: 200 }} />
         );
     }
 }
