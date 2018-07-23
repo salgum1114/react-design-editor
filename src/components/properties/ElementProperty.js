@@ -11,14 +11,14 @@ export default {
         return (
             <Form.Item>
                 {
-                    getFieldDecorator('src', {
+                    getFieldDecorator('code', {
                         rules: [{
                             required: true,
-                            message: 'Please select image',
+                            message: 'Please input code',
                         }],
-                        initialValue: data.src,
+                        initialValue: data.code,
                     })(
-                        <AceModal form={form} />,
+                        <AceModal form={form} code={data.code} />,
                     )
                 }
             </Form.Item>
