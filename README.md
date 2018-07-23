@@ -54,7 +54,9 @@ It is a simple design editor such as power point, slides.
 - [x] Video - development
 - [x] Dom Element - (Code Editor)
 - [x] iframe - development
+- [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Image Cropping - development
 - [ ] Undo / Redo - development
 - [ ] Context menu
+- [ ] Interaction Mode - default / grap / selection
