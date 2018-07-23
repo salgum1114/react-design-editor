@@ -52,9 +52,10 @@ It is a simple design editor such as power point, slides.
 - [x] Alignments
 - [x] Drawing - Polygon
 - [x] Export / Import - JSON, PNG
-- [x] Video - development
+- [x] Video
 - [x] Dom Element - (Code Editor)
-- [x] iframe - development
+- [x] iframe
+- [ ] Animation - development
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Image Cropping - development
