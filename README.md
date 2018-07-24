@@ -1,6 +1,6 @@
 # react-design-editor
 This project was started to meet two requirements.
-1. Image Editor
+1. Image Map
 2. Workflow
 
 # Dependencies
@@ -18,7 +18,7 @@ This project was started to meet two requirements.
 - npm start - Run script
 - http://localhost:8080 - Host access
 
-# Image Editor
+# Image Map
 ## Three layout mode
 ### 1. Fixed
 #### Workarea fixed
