@@ -37,12 +37,17 @@ class AcePreview extends Component {
         const iframe = document.createElement('iframe');
         iframe.width = '100%';
         iframe.height = '200px';
-        iframe.srcdoc = html + `<script type="text/javascript">'use strict';\n${js}</script>`;
         this.container.appendChild(iframe);
         const style = document.createElement('style');
         style.type = 'text/css';
         style.innerHTML = css;
         iframe.contentDocument.head.appendChild(style);
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.innerHTML = js;
+        console.log(html, css, js);
+        iframe.contentDocument.head.appendChild(script);
+        iframe.contentDocument.body.innerHTML = html;
     }
 
     render() {

@@ -1,8 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Modal, Button } from 'antd';
+import { Form, Modal, Button, notification } from 'antd';
 import Icon from 'polestar-icons';
 import AceEditor from './AceEditor';
+
+notification.config({
+    top: 80,
+    duration: 1,
+});
 
 class AceModal extends Component {
     static propTypes = {
@@ -14,7 +19,7 @@ class AceModal extends Component {
     handlers = {
         onOk: () => {
             const { onChange } = this.props;
-            const code = this.aceRef.handlers.getCodeValue();
+            const code = this.aceRef.handlers.getCodes();
             onChange(code);
             this.setState({
                 visible: false,

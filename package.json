@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/salgum1114/react-design-editor#readme",
   "dependencies": {
+    "animejs": "^2.2.0",
     "antd": "^3.6.4",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
@@ -44,6 +45,7 @@
     "mediaelement": "^4.2.9",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
+    "npm": "^6.2.0",
     "polestar-icons": "^0.9.15",
     "prop-types": "^15.6.2",
     "qs": "^6.5.2",

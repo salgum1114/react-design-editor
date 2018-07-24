@@ -46,7 +46,7 @@ const TEXT = [
     },
 ];
 
-const MULTIMEDIA = [
+const IMAGE = [
     {
         key: 'image',
         type: 'image',
@@ -58,21 +58,6 @@ const MULTIMEDIA = [
             height: 80,
             name: 'New image',
             src: '/images/sample/transparentBg.png',
-        },
-    },
-    {
-        key: 'video',
-        type: 'multidedia',
-        icon: 'picture-o',
-        title: 'Video',
-        option: {
-            type: 'video',
-            width: 480,
-            height: 270,
-            name: 'New video',
-            autoplay: true,
-            muted: true,
-            loop: true,
         },
     },
 ];
@@ -103,6 +88,21 @@ const DOM_ELEMENT = [
             width: 480,
             height: 270,
             name: 'New IFrame',
+            autoplay: true,
+            muted: true,
+            loop: true,
+        },
+    },
+    {
+        key: 'video',
+        type: 'dom_element',
+        icon: 'picture-o',
+        title: 'Video',
+        option: {
+            type: 'video',
+            width: 480,
+            height: 270,
+            name: 'New video',
             autoplay: true,
             muted: true,
             loop: true,
@@ -353,17 +353,17 @@ class Items extends Component {
                     <Panel showArrow={showArrow} header="Text">
                         {this.renderItems('TEXT', TEXT)}
                     </Panel>
-                    <Panel showArrow={showArrow} header="Dom Element">
-                        {this.renderItems('DOM_ELEMENT', DOM_ELEMENT)}
-                    </Panel>
-                    <Panel showArrow={showArrow} header="Multimedia">
-                        {this.renderItems('MULTIMEDIA', MULTIMEDIA)}
+                    <Panel showArrow={showArrow} header="Image">
+                        {this.renderItems('IMAGE', IMAGE)}
                     </Panel>
                     <Panel showArrow={showArrow} header="Shape">
                         {this.renderItems('SHAPE', SHAPE)}
                     </Panel>
                     <Panel showArrow={showArrow} header="Drawing">
                         {this.renderItems('DRAWING', DRWAING)}
+                    </Panel>
+                    <Panel showArrow={showArrow} header="Dom Element">
+                        {this.renderItems('DOM_ELEMENT', DOM_ELEMENT)}
                     </Panel>
                 </Collapse>
             </div>

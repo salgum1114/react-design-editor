@@ -8,6 +8,7 @@ import debounce from 'lodash/debounce';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 import interact from 'interactjs';
+import anime from 'animejs';
 
 import CanvasObjects from './canvas/CanvasObjects';
 
@@ -129,6 +130,7 @@ class Canvas extends Component {
                 tooltip: {
                     enabled: true,
                 },
+                animation: {},
             };
             const createImage = (img) => {
                 const createdObj = new fabric.Image(img, {
@@ -188,11 +190,9 @@ class Canvas extends Component {
             canvas.add(createdObj);
             if (src || file || code) {
                 if (obj.type === 'video') {
-                    this.videoHandlers.setVideo(createdObj, src || file);
-                } else if (obj.type === 'element') {
-                    this.elementHandlers.setElement(createdObj, src || code);
+                    this.videoHandlers.set(createdObj, src || file);
                 } else {
-                    this.elementHandlers.setIFrame(createdObj, src || code);
+                    this.elementHandlers.set(createdObj, src || code);
                 }
             }
             if (editable) {
@@ -353,8 +353,6 @@ class Canvas extends Component {
                 this.canvas.requestRenderAll();
             }, propertiesToInclude);
         },
-        getActiveObject: () => this.canvas.getActiveObject(),
-        getActiveObjects: () => this.canvas.getActiveObjects(),
         set: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
             if (!activeObject) {
@@ -510,7 +508,7 @@ class Canvas extends Component {
             this.handlers.setById(obj.id, 'scaleY', height / obj.height);
         },
         scaleToResize: (width, height) => {
-            const activeObject = this.handlers.getActiveObject();
+            const activeObject = this.canvas.getActiveObject();
             const obj = {
                 id: activeObject.id,
                 scaleX: width / activeObject.width,
@@ -600,7 +598,67 @@ class Canvas extends Component {
         },
     }
 
+    animationHandlers = {
+        play: (id) => {
+            const findObject = this.handlers.findById(id);
+            if (!findObject) {
+                return;
+            }
+            if (findObject.anime) {
+                findObject.anime.play();
+                return;
+            }
+            const { delay, loop, autoplay, value, type } = findObject.animation;
+            const instance = anime({
+                targets: findObject,
+                delay,
+                loop,
+                autoplay,
+                direction: 'alternate',
+                begin: () => {
+                    findObject.set({
+                        hasControls: false,
+                        lockMovementX: true,
+                        lockMovementY: true,
+                        hoverCursor: 'pointer',
+                    });
+                },
+                update: (e) => {
+                    findObject.setCoords();
+                    this.canvas.requestRenderAll();
+                },
+                width: 150,
+            });
+            findObject.set('anime', instance);
+            findObject.anime.play();
+        },
+        pause: (id) => {
+            const findObject = this.handlers.findById(id);
+            console.log(findObject);
+            if (!findObject) {
+                return;
+            }
+            findObject.anime.pause();
+        },
+        stop: (id) => {
+            const findObject = this.handlers.findById(id);
+            if (!findObject) {
+                return;
+            }
+            findObject.anime.reverse();
+        },
+    }
+
     videoHandlers = {
+        play: () => {
+
+        },
+        pause: () => {
+
+        },
+        stop: () => {
+
+        },
         create: (obj, src) => {
             const { editable } = this.props;
             const { id, autoplay, muted, loop } = obj;
@@ -633,10 +691,10 @@ class Canvas extends Component {
                 videoHeight: '100%',
                 success: (mediaeElement, originalNode, instance) => {
                     if (editable) {
-
+                        instance.pause();
                     }
                     // https://www.youtube.com/watch?v=bbAQtfoQMp8
-                    console.log(mediaeElement, originalNode, instance);
+                    // console.log(mediaeElement, originalNode, instance);
                 },
             });
             player.setPlayerSize(width, height);
@@ -651,7 +709,7 @@ class Canvas extends Component {
             obj.setCoords();
             obj.set('player', player);
         },
-        loadVideo: (obj, src) => {
+        load: (obj, src) => {
             const { canvas } = this;
             const { editable } = this.props;
             if (editable) {
@@ -664,7 +722,7 @@ class Canvas extends Component {
                 fabric.util.requestAnimFrame(render);
             });
         },
-        setVideo: (obj, src) => {
+        set: (obj, src) => {
             let newSrc;
             if (typeof src === 'string') {
                 obj.set('file', null);
@@ -672,7 +730,7 @@ class Canvas extends Component {
                 newSrc = {
                     src,
                 };
-                this.videoHandlers.loadVideo(obj, newSrc);
+                this.videoHandlers.load(obj, newSrc);
             } else {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -682,7 +740,7 @@ class Canvas extends Component {
                         src: e.target.result,
                         type: src.type,
                     };
-                    this.videoHandlers.loadVideo(obj, newSrc);
+                    this.videoHandlers.load(obj, newSrc);
                 };
                 reader.readAsDataURL(src);
             }
@@ -690,20 +748,27 @@ class Canvas extends Component {
     }
 
     elementHandlers = {
-        setElementById: (id, source) => {
+        setById: (id, source) => {
             const findObject = this.handlers.findById(id);
             if (!findObject) {
                 return;
             }
             if (findObject.type === 'video') {
-                this.videoHandlers.setVideo(findObject, source);
+                this.videoHandlers.set(findObject, source);
             } else if (findObject.type === 'element') {
-                this.elementHandlers.setElement(findObject, source);
+                this.elementHandlers.set(findObject, source);
             } else if (findObject.type === 'iframe') {
-                this.elementHandlers.setIFrame(findObject, source);
+                this.elementHandlers.set(findObject, source);
             }
         },
-        setElement: (obj, code) => {
+        set: (obj, source) => {
+            if (obj.type === 'iframe') {
+                this.elementHandlers.createIFrame(obj, source);
+            } else {
+                this.elementHandlers.createElement(obj, source);
+            }
+        },
+        createElement: (obj, code) => {
             obj.set('code', code);
             const { editable } = this.props;
             const { left, top } = obj.getBoundingRect();
@@ -728,9 +793,9 @@ class Canvas extends Component {
             const { html, css, js } = code;
             if (code.css && code.css.length) {
                 const styleElement = document.createElement('style');
-                script.id = `${id}_style`;
-                script.type = 'text/css';
-                styleElement.innerHTML = code.css;
+                styleElement.id = `${id}_style`;
+                styleElement.type = 'text/css';
+                styleElement.innerHTML = css;
                 document.head.appendChild(styleElement);
             }
             this.container.current.appendChild(element);
@@ -751,7 +816,7 @@ class Canvas extends Component {
             }
             obj.setCoords();
         },
-        setIFrame: (obj, src) => {
+        createIFrame: (obj, src) => {
             obj.set('src', src);
             const { editable } = this.props;
             const { id, scaleX, scaleY, angle } = obj;
@@ -1499,7 +1564,7 @@ class Canvas extends Component {
             }
         },
         arrowmoving: (e) => {
-            const activeObject = this.handlers.getActiveObject();
+            const activeObject = this.canvas.getActiveObject();
             if (!activeObject) {
                 return false;
             }

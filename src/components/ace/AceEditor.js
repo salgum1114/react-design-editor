@@ -19,6 +19,7 @@ class AceEditor extends Component {
         onChangeHTML: debounce((value) => {
             this.setState({
                 html: value,
+                htmlAnnotations: this.htmlRef.editor.getSession().getAnnotations(),
             }, () => {
                 if (this.props.onChangeHTML) {
                     this.props.onChangeHTML(value);
@@ -28,6 +29,7 @@ class AceEditor extends Component {
         onChangeCSS: debounce((value) => {
             this.setState({
                 css: value,
+                cssAnnotations: this.cssRef.editor.getSession().getAnnotations(),
             }, () => {
                 if (this.props.onChangeCSS) {
                     this.props.onChangeCSS(value);
@@ -37,13 +39,36 @@ class AceEditor extends Component {
         onChangeJS: debounce((value) => {
             this.setState({
                 js: value,
+                jsAnnotations: this.jsRef.editor.getSession().getAnnotations(),
             }, () => {
                 if (this.props.onChangeJS) {
                     this.props.onChangeJS(value);
                 }
             });
         }, 500),
-        getCodeValue: () => {
+        onValidateHTML: (annotations) => {
+            let i = annotations.length;
+            const len = annotations.length;
+            while (i--) {
+                if (/doctype first\. Expected/.test(annotations[i].text)) {
+                    annotations.splice(i, 1);
+                } else if (/Unexpected End of file\. Expected/.test(annotations[i].text)) {
+                    annotations.splice(i, 1);
+                }
+            }
+            if (len > annotations.length) {
+                this.htmlRef.editor.getSession().setAnnotations(annotations);
+            }
+        },
+        getAnnotations: () => {
+            const { htmlAnnotations, cssAnnotations, jsAnnotations } = this.state;
+            return {
+                htmlAnnotations,
+                cssAnnotations,
+                jsAnnotations,
+            };
+        },
+        getCodes: () => {
             const { html, css, js } = this.state;
             return {
                 html,
@@ -74,9 +99,18 @@ class AceEditor extends Component {
     }
 
     state = {
-        html: this.props.html || '',
-        css: this.props.css || '',
-        js: this.props.js || '',
+        html: this.props.html,
+        css: this.props.css,
+        js: this.props.js,
+        htmlAnnotations: [],
+        cssAnnotations: [],
+        jsAnnotations: [],
+    }
+
+    componentWillUnmount() {
+        this.htmlRef.editor.destroy();
+        this.cssRef.editor.destroy();
+        this.jsRef.editor.destroy();
     }
 
     render() {
@@ -89,6 +123,7 @@ class AceEditor extends Component {
                         <Col span={12} style={defaultStyle}>
                             <Form.Item label="HTML" colon={false}>
                                 <ReactAce
+                                    ref={(c) => { this.htmlRef = c; }}
                                     mode="html"
                                     theme="chrome"
                                     width="100%"
@@ -109,6 +144,7 @@ class AceEditor extends Component {
                         <Col span={12} style={defaultStyle}>
                             <Form.Item label="CSS" colon={false}>
                                 <ReactAce
+                                    ref={(c) => { this.cssRef = c; }}
                                     mode="css"
                                     theme="chrome"
                                     width="100%"
@@ -129,6 +165,7 @@ class AceEditor extends Component {
                         <Col span={12} style={defaultStyle}>
                             <Form.Item label="JS" colon={false}>
                                 <ReactAce
+                                    ref={(c) => { this.jsRef = c; }}
                                     mode="javascript"
                                     theme="chrome"
                                     width="100%"
