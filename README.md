@@ -1,6 +1,10 @@
 # react-design-editor
 It is a simple design editor such as power point, slides.
 
+This project was started to meet two requirements
+1. Image Editor
+2. Workflow
+
 # Dependencies
 - React.js
 - ant.design
@@ -16,25 +20,29 @@ It is a simple design editor such as power point, slides.
 - npm start - Run script
 - http://localhost:8080 - Host access
 
-# Three layout mode
-## 1. Fixed
-### Workarea fixed
+# Image Editor
+## Three layout mode
+### 1. Fixed
+#### Workarea fixed
 
 ![image](https://user-images.githubusercontent.com/19975642/43051975-b878d336-8e5b-11e8-8e71-6d727bb4bbea.png)
 
-## 2. Responsive
-### Preserves image quality
+### 2. Responsive
+#### Preserves image quality
 
 ![image](https://user-images.githubusercontent.com/19975642/43051993-e1f916f8-8e5b-11e8-9ff4-8a619ef933ee.png)
 
-## 3. Fullscreen
+### 3. Fullscreen
 #### Fills the container area
 
 ![image](https://user-images.githubusercontent.com/19975642/43051999-f4a124e4-8e5b-11e8-816d-62cb1162ae87.png)
 
-# Preview mode
+### Preview mode
 
 ![image](https://user-images.githubusercontent.com/19975642/42750820-9739ea94-8923-11e8-9d03-017a041c55d6.png)
+
+# Workflow
+to be contiuned..
 
 # Supported
 - [x] Add
