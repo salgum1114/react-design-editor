@@ -5,6 +5,7 @@ export default (mergeObjects) => {
         tooltip: {
             enabled: true,
         },
+        animation: {},
     };
     const fabricObjects = {
         'i-text': {

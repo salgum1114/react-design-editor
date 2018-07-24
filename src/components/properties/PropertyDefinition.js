@@ -9,6 +9,7 @@ import ActionProperty from './ActionProperty';
 import VideoProperty from './VideoProperty';
 import ElementProperty from './ElementProperty';
 import IFrameProperty from './IFrameProperty';
+import AnimationProperty from './AnimationProperty';
 
 export default {
     map: {
@@ -42,6 +43,10 @@ export default {
             title: 'Style',
             component: StyleProperty,
         },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
+        },
     },
     textbox: {
         general: {
@@ -63,6 +68,10 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
+        },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
         },
     },
     image: {
@@ -86,6 +95,10 @@ export default {
             title: 'Style',
             component: StyleProperty,
         },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
+        },
     },
     triangle: {
         general: {
@@ -103,6 +116,10 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
+        },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
         },
     },
     rect: {
@@ -122,6 +139,10 @@ export default {
             title: 'Style',
             component: StyleProperty,
         },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
+        },
     },
     circle: {
         general: {
@@ -139,6 +160,10 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
+        },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
         },
     },
     polygon: {
@@ -158,6 +183,10 @@ export default {
             title: 'Style',
             component: StyleProperty,
         },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
+        },
     },
     line: {
         general: {
@@ -175,6 +204,10 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
+        },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
         },
     },
     video: {

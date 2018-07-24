@@ -20,9 +20,11 @@ const propertiesToInclude = [
     'src',
     'action',
     'tooltip',
+    'animation',
     'layout',
     'workareaWidth',
     'workareaHeight',
+    'videoLoadType',
     'autoplay',
     'muted',
     'loop',
@@ -71,7 +73,7 @@ class Editor extends Component {
         onChange: (selectedItem, changedValues, allValues) => {
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
-            console.log(selectedItem, changedValues);
+            console.log(selectedItem, changedValues, allValues);
             if (selectedItem.id === 'workarea') {
                 this.canvasHandlers.onChangeCanvas(changedKey, changedValue, allValues);
                 return;
@@ -95,7 +97,7 @@ class Editor extends Component {
                 if (selectedItem.type === 'image') {
                     this.canvasRef.current.handlers.setImageById(selectedItem.id, changedValue);
                 } else if (this.canvasRef.current.handlers.isElementType(selectedItem.type)) {
-                    this.canvasRef.current.elementHandlers.setElementById(selectedItem.id, changedValue);
+                    this.canvasRef.current.elementHandlers.setById(selectedItem.id, changedValue);
                 }
                 return;
             }
@@ -105,6 +107,10 @@ class Editor extends Component {
             }
             if (changedKey === 'tooltip') {
                 this.canvasRef.current.handlers.set(changedKey, allValues.tooltip);
+                return;
+            }
+            if (changedKey === 'animation') {
+                this.canvasRef.current.handlers.set(changedKey, allValues.animation);
                 return;
             }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
