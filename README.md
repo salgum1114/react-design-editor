@@ -1,6 +1,4 @@
 # react-design-editor
-It is a simple design editor such as power point, slides.
-
 This project was started to meet two requirements.
 1. Image Editor
 2. Workflow
