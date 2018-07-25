@@ -75,7 +75,7 @@ class Editor extends Component {
             const changedValue = changedValues[changedKey];
             console.log(selectedItem, changedValues, allValues);
             if (selectedItem.id === 'workarea') {
-                this.canvasHandlers.onChangeCanvas(changedKey, changedValue, allValues);
+                this.canvasHandlers.onChangeWokarea(changedKey, changedValue, allValues);
                 return;
             }
             if (changedKey === 'width' || changedKey === 'height') {
@@ -115,7 +115,7 @@ class Editor extends Component {
             }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
-        onChangeCanvas: (changedKey, changedValue, allValues) => {
+        onChangeWokarea: (changedKey, changedValue, allValues) => {
             if (changedKey === 'layout') {
                 this.canvasRef.current.workareaHandlers.setLayout(changedValue);
                 return;

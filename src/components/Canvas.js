@@ -608,33 +608,14 @@ class Canvas extends Component {
                 findObject.anime.play();
                 return;
             }
-            const { delay, loop, autoplay, value, type } = findObject.animation;
-            const instance = anime({
-                targets: findObject,
-                delay,
-                loop,
-                autoplay,
-                direction: 'alternate',
-                begin: () => {
-                    findObject.set({
-                        hasControls: false,
-                        lockMovementX: true,
-                        lockMovementY: true,
-                        hoverCursor: 'pointer',
-                    });
-                },
-                update: (e) => {
-                    findObject.setCoords();
-                    this.canvas.requestRenderAll();
-                },
-                width: 150,
-            });
-            findObject.set('anime', instance);
-            findObject.anime.play();
+            const instance = this.animationHandlers.getAnimation(findObject);
+            if (instance) {
+                findObject.set('anime', instance);
+                instance.play();
+            }
         },
         pause: (id) => {
             const findObject = this.handlers.findById(id);
-            console.log(findObject);
             if (!findObject) {
                 return;
             }
@@ -645,7 +626,164 @@ class Canvas extends Component {
             if (!findObject) {
                 return;
             }
-            findObject.anime.reverse();
+            this.animationHandlers.initAnimation(findObject);
+        },
+        initAnimation: (obj) => {
+            if (!obj.anime) {
+                return;
+            }
+            anime.remove(obj);
+            const option = {
+                anime: null,
+                hasControls: true,
+                lockMovementX: false,
+                lockMovementY: false,
+                hoverCursor: 'move',
+            };
+            const { type } = obj.animation;
+            if (type === 'fade') {
+                Object.assign(option, {
+                    opacity: obj.originOpacity,
+                    originOpacity: null,
+                });
+            } else if (type === 'bounce') {
+                if (obj.animation.bounce === 'vertical') {
+                    Object.assign(option, {
+                        top: obj.originTop,
+                        originTop: null,
+                    });
+                } else {
+                    Object.assign(option, {
+                        left: obj.originLeft,
+                        originLeft: null,
+                    });
+                }
+            } else if (type === 'shake') {
+                if (obj.animation.shake === 'vertical') {
+                    Object.assign(option, {
+                        top: obj.originTop,
+                        originTop: null,
+                    });
+                } else {
+                    Object.assign(option, {
+                        left: obj.originLeft,
+                        originLeft: null,
+                    });
+                }
+            } else if (type === 'scaling') {
+                Object.assign(option, {
+                    scaleX: obj.originScaleX,
+                    scaleY: obj.originScaleY,
+                    originScaleX: null,
+                    originScaleY: null,
+                });
+            } else if (type === 'rotation') {
+                Object.assign(option, {
+                    angle: obj.originAngle,
+                    originAngle: null,
+                });
+            } else if (type === 'flash') {
+                Object.assign(option, {
+                    fill: obj.originFill,
+                    originFill: null,
+                });
+            } else {
+                console.warn('Not supportes type.');
+            }
+            obj.set(option);
+            this.canvas.renderAll();
+        },
+        getAnimation: (obj) => {
+            const { delay = 100, autoplay = false, loop = false, type, ...other } = obj.animation;
+            const option = {
+                targets: obj,
+                delay,
+                loop,
+                autoplay,
+                direction: 'alternate',
+                begin: () => {
+                    obj.set({
+                        hasControls: false,
+                        lockMovementX: true,
+                        lockMovementY: true,
+                        hoverCursor: 'pointer',
+                    });
+                },
+                update: (e) => {
+                    obj.setCoords();
+                    this.canvas.renderAll();
+                },
+                complete: () => {
+                    this.animationHandlers.initAnimation(obj);
+                },
+            };
+            if (type === 'fade') {
+                obj.set('originOpacity', obj.opacity);
+                Object.assign(option, {
+                    opacity: other.opacity,
+                    easing: 'easeInQuad',
+                });
+            } else if (type === 'bounce') {
+                const { offset = 1 } = other;
+                if (other.bounce === 'vertical') {
+                    obj.set('originTop', obj.top);
+                    Object.assign(option, {
+                        top: obj.top + offset,
+                        easing: 'easeInQuad',
+                    });
+                } else {
+                    obj.set('originLeft', obj.left);
+                    Object.assign(option, {
+                        left: obj.left + offset,
+                        easing: 'easeInQuad',
+                    });
+                }
+            } else if (type === 'shake') {
+                const { offset = 1 } = other;
+                if (other.shake === 'vertical') {
+                    obj.set('originTop', obj.top);
+                    Object.assign(option, {
+                        top: obj.top + offset,
+                        delay: 0,
+                        elasticity: 1000,
+                        duration: 500,
+                    });
+                } else {
+                    obj.set('originLeft', obj.left);
+                    Object.assign(option, {
+                        left: obj.left + offset,
+                        delay: 0,
+                        elasticity: 1000,
+                        duration: 500,
+                    });
+                }
+            } else if (type === 'scaling') {
+                obj.set('originZoomX', obj.scaleX);
+                obj.set('originZoomY', obj.scaleY);
+                const scaleX = obj.scaleX * other.scale;
+                const scaleY = obj.scaleY * other.scale;
+                Object.assign(option, {
+                    scaleX,
+                    scaleY,
+                    easing: 'easeInQuad',
+                });
+            } else if (type === 'rotation') {
+                obj.set('originAngle', obj.angle);
+                Object.assign(option, {
+                    angle: other.angle,
+                    easing: 'easeInQuad',
+                });
+            } else if (type === 'flash') {
+                obj.set('originFill', obj.fill);
+                Object.assign(option, {
+                    fill: other.fill,
+                    easing: 'easeInQuad',
+                });
+            } else {
+                console.warn('Not supported type.');
+                return;
+            }
+            return anime(option);
         },
     }
 
