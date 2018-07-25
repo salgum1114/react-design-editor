@@ -61,7 +61,7 @@ to be contiuned..
 - [x] Video
 - [x] Dom Element - (Code Editor)
 - [x] iframe
-- [ ] Animation - development
+- [x] Animation - Fade / Bounce / Shake / Scaling / Rotation / Flash
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Image Cropping - development
