@@ -45,7 +45,6 @@ class AcePreview extends Component {
         const script = document.createElement('script');
         script.type = 'text/javascript';
         script.innerHTML = js;
-        console.log(html, css, js);
         iframe.contentDocument.head.appendChild(script);
         iframe.contentDocument.body.innerHTML = html;
     }
