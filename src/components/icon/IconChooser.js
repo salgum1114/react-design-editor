@@ -1,23 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Modal, Form, Col, Row } from 'antd';
+import debounce from 'lodash/debounce';
+import { Button, Modal, Form, Col, Row, Input } from 'antd';
 
 import Icon from '../Icon';
 import icons from './icons.json';
 
 class IconChooser extends Component {
     static propTypes = {
+        onChange: PropTypes.func,
         icon: PropTypes.any,
     }
 
     handlers = {
         onOk: () => {
+            const { icon } = this.state;
             const { onChange } = this.props;
-            const { tempUrl } = this.state;
-            onChange(tempUrl);
+            if (onChange) {
+                onChange(icon);
+            }
             this.setState({
                 visible: false,
-                url: tempUrl,
             });
         },
         onCancel: () => {
@@ -26,6 +29,23 @@ class IconChooser extends Component {
         onClick: () => {
             this.modalHandlers.onShow();
         },
+        onClickIcon: (icon) => {
+            console.log(icon);
+            this.setState({
+                icon,
+            }, () => {
+                const { onChange } = this.props;
+                if (onChange) {
+                    onChange(icon);
+                }
+                this.modalHandlers.onHide();
+            });
+        },
+        onSearch: debounce((value) => {
+            this.setState({
+                textSearch: value,
+            });
+        }, 500),
     }
 
     modalHandlers = {
@@ -43,16 +63,36 @@ class IconChooser extends Component {
 
     state = {
         icon: this.props.icon || { 'map-marker-alt': icons['map-marker-alt'] },
+        textSearch: '',
         visible: false,
     }
 
+    getPrefix = (style) => {
+        let prefix = 'fas';
+        if (style === 'brands') {
+            prefix = 'fab';
+        } else if (style === 'regular') {
+            prefix = 'far';
+        }
+        return prefix
+    }
+
+    getIcons = (textSearch) => {
+        const lowerCase = textSearch.toLowerCase();
+        return Object.keys(icons).filter((icon) => {
+            return icon.includes(lowerCase) || icons[icon].search.terms.some((term) => term.includes(lowerCase));
+        }).map((icon) => ({
+            [icon]: icons[icon],
+        }));
+    }
+
     render() {
-        const { onOk, onCancel, onClick } = this.handlers;
-        const { icon, visible } = this.state;
+        const { onOk, onCancel, onClick, onClickIcon, onSearch } = this.handlers;
+        const { icon, visible, textSearch } = this.state;
         const label = (
             <React.Fragment>
                 <span style={{ marginRight: 8 }}>Icon</span>
-                <Icon name={Object.keys(icon)[0]} />
+                <Icon name={Object.keys(icon)[0]} prefix={this.getPrefix(icon[Object.keys(icon)[0]].styles[0])} />
             </React.Fragment>
         );
         return (
@@ -63,28 +103,26 @@ class IconChooser extends Component {
                     </Button>
                 </Form.Item>
                 <Modal
-                    style={{ background: '#f8f9fa' }}
                     onOk={onOk}
                     onCancel={onCancel}
                     width="80%"
                     visible={visible}
+                    title={<Input.Search onChange={(e) => { onSearch(e.target.value); }} />}
+                    bodyStyle={{ margin: 16, overflowY: 'auto', height: '600px' }}
                 >
                     <Row>
                         {
-                            Object.keys(icons).map((i) => {
-                                let prefix = 'fas';
-                                if (icons[i].styles[0] === 'brands') {
-                                    prefix = 'fab';
-                                } else if (icons[i].styles[0] === 'regular') {
-                                    prefix = 'far';
-                                }
+                            this.getIcons(textSearch).map((ic) => {
+                                const name = Object.keys(ic)[0];
+                                const metadata = ic[name];
+                                const prefix = this.getPrefix(metadata.styles[0]);
                                 return (
-                                    <Col key={i} span={4} className="rde-icon-container">
+                                    <Col onClick={onClickIcon.bind(this, ic)} key={name} span={4} className="rde-icon-container">
                                         <div className="rde-icon-top">
-                                            <Icon name={i} size={3} prefix={prefix} />
+                                            <Icon name={name} size={3} prefix={prefix} />
                                         </div>
                                         <div className="rde-icon-bottom">
-                                            {i}
+                                            {name}
                                         </div>
                                     </Col>
                                 );
