@@ -1,20 +1,22 @@
 import React from 'react';
-import { Form, Button, Switch } from 'antd';
+import { Form, Switch } from 'antd';
+import IconChooser from '../icon/IconChooser';
 
 export default {
     render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
-                <Form.Item label="Icon" colon={false}>
+                <Form.Item>
                     {
                         getFieldDecorator('icon', {
                             rules: [{
                                 required: true,
                                 message: 'Please select icon',
                             }],
+                            initialValue: data.icon,
                         })(
-                            <Button>Choose Icon from Library</Button>,
+                            <IconChooser icon={data.icon} />,
                         )
                     }
                 </Form.Item>
@@ -23,8 +25,6 @@ export default {
                         getFieldDecorator('iconShadow', {
                             rules: [{
                                 type: 'boolean',
-                                required: true,
-                                message: 'Please select icon',
                             }],
                         })(
                             <Switch />,
