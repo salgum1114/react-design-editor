@@ -7,11 +7,6 @@ import Icon from '../Icon';
 import icons from './icons.json';
 
 class IconChooser extends Component {
-    static propTypes = {
-        onChange: PropTypes.func,
-        icon: PropTypes.any,
-    }
-
     handlers = {
         onOk: () => {
             const { icon } = this.state;
@@ -60,8 +55,17 @@ class IconChooser extends Component {
         },
     }
 
+    static propTypes = {
+        onChange: PropTypes.func,
+        icon: PropTypes.any,
+    }
+
+    static defaultProps = {
+        icon: { 'map-marker-alt': icons['map-marker-alt'] },
+    }
+
     state = {
-        icon: this.props.icon || { 'map-marker-alt': icons['map-marker-alt'] },
+        icon: this.props.icon,
         textSearch: '',
         visible: false,
     }
@@ -73,16 +77,14 @@ class IconChooser extends Component {
         } else if (style === 'regular') {
             prefix = 'far';
         }
-        return prefix
+        return prefix;
     }
 
     getIcons = (textSearch) => {
         const lowerCase = textSearch.toLowerCase();
-        return Object.keys(icons).filter((icon) => {
-            return icon.includes(lowerCase) || icons[icon].search.terms.some((term) => term.includes(lowerCase));
-        }).map((icon) => ({
-            [icon]: icons[icon],
-        }));
+        return Object.keys(icons)
+            .filter(icon => icon.includes(lowerCase) || icons[icon].search.terms.some(term => term.includes(lowerCase)))
+            .map(icon => ({ [icon]: icons[icon] }));
     }
 
     render() {
@@ -93,6 +95,16 @@ class IconChooser extends Component {
                 <span style={{ marginRight: 8 }}>Icon</span>
                 <Icon name={Object.keys(icon)[0]} prefix={this.getPrefix(icon[Object.keys(icon)[0]].styles[0])} />
             </React.Fragment>
+        );
+        const filteredIcons = this.getIcons(textSearch);
+        const filteredIconsLength = filteredIcons.length;
+        const title = (
+            <div style={{ padding: '0 24px' }}>
+                <Input
+                    onChange={(e) => { onSearch(e.target.value); }}
+                    placeholder={`Search ${filteredIconsLength} icons for...`}
+                />
+            </div>
         );
         return (
             <React.Fragment>
@@ -106,12 +118,12 @@ class IconChooser extends Component {
                     onCancel={onCancel}
                     width="80%"
                     visible={visible}
-                    title={<Input.Search onChange={(e) => { onSearch(e.target.value); }} />}
+                    title={title}
                     bodyStyle={{ margin: 16, overflowY: 'auto', height: '600px' }}
                 >
                     <Row>
                         {
-                            this.getIcons(textSearch).map((ic) => {
+                            filteredIcons.map((ic) => {
                                 const name = Object.keys(ic)[0];
                                 const metadata = ic[name];
                                 const prefix = this.getPrefix(metadata.styles[0]);
