@@ -24,7 +24,8 @@ const MARKER = [
         option: {
             type: 'i-text',
             text: '\uf3c5', // map-marker
-            fontFamily: 'FontAwesome',
+            fontFamily: 'Font Awesome 5 Free',
+            fontWeight: 900,
             fontSize: 60,
             width: 30,
             height: 30,

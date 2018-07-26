@@ -46,7 +46,7 @@ class CanvasList extends Component {
                 let icon;
                 let title = '';
                 if (obj.type === 'i-text') {
-                    icon = 'map-marker';
+                    icon = 'map-marker-alt';
                     title = 'Marker';
                 } else if (obj.type === 'textbox') {
                     icon = 'font';
