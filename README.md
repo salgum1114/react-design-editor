@@ -13,6 +13,7 @@ This project was started to meet two requirements.
 - mediaelement.js
 - react-ace
 - interact.js
+- fontawesome5
 - webpack4
 - babel
 
