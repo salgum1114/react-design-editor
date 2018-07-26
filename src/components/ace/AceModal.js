@@ -67,7 +67,7 @@ class AceModal extends Component {
             <React.Fragment>
                 <span style={{ marginRight: 8 }}>Code Editor</span>
                 <Button onClick={onClick} shape="circle">
-                    <Icon name="edit" />
+                    <Icon name="code" />
                 </Button>
             </React.Fragment>
         );

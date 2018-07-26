@@ -36,6 +36,17 @@ class HeaderToolbar extends Component {
                     <Button shape="circle"></Button> */}
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.modeHandlers.selection()}>
+                        <Icon name="mouse-pointer" />
+                    </Button>
+                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.modeHandlers.grab()}>
+                        <Icon name="hand-rock" />
+                    </Button>
+                    {/* <Button shape="circle"></Button>
+                    <Button shape="circle"></Button>
+                    <Button shape="circle"></Button> */}
+                </FlexItem>
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
                     <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignments.left()}>
                         <Icon name="align-left" />
                     </Button>
@@ -59,10 +70,10 @@ class HeaderToolbar extends Component {
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
                     <Button className="rde-action-btn">
-                        <Icon name="rotate-left" style={{ marginRight: 8 }} />Undo
+                        <Icon name="undo-alt" style={{ marginRight: 8 }} />Undo
                     </Button>
                     <Button className="rde-action-btn">
-                        Redo<Icon name="rotate-right" style={{ marginLeft: 8 }} />
+                        Redo<Icon name="redo-alt" style={{ marginLeft: 8 }} />
                     </Button>
                 </FlexItem>
             </FlexBox>

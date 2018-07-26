@@ -12,6 +12,7 @@ class Preview extends Component {
         preview: PropTypes.bool,
         onChangePreview: PropTypes.func,
         onTooltip: PropTypes.func,
+        onAction: PropTypes.func,
     }
 
     constructor(props) {
@@ -41,12 +42,12 @@ class Preview extends Component {
 
     render() {
         const { canvasRect } = this.state;
-        const { onChangePreview, onTooltip, preview } = this.props;
+        const { onChangePreview, onTooltip, onAction, preview } = this.props;
         const previewClassName = classnames('rde-canvas-preview', { preview });
         return (
             <div className={previewClassName}>
                 <div ref={(c) => { this.container = c; }} style={{ overvlow: 'hidden', display: 'flex', flex: '1', height: '100%' }}>
-                    <Canvas editable={false} width={canvasRect.width} height={canvasRect.height} ref={this.canvasRef} onTooltip={onTooltip} />
+                    <Canvas editable={false} width={canvasRect.width} height={canvasRect.height} ref={this.canvasRef} onTooltip={onTooltip} onAction={onAction} />
                     <Button className="rde-action-btn rde-canvas-preview-close-btn" onClick={onChangePreview}>
                         <Icon name="times" size={1.5} />
                     </Button>

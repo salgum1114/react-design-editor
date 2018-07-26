@@ -116,6 +116,9 @@ class Canvas extends Component {
             if (obj.type !== 'polygon' && editable) {
                 this.handlers.centerObject(createdObj, centered);
             }
+            if (createdObj.animation.autoplay) {
+                this.animationHandlers.play(createdObj.id);
+            }
             const { onAdd } = this.props;
             if (onAdd && editable) {
                 onAdd(createdObj);
@@ -598,6 +601,33 @@ class Canvas extends Component {
         },
     }
 
+    modeHandlers = {
+        mode: 'selection',
+        panning: false,
+        selection: () => {
+            this.modeHandlers.mode = 'selection';
+            this.canvas.selection = true;
+            this.canvas.setCursor('pointer');
+            this.canvas.getObjects().forEach((obj) => {
+                if (obj.id !== 'workarea') {
+                    obj.selectable = true;
+                }
+            });
+            this.canvas.renderAll();
+        },
+        grab: () => {
+            this.modeHandlers.mode = 'grab';
+            this.canvas.selection = false;
+            this.canvas.setCursor('grab');
+            this.canvas.getObjects().forEach((obj) => {
+                if (obj.id !== 'workarea') {
+                    obj.selectable = false;
+                }
+            });
+            this.canvas.renderAll();
+        },
+    }
+
     animationHandlers = {
         play: (id) => {
             const findObject = this.handlers.findById(id);
@@ -606,6 +636,9 @@ class Canvas extends Component {
             }
             if (findObject.anime) {
                 findObject.anime.play();
+                return;
+            }
+            if (findObject.animation.type === 'none') {
                 return;
             }
             const instance = this.animationHandlers.getAnimation(findObject);
@@ -1570,6 +1603,7 @@ class Canvas extends Component {
                 x: center.left,
                 y: center.top,
             };
+            this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
             this.zoomHandlers.zoomToPoint(point, 1);
         },
         zoomToFit: () => {
@@ -1638,24 +1672,14 @@ class Canvas extends Component {
         }, 100),
     }
 
-    actions = {
-
-    }
-
     events = {
         object: {
             mousedown: (opt) => {
                 const { target } = opt;
                 if (target && target.action.enabled) {
-                    const { action } = target;
-                    if (action.type === 'dashboard') {
-                        console.log(opt.target);
-                    } else if (action.type === 'url') {
-                        if (action.state === 'current') {
-                            document.location.href = action.url;
-                            return;
-                        }
-                        window.open(action.url);
+                    const { onAction } = this.props;
+                    if (onAction) {
+                        onAction(this.canvas, target);
                     }
                 }
             },
@@ -1746,6 +1770,9 @@ class Canvas extends Component {
             }
         },
         mousedown: (opt) => {
+            if (this.modeHandlers.mode === 'grab') {
+                this.modeHandlers.panning = true;
+            }
             if (!this.polygonMode && this.props.editable) {
                 this.props.onSelect(opt.target);
             }
@@ -1758,6 +1785,10 @@ class Canvas extends Component {
             }
         },
         mousemove: (opt) => {
+            if (this.modeHandlers.mode === 'grab' && this.modeHandlers.panning) {
+                const delta = new fabric.Point(opt.e.movementX, opt.e.movementY);
+                this.canvas.relativePan(delta);
+            }
             if (!this.props.editable && opt.target) {
                 if (this.handlers.isElementType(opt.target.type)) {
                     return false;
@@ -1782,6 +1813,11 @@ class Canvas extends Component {
                 this.canvas.renderAll();
             }
             this.canvas.renderAll();
+        },
+        mouseup: (opt) => {
+            if (this.modeHandlers.mode === 'grab') {
+                this.modeHandlers.panning = false;
+            }
         },
         selection: (opt) => {
             const { onSelect } = this.props;
@@ -1974,7 +2010,7 @@ class Canvas extends Component {
         });
         this.canvas.add(this.workarea);
         this.canvas.centerObject(this.workarea);
-        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, selection } = this.events;
+        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, selection } = this.events;
         if (editable) {
             this.canvas.on({
                 'object:modified': modified,
@@ -1984,6 +2020,7 @@ class Canvas extends Component {
                 'mouse:wheel': mousewheel,
                 'mouse:down': mousedown,
                 'mouse:move': mousemove,
+                'mouse:up': mouseup,
                 'selection:cleared': selection,
                 'selection:created': selection,
                 'selection:updated': selection,

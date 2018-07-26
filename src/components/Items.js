@@ -4,7 +4,6 @@ import { Collapse, notification } from 'antd';
 import uuid from 'uuid/v4';
 
 import { FlexBox } from './flex';
-
 import Icon from './Icon';
 
 notification.config({
@@ -17,11 +16,14 @@ const MARKER = [
     {
         key: 'default',
         type: 'itext',
-        icon: 'map-marker',
+        icon: {
+            prefix: 'fas',
+            name: 'map-marker-alt',
+        },
         title: 'Marker',
         option: {
             type: 'i-text',
-            text: '\uf041', // map-marker
+            text: '\uf3c5', // map-marker
             fontFamily: 'FontAwesome',
             fontSize: 60,
             width: 30,
@@ -36,7 +38,10 @@ const TEXT = [
     {
         key: 'default',
         type: 'textbox',
-        icon: 'font',
+        icon: {
+            prefix: 'fas',
+            name: 'font',
+        },
         title: 'Text',
         option: {
             type: 'textbox',
@@ -50,7 +55,10 @@ const IMAGE = [
     {
         key: 'image',
         type: 'image',
-        icon: 'picture-o',
+        icon: {
+            prefix: 'fas',
+            name: 'image',
+        },
         title: 'Image',
         option: {
             type: 'image',
@@ -66,7 +74,10 @@ const DOM_ELEMENT = [
     {
         key: 'custom',
         type: 'dom_element',
-        icon: 'picture-o',
+        icon: {
+            prefix: 'fab',
+            name: 'html5',
+        },
         title: 'Element',
         option: {
             type: 'element',
@@ -81,7 +92,10 @@ const DOM_ELEMENT = [
     {
         key: 'iframe',
         type: 'dom_element',
-        icon: 'picture-o',
+        icon: {
+            prefix: 'fas',
+            name: 'window-maximize',
+        },
         title: 'IFrame',
         option: {
             type: 'iframe',
@@ -96,7 +110,10 @@ const DOM_ELEMENT = [
     {
         key: 'video',
         type: 'dom_element',
-        icon: 'picture-o',
+        icon: {
+            prefix: 'fas',
+            name: 'video',
+        },
         title: 'Video',
         option: {
             type: 'video',
@@ -114,7 +131,10 @@ const SHAPE = [
     {
         key: 'default-triangle',
         type: 'triangle',
-        icon: 'picture-o',
+        icon: {
+            prefix: 'fas',
+            name: 'image',
+        },
         title: 'Triangle',
         option: {
             type: 'triangle',
@@ -126,7 +146,10 @@ const SHAPE = [
     {
         key: 'default-rect',
         type: 'rect',
-        icon: 'picture-o',
+        icon: {
+            prefix: 'fas',
+            name: 'image',
+        },
         title: 'Rectangle',
         option: {
             type: 'rect',
@@ -138,7 +161,10 @@ const SHAPE = [
     {
         key: 'default-circle',
         type: 'circle',
-        icon: 'picture-o',
+        icon: {
+            prefix: 'far',
+            name: 'circle',
+        },
         title: 'Circle',
         option: {
             type: 'circle',
@@ -152,7 +178,10 @@ const DRWAING = [
     {
         key: 'polygon',
         type: 'polygon',
-        icon: 'picture-o',
+        icon: {
+            prefix: 'fas',
+            name: 'draw-polygon',
+        },
         title: 'Polygon',
         option: {
             type: 'polygon',
@@ -314,7 +343,7 @@ class Items extends Component {
                             className="rde-item"
                             style={{ flex: '0 1 auto' }}
                         >
-                            <Icon name={item.icon} size={3} />
+                            <Icon name={item.icon.name} prefix={item.icon.prefix} size={3} />
                             <div className="rde-item-text">
                                 {item.title}
                             </div>
@@ -331,7 +360,7 @@ class Items extends Component {
                             className="rde-item"
                             style={{ flex: '0 1 auto' }}
                         >
-                            <Icon name={item.icon} size={3} />
+                            <Icon name={item.icon.name} prefix={item.icon.prefix} size={3} />
                             <div className="rde-item-text">
                                 {item.title}
                             </div>
