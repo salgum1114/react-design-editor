@@ -36,7 +36,7 @@ class Title extends Component {
                         size="large"
                         onClick={this.handlers.goGithub}
                     >
-                        <Icon name="github" size={1.5} />
+                        <Icon name="github" prefix="fab" size={1.5} />
                     </Button>
                 </div>
                 <FlexBox style={{ marginRight: 8 }} flex="1" justifyContent="flex-end">

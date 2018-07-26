@@ -12,7 +12,7 @@ class Icon extends Component {
         innerColor: PropTypes.string,
         innerClassName: PropTypes.string,
         innerSize: PropTypes.number,
-        widthFix: PropTypes.number,
+        prefix: PropTypes.string,
     };
 
     static defaultProps = {
@@ -24,11 +24,11 @@ class Icon extends Component {
         innerColor: '',
         innerClassName: '',
         innerSize: 1,
-        widthFix: null,
+        prefix: 'fas',
     };
 
-    getIconHtml = (name, className, size, color) => {
-        const iconClassName = `fa fa-${name} ${className}`;
+    getIconHtml = (prefix, name, className, size, color) => {
+        const iconClassName = `${prefix} fa-${name} ${className}`;
         const iconStyle = Object.assign({}, this.props.style, {
             fontSize: `${size}em`,
             color,
@@ -37,14 +37,12 @@ class Icon extends Component {
     }
 
     render() {
-        const { color, size, className, innerIcon, innerColor, innerSize, innerClassName, widthFix } = this.props;
+        const { color, size, className, innerIcon, innerColor, innerSize, innerClassName, prefix } = this.props;
         let { name } = this.props;
         if (name.startsWith('icon-')) {
             name = name.substr('icon-'.length);
         }
-        // const spanWidth = widthFix ? { width: `${widthFix}px` } : { width: '100%' };
-
-        const iconHtml = this.getIconHtml(name, className, size, color);
+        const iconHtml = this.getIconHtml(prefix, name, className, size, color);
         let innerIconHtml = null;
         if (innerIcon) {
             innerIconHtml = this.getIconHtml(innerIcon, innerClassName, innerSize, innerColor);

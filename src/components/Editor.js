@@ -132,12 +132,22 @@ class Editor extends Component {
             this.canvasRef.current.workarea.set(changedKey, changedValue);
             this.canvasRef.current.canvas.requestRenderAll();
         },
-        onTooltip: (ref, opt) => {
+        onTooltip: (ref, target) => {
             const count = (Math.random() * 10) + 1;
-            return <div><div><div><Button>{opt.target.id}</Button><Badge count={count}/></div></div></div>;
+            return <div><div><div><Button>{target.id}</Button><Badge count={count}/></div></div></div>;
         },
-        onAction: (canvas, opt) => {
-
+        onAction: (canvas, target) => {
+            const { action } = target;
+            console.log(target);
+            if (action.type === 'dashboard') {
+                console.log(target);
+            } else if (action.type === 'url') {
+                if (action.state === 'current') {
+                    document.location.href = action.url;
+                    return;
+                }
+                window.open(action.url);
+            }
         },
     }
 
@@ -197,7 +207,7 @@ class Editor extends Component {
 
     render() {
         const { preview, selectedItem, canvasRect, zoomRatio } = this.state;
-        const { onAdd, onRemove, onSelect, onModified, onChange, onZoom, onTooltip } = this.canvasHandlers;
+        const { onAdd, onRemove, onSelect, onModified, onChange, onZoom, onTooltip, onAction } = this.canvasHandlers;
         const { onChangePreview } = this.handlers;
         return (
             <div className="rde-main">
@@ -230,6 +240,7 @@ class Editor extends Component {
                                 onSelect={onSelect}
                                 onZoom={onZoom}
                                 onTooltip={onTooltip}
+                                onAction={onAction}
                             />
                         </main>
                         <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
@@ -240,7 +251,7 @@ class Editor extends Component {
                         </aside>
                     </div>
                 </div>
-                <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} />
+                <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onAction={onAction} />
             </div>
         );
     }
