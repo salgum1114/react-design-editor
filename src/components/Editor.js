@@ -29,6 +29,7 @@ const propertiesToInclude = [
     'muted',
     'loop',
     'code',
+    'icon',
 ];
 
 class Editor extends Component {
