@@ -30,7 +30,6 @@ class IconChooser extends Component {
             this.modalHandlers.onShow();
         },
         onClickIcon: (icon) => {
-            console.log(icon);
             this.setState({
                 icon,
             }, () => {
