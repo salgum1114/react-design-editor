@@ -13,6 +13,7 @@ This project was started to meet two requirements.
 - mediaelement.js
 - react-ace
 - interact.js
+- anime.js
 - fontawesome5
 - webpack4
 - babel
@@ -66,6 +67,7 @@ to be contiuned..
 - [x] Dom Element - (Code Editor)
 - [x] iframe
 - [x] Animation - Fade / Bounce / Shake / Scaling / Rotation / Flash
+- [x] Icon Chooser - fontawesome 5.2.0 free version
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Image Cropping - development
