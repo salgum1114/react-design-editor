@@ -113,6 +113,19 @@ class Editor extends Component {
                 this.canvasRef.current.handlers.set(changedKey, allValues.animation);
                 return;
             }
+            if (changedKey === 'icon') {
+                const { unicode, styles } = changedValue[Object.keys(changedValue)[0]];
+                const uni = parseInt(unicode, 16);
+                if (styles[0] === 'brands') {
+                    this.canvasRef.current.handlers.set('fontFamily', 'Font Awesome 5 Brands');
+                } else if (styles[0] === 'brands') {
+                    this.canvasRef.current.handlers.set('fontFamily', 'Font Awesome 5 Regular');
+                } else {
+                    this.canvasRef.current.handlers.set('fontFamily', 'Font Awesome 5 Free');
+                }
+                this.canvasRef.current.handlers.set('text', String.fromCodePoint(uni));
+                return;
+            }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
         onChangeWokarea: (changedKey, changedValue, allValues) => {
