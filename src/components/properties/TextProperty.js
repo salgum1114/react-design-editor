@@ -1,6 +1,11 @@
 import React from 'react';
-import { Form, Slider, Col, Button, Select } from 'antd';
-import Icon from 'polestar-icons';
+import { Form, Slider, Col, Select, Tag } from 'antd';
+import sortBy from 'lodash/sortBy';
+
+import Icon from '../Icon';
+import Fonts from '../font/fonts';
+
+const fonts = Fonts.getFonts();
 
 export default {
     render(canvasRef, form, data) {
@@ -11,14 +16,20 @@ export default {
                     <Form.Item label="Font Family" colon={false}>
                         {
                             getFieldDecorator('fontFamily', {
-                                rules: [{
-                                    // required: true,
-                                    // message: 'Please input rotation',
-                                }],
-                                initialValue: 'default',
+                                initialValue: data.fontFamily,
                             })(
                                 <Select>
-                                    <Select.Option value="default">default</Select.Option>
+                                    {
+                                        Object.keys(fonts).map((font) => {
+                                            return (
+                                                <Select.OptGroup key={font} label={font.toUpperCase()}>
+                                                    {
+                                                        sortBy(fonts[font], ['name']).map(f => <Select.Option key={f.name} value={f.name}>{f.name}</Select.Option>)
+                                                    }
+                                                </Select.OptGroup>
+                                            );
+                                        })
+                                    }
                                 </Select>,
                             )
                         }
@@ -28,14 +39,12 @@ export default {
                     <Form.Item label="Font Size" colon={false}>
                         {
                             getFieldDecorator('fontSize', {
-                                rules: [{
-                                    // required: true,
-                                    // message: 'Please input rotation',
-                                }],
-                                initialValue: '60',
+                                initialValue: data.fontSize || '32',
                             })(
                                 <Select>
-                                    <Select.Option value="60">60</Select.Option>
+                                    {
+                                        Array.from({ length: 60 }, (v, k) => <Select.Option key={k} value={`${k + 1}`}>{k + 1}</Select.Option>)
+                                    }
                                 </Select>,
                             )
                         }
@@ -45,14 +54,12 @@ export default {
                     <Form.Item>
                         {
                             getFieldDecorator('fontWeight', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input height',
-                                }],
+                                valuePropName: 'checked',
+                                initialValue: data.fontWeight === 'bold',
                             })(
-                                <Button shape="circle">
+                                <Tag.CheckableTag className="rde-action-tag">
                                     <Icon name="bold" />
-                                </Button>,
+                                </Tag.CheckableTag>,
                             )
                         }
                     </Form.Item>
@@ -61,14 +68,12 @@ export default {
                     <Form.Item>
                         {
                             getFieldDecorator('fontStyle', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input rotation',
-                                }],
+                                valuePropName: 'checked',
+                                initialValue: data.fontStyle === 'italic',
                             })(
-                                <Button shape="circle">
+                                <Tag.CheckableTag className="rde-action-tag">
                                     <Icon name="italic" />
-                                </Button>,
+                                </Tag.CheckableTag>,
                             )
                         }
                     </Form.Item>
@@ -77,14 +82,12 @@ export default {
                     <Form.Item>
                         {
                             getFieldDecorator('linethrough', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input x position',
-                                }],
+                                valuePropName: 'checked',
+                                initialValue: data.linethrough,
                             })(
-                                <Button shape="circle">
+                                <Tag.CheckableTag className="rde-action-tag">
                                     <Icon name="strikethrough" />
-                                </Button>,
+                                </Tag.CheckableTag>,
                             )
                         }
                     </Form.Item>
@@ -93,14 +96,12 @@ export default {
                     <Form.Item>
                         {
                             getFieldDecorator('underline', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input y position',
-                                }],
+                                valuePropName: 'checked',
+                                initialValue: data.underline,
                             })(
-                                <Button shape="circle">
+                                <Tag.CheckableTag className="rde-action-tag">
                                     <Icon name="underline" />
-                                </Button>,
+                                </Tag.CheckableTag>,
                             )
                         }
                     </Form.Item>
@@ -108,15 +109,13 @@ export default {
                 <Col span={6}>
                     <Form.Item>
                         {
-                            getFieldDecorator('left', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input height',
-                                }],
+                            getFieldDecorator('textAlign.left', {
+                                valuePropName: 'checked',
+                                initialValue: data.textAlign === 'left',
                             })(
-                                <Button shape="circle">
+                                <Tag.CheckableTag className="rde-action-tag">
                                     <Icon name="align-left" />
-                                </Button>,
+                                </Tag.CheckableTag>,
                             )
                         }
                     </Form.Item>
@@ -124,15 +123,13 @@ export default {
                 <Col span={6}>
                     <Form.Item>
                         {
-                            getFieldDecorator('left', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input x position',
-                                }],
+                            getFieldDecorator('textAlign.center', {
+                                valuePropName: 'checked',
+                                initialValue: data.textAlign === 'center',
                             })(
-                                <Button shape="circle">
+                                <Tag.CheckableTag className="rde-action-tag">
                                     <Icon name="align-center" />
-                                </Button>,
+                                </Tag.CheckableTag>,
                             )
                         }
                     </Form.Item>
@@ -140,15 +137,13 @@ export default {
                 <Col span={6}>
                     <Form.Item>
                         {
-                            getFieldDecorator('top', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input y position',
-                                }],
+                            getFieldDecorator('textAlign.right', {
+                                valuePropName: 'checked',
+                                initialValue: data.textAlign === 'right',
                             })(
-                                <Button shape="circle">
+                                <Tag.CheckableTag className="rde-action-tag">
                                     <Icon name="align-right" />
-                                </Button>,
+                                </Tag.CheckableTag>,
                             )
                         }
                     </Form.Item>
@@ -156,15 +151,13 @@ export default {
                 <Col span={6}>
                     <Form.Item>
                         {
-                            getFieldDecorator('rotation', {
-                                rules: [{
-                                    required: true,
-                                    message: 'Please input rotation',
-                                }],
+                            getFieldDecorator('textAlign.justify', {
+                                valuePropName: 'checked',
+                                initialValue: data.textAlign === 'justify',
                             })(
-                                <Button shape="circle">
+                                <Tag.CheckableTag className="rde-action-tag">
                                     <Icon name="align-justify" />
-                                </Button>,
+                                </Tag.CheckableTag>,
                             )
                         }
                     </Form.Item>
@@ -175,8 +168,6 @@ export default {
                             getFieldDecorator('lineHeight', {
                                 rules: [{
                                     type: 'number',
-                                    // required: false,
-                                    // message: 'Please input name',
                                 }],
                                 initialValue: data.lineHeight,
                             })(
@@ -191,8 +182,6 @@ export default {
                             getFieldDecorator('charSpacing', {
                                 rules: [{
                                     type: 'number',
-                                    // required: true,
-                                    // message: 'Please input width',
                                 }],
                                 initialValue: data.charSpacing,
                             })(
