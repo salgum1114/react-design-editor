@@ -45,6 +45,7 @@ class CanvasList extends Component {
             }).map((obj) => {
                 let icon;
                 let title = '';
+                let prefix = 'fas';
                 if (obj.type === 'i-text') {
                     icon = 'map-marker-alt';
                     title = 'Marker';
@@ -52,25 +53,35 @@ class CanvasList extends Component {
                     icon = 'font';
                     title = 'Text';
                 } else if (obj.type === 'image') {
-                    icon = 'picture-o';
+                    icon = 'image';
                     title = 'Image';
                 } else if (obj.type === 'triangle') {
-                    icon = 'picture-o';
+                    icon = 'image';
                     title = 'Triangle';
                 } else if (obj.type === 'rect') {
-                    icon = 'picture-o';
+                    icon = 'image';
                     title = 'Rect';
                 } else if (obj.type === 'circle') {
-                    icon = 'picture-o';
+                    icon = 'circle';
                     title = 'Circle';
                 } else if (obj.type === 'polygon') {
-                    icon = 'picture-o';
+                    icon = 'draw-polygon';
                     title = 'Polygon';
                 } else if (obj.type === 'line') {
-                    icon = 'picture-o';
+                    icon = 'image';
                     title = 'Line';
+                } else if (obj.type === 'element') {
+                    icon = 'html5';
+                    title = 'Element';
+                    prefix = 'fab';
+                } else if (obj.type === 'iframe') {
+                    icon = 'window-maximize';
+                    title = 'iframe';
+                } else if (obj.type === 'video') {
+                    icon = 'video';
+                    title = 'Video';
                 } else {
-                    icon = 'picture-o';
+                    icon = 'image';
                     title = 'Default';
                 }
                 let className = 'rde-canvas-list-item';
@@ -80,7 +91,7 @@ class CanvasList extends Component {
                 return (
                     <FlexItem key={obj.id} className={className} flex="1" onClick={() => canvasRef.current.handlers.select(obj)}>
                         <FlexBox alignItems="center">
-                            <Icon className="rde-canvas-list-item-icon" name={icon} size={1.5} style={{ width: 32 }} />
+                            <Icon className="rde-canvas-list-item-icon" name={icon} size={1.5} style={{ width: 32 }} prefix={prefix} />
                             <div className="rde-canvas-list-item-text">
                                 {title}
                             </div>

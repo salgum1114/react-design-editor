@@ -753,6 +753,7 @@ class Canvas extends Component {
                         lockMovementY: true,
                         hoverCursor: 'pointer',
                     });
+                    this.canvas.renderAll();
                 },
                 update: (e) => {
                     obj.setCoords();
@@ -823,6 +824,7 @@ class Canvas extends Component {
                 Object.assign(option, {
                     fill: other.fill,
                     easing: 'easeInQuad',
+                    duration: 2000,
                 });
             } else {
                 console.warn('Not supported type.');

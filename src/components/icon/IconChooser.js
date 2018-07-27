@@ -70,6 +70,12 @@ class IconChooser extends Component {
         visible: false,
     }
 
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            icon: nextProps.icon || this.state.icon,
+        });
+    }
+
     getPrefix = (style) => {
         let prefix = 'fas';
         if (style === 'brands') {
