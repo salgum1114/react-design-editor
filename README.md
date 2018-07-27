@@ -68,6 +68,7 @@ to be contiuned..
 - [x] iframe
 - [x] Animation - Fade / Bounce / Shake / Scaling / Rotation / Flash
 - [x] Icon Chooser - fontawesome 5.2.0 free version
+- [x] Google Fonts - 20 fonts
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Image Cropping - development
