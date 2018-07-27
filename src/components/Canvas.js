@@ -402,6 +402,18 @@ class Canvas extends Component {
             const findObject = this.handlers.findById(id);
             this.handlers.setByObject(findObject, key, value);
         },
+        setShadow: (key, value) => {
+            const activeObject = this.canvas.getActiveObject();
+            if (!activeObject) {
+                return false;
+            }
+            activeObject.setShadow(value);
+            this.canvas.requestRenderAll();
+            const { onModified } = this.props;
+            if (onModified) {
+                onModified(activeObject);
+            }
+        },
         loadImage: (obj, src) => {
             if (obj.type === 'image') {
                 const newImg = new Image();
