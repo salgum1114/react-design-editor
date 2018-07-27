@@ -164,7 +164,7 @@ const SHAPE = [
         key: 'default-circle',
         type: 'circle',
         icon: {
-            prefix: 'far',
+            prefix: 'fas',
             name: 'circle',
         },
         title: 'Circle',

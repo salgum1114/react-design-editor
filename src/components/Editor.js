@@ -125,6 +125,7 @@ class Editor extends Component {
                     this.canvasRef.current.handlers.set('fontFamily', 'Font Awesome 5 Free');
                 }
                 this.canvasRef.current.handlers.set('text', String.fromCodePoint(uni));
+                this.canvasRef.current.handlers.set('icon', changedValue);
                 return;
             }
             if (changedKey === 'shadow') {
