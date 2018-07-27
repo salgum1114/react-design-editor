@@ -10,6 +10,7 @@ import VideoProperty from './VideoProperty';
 import ElementProperty from './ElementProperty';
 import IFrameProperty from './IFrameProperty';
 import AnimationProperty from './AnimationProperty';
+import ShadowProperty from './ShadowProperty';
 
 export default {
     map: {
@@ -43,6 +44,10 @@ export default {
             title: 'Style',
             component: StyleProperty,
         },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
+        },
         animation: {
             title: 'Animation',
             component: AnimationProperty,
@@ -69,6 +74,10 @@ export default {
             title: 'Style',
             component: StyleProperty,
         },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
+        },
         animation: {
             title: 'Animation',
             component: AnimationProperty,
@@ -94,6 +103,10 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
+        },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
         },
         animation: {
             title: 'Animation',
@@ -139,6 +152,10 @@ export default {
             title: 'Style',
             component: StyleProperty,
         },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
+        },
         animation: {
             title: 'Animation',
             component: AnimationProperty,
@@ -160,6 +177,10 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
+        },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
         },
         animation: {
             title: 'Animation',
@@ -183,6 +204,10 @@ export default {
             title: 'Style',
             component: StyleProperty,
         },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
+        },
         animation: {
             title: 'Animation',
             component: AnimationProperty,
@@ -204,6 +229,10 @@ export default {
         style: {
             title: 'Style',
             component: StyleProperty,
+        },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
         },
         animation: {
             title: 'Animation',

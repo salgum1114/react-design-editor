@@ -127,6 +127,14 @@ class Editor extends Component {
                 this.canvasRef.current.handlers.set('text', String.fromCodePoint(uni));
                 return;
             }
+            if (changedKey === 'shadow') {
+                if (allValues.shadow.enabled) {
+                    this.canvasRef.current.handlers.setShadow(changedKey, allValues.shadow);
+                } else {
+                    this.canvasRef.current.handlers.setShadow(changedKey, null);
+                }
+                return;
+            }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
         onChangeWokarea: (changedKey, changedValue, allValues) => {
