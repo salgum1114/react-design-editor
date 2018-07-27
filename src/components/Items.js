@@ -48,6 +48,7 @@ const TEXT = [
             type: 'textbox',
             text: 'Input text',
             name: 'New text',
+            fontSize: 32,
         },
     },
 ];

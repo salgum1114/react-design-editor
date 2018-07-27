@@ -135,6 +135,18 @@ class Editor extends Component {
                 }
                 return;
             }
+            if (changedKey === 'fontWeight') {
+                this.canvasRef.current.handlers.set(changedKey, changedValue ? 'bold' : 'normal');
+                return;
+            }
+            if (changedKey === 'fontStyle') {
+                this.canvasRef.current.handlers.set(changedKey, changedValue ? 'italic' : 'normal');
+                return;
+            }
+            if (changedKey === 'textAlign') {
+                this.canvasRef.current.handlers.set(changedKey, Object.keys(changedValue)[0]);
+                return;
+            }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
         onChangeWokarea: (changedKey, changedValue, allValues) => {
