@@ -1746,14 +1746,13 @@ class Canvas extends Component {
             const activeObjectWidth = activeObjectBoundingRect.width / this.viewportTransform[0];
             let horizontalInTheRange = false;
             let verticalInTheRange = false;
-            const transform = this.canvas._currentTransform;
+            const { _currentTransform: transform } = this.canvas;
             if (!transform) return;
 
             // It should be trivial to DRY this up by encapsulating (repeating) creation of x1, x2, y1, and y2 into functions,
             // but we're not doing it here for perf. reasons -- as this a function that's invoked on every mouse move
 
             for (let i = canvasObjects.length; i--;) {
-
                 if (canvasObjects[i] === target) {
                     continue;
                 }
@@ -1768,90 +1767,138 @@ class Canvas extends Component {
                 // snap by the horizontal center line
                 if (this.guidelines.isInRange(objectLeft, activeObjectLeft)) {
                     verticalInTheRange = true;
-                    this.verticalLines.push({
-                        x: objectLeft,
-                        y1: (objectTop < activeObjectTop)
-                            ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
-                            : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
-                        y2: (activeObjectTop > objectTop)
-                            ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
-                            : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset)
-                    });
+                    if (canvasObjects[i].id === 'workarea') {
+                        this.verticalLines.push({
+                            x: objectLeft,
+                            y1: 0,
+                            y2: this.canvas.getHeight(),
+                        });
+                    } else {
+                        this.verticalLines.push({
+                            x: objectLeft,
+                            y1: (objectTop < activeObjectTop)
+                                ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
+                                : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
+                            y2: (activeObjectTop > objectTop)
+                                ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
+                                : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
+                        });
+                    }
                     target.setPositionByOrigin(new fabric.Point(objectLeft, activeObjectTop), 'center', 'center');
                 }
 
                 // snap by the left edge
                 if (this.guidelines.isInRange(objectLeft - (objectWidth / 2), activeObjectLeft - (activeObjectWidth / 2))) {
                     verticalInTheRange = true;
-                    this.verticalLines.push({
-                        x: objectLeft - (objectWidth / 2),
-                        y1: (objectTop < activeObjectTop)
-                            ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
-                            : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
-                        y2: (activeObjectTop > objectTop)
-                            ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
-                            : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
-                    });
+                    if (canvasObjects[i].id === 'workarea') {
+                        this.verticalLines.push({
+                            x: objectLeft - (objectWidth / 2),
+                            y1: 0,
+                            y2: this.canvas.getHeight(),
+                        });
+                    } else {
+                        this.verticalLines.push({
+                            x: objectLeft - (objectWidth / 2),
+                            y1: (objectTop < activeObjectTop)
+                                ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
+                                : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
+                            y2: (activeObjectTop > objectTop)
+                                ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
+                                : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
+                        });
+                    }
                     target.setPositionByOrigin(new fabric.Point(objectLeft - (objectWidth / 2) + (activeObjectWidth / 2), activeObjectTop), 'center', 'center');
                 }
 
                 // snap by the right edge
                 if (this.guidelines.isInRange(objectLeft + (objectWidth / 2), activeObjectLeft + (activeObjectWidth / 2))) {
                     verticalInTheRange = true;
-                    this.verticalLines.push({
-                        x: objectLeft + (objectWidth / 2),
-                        y1: (objectTop < activeObjectTop)
-                            ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
-                            : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
-                        y2: (activeObjectTop > objectTop)
-                            ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
-                            : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
-                    });
+                    if (canvasObjects[i].id === 'workarea') {
+                        this.verticalLines.push({
+                            x: objectLeft + (objectWidth / 2),
+                            y1: 0,
+                            y2: this.canvas.getHeight(),
+                        });
+                    } else {
+                        this.verticalLines.push({
+                            x: objectLeft + (objectWidth / 2),
+                            y1: (objectTop < activeObjectTop)
+                                ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
+                                : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
+                            y2: (activeObjectTop > objectTop)
+                                ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
+                                : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
+                        });
+                    }
                     target.setPositionByOrigin(new fabric.Point(objectLeft + (objectWidth / 2) - (activeObjectWidth / 2), activeObjectTop), 'center', 'center');
                 }
 
                 // snap by the vertical center line
                 if (this.guidelines.isInRange(objectTop, activeObjectTop)) {
                     horizontalInTheRange = true;
-                    this.horizontalLines.push({
-                        y: objectTop,
-                        x1: (objectLeft < activeObjectLeft)
-                            ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
-                            : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
-                        x2: (activeObjectLeft > objectLeft)
-                            ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
-                            : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset)
-                    });
+                    if (canvasObjects[i].id === 'workarea') {
+                        this.horizontalLines.push({
+                            y: objectTop,
+                            x1: 0,
+                            x2: this.canvas.getWidth(),
+                        });
+                    } else {
+                        this.horizontalLines.push({
+                            y: objectTop,
+                            x1: (objectLeft < activeObjectLeft)
+                                ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
+                                : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
+                            x2: (activeObjectLeft > objectLeft)
+                                ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
+                                : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset),
+                        });
+                    }
                     target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop), 'center', 'center');
                 }
 
                 // snap by the top edge
                 if (this.guidelines.isInRange(objectTop - (objectHeight / 2), activeObjectTop - (activeObjectHeight / 2))) {
                     horizontalInTheRange = true;
-                    this.horizontalLines.push({
-                        y: objectTop - (objectHeight / 2),
-                        x1: (objectLeft < activeObjectLeft)
-                            ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
-                            : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
-                        x2: (activeObjectLeft > objectLeft)
-                            ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
-                            : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset)
-                    });
+                    if (canvasObjects[i].id === 'workarea') {
+                        this.horizontalLines.push({
+                            y: objectTop - (objectHeight / 2),
+                            x1: 0,
+                            x2: this.canvas.getWidth(),
+                        });
+                    } else {
+                        this.horizontalLines.push({
+                            y: objectTop - (objectHeight / 2),
+                            x1: (objectLeft < activeObjectLeft)
+                                ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
+                                : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
+                            x2: (activeObjectLeft > objectLeft)
+                                ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
+                                : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset),
+                        });
+                    }
                     target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop - (objectHeight / 2) + (activeObjectHeight / 2)), 'center', 'center');
                 }
 
                 // snap by the bottom edge
                 if (this.guidelines.isInRange(objectTop + (objectHeight / 2), activeObjectTop + (activeObjectHeight / 2))) {
                     horizontalInTheRange = true;
-                    this.horizontalLines.push({
-                        y: objectTop + (objectHeight / 2),
-                        x1: (objectLeft < activeObjectLeft)
-                            ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
-                            : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
-                        x2: (activeObjectLeft > objectLeft)
-                            ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
-                            : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset)
-                    });
+                    if (canvasObjects[i].id === 'workarea') {
+                        this.horizontalLines.push({
+                            y: objectTop + (objectHeight / 2),
+                            x1: 0,
+                            x2: this.canvas.getWidth(),
+                        });
+                    } else {
+                        this.horizontalLines.push({
+                            y: objectTop + (objectHeight / 2),
+                            x1: (objectLeft < activeObjectLeft)
+                                ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
+                                : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
+                            x2: (activeObjectLeft > objectLeft)
+                                ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
+                                : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset),
+                        });
+                    }
                     target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop + (objectHeight / 2) - (activeObjectHeight / 2)), 'center', 'center');
                 }
             }
@@ -1865,132 +1912,7 @@ class Canvas extends Component {
             }
         },
         scalingGuidelines: (target) => {
-            const canvasObjects = this.canvas.getObjects();
-            const activeObjectCenter = target.getCenterPoint();
-            const activeObjectLeft = activeObjectCenter.x;
-            const activeObjectTop = activeObjectCenter.y;
-            const activeObjectBoundingRect = target.getBoundingRect();
-            const activeObjectHeight = activeObjectBoundingRect.height / this.viewportTransform[3];
-            const activeObjectWidth = activeObjectBoundingRect.width / this.viewportTransform[0];
-            let horizontalInTheRange = false;
-            let verticalInTheRange = false;
-            const transform = this.canvas._currentTransform;
-            if (!transform) return;
-
-            // It should be trivial to DRY this up by encapsulating (repeating) creation of x1, x2, y1, and y2 into functions,
-            // but we're not doing it here for perf. reasons -- as this a function that's invoked on every mouse move
-
-            for (let i = canvasObjects.length; i--;) {
-
-                if (canvasObjects[i] === target) {
-                    continue;
-                }
-
-                const objectCenter = canvasObjects[i].getCenterPoint();
-                const objectLeft = objectCenter.x;
-                const objectTop = objectCenter.y;
-                const objectBoundingRect = canvasObjects[i].getBoundingRect();
-                const objectHeight = objectBoundingRect.height / this.viewportTransform[3];
-                const objectWidth = objectBoundingRect.width / this.viewportTransform[0];
-
-                // snap by the horizontal center line
-                if (this.guidelines.isInRange(objectLeft, activeObjectLeft)) {
-                    verticalInTheRange = true;
-                    this.verticalLines.push({
-                        x: objectLeft,
-                        y1: (objectTop < activeObjectTop)
-                            ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
-                            : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
-                        y2: (activeObjectTop > objectTop)
-                            ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
-                            : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset)
-                    });
-                    target.setPositionByOrigin(new fabric.Point(objectLeft, activeObjectTop), 'center', 'center');
-                }
-
-                // snap by the left edge
-                if (this.guidelines.isInRange(objectLeft - (objectWidth / 2), activeObjectLeft - (activeObjectWidth / 2))) {
-                    verticalInTheRange = true;
-                    this.verticalLines.push({
-                        x: objectLeft - (objectWidth / 2),
-                        y1: (objectTop < activeObjectTop)
-                            ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
-                            : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
-                        y2: (activeObjectTop > objectTop)
-                            ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
-                            : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
-                    });
-                    target.setPositionByOrigin(new fabric.Point(objectLeft - (objectWidth / 2) + (activeObjectWidth / 2), activeObjectTop), 'center', 'center');
-                }
-
-                // snap by the right edge
-                if (this.guidelines.isInRange(objectLeft + (objectWidth / 2), activeObjectLeft + (activeObjectWidth / 2))) {
-                    verticalInTheRange = true;
-                    this.verticalLines.push({
-                        x: objectLeft + (objectWidth / 2),
-                        y1: (objectTop < activeObjectTop)
-                            ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
-                            : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
-                        y2: (activeObjectTop > objectTop)
-                            ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
-                            : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
-                    });
-                    target.setPositionByOrigin(new fabric.Point(objectLeft + (objectWidth / 2) - (activeObjectWidth / 2), activeObjectTop), 'center', 'center');
-                }
-
-                // snap by the vertical center line
-                if (this.guidelines.isInRange(objectTop, activeObjectTop)) {
-                    horizontalInTheRange = true;
-                    this.horizontalLines.push({
-                        y: objectTop,
-                        x1: (objectLeft < activeObjectLeft)
-                            ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
-                            : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
-                        x2: (activeObjectLeft > objectLeft)
-                            ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
-                            : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset)
-                    });
-                    target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop), 'center', 'center');
-                }
-
-                // snap by the top edge
-                if (this.guidelines.isInRange(objectTop - (objectHeight / 2), activeObjectTop - (activeObjectHeight / 2))) {
-                    horizontalInTheRange = true;
-                    this.horizontalLines.push({
-                        y: objectTop - (objectHeight / 2),
-                        x1: (objectLeft < activeObjectLeft)
-                            ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
-                            : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
-                        x2: (activeObjectLeft > objectLeft)
-                            ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
-                            : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset)
-                    });
-                    target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop - (objectHeight / 2) + (activeObjectHeight / 2)), 'center', 'center');
-                }
-
-                // snap by the bottom edge
-                if (this.guidelines.isInRange(objectTop + (objectHeight / 2), activeObjectTop + (activeObjectHeight / 2))) {
-                    horizontalInTheRange = true;
-                    this.horizontalLines.push({
-                        y: objectTop + (objectHeight / 2),
-                        x1: (objectLeft < activeObjectLeft)
-                            ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
-                            : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
-                        x2: (activeObjectLeft > objectLeft)
-                            ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
-                            : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset)
-                    });
-                    target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop + (objectHeight / 2) - (activeObjectHeight / 2)), 'center', 'center');
-                }
-            }
-
-            if (!horizontalInTheRange) {
-                this.horizontalLines.length = 0;
-            }
-
-            if (!verticalInTheRange) {
-                this.verticalLines.length = 0;
-            }
+            // TODO...
         },
     }
 
