@@ -1274,8 +1274,8 @@ class Canvas extends Component {
                                     obj.player.setPlayerSize(objWidth, objHeight);
                                 }
                                 obj.set({
-                                    scaleX,
-                                    scaleY,
+                                    scaleX: 1,
+                                    scaleY: 1,
                                 });
                                 obj.setCoords();
                             }
@@ -1291,7 +1291,7 @@ class Canvas extends Component {
                     canvas.renderAll();
                 });
             };
-            if (typeof source === 'string') {
+            if (typeof src === 'string') {
                 workarea.set({
                     src,
                 });
@@ -1720,8 +1720,8 @@ class Canvas extends Component {
             ctx.lineWidth = aligningLineWidth;
             ctx.strokeStyle = aligningLineColor;
             ctx.beginPath();
-            ctx.moveTo(((x1 + viewportTransform[4]) * zoom), ((y1 + viewportTransform[5]) * zoom));
-            ctx.lineTo(((x2 + viewportTransform[4]) * zoom), ((y2 + viewportTransform[5]) * zoom));
+            ctx.moveTo((x1 * zoom) + viewportTransform[4], (y1 * zoom) + viewportTransform[5]);
+            ctx.lineTo((x2 * zoom) + viewportTransform[4], (y2 * zoom) + viewportTransform[5]);
             ctx.stroke();
             ctx.restore();
         },
@@ -1768,10 +1768,12 @@ class Canvas extends Component {
                 if (this.guidelines.isInRange(objectLeft, activeObjectLeft)) {
                     verticalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
+                        const y1 = -5000;
+                        const y2 = 5000;
                         this.verticalLines.push({
                             x: objectLeft,
-                            y1: 0,
-                            y2: this.canvas.getHeight(),
+                            y1,
+                            y2,
                         });
                     } else {
                         this.verticalLines.push({
@@ -1791,10 +1793,12 @@ class Canvas extends Component {
                 if (this.guidelines.isInRange(objectLeft - (objectWidth / 2), activeObjectLeft - (activeObjectWidth / 2))) {
                     verticalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
+                        const y1 = -5000;
+                        const y2 = 5000;
                         this.verticalLines.push({
                             x: objectLeft - (objectWidth / 2),
-                            y1: 0,
-                            y2: this.canvas.getHeight(),
+                            y1,
+                            y2,
                         });
                     } else {
                         this.verticalLines.push({
@@ -1814,10 +1818,12 @@ class Canvas extends Component {
                 if (this.guidelines.isInRange(objectLeft + (objectWidth / 2), activeObjectLeft + (activeObjectWidth / 2))) {
                     verticalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
+                        const y1 = -5000;
+                        const y2 = 5000;
                         this.verticalLines.push({
                             x: objectLeft + (objectWidth / 2),
-                            y1: 0,
-                            y2: this.canvas.getHeight(),
+                            y1,
+                            y2,
                         });
                     } else {
                         this.verticalLines.push({
@@ -1837,10 +1843,12 @@ class Canvas extends Component {
                 if (this.guidelines.isInRange(objectTop, activeObjectTop)) {
                     horizontalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
+                        const x1 = -5000;
+                        const x2 = 5000;
                         this.horizontalLines.push({
                             y: objectTop,
-                            x1: 0,
-                            x2: this.canvas.getWidth(),
+                            x1,
+                            x2,
                         });
                     } else {
                         this.horizontalLines.push({
@@ -1860,10 +1868,12 @@ class Canvas extends Component {
                 if (this.guidelines.isInRange(objectTop - (objectHeight / 2), activeObjectTop - (activeObjectHeight / 2))) {
                     horizontalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
+                        const x1 = -5000;
+                        const x2 = 5000;
                         this.horizontalLines.push({
                             y: objectTop - (objectHeight / 2),
-                            x1: 0,
-                            x2: this.canvas.getWidth(),
+                            x1,
+                            x2,
                         });
                     } else {
                         this.horizontalLines.push({
@@ -1883,10 +1893,12 @@ class Canvas extends Component {
                 if (this.guidelines.isInRange(objectTop + (objectHeight / 2), activeObjectTop + (activeObjectHeight / 2))) {
                     horizontalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
+                        const x1 = -5000;
+                        const x2 = 5000;
                         this.horizontalLines.push({
                             y: objectTop + (objectHeight / 2),
-                            x1: 0,
-                            x2: this.canvas.getWidth(),
+                            x1,
+                            x2,
                         });
                     } else {
                         this.horizontalLines.push({
@@ -1950,7 +1962,7 @@ class Canvas extends Component {
         },
         scaling: (opt) => {
             const { target } = opt;
-            // TODO... this.guidelines.scalingGuidelines(target);
+            // TODO...this.guidelines.scalingGuidelines(target);
             if (this.handlers.isElementType(target.type)) {
                 const zoom = this.canvas.getZoom();
                 const width = target.width * target.scaleX * zoom;
