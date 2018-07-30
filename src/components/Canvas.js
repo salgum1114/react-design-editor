@@ -1795,8 +1795,12 @@ class Canvas extends Component {
                     if (canvasObjects[i].id === 'workarea') {
                         const y1 = -5000;
                         const y2 = 5000;
+                        let x = objectLeft - (objectWidth / 2);
+                        if (canvasObjects[i].layout === 'fullscreen') {
+                            x = 0;
+                        }
                         this.verticalLines.push({
-                            x: objectLeft - (objectWidth / 2),
+                            x,
                             y1,
                             y2,
                         });
@@ -1820,8 +1824,12 @@ class Canvas extends Component {
                     if (canvasObjects[i].id === 'workarea') {
                         const y1 = -5000;
                         const y2 = 5000;
+                        let x = objectLeft + (objectWidth / 2);
+                        if (canvasObjects[i].layout === 'fullscreen') {
+                            x = this.canvas.getWidth();
+                        }
                         this.verticalLines.push({
-                            x: objectLeft + (objectWidth / 2),
+                            x,
                             y1,
                             y2,
                         });
@@ -1870,8 +1878,12 @@ class Canvas extends Component {
                     if (canvasObjects[i].id === 'workarea') {
                         const x1 = -5000;
                         const x2 = 5000;
+                        let y = objectTop - (objectHeight / 2);
+                        if (canvasObjects[i].layout === 'fullscreen') {
+                            y = 0;
+                        }
                         this.horizontalLines.push({
-                            y: objectTop - (objectHeight / 2),
+                            y,
                             x1,
                             x2,
                         });
@@ -1895,8 +1907,12 @@ class Canvas extends Component {
                     if (canvasObjects[i].id === 'workarea') {
                         const x1 = -5000;
                         const x2 = 5000;
+                        let y = objectTop + (objectHeight / 2);
+                        if (canvasObjects[i].layout === 'fullscreen') {
+                            y = this.canvas.getHeight();
+                        }
                         this.horizontalLines.push({
-                            y: objectTop + (objectHeight / 2),
+                            y,
                             x1,
                             x2,
                         });
