@@ -558,6 +558,8 @@ class Canvas extends Component {
                     const topRatio = canvasHeight / (height * scaleY);
                     obj.left *= leftRatio;
                     obj.top *= topRatio;
+                    obj.scaleX *= leftRatio;
+                    obj.scaleY *= topRatio;
                 } else {
                     const diffLeft = left - prevLeft;
                     const diffTop = top - prevTop;
@@ -2170,8 +2172,8 @@ class Canvas extends Component {
                 scaleX,
                 scaleY,
             });
-            this.canvas.getObjects().forEach((obj, index) => {
-                if (index !== 0) {
+            this.canvas.getObjects().forEach((obj) => {
+                if (obj.id !== 'workarea') {
                     const left = obj.left * diffScaleX;
                     const top = obj.top * diffScaleY;
                     const width = obj.width * scaleX;
@@ -2182,9 +2184,11 @@ class Canvas extends Component {
                         obj.player.setPlayerSize(width, height);
                     }
                     this.elementHandlers.setPosition(el, left, top);
+                    const newScaleX = obj.scaleX * diffScaleX;
+                    const newScaleY = obj.scaleY * diffScaleY;
                     obj.set({
-                        scaleX,
-                        scaleY,
+                        scaleX: newScaleX,
+                        scaleY: newScaleY,
                         left,
                         top,
                     });
