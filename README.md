@@ -69,7 +69,7 @@ to be contiuned..
 - [x] Animation - Fade / Bounce / Shake / Scaling / Rotation / Flash
 - [x] Icon Chooser - fontawesome 5.2.0 free version
 - [x] Google Fonts - 20 fonts
-- [x] Align Guidlines - moving (temporary) / resize (development)
+- [x] Align Guidlines - moving / resize (development)
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Image Cropping - development
