@@ -1,6 +1,8 @@
 import { fabric } from 'fabric';
 export default (mergeObjects) => {
     const defaultOptions = {
+        fill: 'rgba(0, 0, 0, 1)',
+        stroke: 'rgba(255, 255, 255, 0)',
         action: {},
         tooltip: {
             enabled: true,
