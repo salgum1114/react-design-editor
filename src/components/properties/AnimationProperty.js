@@ -65,20 +65,40 @@ export default {
                             </Row>
                             {
                                 type !== 'shake' ? (
-                                    <Form.Item label="Delay" colon={false}>
-                                        {
-                                            getFieldDecorator('animation.delay', {
-                                                rules: [{
-                                                    type: 'number',
-                                                    min: 100,
-                                                    max: 5000,
-                                                }],
-                                                initialValue: data.animation.delay || 100,
-                                            })(
-                                                <Slider min={100} max={5000} step={100} />,
-                                            )
-                                        }
-                                    </Form.Item>
+                                    <Row>
+                                        <Col span={12}>
+                                            <Form.Item label="Delay" colon={false}>
+                                                {
+                                                    getFieldDecorator('animation.delay', {
+                                                        rules: [{
+                                                            type: 'number',
+                                                            min: 100,
+                                                            max: 5000,
+                                                        }],
+                                                        initialValue: data.animation.delay || 100,
+                                                    })(
+                                                        <Slider min={100} max={5000} step={100} />,
+                                                    )
+                                                }
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={12}>
+                                            <Form.Item label="Duration" colon={false}>
+                                                {
+                                                    getFieldDecorator('animation.duration', {
+                                                        rules: [{
+                                                            type: 'number',
+                                                            min: 100,
+                                                            max: 5000,
+                                                        }],
+                                                        initialValue: data.animation.duration || 100,
+                                                    })(
+                                                        <Slider min={100} max={5000} step={100} />,
+                                                    )
+                                                }
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
                                 ) : null
                             }
                             {this.getComponentType(type, data, getFieldDecorator)}

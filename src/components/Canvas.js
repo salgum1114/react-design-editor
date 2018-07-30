@@ -186,6 +186,7 @@ class Canvas extends Component {
                 ...otherOption,
                 ...defaultOptions,
                 fill: 'rgba(255, 255, 255, 0)',
+                stroke: 'rgba(255, 255, 255, 0)',
             });
             if (!editable) {
                 createdObj.on('mousedown', this.events.object.mousedown);
@@ -732,7 +733,9 @@ class Canvas extends Component {
             } else if (type === 'flash') {
                 Object.assign(option, {
                     fill: obj.originFill,
+                    stroke: obj.originStroke,
                     originFill: null,
+                    origniStroke: null,
                 });
             } else {
                 console.warn('Not supportes type.');
@@ -741,12 +744,13 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         getAnimation: (obj) => {
-            const { delay = 100, autoplay = false, loop = false, type, ...other } = obj.animation;
+            const { delay = 100, duration = 100, autoplay = false, loop = false, type, ...other } = obj.animation;
             const option = {
                 targets: obj,
                 delay,
                 loop,
                 autoplay,
+                duration,
                 direction: 'alternate',
                 begin: () => {
                     obj.set({
@@ -758,6 +762,14 @@ class Canvas extends Component {
                     this.canvas.renderAll();
                 },
                 update: (e) => {
+                    if (type === 'flash') {
+                        // I do not know why it works. Magic code...
+                        const fill = e.animations[0].currentValue;
+                        const stroke = e.animations[1].currentValue;
+                        obj.set('fill', '');
+                        obj.set('fill', fill);
+                        obj.set('stroke', stroke);
+                    }
                     obj.setCoords();
                     this.canvas.renderAll();
                 },
@@ -822,11 +834,13 @@ class Canvas extends Component {
                     easing: 'easeInQuad',
                 });
             } else if (type === 'flash') {
+                const { fill = 'rgba(255, 255, 255, 1)', stroke = 'rgba(255, 255, 255, 0)' } = other;
                 obj.set('originFill', obj.fill);
+                obj.set('originStroke', obj.stroke);
                 Object.assign(option, {
-                    fill: other.fill,
+                    fill,
+                    stroke,
                     easing: 'easeInQuad',
-                    duration: 2000,
                 });
             } else {
                 console.warn('Not supported type.');

@@ -15,18 +15,19 @@ class ColorPicker extends Component {
     }
 
     state = {
-        color: this.props.value || '#fff',
+        color: this.props.value || 'rgba(255, 255, 255, 1)',
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            color: nextProps.value || this.state.value,
+            color: nextProps.value || this.state.color,
         });
     }
 
     render() {
         const { color } = this.state;
         const { onChange } = this.handlers;
+        // console.log(color);
         return (
             <Popover
                 trigger="click"
