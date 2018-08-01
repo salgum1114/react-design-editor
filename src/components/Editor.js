@@ -34,12 +34,12 @@ const propertiesToInclude = [
 
 class Editor extends Component {
     canvasHandlers = {
-        onAdd: (obj) => {
-            if (obj.type === 'activeSelection') {
+        onAdd: (target) => {
+            if (target.type === 'activeSelection') {
                 this.canvasHandlers.onSelect(null);
                 return;
             }
-            this.canvasRef.current.handlers.select(obj);
+            this.canvasRef.current.handlers.select(target);
         },
         onSelect: (target) => {
             if (target && target.id !== 'workarea' && target.type !== 'activeSelection') {
@@ -52,13 +52,13 @@ class Editor extends Component {
                 selectedItem: this.canvasRef.current.workarea,
             });
         },
-        onRemove: (obj) => {
+        onRemove: (target) => {
             this.canvasHandlers.onSelect(null);
         },
-        onModified: debounce((opt) => {
-            if (opt.type !== 'activeSelection') {
+        onModified: debounce((target) => {
+            if (target.type !== 'activeSelection') {
                 this.setState({
-                    selectedItem: opt,
+                    selectedItem: target,
                 });
                 return;
             }
@@ -119,7 +119,7 @@ class Editor extends Component {
                 const uni = parseInt(unicode, 16);
                 if (styles[0] === 'brands') {
                     this.canvasRef.current.handlers.set('fontFamily', 'Font Awesome 5 Brands');
-                } else if (styles[0] === 'brands') {
+                } else if (styles[0] === 'regular') {
                     this.canvasRef.current.handlers.set('fontFamily', 'Font Awesome 5 Regular');
                 } else {
                     this.canvasRef.current.handlers.set('fontFamily', 'Font Awesome 5 Free');
@@ -169,13 +169,22 @@ class Editor extends Component {
         },
         onTooltip: (ref, target) => {
             const count = (Math.random() * 10) + 1;
-            return <div><div><div><Button>{target.id}</Button><Badge count={count}/></div></div></div>;
+            return (
+                <div>
+                    <div>
+                        <div>
+                            <Button>
+                                {target.id}
+                            </Button>
+                            <Badge count={count} />
+                        </div>
+                    </div>
+                </div>
+            );
         },
         onAction: (canvas, target) => {
             const { action } = target;
-            console.log(target);
             if (action.type === 'dashboard') {
-                console.log(target);
             } else if (action.type === 'url') {
                 if (action.state === 'current') {
                     document.location.href = action.url;

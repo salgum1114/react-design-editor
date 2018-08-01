@@ -99,7 +99,7 @@ class Canvas extends Component {
                 option.scaleX = this.workarea.scaleX;
                 option.scaleY = this.workarea.scaleY;
             }
-            const newOption = Object.assign({}, obj, option);
+            const newOption = Object.assign({}, option, obj);
             if (obj.type === 'image') {
                 this.handlers.addImage(newOption, centered);
                 return;
@@ -110,7 +110,7 @@ class Canvas extends Component {
             }
             const createdObj = this.fabricObjects[obj.type].create({ ...newOption });
             if (!editable && !this.handlers.isElementType(obj.type)) {
-                createdObj.on('mousedown', this.events.object.mousedown);
+                createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }
             this.canvas.add(createdObj);
             if (obj.type !== 'polygon' && editable) {
@@ -142,7 +142,7 @@ class Canvas extends Component {
                     ...defaultOptions,
                 });
                 if (!editable) {
-                    createdObj.on('mousedown', this.events.object.mousedown);
+                    createdObj.on('mousedown', this.eventHandlers.object.mousedown);
                 }
                 this.canvas.add(createdObj);
                 if (editable) {
@@ -189,7 +189,7 @@ class Canvas extends Component {
                 stroke: 'rgba(255, 255, 255, 0)',
             });
             if (!editable) {
-                createdObj.on('mousedown', this.events.object.mousedown);
+                createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }
             canvas.add(createdObj);
             if (src || file || code) {
@@ -1425,12 +1425,14 @@ class Canvas extends Component {
             this.lineArray = [];
             this.activeLine = null;
             this.activeShape = null;
+            this.canvas.selection = true;
+            this.canvas.renderAll();
         },
         addPoint: (obj) => {
             obj.points.forEach((point, index) => {
                 const circle = new fabric.Circle({
                     id: uuid(),
-                    radius: 5,
+                    radius: 3,
                     fill: '#ffffff',
                     stroke: '#333333',
                     strokeWidth: 0.5,
@@ -1454,7 +1456,7 @@ class Canvas extends Component {
                 const { x, y } = absolutePointer;
                 const circle = new fabric.Circle({
                     id,
-                    radius: 5,
+                    radius: 3,
                     fill: '#ffffff',
                     stroke: '#333333',
                     strokeWidth: 0.5,
@@ -1551,12 +1553,64 @@ class Canvas extends Component {
                     strokeDashArray: [10, 5],
                     fill: 'rgba(255, 255, 255, 0)',
                     opacity: 1,
+                    // hasBorders: false,
+                    // hasControls: false,
+                    // lockMovementX: true,
+                    // lockMovementY: true,
+                    // evented: false,
+                    objectCaching: !this.props.editable,
                 };
                 this.handlers.add(option, false);
+                this.pointArray = [];
                 this.activeLine = null;
                 this.activeShape = null;
                 this.polygonMode = false;
                 this.canvas.selection = true;
+            },
+            createResize: (target, points) => {
+                points.forEach((point, index) => {
+                    const { x, y } = point;
+                    const circle = new fabric.Circle({
+                        name: index,
+                        radius: 3,
+                        fill: '#ffffff',
+                        stroke: '#333333',
+                        strokeWidth: 0.5,
+                        left: x,
+                        top: y,
+                        hasBorders: false,
+                        hasControls: false,
+                        originX: 'center',
+                        originY: 'center',
+                        hoverCursor: 'pointer',
+                        parentId: target.id,
+                    });
+                    this.pointArray.push(circle);
+                });
+                const group = [target].concat(this.pointArray);
+                this.canvas.add(new fabric.Group(group, { type: 'polygon', id: uuid() }));
+            },
+            removeResize: () => {
+                if (this.pointArray) {
+                    this.pointArray.forEach((point) => {
+                        this.canvas.remove(point);
+                    });
+                    this.pointArray = [];
+                }
+            },
+            movingResize: (target, e) => {
+                const points = target.diffPoints || target.points;
+                const diffPoints = [];
+                points.forEach((point) => {
+                    diffPoints.push({
+                        x: point.x + e.movementX,
+                        y: point.y + e.movementY,
+                    });
+                });
+                target.set({
+                    diffPoints,
+                });
+                this.canvas.renderAll();
             },
         },
         line: {
@@ -1564,7 +1618,7 @@ class Canvas extends Component {
         },
     }
 
-    alignments = {
+    alignmentHandlers = {
         left: () => {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject && activeObject.type === 'activeSelection') {
@@ -1671,8 +1725,8 @@ class Canvas extends Component {
         },
     }
 
-    tooltip = {
-        showTooltip: debounce((target) => {
+    tooltipHandlers = {
+        show: debounce((target) => {
             if (target.tooltip && target.tooltip.enabled) {
                 while (this.tooltipRef.current.hasChildNodes()) {
                     this.tooltipRef.current.removeChild(this.tooltipRef.current.firstChild);
@@ -1697,12 +1751,12 @@ class Canvas extends Component {
                 this.tooltipRef.current.style.top = `${top + objHeightDiff}px`;
             }
         }, 100),
-        hiddenTooltip: debounce((target) => {
+        hide: debounce((target) => {
             this.tooltipRef.current.classList.add('tooltip-hidden');
         }, 100),
     }
 
-    guidelines = {
+    guidelineHandlers = {
         init: () => {
             this.ctx = this.canvas.getSelectionContext();
             this.aligningLineOffset = 5;
@@ -1715,7 +1769,7 @@ class Canvas extends Component {
             this.horizontalLines = [];
         },
         drawVerticalLine: (coords) => {
-            this.guidelines.drawLine(
+            this.guidelineHandlers.drawLine(
                 coords.x + 0.5,
                 coords.y1 > coords.y2 ? coords.y2 : coords.y1,
                 coords.x + 0.5,
@@ -1723,7 +1777,7 @@ class Canvas extends Component {
             );
         },
         drawHorizontalLine: (coords) => {
-            this.guidelines.drawLine(
+            this.guidelineHandlers.drawLine(
                 coords.x1 > coords.x2 ? coords.x2 : coords.x1,
                 coords.y + 0.5,
                 coords.x2 > coords.x1 ? coords.x2 : coords.x1,
@@ -1781,7 +1835,7 @@ class Canvas extends Component {
                 const objectWidth = objectBoundingRect.width / this.viewportTransform[0];
 
                 // snap by the horizontal center line
-                if (this.guidelines.isInRange(objectLeft, activeObjectLeft)) {
+                if (this.guidelineHandlers.isInRange(objectLeft, activeObjectLeft)) {
                     verticalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
                         const y1 = -5000;
@@ -1806,7 +1860,7 @@ class Canvas extends Component {
                 }
 
                 // snap by the left edge
-                if (this.guidelines.isInRange(objectLeft - (objectWidth / 2), activeObjectLeft - (activeObjectWidth / 2))) {
+                if (this.guidelineHandlers.isInRange(objectLeft - (objectWidth / 2), activeObjectLeft - (activeObjectWidth / 2))) {
                     verticalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
                         const y1 = -5000;
@@ -1835,7 +1889,7 @@ class Canvas extends Component {
                 }
 
                 // snap by the right edge
-                if (this.guidelines.isInRange(objectLeft + (objectWidth / 2), activeObjectLeft + (activeObjectWidth / 2))) {
+                if (this.guidelineHandlers.isInRange(objectLeft + (objectWidth / 2), activeObjectLeft + (activeObjectWidth / 2))) {
                     verticalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
                         const y1 = -5000;
@@ -1864,7 +1918,7 @@ class Canvas extends Component {
                 }
 
                 // snap by the vertical center line
-                if (this.guidelines.isInRange(objectTop, activeObjectTop)) {
+                if (this.guidelineHandlers.isInRange(objectTop, activeObjectTop)) {
                     horizontalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
                         const x1 = -5000;
@@ -1889,7 +1943,7 @@ class Canvas extends Component {
                 }
 
                 // snap by the top edge
-                if (this.guidelines.isInRange(objectTop - (objectHeight / 2), activeObjectTop - (activeObjectHeight / 2))) {
+                if (this.guidelineHandlers.isInRange(objectTop - (objectHeight / 2), activeObjectTop - (activeObjectHeight / 2))) {
                     horizontalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
                         const x1 = -5000;
@@ -1918,7 +1972,7 @@ class Canvas extends Component {
                 }
 
                 // snap by the bottom edge
-                if (this.guidelines.isInRange(objectTop + (objectHeight / 2), activeObjectTop + (activeObjectHeight / 2))) {
+                if (this.guidelineHandlers.isInRange(objectTop + (objectHeight / 2), activeObjectTop + (activeObjectHeight / 2))) {
                     horizontalInTheRange = true;
                     if (canvasObjects[i].id === 'workarea') {
                         const x1 = -5000;
@@ -1960,7 +2014,7 @@ class Canvas extends Component {
         },
     }
 
-    events = {
+    eventHandlers = {
         object: {
             mousedown: (opt) => {
                 const { target } = opt;
@@ -1979,13 +2033,21 @@ class Canvas extends Component {
                 if (!target) {
                     return;
                 }
-                onModified(opt.target);
+                if (target.type === 'circle' && target.parentId) {
+                    return;
+                }
+                onModified(target);
             }
         },
         moving: (opt) => {
             const { target } = opt;
-            // TODO... zoom > 1
-            this.guidelines.movingGuidelines(target);
+            // if (target.type === 'circle' && target.parentId) {
+            //     const findObject = this.handlers.findById(target.parentId);
+            //     const { x, y } = target.getCenterPoint();
+            //     findObject.points[target.name] = { x, y };
+            //     return;
+            // }
+            this.guidelineHandlers.movingGuidelines(target);
             if (this.handlers.isElementType(target.type)) {
                 const el = this.elementHandlers.findById(target.id);
                 // update the element
@@ -1994,7 +2056,7 @@ class Canvas extends Component {
         },
         scaling: (opt) => {
             const { target } = opt;
-            // TODO...this.guidelines.scalingGuidelines(target);
+            // TODO...this.guidelineHandlers.scalingGuidelines(target);
             if (this.handlers.isElementType(target.type)) {
                 const zoom = this.canvas.getZoom();
                 const width = target.width * target.scaleX * zoom;
@@ -2064,14 +2126,23 @@ class Canvas extends Component {
             if (this.modeHandlers.mode === 'grab') {
                 this.modeHandlers.panning = true;
             }
-            if (this.props.editable) {
+            const { onSelect, editable } = this.props;
+            const { target } = opt;
+            if (editable) {
+                // if (target && target.type === 'circle' && target.parentId) {
+                //     const findObject = this.handlers.findById(target.parentId);
+                //     this.canvas.setActiveObject(findObject);
+                //     return;
+                // }
                 this.viewportTransform = this.canvas.viewportTransform;
                 this.zoom = this.canvas.getZoom();
                 if (!this.polygonMode) {
-                    this.props.onSelect(opt.target);
+                    if (onSelect) {
+                        onSelect(target);
+                    }
                 }
                 if (this.polygonMode) {
-                    if (opt.target && this.pointArray.length && opt.target.id === this.pointArray[0].id) {
+                    if (target && this.pointArray.length && target.id === this.pointArray[0].id) {
                         this.drawingHandlers.polygon.generatePolygon(this.pointArray);
                     } else {
                         this.drawingHandlers.polygon.addPoint(opt);
@@ -2089,9 +2160,9 @@ class Canvas extends Component {
                     return false;
                 }
                 if (opt.target.id !== 'workarea') {
-                    this.tooltip.showTooltip(opt.target);
+                    this.tooltipHandlers.show(opt.target);
                 } else {
-                    this.tooltip.hiddenTooltip(opt.target);
+                    this.tooltipHandlers.hide(opt.target);
                 }
             }
             if (this.activeLine && this.activeLine.class === 'line') {
@@ -2119,8 +2190,21 @@ class Canvas extends Component {
         },
         selection: (opt) => {
             const { onSelect } = this.props;
+            const { target } = opt;
+            // if (target && target.type === 'circle' && target.parentId) {
+            //     const findObject = this.handlers.findById(target.parentId);
+            //     this.canvas.setActiveObject(findObject);
+            //     return;
+            // }
+
+            // if (target && target.type === 'polygon') {
+            //     this.drawingHandlers.polygon.createResize(target, target.diffPoints || target.points);
+            // } else {
+            //     this.drawingHandlers.polygon.removeResize();
+            // }
+
             if (onSelect) {
-                onSelect(opt.target);
+                onSelect(target);
             }
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
@@ -2258,24 +2342,26 @@ class Canvas extends Component {
             }
         },
         keydown: (e) => {
-            if (!document.activeElement.id.includes('mep')
-            && this.canvas.wrapperEl !== document.activeElement) {
+            if (this.canvas.wrapperEl !== document.activeElement) {
                 return false;
             }
             if (e.keyCode === 46) {
                 this.handlers.remove();
             } else if (e.code.includes('Arrow')) {
-                this.events.arrowmoving(e);
+                this.eventHandlers.arrowmoving(e);
             } else if (e.ctrlKey && e.keyCode === 65) {
                 e.preventDefault();
                 this.handlers.allSelect();
             } else if (e.ctrlKey && e.keyCode === 67) {
                 e.preventDefault();
                 this.handlers.copy();
-            } else if (e.ctrlKey && e.keyCode === 86) {
-                e.preventDefault();
-                this.handlers.paste();
-            } else if (e.code === 27) {
+            }
+            // else if (e.ctrlKey && e.keyCode === 86) {
+            //     e.preventDefault();
+            //     console.log('tewqttweq');
+            //     this.handlers.paste();
+            // } 
+            else if (e.keyCode === 27) {
                 if (this.polygonMode) {
                     this.drawingHandlers.finishDraw();
                 }
@@ -2310,9 +2396,9 @@ class Canvas extends Component {
         });
         this.canvas.add(this.workarea);
         this.canvas.centerObject(this.workarea);
-        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, selection } = this.events;
+        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, selection } = this.eventHandlers;
         if (editable) {
-            this.guidelines.init();
+            this.guidelineHandlers.init();
             this.canvas.on({
                 'object:modified': modified,
                 'object:scaling': scaling,
@@ -2330,10 +2416,10 @@ class Canvas extends Component {
                 },
                 'after:render': () => {
                     for (let i = this.verticalLines.length; i--;) {
-                        this.guidelines.drawVerticalLine(this.verticalLines[i]);
+                        this.guidelineHandlers.drawVerticalLine(this.verticalLines[i]);
                     }
                     for (let i = this.horizontalLines.length; i--;) {
-                        this.guidelines.drawHorizontalLine(this.horizontalLines[i]);
+                        this.guidelineHandlers.drawHorizontalLine(this.horizontalLines[i]);
                     }
                     this.verticalLines.length = 0;
                     this.horizontalLines.length = 0;
@@ -2347,11 +2433,11 @@ class Canvas extends Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         const { width: currentWidth, height: currentHeight } = this.props;
         const { width: prevWidth, height: prevHeight } = prevProps;
         if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
-            this.events.resize(prevWidth, prevHeight, currentWidth, currentHeight);
+            this.eventHandlers.resize(prevWidth, prevHeight, currentWidth, currentHeight);
         }
     }
 
@@ -2362,13 +2448,13 @@ class Canvas extends Component {
     attachEventListener = () => {
         // if add canvas wrapper element event, tabIndex = 1000;
         this.canvas.wrapperEl.tabIndex = 1000;
-        document.addEventListener('keydown', this.events.keydown, false);
-        document.addEventListener('paste', this.events.paste, false);
+        document.addEventListener('keydown', this.eventHandlers.keydown, false);
+        document.addEventListener('paste', this.eventHandlers.paste, false);
     }
 
     detachEventListener = () => {
-        document.removeEventListener('keydown', this.events.keydown);
-        document.removeEventListener('paste', this.events.paste);
+        document.removeEventListener('keydown', this.eventHandlers.keydown);
+        document.removeEventListener('paste', this.eventHandlers.paste);
     }
 
     render() {
