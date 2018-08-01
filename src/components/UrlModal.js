@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button, Input } from 'antd';
-import Icon from 'polestar-icons';
+import Icon from './Icon';
 
 class UrlModal extends Component {
     static propTypes = {
