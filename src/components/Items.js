@@ -376,28 +376,26 @@ class Items extends Component {
     render() {
         const showArrow = false;
         return (
-            <div>
-                <Collapse bordered={false}>
-                    <Panel showArrow={showArrow} header="Marker">
-                        {this.renderItems('MARKER', MARKER)}
-                    </Panel>
-                    <Panel showArrow={showArrow} header="Text">
-                        {this.renderItems('TEXT', TEXT)}
-                    </Panel>
-                    <Panel showArrow={showArrow} header="Image">
-                        {this.renderItems('IMAGE', IMAGE)}
-                    </Panel>
-                    <Panel showArrow={showArrow} header="Shape">
-                        {this.renderItems('SHAPE', SHAPE)}
-                    </Panel>
-                    <Panel showArrow={showArrow} header="Drawing">
-                        {this.renderItems('DRAWING', DRWAING)}
-                    </Panel>
-                    <Panel showArrow={showArrow} header="Dom Element">
-                        {this.renderItems('DOM_ELEMENT', DOM_ELEMENT)}
-                    </Panel>
-                </Collapse>
-            </div>
+            <Collapse bordered={false}>
+                <Panel showArrow={showArrow} header="Marker">
+                    {this.renderItems('MARKER', MARKER)}
+                </Panel>
+                <Panel showArrow={showArrow} header="Text">
+                    {this.renderItems('TEXT', TEXT)}
+                </Panel>
+                <Panel showArrow={showArrow} header="Image">
+                    {this.renderItems('IMAGE', IMAGE)}
+                </Panel>
+                <Panel showArrow={showArrow} header="Shape">
+                    {this.renderItems('SHAPE', SHAPE)}
+                </Panel>
+                <Panel showArrow={showArrow} header="Drawing">
+                    {this.renderItems('DRAWING', DRWAING)}
+                </Panel>
+                <Panel showArrow={showArrow} header="Dom Element">
+                    {this.renderItems('DOM_ELEMENT', DOM_ELEMENT)}
+                </Panel>
+            </Collapse>
         );
     }
 }

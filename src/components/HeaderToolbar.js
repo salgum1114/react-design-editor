@@ -47,13 +47,13 @@ class HeaderToolbar extends Component {
                     <Button shape="circle"></Button> */}
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignments.left()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignmentHandlers.left()}>
                         <Icon name="align-left" />
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignments.center()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignmentHandlers.center()}>
                         <Icon name="align-center" />
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignments.right()}>
+                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignmentHandlers.right()}>
                         <Icon name="align-right" />
                     </Button>
                     {/* <Button shape="circle"></Button>
