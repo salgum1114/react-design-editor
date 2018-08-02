@@ -91,7 +91,7 @@ export default {
                                                             min: 100,
                                                             max: 5000,
                                                         }],
-                                                        initialValue: data.animation.duration || 100,
+                                                        initialValue: data.animation.duration || 1000,
                                                     })(
                                                         <Slider min={100} max={5000} step={100} />,
                                                     )

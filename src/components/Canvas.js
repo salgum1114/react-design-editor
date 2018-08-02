@@ -17,6 +17,16 @@ notification.config({
     duration: 2,
 });
 
+const defaultOptions = {
+    action: {},
+    tooltip: {
+        enabled: true,
+    },
+    animation: {
+        type: 'none',
+    },
+}
+
 const workareaOption = {
     width: 600,
     height: 400,
@@ -100,6 +110,34 @@ class Canvas extends Component {
                 option.scaleY = this.workarea.scaleY;
             }
             const newOption = Object.assign({}, option, obj);
+            if (obj.type === 'group') {
+                const objects = this.handlers.addGroup(newOption);
+                const groupOption = Object.assign({}, newOption, { objects });
+                if (obj.type === 'image') {
+                    this.handlers.addImage(newOption, centered);
+                    return;
+                }
+                if (this.handlers.isElementType(obj.type)) {
+                    this.handlers.addElement(newOption, centered);
+                    return;
+                }
+                const createdObj = this.fabricObjects[obj.type].create({ ...groupOption });
+                if (!editable && !this.handlers.isElementType(obj.type)) {
+                    createdObj.on('mousedown', this.eventHandlers.object.mousedown);
+                }
+                this.canvas.add(createdObj);
+                if (obj.type !== 'polygon' && editable) {
+                    this.handlers.centerObject(createdObj, centered);
+                }
+                if (createdObj.animation && createdObj.animation.autoplay) {
+                    this.animationHandlers.play(createdObj.id);
+                }
+                const { onAdd } = this.props;
+                if (onAdd && editable) {
+                    onAdd(createdObj);
+                }
+                return createdObj;
+            }
             if (obj.type === 'image') {
                 this.handlers.addImage(newOption, centered);
                 return;
@@ -116,25 +154,24 @@ class Canvas extends Component {
             if (obj.type !== 'polygon' && editable) {
                 this.handlers.centerObject(createdObj, centered);
             }
-            if (createdObj.animation.autoplay) {
+            if (createdObj.animation && createdObj.animation.autoplay) {
                 this.animationHandlers.play(createdObj.id);
             }
             const { onAdd } = this.props;
             if (onAdd && editable) {
                 onAdd(createdObj);
             }
+            return createdObj;
+        },
+        addGroup: (obj) => {
+            return obj.objects.map((child) => {
+                return this.handlers.add(child);
+            });
         },
         addImage: (obj, centered = true) => {
             const { editable } = this.props;
             const image = new Image();
             const { src, file, ...otherOption } = obj;
-            const defaultOptions = {
-                action: {},
-                tooltip: {
-                    enabled: true,
-                },
-                animation: {},
-            };
             const createImage = (img) => {
                 const createdObj = new fabric.Image(img, {
                     src,
@@ -172,12 +209,6 @@ class Canvas extends Component {
         addElement: (obj, centered = true) => {
             const { canvas } = this;
             const { editable } = this.props;
-            const defaultOptions = {
-                action: {},
-                tooltip: {
-                    enabled: true,
-                },
-            };
             const { src, file, code, ...otherOption } = obj;
             const createdObj = new fabric.Rect({
                 src,
@@ -578,7 +609,7 @@ class Canvas extends Component {
                 callback(this.canvas);
             }
         },
-        exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude),
+        exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude).objects,
         bringForward: () => {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
@@ -589,9 +620,22 @@ class Canvas extends Component {
                 }
             }
         },
+        bringToFront: () => {
+            const activeObject = this.canvas.getActiveObject();
+            if (activeObject) {
+                this.canvas.bringToFront(activeObject);
+                const { onModified } = this.props;
+                if (onModified) {
+                    onModified(activeObject);
+                }
+            }
+        },
         sendBackwards: () => {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
+                if (this.canvas.getObjects()[1].id === activeObject.id) {
+                    return;
+                }
                 this.canvas.sendBackwards(activeObject);
                 const { onModified } = this.props;
                 if (onModified) {
@@ -599,7 +643,18 @@ class Canvas extends Component {
                 }
             }
         },
-        clear: () => {
+        sendToBack: () => {
+            const activeObject = this.canvas.getActiveObject();
+            if (activeObject) {
+                this.canvas.sendToBack(activeObject);
+                this.canvas.sendToBack(this.canvas.getObjects()[1]);
+                const { onModified } = this.props;
+                if (onModified) {
+                    onModified(activeObject);
+                }
+            }
+        },
+        clear: (workarea = false) => {
             const { canvas } = this;
             const ids = canvas.getObjects().reduce((prev, curr) => {
                 if (this.handlers.isElementType(curr.type)) {
@@ -609,7 +664,42 @@ class Canvas extends Component {
                 return prev;
             }, []);
             this.elementHandlers.removeByIds(ids);
-            canvas.clear();
+            if (workarea) {
+                canvas.clear();
+            } else {
+                canvas.getObjects().forEach((obj) => {
+                    if (obj.id !== 'workarea') {
+                        canvas.remove(obj);
+                    }
+                });
+            }
+        },
+        toGroup: () => {
+            const { canvas } = this;
+            if (!canvas.getActiveObject()) {
+                return;
+            }
+            if (canvas.getActiveObject().type !== 'activeSelection') {
+                return;
+            }
+            const group = canvas.getActiveObject().toGroup();
+            group.set({
+                id: uuid(),
+                name: 'New group',
+                ...defaultOptions,
+            });
+            canvas.renderAll();
+        },
+        toActiveSelection: () => {
+            const { canvas } = this;
+            if (!canvas.getActiveObject()) {
+                return;
+            }
+            if (canvas.getActiveObject().type !== 'group') {
+                return;
+            }
+            canvas.getActiveObject().toActiveSelection();
+            canvas.renderAll();
         },
         isElementType: (type) => {
             return type === 'video' || type === 'element' || type === 'iframe';
@@ -778,9 +868,10 @@ class Canvas extends Component {
                 },
             };
             if (type === 'fade') {
+                const { opacity = 0 } = other;
                 obj.set('originOpacity', obj.opacity);
                 Object.assign(option, {
-                    opacity: other.opacity,
+                    opacity,
                     easing: 'easeInQuad',
                 });
             } else if (type === 'bounce') {
@@ -818,10 +909,11 @@ class Canvas extends Component {
                     });
                 }
             } else if (type === 'scaling') {
+                const { scale = 1 } = other;
                 obj.set('originZoomX', obj.scaleX);
                 obj.set('originZoomY', obj.scaleY);
-                const scaleX = obj.scaleX * other.scale;
-                const scaleY = obj.scaleY * other.scale;
+                const scaleX = obj.scaleX * scale;
+                const scaleY = obj.scaleY * scale;
                 Object.assign(option, {
                     scaleX,
                     scaleY,
@@ -834,7 +926,7 @@ class Canvas extends Component {
                     easing: 'easeInQuad',
                 });
             } else if (type === 'flash') {
-                const { fill = 'rgba(255, 255, 255, 1)', stroke = 'rgba(255, 255, 255, 0)' } = other;
+                const { fill = obj.fill, stroke = obj.stroke } = other;
                 obj.set('originFill', obj.fill);
                 obj.set('originStroke', obj.stroke);
                 Object.assign(option, {
@@ -1428,27 +1520,6 @@ class Canvas extends Component {
             this.canvas.selection = true;
             this.canvas.renderAll();
         },
-        addPoint: (obj) => {
-            obj.points.forEach((point, index) => {
-                const circle = new fabric.Circle({
-                    id: uuid(),
-                    radius: 3,
-                    fill: '#ffffff',
-                    stroke: '#333333',
-                    strokeWidth: 0.5,
-                    selectable: true,
-                    hasBorders: false,
-                    hasControls: false,
-                    originX: 'center',
-                    originY: 'center',
-                    hoverCursor: 'pointer',
-                    polygon: obj.id,
-                    name: index,
-                });
-                circle.setPositionByOrigin(new fabric.Point(point.x, point.y), 'left', 'top');
-                this.canvas.add(circle);
-            });
-        },
         polygon: {
             addPoint: (opt) => {
                 const id = uuid();
@@ -1553,11 +1624,6 @@ class Canvas extends Component {
                     strokeDashArray: [10, 5],
                     fill: 'rgba(255, 255, 255, 0)',
                     opacity: 1,
-                    // hasBorders: false,
-                    // hasControls: false,
-                    // lockMovementX: true,
-                    // lockMovementY: true,
-                    // evented: false,
                     objectCaching: !this.props.editable,
                 };
                 this.handlers.add(option, false);
@@ -1567,6 +1633,7 @@ class Canvas extends Component {
                 this.polygonMode = false;
                 this.canvas.selection = true;
             },
+            // TODO... polygon resize
             createResize: (target, points) => {
                 points.forEach((point, index) => {
                     const { x, y } = point;
@@ -2018,7 +2085,7 @@ class Canvas extends Component {
         object: {
             mousedown: (opt) => {
                 const { target } = opt;
-                if (target && target.action.enabled) {
+                if (target && target.action && target.action.enabled) {
                     const { onAction } = this.props;
                     if (onAction) {
                         onAction(this.canvas, target);
@@ -2041,12 +2108,6 @@ class Canvas extends Component {
         },
         moving: (opt) => {
             const { target } = opt;
-            // if (target.type === 'circle' && target.parentId) {
-            //     const findObject = this.handlers.findById(target.parentId);
-            //     const { x, y } = target.getCenterPoint();
-            //     findObject.points[target.name] = { x, y };
-            //     return;
-            // }
             this.guidelineHandlers.movingGuidelines(target);
             if (this.handlers.isElementType(target.type)) {
                 const el = this.elementHandlers.findById(target.id);
@@ -2129,11 +2190,6 @@ class Canvas extends Component {
             const { onSelect, editable } = this.props;
             const { target } = opt;
             if (editable) {
-                // if (target && target.type === 'circle' && target.parentId) {
-                //     const findObject = this.handlers.findById(target.parentId);
-                //     this.canvas.setActiveObject(findObject);
-                //     return;
-                // }
                 this.viewportTransform = this.canvas.viewportTransform;
                 this.zoom = this.canvas.getZoom();
                 if (!this.polygonMode) {
@@ -2191,21 +2247,22 @@ class Canvas extends Component {
         selection: (opt) => {
             const { onSelect } = this.props;
             const { target } = opt;
-            // if (target && target.type === 'circle' && target.parentId) {
-            //     const findObject = this.handlers.findById(target.parentId);
-            //     this.canvas.setActiveObject(findObject);
-            //     return;
-            // }
-
-            // if (target && target.type === 'polygon') {
-            //     this.drawingHandlers.polygon.createResize(target, target.diffPoints || target.points);
-            // } else {
-            //     this.drawingHandlers.polygon.removeResize();
-            // }
-
             if (onSelect) {
                 onSelect(target);
             }
+        },
+        beforeRender: (opt) => {
+            this.canvas.clearContext(this.canvas.contextTop);
+        },
+        afterRender: (opt) => {
+            for (let i = this.verticalLines.length; i--;) {
+                this.guidelineHandlers.drawVerticalLine(this.verticalLines[i]);
+            }
+            for (let i = this.horizontalLines.length; i--;) {
+                this.guidelineHandlers.drawHorizontalLine(this.horizontalLines[i]);
+            }
+            this.verticalLines.length = 0;
+            this.horizontalLines.length = 0;
         },
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
             this.currentWidth = currentWidth;
@@ -2396,7 +2453,7 @@ class Canvas extends Component {
         });
         this.canvas.add(this.workarea);
         this.canvas.centerObject(this.workarea);
-        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, selection } = this.eventHandlers;
+        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, selection, beforeRender, afterRender } = this.eventHandlers;
         if (editable) {
             this.guidelineHandlers.init();
             this.canvas.on({
@@ -2411,19 +2468,8 @@ class Canvas extends Component {
                 'selection:cleared': selection,
                 'selection:created': selection,
                 'selection:updated': selection,
-                'before:render': () => {
-                    this.canvas.clearContext(this.canvas.contextTop);
-                },
-                'after:render': () => {
-                    for (let i = this.verticalLines.length; i--;) {
-                        this.guidelineHandlers.drawVerticalLine(this.verticalLines[i]);
-                    }
-                    for (let i = this.horizontalLines.length; i--;) {
-                        this.guidelineHandlers.drawHorizontalLine(this.horizontalLines[i]);
-                    }
-                    this.verticalLines.length = 0;
-                    this.horizontalLines.length = 0;
-                },
+                'before:render': beforeRender,
+                'after:render': afterRender,
             });
             this.attachEventListener();
         } else {

@@ -6,6 +6,11 @@ import { FlexBox } from './flex';
 import Icon from './Icon';
 
 class Title extends Component {
+    static propTypes = {
+        propertiesRef: PropTypes.any,
+        canvasRef: PropTypes.any,
+    }
+
     handlers = {
         onSave: () => {
             const { propertiesRef } = this.props;
@@ -13,13 +18,20 @@ class Title extends Component {
                 console.log(error, values);
             });
         },
+        onExport: () => {
+            const { canvasRef } = this.props;
+            console.log(canvasRef.current.handlers.exportJSON());
+        },
+        onImport: () => {
+            
+        },
+        onCancel: () => {
+            const { canvasRef } = this.props;
+            canvasRef.current.handlers.clear();
+        },
         goGithub: () => {
             window.open('https://github.com/salgum1114/react-design-editor');
         },
-    }
-
-    static propTypes = {
-        propertiesRef: PropTypes.any,
     }
 
     render() {
@@ -48,6 +60,30 @@ class Title extends Component {
                         }}
                         shape="circle"
                         size="large"
+                        onClick={this.handlers.onExport}
+                    >
+                        <Icon name="file-export" size={1.5} />
+                    </Button>
+                    <Button
+                        className="rde-action-btn"
+                        style={{
+                            marginRight: 16,
+                            color: 'white',
+                        }}
+                        shape="circle"
+                        size="large"
+                        onClick={this.handlers.onImport}
+                    >
+                        <Icon name="file-import" size={1.5} />
+                    </Button>
+                    <Button
+                        className="rde-action-btn"
+                        style={{
+                            marginRight: 8,
+                            color: 'white',
+                        }}
+                        shape="circle"
+                        size="large"
                         onClick={this.handlers.onSave}
                     >
                         <Icon name="save" size={1.5} />
@@ -59,6 +95,7 @@ class Title extends Component {
                         }}
                         shape="circle"
                         size="large"
+                        onClick={this.handlers.onCancel}
                     >
                         <Icon name="times" size={1.5} />
                     </Button>

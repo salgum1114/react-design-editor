@@ -203,12 +203,13 @@ class Editor extends Component {
             }, () => {
                 if (this.state.preview) {
                     setTimeout(() => {
-                        const data = this.canvasRef.current.handlers.exportJSON().objects.filter((obj) => {
+                        const data = this.canvasRef.current.handlers.exportJSON().filter((obj) => {
                             if (!obj.id) {
                                 return false;
                             }
                             return true;
                         });
+                        console.log(data);
                         const json = JSON.stringify(data);
                         this.preview.canvasRef.current.handlers.importJSON(json);
                     }, 0);
@@ -257,7 +258,7 @@ class Editor extends Component {
         return (
             <div className="rde-main">
                 <div className="rde-title">
-                    <Title propertiesRef={this.propertiesRef} />
+                    <Title propertiesRef={this.propertiesRef} canvasRef={this.canvasRef} />
                 </div>
                 <div className="rde-content">
                     <div className="rde-editor">

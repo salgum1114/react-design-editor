@@ -23,6 +23,20 @@ export default {
             component: ImageProperty,
         },
     },
+    group: {
+        general: {
+            title: 'General',
+            component: GeneralProperty,
+        },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
+        },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
+        },
+    },
     'i-text': {
         general: {
             title: 'General',

@@ -12,6 +12,12 @@ export default (mergeObjects) => {
         },
     };
     const fabricObjects = {
+        group: {
+            create: ({ objects, ...option }) => new fabric.Group(objects, {
+                ...defaultOptions,
+                ...option,
+            }),
+        },
         'i-text': {
             create: ({ text, ...option }) => new fabric.IText(text, {
                 ...defaultOptions,
