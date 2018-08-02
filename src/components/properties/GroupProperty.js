@@ -1,47 +1,11 @@
 import React from 'react';
-import { Form, Input, Slider, Switch, Col, InputNumber, Row } from 'antd';
+import { Form, Input, Slider, Col, InputNumber, Row } from 'antd';
 
 export default {
     render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
-                <Row>
-                    <Col span={12}>
-                        <Form.Item label="Lock" colon={false}>
-                            {
-                                getFieldDecorator('lock', {
-                                    rules: [{
-                                        type: 'boolean',
-                                        // required: true,
-                                        // message: 'Please input rotation',
-                                    }],
-                                    valuePropName: 'checked',
-                                    initialValue: data.lock,
-                                })(
-                                    <Switch />,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item label="Visible" colon={false}>
-                            {
-                                getFieldDecorator('visible', {
-                                    rules: [{
-                                        type: 'boolean',
-                                        // required: true,
-                                        // message: 'Please input rotation',
-                                    }],
-                                    valuePropName: 'checked',
-                                    initialValue: data.visible,
-                                })(
-                                    <Switch />,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                </Row>
                 <Form.Item label="Name" colon={false}>
                     {
                         getFieldDecorator('name', {

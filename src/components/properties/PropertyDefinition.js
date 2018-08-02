@@ -11,7 +11,6 @@ import ElementProperty from './ElementProperty';
 import IFrameProperty from './IFrameProperty';
 import AnimationProperty from './AnimationProperty';
 import ShadowProperty from './ShadowProperty';
-import GroupProperty from './GroupProperty';
 
 export default {
     map: {
@@ -27,7 +26,15 @@ export default {
     group: {
         general: {
             title: 'General',
-            component: GroupProperty,
+            component: GeneralProperty,
+        },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
+        },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
         },
     },
     'i-text': {
