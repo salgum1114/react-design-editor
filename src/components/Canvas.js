@@ -578,7 +578,7 @@ class Canvas extends Component {
                 callback(this.canvas);
             }
         },
-        exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude),
+        exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude).objects,
         bringForward: () => {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
@@ -589,9 +589,22 @@ class Canvas extends Component {
                 }
             }
         },
+        bringToFront: () => {
+            const activeObject = this.canvas.getActiveObject();
+            if (activeObject) {
+                this.canvas.bringToFront(activeObject);
+                const { onModified } = this.props;
+                if (onModified) {
+                    onModified(activeObject);
+                }
+            }
+        },
         sendBackwards: () => {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
+                if (this.canvas.getObjects()[1].id === activeObject.id) {
+                    return;
+                }
                 this.canvas.sendBackwards(activeObject);
                 const { onModified } = this.props;
                 if (onModified) {
@@ -599,7 +612,18 @@ class Canvas extends Component {
                 }
             }
         },
-        clear: () => {
+        sendToBack: () => {
+            const activeObject = this.canvas.getActiveObject();
+            if (activeObject) {
+                this.canvas.sendToBack(activeObject);
+                this.canvas.sendToBack(this.canvas.getObjects()[1]);
+                const { onModified } = this.props;
+                if (onModified) {
+                    onModified(activeObject);
+                }
+            }
+        },
+        clear: (workarea = false) => {
             const { canvas } = this;
             const ids = canvas.getObjects().reduce((prev, curr) => {
                 if (this.handlers.isElementType(curr.type)) {
@@ -609,7 +633,15 @@ class Canvas extends Component {
                 return prev;
             }, []);
             this.elementHandlers.removeByIds(ids);
-            canvas.clear();
+            if (workarea) {
+                canvas.clear();
+            } else {
+                canvas.getObjects().forEach((obj) => {
+                    if (obj.id !== 'workarea') {
+                        canvas.remove(obj);
+                    }
+                });
+            }
         },
         isElementType: (type) => {
             return type === 'video' || type === 'element' || type === 'iframe';
