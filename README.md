@@ -72,9 +72,10 @@ to be contiuned..
 - [x] Icon Chooser - fontawesome 5.2.0 free version
 - [x] Google Fonts - 20 fonts
 - [x] Align Guidlines - moving / resize (development)
+- [x] Interaction Mode - grap / selection
+- [ ] Group / Ungroup - development
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Image Cropping - development
 - [ ] Undo / Redo - development
 - [ ] Context menu
-- [ ] Interaction Mode - default / grap / selection
