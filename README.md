@@ -73,7 +73,7 @@ to be contiuned..
 - [x] Google Fonts - 20 fonts
 - [x] Align Guidlines - moving / resize (development)
 - [x] Interaction Mode - grap / selection
-- [ ] Group / Ungroup - development
+- [x] Group / Ungroup - development
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Image Cropping - development
