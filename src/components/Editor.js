@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
 import { Badge, Button } from 'antd';
 import debounce from 'lodash/debounce';
+import '../libs/fontawesome-5.2.0/css/all.css';
 
 import Wireframe from './Wireframe';
 import Items from './Items';

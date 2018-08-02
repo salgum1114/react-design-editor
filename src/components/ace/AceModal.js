@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button, notification } from 'antd';
-import Icon from 'polestar-icons';
+import Icon from '../Icon';
 import AceEditor from './AceEditor';
 
 notification.config({
