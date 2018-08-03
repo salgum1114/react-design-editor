@@ -32,23 +32,25 @@ class FooterToolbar extends Component {
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-zoom">
                     <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoomHandlers.zoomOneToOne()}>
-                        1:1
+                        {'1:1'}
                     </Button>
                     <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.zoomHandlers.zoomToFit()}>
-                        Fit
+                        {'Fit'}
                     </Button>
                 </FlexItem>
-                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-pager">
+                {/* <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-pager">
                     <Button className="rde-action-btn" shape="circle">
                         <Icon name="angle-left" />
                     </Button>
-                    <div>1 / 1</div>
+                    <div>{'1 / 1'}</div>
                     <Button className="rde-action-btn" shape="circle">
                         <Icon name="angle-right" />
                     </Button>
-                </FlexItem>
+                </FlexItem> */}
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-action">
-                    <span style={{ marginRight: 8 }}>Preview</span>
+                    <span style={{ marginRight: 8 }}>
+                        {'Preview'}
+                    </span>
                     <Switch checked={preview} onChange={onChangePreview} />
                 </FlexItem>
             </FlexBox>
