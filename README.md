@@ -1,9 +1,11 @@
 # react-design-editor
-It is a simple design editor such as power point, slides.
+- The project was developed as react.js, ant.design, and fabric.js and started to create editable design tools such as PowerPoint and slides.
 
-This project was started to meet two requirements.
-1. Image Map
-2. Workflow
+- Because we used fabric.js, the main container starts with the canvas.
+
+- Layouts and components such as property edits, item lists, and toolbars were developed as react.js, and the ant.design component was primarily used.
+
+- The project is constantly being developed to support a variety of functions, and its goal is to be able to draw workflow (BPMN) in the future.
 
 # Demos
 [React Design Editor](https://salgum1114.github.io/)
