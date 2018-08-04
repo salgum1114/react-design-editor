@@ -1,7 +1,7 @@
 # react-design-editor
-- The project was developed as react.js, ant.design, and fabric.js and started to create editable design tools such as PowerPoint and slides.
+- The project was developed as react.js, ant.design, fabric.js and started to create editable design tools such as PowerPoint and slides.
 
-- Because we used fabric.js, the main container starts with the canvas.
+- Since the react-edsign-eidtor used fabric.js, the main container starts with the canvas.
 
 - Layouts and components such as property edits, item lists, and toolbars were developed as react.js, and the ant.design component was primarily used.
 
