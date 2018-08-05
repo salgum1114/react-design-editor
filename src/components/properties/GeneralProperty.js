@@ -13,8 +13,6 @@ export default {
                                 getFieldDecorator('lock', {
                                     rules: [{
                                         type: 'boolean',
-                                        // required: true,
-                                        // message: 'Please input rotation',
                                     }],
                                     valuePropName: 'checked',
                                     initialValue: data.lock,
@@ -30,8 +28,6 @@ export default {
                                 getFieldDecorator('visible', {
                                     rules: [{
                                         type: 'boolean',
-                                        // required: true,
-                                        // message: 'Please input rotation',
                                     }],
                                     valuePropName: 'checked',
                                     initialValue: data.visible,
@@ -45,10 +41,6 @@ export default {
                 <Form.Item label="Name" colon={false}>
                     {
                         getFieldDecorator('name', {
-                            rules: [{
-                                // required: false,
-                                // message: 'Please input name',
-                            }],
                             initialValue: data.name,
                         })(
                             <Input />,

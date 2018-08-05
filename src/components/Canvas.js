@@ -25,7 +25,7 @@ const defaultOptions = {
     animation: {
         type: 'none',
     },
-}
+};
 
 const workareaOption = {
     width: 600,
@@ -576,7 +576,6 @@ class Canvas extends Component {
                     prevLeft = obj.left;
                     prevTop = obj.top;
                     this.workarea.set(obj);
-                    this.canvas.add(this.workarea);
                     this.canvas.centerObject(this.workarea);
                     this.workareaHandlers.setImage(obj.src);
                     this.workarea.setCoords();
@@ -706,11 +705,73 @@ class Canvas extends Component {
         },
     }
 
+    cropHandlers = {
+        validType: () => {
+            const activeObject = this.canvas.getActiveObject();
+            if (!activeObject) {
+                return true;
+            }
+            if (activeObject.type === 'image') {
+                return false;
+            }
+            return true;
+        },
+        start: () => {
+            if (this.cropHandlers.validType()) {
+                return;
+            }
+            this.interactionMode = 'crop';
+            this.cropObject = this.canvas.getActiveObject();
+            this.cropRect = new fabric.Rect({
+                width: this.cropObject.width,
+                height: this.cropObject.height,
+                scaleX: this.cropObject.scaleX,
+                scaleY: this.cropObject.scaleY,
+                left: this.cropObject.left,
+                top: this.cropObject.top,
+                hasRotatingPoint: false,
+                fill: 'rgba(0, 0, 0, 0.2)',
+            });
+            this.canvas.add(this.cropRect);
+            this.canvas.setActiveObject(this.cropRect);
+            this.cropObject.selectable = false;
+            this.cropObject.evented = false;
+            this.canvas.renderAll();
+        },
+        finish: () => {
+            const { left, top, width, height, scaleX, scaleY } = this.cropRect;
+            console.log(left, top, width, height);
+            console.log(this.cropObject.left, this.cropObject.top, this.cropObject.width, this.cropObject.height);
+            this.cropObject.toDataURL({
+                left,
+                top,
+                width: width * scaleX,
+                height: height * scaleY,
+            });
+            this.cropHandlers.cancel();
+        },
+        cancel: () => {
+            this.interactionMode = 'selection';
+            this.cropObject.selectable = true;
+            this.cropObject.evented = true;
+            this.canvas.setActiveObject(this.cropObject);
+            this.canvas.remove(this.cropRect);
+            this.cropRect = null;
+            // this.cropObject = null;
+            this.canvas.renderAll();
+        },
+        resize: (opt) => {
+            console.log(opt);
+        },
+        moving: (opt) => {
+            console.log(opt);
+        },
+    }
+
     modeHandlers = {
-        mode: 'selection',
         panning: false,
         selection: () => {
-            this.modeHandlers.mode = 'selection';
+            this.interactionMode = 'selection';
             this.canvas.selection = true;
             this.canvas.setCursor('pointer');
             this.canvas.getObjects().forEach((obj) => {
@@ -721,7 +782,7 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         grab: () => {
-            this.modeHandlers.mode = 'grab';
+            this.interactionMode = 'grab';
             this.canvas.selection = false;
             this.canvas.setCursor('grab');
             this.canvas.getObjects().forEach((obj) => {
@@ -730,6 +791,10 @@ class Canvas extends Component {
                 }
             });
             this.canvas.renderAll();
+        },
+        moving: (e) => {
+            const delta = new fabric.Point(e.movementX, e.movementY);
+            this.canvas.relativePan(delta);
         },
     }
 
@@ -1497,14 +1562,14 @@ class Canvas extends Component {
 
     drawingHandlers = {
         initDraw: () => {
-            this.polygonMode = true;
+            this.interactionMode = 'polygon';
             this.pointArray = [];
             this.lineArray = [];
             this.activeLine = null;
             this.activeShape = null;
         },
         finishDraw: () => {
-            this.polygonMode = false;
+            this.interactionMode = 'selection';
             this.pointArray.forEach((point) => {
                 this.canvas.remove(point);
             });
@@ -1630,7 +1695,7 @@ class Canvas extends Component {
                 this.pointArray = [];
                 this.activeLine = null;
                 this.activeShape = null;
-                this.polygonMode = false;
+                this.interactionMode = 'selection';
                 this.canvas.selection = true;
             },
             // TODO... polygon resize
@@ -2108,15 +2173,22 @@ class Canvas extends Component {
         },
         moving: (opt) => {
             const { target } = opt;
-            this.guidelineHandlers.movingGuidelines(target);
-            if (this.handlers.isElementType(target.type)) {
-                const el = this.elementHandlers.findById(target.id);
-                // update the element
-                this.elementHandlers.setPosition(el, target.left, target.top);
+            if (this.interactionMode === 'crop') {
+                this.cropHandlers.moving(opt);
+            } else {
+                this.guidelineHandlers.movingGuidelines(target);
+                if (this.handlers.isElementType(target.type)) {
+                    const el = this.elementHandlers.findById(target.id);
+                    // update the element
+                    this.elementHandlers.setPosition(el, target.left, target.top);
+                }
             }
         },
         scaling: (opt) => {
             const { target } = opt;
+            if (this.interactionMode === 'crop') {
+                this.cropHandlers.resize(opt);
+            }
             // TODO...this.guidelineHandlers.scalingGuidelines(target);
             if (this.handlers.isElementType(target.type)) {
                 const zoom = this.canvas.getZoom();
@@ -2184,7 +2256,7 @@ class Canvas extends Component {
             }
         },
         mousedown: (opt) => {
-            if (this.modeHandlers.mode === 'grab') {
+            if (this.interactionMode === 'grab') {
                 this.modeHandlers.panning = true;
             }
             const { onSelect, editable } = this.props;
@@ -2192,12 +2264,12 @@ class Canvas extends Component {
             if (editable) {
                 this.viewportTransform = this.canvas.viewportTransform;
                 this.zoom = this.canvas.getZoom();
-                if (!this.polygonMode) {
+                if (this.interactionMode === 'selection') {
                     if (onSelect) {
                         onSelect(target);
                     }
                 }
-                if (this.polygonMode) {
+                if (this.interactionMode === 'polygon') {
                     if (target && this.pointArray.length && target.id === this.pointArray[0].id) {
                         this.drawingHandlers.polygon.generatePolygon(this.pointArray);
                     } else {
@@ -2207,9 +2279,8 @@ class Canvas extends Component {
             }
         },
         mousemove: (opt) => {
-            if (this.modeHandlers.mode === 'grab' && this.modeHandlers.panning) {
-                const delta = new fabric.Point(opt.e.movementX, opt.e.movementY);
-                this.canvas.relativePan(delta);
+            if (this.interactionMode === 'grab' && this.modeHandlers.panning) {
+                this.modeHandlers.moving(opt.e);
             }
             if (!this.props.editable && opt.target) {
                 if (this.handlers.isElementType(opt.target.type)) {
@@ -2221,18 +2292,20 @@ class Canvas extends Component {
                     this.tooltipHandlers.hide(opt.target);
                 }
             }
-            if (this.activeLine && this.activeLine.class === 'line') {
-                const pointer = this.canvas.getPointer(opt.e);
-                this.activeLine.set({ x2: pointer.x, y2: pointer.y });
-                const points = this.activeShape.get('points');
-                points[this.pointArray.length] = {
-                    x: pointer.x,
-                    y: pointer.y,
-                };
-                this.activeShape.set({
-                    points,
-                });
-                this.canvas.renderAll();
+            if (this.interactionMode === 'polygon') {
+                if (this.activeLine && this.activeLine.class === 'line') {
+                    const pointer = this.canvas.getPointer(opt.e);
+                    this.activeLine.set({ x2: pointer.x, y2: pointer.y });
+                    const points = this.activeShape.get('points');
+                    points[this.pointArray.length] = {
+                        x: pointer.x,
+                        y: pointer.y,
+                    };
+                    this.activeShape.set({
+                        points,
+                    });
+                    this.canvas.renderAll();
+                }
             }
             this.canvas.renderAll();
         },
@@ -2419,7 +2492,7 @@ class Canvas extends Component {
             //     this.handlers.paste();
             // } 
             else if (e.keyCode === 27) {
-                if (this.polygonMode) {
+                if (this.interactionMode === 'polygon') {
                     this.drawingHandlers.finishDraw();
                 }
             }
@@ -2455,6 +2528,7 @@ class Canvas extends Component {
         this.canvas.centerObject(this.workarea);
         const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, selection, beforeRender, afterRender } = this.eventHandlers;
         if (editable) {
+            this.interactionMode = 'selection';
             this.guidelineHandlers.init();
             this.canvas.on({
                 'object:modified': modified,

@@ -65,6 +65,17 @@ class HeaderToolbar extends Component {
                         <Icon name="object-ungroup" />
                     </Button>
                 </FlexItem>
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-crop">
+                    <Button className="rde-action-btn" shape="circle" disabled={canvasRef.current ? canvasRef.current.cropHandlers.validType() : true} onClick={() => canvasRef.current.cropHandlers.start()}>
+                        <Icon name="crop" />
+                    </Button>
+                    <Button className="rde-action-btn" shape="circle" disabled={canvasRef.current ? !canvasRef.current.cropRect : true} onClick={() => canvasRef.current.cropHandlers.finish()}>
+                        <Icon name="check" />
+                    </Button>
+                    <Button className="rde-action-btn" shape="circle" disabled={canvasRef.current ? !canvasRef.current.cropRect : true} onClick={() => canvasRef.current.cropHandlers.cancel()}>
+                        <Icon name="times" />
+                    </Button>
+                </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-operation">
                     <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.handlers.duplicate()}>
                         <Icon name="clone" />
@@ -75,10 +86,12 @@ class HeaderToolbar extends Component {
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
                     <Button className="rde-action-btn">
-                        <Icon name="undo-alt" style={{ marginRight: 8 }} />Undo
+                        <Icon name="undo-alt" style={{ marginRight: 8 }} />
+                        {'Undo'}
                     </Button>
                     <Button className="rde-action-btn">
-                        Redo<Icon name="redo-alt" style={{ marginLeft: 8 }} />
+                        {'Redo'}
+                        <Icon name="redo-alt" style={{ marginLeft: 8 }} />
                     </Button>
                 </FlexItem>
             </FlexBox>
