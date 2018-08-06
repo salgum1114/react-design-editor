@@ -447,21 +447,17 @@ class Canvas extends Component {
             }
         },
         loadImage: (obj, src) => {
-            if (obj.type === 'image') {
-                const newImg = new Image();
-                newImg.onload = () => {
-                    obj.setElement(newImg);
+            fabric.util.loadImage(src, (source) => {
+                if (obj.type !== 'image') {
+                    obj.setPatternFill({
+                        source,
+                        repeat: 'repeat',
+                    });
                     obj.setCoords();
                     this.canvas.renderAll();
-                };
-                newImg.src = src;
-                return;
-            }
-            fabric.util.loadImage(src, (source) => {
-                obj.setPatternFill({
-                    source,
-                    repeat: 'repeat',
-                });
+                    return;
+                }
+                obj.setElement(source);
                 obj.setCoords();
                 this.canvas.renderAll();
             });
@@ -727,6 +723,8 @@ class Canvas extends Component {
                 height: this.cropObject.height,
                 scaleX: this.cropObject.scaleX,
                 scaleY: this.cropObject.scaleY,
+                originX: 'left',
+                originY: 'top',
                 left: this.cropObject.left,
                 top: this.cropObject.top,
                 hasRotatingPoint: false,
@@ -740,14 +738,13 @@ class Canvas extends Component {
         },
         finish: () => {
             const { left, top, width, height, scaleX, scaleY } = this.cropRect;
-            console.log(left, top, width, height);
-            console.log(this.cropObject.left, this.cropObject.top, this.cropObject.width, this.cropObject.height);
-            this.cropObject.toDataURL({
-                left,
-                top,
+            const croppedImg = this.cropObject.toDataURL({
+                left: left - this.cropObject.left,
+                top: top - this.cropObject.top,
                 width: width * scaleX,
                 height: height * scaleY,
             });
+            this.handlers.setImage(this.cropObject, croppedImg);
             this.cropHandlers.cancel();
         },
         cancel: () => {
@@ -761,10 +758,107 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         resize: (opt) => {
-            console.log(opt);
+            const { target, transform: { original, newScaleX, newScaleY } } = opt;
+            const { left, top, width, height, scaleX, scaleY } = target;
+            const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight, scaleX: cropScaleX, scaleY: cropScaleY } = this.cropObject;
+            // if (Math.round(cropLeft) > Math.round(left) && Math.round(cropTop) > Math.round(top)) { // left top
+            //     console.log('1');
+            //     target.set({
+            //         left: cropLeft,
+            //         top: cropTop,
+            //         scaleX: original.scaleX,
+            //         scaleY: original.scaleY,
+            //     });
+            // } else if (Math.round(cropLeft) > Math.round(left)
+            // && Math.round(cropTop + (cropHeight * cropScaleY)) < Math.round(top + (height * scaleY))) { // left bottom
+            //     console.log('3');
+            //     target.set({
+            //         left: cropLeft,
+            //         top: original.top,
+            //         scaleX: original.scaleX,
+            //         scaleY: original.scaleY,
+            //     });
+            // } else if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))
+            // && Math.round(cropTop > Math.round(top))) { // right top
+            //     console.log('6');
+            //     target.set({
+            //         left: original.left,
+            //         top: cropTop,
+            //         scaleX: original.scaleX,
+            //         scaleY: original.scaleY,
+            //     });
+            // } else if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))
+            // && Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // right bottom
+            //     console.log('8');
+            //     target.set({
+            //         left: original.left,
+            //         top: original.top,
+            //         scaleX: original.scaleX,
+            //         scaleY: original.scaleY,
+            //     });
+            // } else
+            if (Math.round(cropLeft) > Math.round(left)) { // left
+                const leftDiff = (Math.round(target.getBoundingRect().left) - Math.round(cropLeft)) / cropWidth;
+                const widthDiff = target.getBoundingRect().width / cropWidth;
+                target.set({
+                    left: cropLeft,
+                    scaleX: (leftDiff + widthDiff) > 1 ? 1 : leftDiff + widthDiff,
+                });
+            }
+            // else if (Math.round(cropTop) > Math.round(top)) { // top
+            //     console.log('4');
+            //     target.set({
+            //         top: cropTop,
+            //         scaleY: original.scaleY,
+            //     });
+            // } else if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
+            //     console.log('5');
+            //     target.set({
+            //         top: original.top,
+            //         scaleY: original.scaleY,
+            //     });
+            // } else if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))) { // right
+            //     console.log('7');
+            //     target.set({
+            //         left: original.left,
+            //         scaleX: original.scaleX,
+            //     });
+            // }
         },
         moving: (opt) => {
-            console.log(opt);
+            const { target } = opt;
+            const { left, top, width, height, scaleX, scaleY } = target;
+            const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight } = this.cropObject.getBoundingRect();
+            const movedTop = () => {
+                if (Math.round(cropTop) >= Math.round(top)) {
+                    target.set({
+                        top: cropTop,
+                    });
+                } else if (Math.round(cropTop + cropHeight) <= Math.round(top + (height * scaleY))) {
+                    target.set({
+                        top: cropTop + cropHeight - (height * scaleY),
+                    });
+                }
+            };
+            if (Math.round(cropLeft) >= Math.round(left)) {
+                target.set({
+                    left: Math.max(left, cropLeft),
+                });
+                movedTop();
+            } else if (Math.round(cropLeft + cropWidth) <= Math.round(left + (width * scaleX))) {
+                target.set({
+                    left: cropLeft + cropWidth - (width * scaleX),
+                });
+                movedTop();
+            } else if (Math.round(cropTop) >= Math.round(top)) {
+                target.set({
+                    top: cropTop,
+                });
+            } else if (Math.round(cropTop + cropHeight) <= Math.round(top + (height * scaleY))) {
+                target.set({
+                    top: cropTop + cropHeight - (height * scaleY),
+                });
+            }
         },
     }
 

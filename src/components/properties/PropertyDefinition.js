@@ -32,10 +32,6 @@ export default {
             title: 'Shadow',
             component: ShadowProperty,
         },
-        animation: {
-            title: 'Animation',
-            component: AnimationProperty,
-        },
     },
     'i-text': {
         general: {

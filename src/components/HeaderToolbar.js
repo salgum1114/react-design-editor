@@ -14,6 +14,7 @@ class HeaderToolbar extends Component {
 
     render() {
         const { canvasRef, selectedItem } = this.props;
+        const idCropping = canvasRef.current ? canvasRef.current.interactionMode === 'crop' : false;
         return (
             <FlexBox className="rde-canvas-toolbar-container" flex="1">
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-list">
@@ -25,16 +26,16 @@ class HeaderToolbar extends Component {
                     </div>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
-                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.handlers.bringForward()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={e => canvasRef.current.handlers.bringForward()}>
                         <Icon name="angle-up" />
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.handlers.sendBackwards()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={e => canvasRef.current.handlers.sendBackwards()}>
                         <Icon name="angle-down" />
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.handlers.bringToFront()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={e => canvasRef.current.handlers.bringToFront()}>
                         <Icon name="angle-double-up" />
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={e => canvasRef.current.handlers.sendToBack()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={e => canvasRef.current.handlers.sendToBack()}>
                         <Icon name="angle-double-down" />
                     </Button>
                 </FlexItem>
@@ -47,21 +48,21 @@ class HeaderToolbar extends Component {
                     </Button>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignmentHandlers.left()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={() => canvasRef.current.alignmentHandlers.left()}>
                         <Icon name="align-left" />
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignmentHandlers.center()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={() => canvasRef.current.alignmentHandlers.center()}>
                         <Icon name="align-center" />
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.alignmentHandlers.right()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={() => canvasRef.current.alignmentHandlers.right()}>
                         <Icon name="align-right" />
                     </Button>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-group">
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.handlers.toGroup()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={() => canvasRef.current.handlers.toGroup()}>
                         <Icon name="object-group" />
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.handlers.toActiveSelection()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={() => canvasRef.current.handlers.toActiveSelection()}>
                         <Icon name="object-ungroup" />
                     </Button>
                 </FlexItem>
@@ -77,19 +78,19 @@ class HeaderToolbar extends Component {
                     </Button>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-operation">
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.handlers.duplicate()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={() => canvasRef.current.handlers.duplicate()}>
                         <Icon name="clone" />
                     </Button>
-                    <Button className="rde-action-btn" shape="circle" onClick={() => canvasRef.current.handlers.remove()}>
+                    <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={() => canvasRef.current.handlers.remove()}>
                         <Icon name="trash" />
                     </Button>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
-                    <Button className="rde-action-btn">
+                    <Button className="rde-action-btn" disabled={idCropping}>
                         <Icon name="undo-alt" style={{ marginRight: 8 }} />
                         {'Undo'}
                     </Button>
-                    <Button className="rde-action-btn">
+                    <Button className="rde-action-btn" disabled={idCropping}>
                         {'Redo'}
                         <Icon name="redo-alt" style={{ marginLeft: 8 }} />
                     </Button>

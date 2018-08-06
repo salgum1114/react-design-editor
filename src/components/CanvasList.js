@@ -13,16 +13,17 @@ class CanvasList extends Component {
 
     renderActions = () => {
         const { canvasRef } = this.props;
+        const idCropping = canvasRef.current ? canvasRef.current.interactionMode === 'crop' : false;
         return (
             <FlexItem className="rde-canvas-list-actions" flex="0 1 auto">
                 <FlexBox justifyContent="space-between" alignItems="center">
                     <FlexBox flex="1" justifyContent="center">
-                        <Button className="rde-action-btn" style={{ width: '100%', height: 30 }} onClick={e => canvasRef.current.handlers.sendBackwards()}>
+                        <Button className="rde-action-btn" style={{ width: '100%', height: 30 }} disabled={idCropping} onClick={e => canvasRef.current.handlers.sendBackwards()}>
                             <Icon name="arrow-up" />
                         </Button>
                     </FlexBox>
                     <FlexBox flex="1" justifyContent="center">
-                        <Button className="rde-action-btn" style={{ width: '100%', height: 30 }} onClick={e => canvasRef.current.handlers.bringForward()}>
+                        <Button className="rde-action-btn" style={{ width: '100%', height: 30 }} disabled={idCropping} onClick={e => canvasRef.current.handlers.bringForward()}>
                             <Icon name="arrow-down" />
                         </Button>
                     </FlexBox>
@@ -33,6 +34,7 @@ class CanvasList extends Component {
 
     renderItem = () => {
         const { canvasRef, selectedItem } = this.props;
+        const idCropping = canvasRef.current ? canvasRef.current.interactionMode === 'crop' : false;
         return canvasRef.current ? (
             canvasRef.current.canvas.getObjects().filter((obj) => {
                 if (obj.id === 'workarea') {
@@ -96,10 +98,10 @@ class CanvasList extends Component {
                                 {title}
                             </div>
                             <FlexBox className="rde-canvas-list-item-actions" flex="1" justifyContent="flex-end">
-                                <Button className="rde-action-btn" shape="circle" onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.duplicateById(obj.id); }}>
+                                <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.duplicateById(obj.id); }}>
                                     <Icon name="clone" />
                                 </Button>
-                                <Button className="rde-action-btn" shape="circle" onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.removeById(obj.id); }}>
+                                <Button className="rde-action-btn" shape="circle" disabled={idCropping} onClick={(e) => { e.stopPropagation(); canvasRef.current.handlers.removeById(obj.id); }}>
                                     <Icon name="trash" />
                                 </Button>
                             </FlexBox>
