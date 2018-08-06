@@ -64,8 +64,8 @@ const IMAGE = [
         title: 'Image',
         option: {
             type: 'image',
-            width: 80,
-            height: 80,
+            width: 160,
+            height: 160,
             name: 'New image',
             src: '/images/sample/transparentBg.png',
         },

@@ -43,7 +43,7 @@ class Editor extends Component {
             this.canvasRef.current.handlers.select(target);
         },
         onSelect: (target) => {
-            if (target && target.id !== 'workarea' && target.type !== 'activeSelection') {
+            if (target && target.id && target.id !== 'workarea' && target.type !== 'activeSelection') {
                 this.setState({
                     selectedItem: target,
                 });
@@ -57,7 +57,7 @@ class Editor extends Component {
             this.canvasHandlers.onSelect(null);
         },
         onModified: debounce((target) => {
-            if (target.type !== 'activeSelection') {
+            if (target && target.id && target.id !== 'workarea' && target.type !== 'activeSelection') {
                 this.setState({
                     selectedItem: target,
                 });
@@ -209,7 +209,6 @@ class Editor extends Component {
                             }
                             return true;
                         });
-                        console.log(data);
                         const json = JSON.stringify(data);
                         this.preview.canvasRef.current.handlers.importJSON(json);
                     }, 0);
