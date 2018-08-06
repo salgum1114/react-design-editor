@@ -718,6 +718,7 @@ class Canvas extends Component {
             }
             this.interactionMode = 'crop';
             this.cropObject = this.canvas.getActiveObject();
+            const { left, top } = this.cropObject;
             this.cropRect = new fabric.Rect({
                 width: this.cropObject.width,
                 height: this.cropObject.height,
@@ -725,8 +726,8 @@ class Canvas extends Component {
                 scaleY: this.cropObject.scaleY,
                 originX: 'left',
                 originY: 'top',
-                left: this.cropObject.left,
-                top: this.cropObject.top,
+                left,
+                top,
                 hasRotatingPoint: false,
                 fill: 'rgba(0, 0, 0, 0.2)',
             });
@@ -758,72 +759,114 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         resize: (opt) => {
-            const { target, transform: { original, newScaleX, newScaleY } } = opt;
+            const { target, transform: { original, corner } } = opt;
             const { left, top, width, height, scaleX, scaleY } = target;
             const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight, scaleX: cropScaleX, scaleY: cropScaleY } = this.cropObject;
-            // if (Math.round(cropLeft) > Math.round(left) && Math.round(cropTop) > Math.round(top)) { // left top
-            //     console.log('1');
-            //     target.set({
-            //         left: cropLeft,
-            //         top: cropTop,
-            //         scaleX: original.scaleX,
-            //         scaleY: original.scaleY,
-            //     });
-            // } else if (Math.round(cropLeft) > Math.round(left)
-            // && Math.round(cropTop + (cropHeight * cropScaleY)) < Math.round(top + (height * scaleY))) { // left bottom
-            //     console.log('3');
-            //     target.set({
-            //         left: cropLeft,
-            //         top: original.top,
-            //         scaleX: original.scaleX,
-            //         scaleY: original.scaleY,
-            //     });
-            // } else if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))
-            // && Math.round(cropTop > Math.round(top))) { // right top
-            //     console.log('6');
-            //     target.set({
-            //         left: original.left,
-            //         top: cropTop,
-            //         scaleX: original.scaleX,
-            //         scaleY: original.scaleY,
-            //     });
-            // } else if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))
-            // && Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // right bottom
-            //     console.log('8');
-            //     target.set({
-            //         left: original.left,
-            //         top: original.top,
-            //         scaleX: original.scaleX,
-            //         scaleY: original.scaleY,
-            //     });
-            // } else
-            if (Math.round(cropLeft) > Math.round(left)) { // left
-                const leftDiff = (Math.round(target.getBoundingRect().left) - Math.round(cropLeft)) / cropWidth;
-                const widthDiff = target.getBoundingRect().width / cropWidth;
-                target.set({
-                    left: cropLeft,
-                    scaleX: (leftDiff + widthDiff) > 1 ? 1 : leftDiff + widthDiff,
-                });
+            if (corner === 'tl') {
+                if (Math.round(cropLeft) > Math.round(left)) { // left
+                    const originRight = Math.round(cropLeft + cropWidth);
+                    const targetRight = Math.round(target.getBoundingRect().left + target.getBoundingRect().width);
+                    const diffRightRatio = 1 - ((originRight - targetRight) / cropWidth);
+                    target.set({
+                        left: cropLeft,
+                        scaleX: diffRightRatio > 1 ? 1 : diffRightRatio,
+                    });
+                }
+                if (Math.round(cropTop) > Math.round(top)) { // top
+                    const originBottom = Math.round(cropTop + cropHeight);
+                    const targetBottom = Math.round(target.getBoundingRect().top + target.getBoundingRect().height);
+                    const diffBottomRatio = 1 - ((originBottom - targetBottom) / cropHeight);
+                    target.set({
+                        top: cropTop,
+                        scaleY: diffBottomRatio > 1 ? 1 : diffBottomRatio,
+                    });
+                }
+            } else if (corner === 'bl') {
+                if (Math.round(cropLeft) > Math.round(left)) { // left
+                    const originRight = Math.round(cropLeft + cropWidth);
+                    const targetRight = Math.round(target.getBoundingRect().left + target.getBoundingRect().width);
+                    const diffRightRatio = 1 - ((originRight - targetRight) / cropWidth);
+                    target.set({
+                        left: cropLeft,
+                        scaleX: diffRightRatio > 1 ? 1 : diffRightRatio,
+                    });
+                }
+                if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
+                    const diffTopRatio = 1 - ((original.top - cropTop) / cropHeight);
+                    target.set({
+                        top: original.top,
+                        scaleY: diffTopRatio > 1 ? 1 : diffTopRatio,
+                    });
+                }
+            } else if (corner === 'tr') {
+                if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))) { // right
+                    const diffLeftRatio = 1 - ((original.left - cropLeft) / cropWidth);
+                    target.set({
+                        left: original.left,
+                        scaleX: diffLeftRatio > 1 ? 1 : diffLeftRatio,
+                    });
+                }
+                if (Math.round(cropTop) > Math.round(top)) { // top
+                    const originBottom = Math.round(cropTop + cropHeight);
+                    const targetBottom = Math.round(target.getBoundingRect().top + target.getBoundingRect().height);
+                    const diffBottomRatio = 1 - ((originBottom - targetBottom) / cropHeight);
+                    target.set({
+                        top: cropTop,
+                        scaleY: diffBottomRatio > 1 ? 1 : diffBottomRatio,
+                    });
+                }
+            } else if (corner === 'br') {
+                if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))) { // right
+                    const diffLeftRatio = 1 - ((original.left - cropLeft) / cropWidth);
+                    target.set({
+                        left: original.left,
+                        scaleX: diffLeftRatio > 1 ? 1 : diffLeftRatio,
+                    });
+                }
+                if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
+                    const diffTopRatio = 1 - ((original.top - cropTop) / cropHeight);
+                    target.set({
+                        top: original.top,
+                        scaleY: diffTopRatio > 1 ? 1 : diffTopRatio,
+                    });
+                }
+            } else if (corner === 'ml') {
+                if (Math.round(cropLeft) > Math.round(left)) { // left
+                    const originRight = Math.round(cropLeft + cropWidth);
+                    const targetRight = Math.round(target.getBoundingRect().left + target.getBoundingRect().width);
+                    const diffRightRatio = 1 - ((originRight - targetRight) / cropWidth);
+                    target.set({
+                        left: cropLeft,
+                        scaleX: diffRightRatio > 1 ? 1 : diffRightRatio,
+                    });
+                }
+            } else if (corner === 'mt') {
+                if (Math.round(cropTop) > Math.round(top)) { // top
+                    const originBottom = Math.round(cropTop + cropHeight);
+                    const targetBottom = Math.round(target.getBoundingRect().top + target.getBoundingRect().height);
+                    const diffBottomRatio = 1 - ((originBottom - targetBottom) / cropHeight);
+                    target.set({
+                        top: cropTop,
+                        scaleY: diffBottomRatio > 1 ? 1 : diffBottomRatio,
+                    });
+                }
+            } else if (corner === 'mb') {
+                if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
+                    const diffTopRatio = 1 - ((original.top - cropTop) / cropHeight);
+                    target.set({
+                        top: original.top,
+                        scaleY: diffTopRatio > 1 ? 1 : diffTopRatio,
+                    });
+                }
+            } else if (corner === 'mr') {
+                if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))) { // right
+                    const diffLeftRatio = 1 - ((original.left - cropLeft) / cropWidth);
+                    target.set({
+                        left: original.left,
+                        scaleX: diffLeftRatio > 1 ? 1 : diffLeftRatio,
+                    });
+                }
             }
-            // else if (Math.round(cropTop) > Math.round(top)) { // top
-            //     console.log('4');
-            //     target.set({
-            //         top: cropTop,
-            //         scaleY: original.scaleY,
-            //     });
-            // } else if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
-            //     console.log('5');
-            //     target.set({
-            //         top: original.top,
-            //         scaleY: original.scaleY,
-            //     });
-            // } else if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))) { // right
-            //     console.log('7');
-            //     target.set({
-            //         left: original.left,
-            //         scaleX: original.scaleX,
-            //     });
-            // }
         },
         moving: (opt) => {
             const { target } = opt;
