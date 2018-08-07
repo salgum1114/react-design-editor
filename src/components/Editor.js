@@ -203,7 +203,7 @@ class Editor extends Component {
             }, () => {
                 if (this.state.preview) {
                     setTimeout(() => {
-                        const data = this.canvasRef.current.handlers.exportJSON().filter((obj) => {
+                        const data = this.canvasRef.current.handlers.exportJSON().objects.filter((obj) => {
                             if (!obj.id) {
                                 return false;
                             }

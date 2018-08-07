@@ -11,6 +11,10 @@ class Title extends Component {
         canvasRef: PropTypes.any,
     }
 
+    state = {
+        data: {},
+    }
+
     handlers = {
         onSave: () => {
             const { propertiesRef } = this.props;
@@ -20,6 +24,9 @@ class Title extends Component {
         },
         onExport: () => {
             const { canvasRef } = this.props;
+            this.setState({
+                data: canvasRef.current.handlers.exportJSON(),
+            });
             console.log(canvasRef.current.handlers.exportJSON());
         },
         onImport: () => {
@@ -35,6 +42,7 @@ class Title extends Component {
     }
 
     render() {
+        const data = `data: text/json;charset-utf-8, ${encodeURIComponent(JSON.stringify(this.state.data))}`;
         return (
             <FlexBox style={{ background: 'linear-gradient(141deg,#23303e,#404040 51%,#23303e 75%)' }} flexWrap="wrap" flex="1" alignItems="center">
                 <div style={{ marginLeft: 8 }} flex="0 1 auto">
@@ -62,7 +70,9 @@ class Title extends Component {
                         size="large"
                         onClick={this.handlers.onExport}
                     >
-                        <Icon name="file-export" size={1.5} />
+                        <a href={data} download="metadata.json">
+                            <Icon name="file-export" size={1.5} />
+                        </a>
                     </Button>
                     <Button
                         className="rde-action-btn"

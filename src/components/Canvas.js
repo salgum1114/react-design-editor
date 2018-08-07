@@ -621,7 +621,7 @@ class Canvas extends Component {
                 callback(this.canvas);
             }
         },
-        exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude).objects,
+        exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude),
         bringForward: () => {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
