@@ -209,12 +209,13 @@ class Editor extends Component {
                             }
                             return true;
                         });
+                        console.log(data);
                         const json = JSON.stringify(data);
                         this.preview.canvasRef.current.handlers.importJSON(json);
                     }, 0);
                     return;
                 }
-                this.preview.canvasRef.current.handlers.clear();
+                this.preview.canvasRef.current.handlers.clear(true);
             });
         },
     }

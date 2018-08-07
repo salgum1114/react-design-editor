@@ -571,6 +571,12 @@ class Canvas extends Component {
                 if (obj.id === 'workarea') {
                     prevLeft = obj.left;
                     prevTop = obj.top;
+                    if (!this.workarea) {
+                        this.workarea = new fabric.Image(null, {
+                            ...workareaOption,
+                        });
+                        this.canvas.add(this.workarea);
+                    }
                     this.workarea.set(obj);
                     this.canvas.centerObject(this.workarea);
                     this.workareaHandlers.setImage(obj.src);
@@ -661,6 +667,7 @@ class Canvas extends Component {
             this.elementHandlers.removeByIds(ids);
             if (workarea) {
                 canvas.clear();
+                this.workarea = null;
             } else {
                 canvas.getObjects().forEach((obj) => {
                     if (obj.id !== 'workarea') {
