@@ -62,7 +62,11 @@ class Canvas extends Component {
     static propsTypes = {
         fabricObjects: PropTypes.object,
         editable: PropTypes.bool,
-        width: PropTypes.width,
+        width: PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.string,
+        ]),
+        backgroundColor: PropTypes.string,
         height: PropTypes.height,
         tooltip: PropTypes.any,
         zoom: PropTypes.bool,
@@ -80,6 +84,7 @@ class Canvas extends Component {
         editable: true,
         width: 300,
         height: 150,
+        backgroundColor: '#f3f3f3',
         tooltip: null,
         zoom: true,
         propertiesToInclude: [],
@@ -572,7 +577,7 @@ class Canvas extends Component {
             }
             let prevLeft;
             let prevTop;
-            this.canvas.setBackgroundColor(this.props.backgroundColor || '#f3f3f3');
+            this.canvas.setBackgroundColor(this.props.backgroundColor);
             json.forEach((obj) => {
                 if (obj.id === 'workarea') {
                     prevLeft = obj.left;
@@ -2666,7 +2671,7 @@ class Canvas extends Component {
         const { editable, backgroundColor, width, height } = this.props;
         this.canvas = new fabric.Canvas(`canvas_${id}`, {
             preserveObjectStacking: true,
-            backgroundColor: backgroundColor || '#f3f3f3',
+            backgroundColor,
             width,
             height,
             selection: editable,
