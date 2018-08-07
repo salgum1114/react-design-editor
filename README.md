@@ -68,7 +68,8 @@ to be contiuned..
 - [x] Drawing - Polygon
 - [x] Export / Import - JSON, PNG
 - [x] Video
-- [x] Dom Element - (Code Editor)
+- [x] Dom Element
+- [x] Code Editor - HTML / CSS / JS / Preview
 - [x] iframe
 - [x] Animation - Fade / Bounce / Shake / Scaling / Rotation / Flash
 - [x] Icon Chooser - fontawesome 5.2.0 free version
