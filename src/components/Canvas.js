@@ -53,6 +53,11 @@ const workareaOption = {
     },
 };
 
+const canvasOption = {
+    preserveObjectStacking: true,
+    backgroundColor: '#f3f3f3',
+};
+
 class Canvas extends Component {
     static propsTypes = {
         fabricObjects: PropTypes.object,
@@ -567,6 +572,7 @@ class Canvas extends Component {
             }
             let prevLeft;
             let prevTop;
+            this.canvas.setBackgroundColor(this.props.backgroundColor || '#f3f3f3');
             json.forEach((obj) => {
                 if (obj.id === 'workarea') {
                     prevLeft = obj.left;
@@ -2657,12 +2663,12 @@ class Canvas extends Component {
 
     componentDidMount() {
         const { id } = this.state;
-        const { editable, width, height } = this.props;
+        const { editable, backgroundColor, width, height } = this.props;
         this.canvas = new fabric.Canvas(`canvas_${id}`, {
             preserveObjectStacking: true,
+            backgroundColor: backgroundColor || '#f3f3f3',
             width,
             height,
-            backgroundColor: '#f3f3f3',
             selection: editable,
         });
         this.workarea = new fabric.Image(null, {
