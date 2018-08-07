@@ -34,10 +34,6 @@ module.exports = merge(baseConfig, {
         vendor: [
             'react',
             'react-dom',
-            'react-redux',
-            'react-router-dom',
-            'redux',
-            'redux-thunk',
         ],
         app: ['babel-polyfill', path.resolve(__dirname, 'src/index.js')],
     },
