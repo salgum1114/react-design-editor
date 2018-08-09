@@ -10,6 +10,7 @@ export default (mergeObjects) => {
         animation: {
             type: 'none',
         },
+        userProperty: {},
     };
     const fabricObjects = {
         group: {

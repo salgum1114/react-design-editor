@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'antd';
+import { Button, Table } from 'antd';
 
 import { FlexBox } from './flex';
 import Icon from './Icon';

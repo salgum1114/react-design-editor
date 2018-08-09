@@ -25,6 +25,7 @@ const defaultOptions = {
     animation: {
         type: 'none',
     },
+    userProperty: {},
 };
 
 const workareaOption = {
@@ -1130,8 +1131,8 @@ class Canvas extends Component {
                 }
             } else if (type === 'scaling') {
                 const { scale = 1 } = other;
-                obj.set('originZoomX', obj.scaleX);
-                obj.set('originZoomY', obj.scaleY);
+                obj.set('originScaleX', obj.scaleX);
+                obj.set('originScaleY', obj.scaleY);
                 const scaleX = obj.scaleX * scale;
                 const scaleY = obj.scaleY * scale;
                 Object.assign(option, {
@@ -1531,6 +1532,7 @@ class Canvas extends Component {
                     this.workarea.set({
                         width: 0,
                         height: 0,
+                        backgroundColor: 'rgba(255, 255, 255, 0)',
                     });
                 }
                 canvas.centerObject(this.workarea);
@@ -1557,6 +1559,7 @@ class Canvas extends Component {
                     this.workarea.set({
                         left: 0,
                         top: 0,
+                        backgroundColor: 'rgba(255, 255, 255, 1)',
                     });
                 }
             }

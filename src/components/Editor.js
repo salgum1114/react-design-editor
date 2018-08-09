@@ -13,6 +13,8 @@ import HeaderToolbar from './HeaderToolbar';
 import Title from './Title';
 import Preview from './Preview';
 
+import '../styles/index.less';
+
 const propertiesToInclude = [
     'id',
     'name',
@@ -27,10 +29,12 @@ const propertiesToInclude = [
     'workareaHeight',
     'videoLoadType',
     'autoplay',
+    'shadow',
     'muted',
     'loop',
     'code',
     'icon',
+    'userProperty',
 ];
 
 class Editor extends Component {
@@ -247,6 +251,10 @@ class Editor extends Component {
             });
         });
         this.setState({
+            canvasRect: {
+                width: this.container.clientWidth,
+                height: this.container.clientHeight,
+            },
             selectedItem: this.canvasRef.current.workarea,
         });
     }

@@ -18,7 +18,7 @@ module.exports = {
                         'react-hot-loader/babel',
                         'syntax-dynamic-import',
                         'dynamic-import-webpack',
-                        ['import', { libraryName: 'antd', style: 'css' }],
+                        ['import', { libraryName: 'antd', style: true }],
                         'transform-decorators-legacy',
                     ],
                 },

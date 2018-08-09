@@ -86,7 +86,10 @@ video {
     .rde-items {
         overflow-y: auto;
         position: relative;
-        height: calc(100% - 60px);
+        height : -webkit-calc(100% ~'-' 60px);
+        height :    -moz-calc(100% ~'-' 60px);
+        height :         calc(100% ~'-' 60px);
+        // height: calc(100% - 60px);
         min-width: 200px;
         width: 200px;
         background: #fff;
@@ -121,7 +124,10 @@ video {
         -webkit-box-flex: 1;
         -ms-flex: 1;
         flex: 1;
-        height: calc(100% - 140px);
+        height : -webkit-calc(100% ~'-' 140px);
+        height :    -moz-calc(100% ~'-' 140px);
+        height :         calc(100% ~'-' 140px);
+        // height: calc(100% - 140px);
         z-index: 0;
         top: 40px;
         min-width: 200px;
@@ -154,7 +160,9 @@ video {
             position: absolute;
             display: none;
             width: 300px;
-            height: calc(100vh - 150px);
+            height : -webkit-calc(100vh ~'-' 140px);
+            height :    -moz-calc(100vh ~'-' 140px);
+            height :         calc(100vh ~'-' 140px);
             top: 40px;
             left: -4px;
             z-index: 0;
@@ -255,7 +263,10 @@ video {
     .rde-properties {
         overflow-y: auto;
         position: relative;
-        height: calc(100% - 60px);
+        height : -webkit-calc(100% ~'-' 150px);
+        height :    -moz-calc(100% ~'-' 60px);
+        height :         calc(100% ~'-' 60px);
+        // height: calc(100% - 60px);
         width: 300px;
         right: 0;
         z-index: 1000;
@@ -351,6 +362,16 @@ video {
     height: 32px;
     text-align: center;
     padding-top: 4px;
+}
+
+.rde-editable-cell {
+    padding: 5px 12px;
+    &:hover {
+        border: 1px solid #d9d9d9;
+        border-radius: 4px;
+        padding: 4px 11px;
+    }
+    cursor: pointer;
 }
 
 [draggable] {

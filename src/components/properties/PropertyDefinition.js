@@ -11,6 +11,7 @@ import ElementProperty from './ElementProperty';
 import IFrameProperty from './IFrameProperty';
 import AnimationProperty from './AnimationProperty';
 import ShadowProperty from './ShadowProperty';
+import UserProperty from './UserProperty';
 
 export default {
     map: {
@@ -62,6 +63,10 @@ export default {
             title: 'Animation',
             component: AnimationProperty,
         },
+        userProperty: {
+            title: 'User Property',
+            component: UserProperty,
+        },
     },
     textbox: {
         general: {
@@ -91,6 +96,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        userProperty: {
+            title: 'User Property',
+            component: UserProperty,
         },
     },
     image: {
@@ -122,6 +131,10 @@ export default {
             title: 'Animation',
             component: AnimationProperty,
         },
+        userProperty: {
+            title: 'User Property',
+            component: UserProperty,
+        },
     },
     triangle: {
         general: {
@@ -143,6 +156,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        userProperty: {
+            title: 'User Property',
+            component: UserProperty,
         },
     },
     rect: {
@@ -170,6 +187,10 @@ export default {
             title: 'Animation',
             component: AnimationProperty,
         },
+        userProperty: {
+            title: 'User Property',
+            component: UserProperty,
+        },
     },
     circle: {
         general: {
@@ -195,6 +216,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        userProperty: {
+            title: 'User Property',
+            component: UserProperty,
         },
     },
     polygon: {
@@ -222,6 +247,10 @@ export default {
             title: 'Animation',
             component: AnimationProperty,
         },
+        userProperty: {
+            title: 'User Property',
+            component: UserProperty,
+        },
     },
     line: {
         general: {
@@ -247,6 +276,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        userProperty: {
+            title: 'User Property',
+            component: UserProperty,
         },
     },
     video: {
