@@ -38,6 +38,12 @@ class Preview extends Component {
                 canvasRect,
             });
         });
+        this.setState({
+            canvasRect: {
+                width: this.container.clientWidth,
+                height: this.container.clientHeight,
+            },
+        });
     }
 
     render() {

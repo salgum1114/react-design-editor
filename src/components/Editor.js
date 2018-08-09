@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
-import { Badge, Button } from 'antd';
+import { Badge, Button, Spin } from 'antd';
 import debounce from 'lodash/debounce';
 import '../libs/fontawesome-5.2.0/css/all.css';
 
@@ -213,13 +213,51 @@ class Editor extends Component {
                             }
                             return true;
                         });
-                        console.log(data);
                         const json = JSON.stringify(data);
                         this.preview.canvasRef.current.handlers.importJSON(json);
                     }, 0);
                     return;
                 }
                 this.preview.canvasRef.current.handlers.clear(true);
+            });
+        },
+        onLoading: (files) => {
+            this.setState({
+                loading: true,
+            }, () => {
+                setTimeout(() => {
+                    const reader = new FileReader();
+                    reader.onprogress = (e) => {
+                        if (e.lengthComputable) {                                            
+                            const progress = parseInt(((e.loaded / e.total) * 100), 10);
+                            this.handlers.onProgress(progress);
+                        }
+                    };
+                    reader.onload = (e) => {
+                        const json = JSON.parse(e.target.result);
+                        if (json.objects) {
+                            this.canvasRef.current.handlers.clear(true);
+                            const data = json.objects.filter((obj) => {
+                                if (!obj.id) {
+                                    return false;
+                                }
+                                return true;
+                            });
+                            this.canvasRef.current.handlers.importJSON(JSON.stringify(data));
+                        }
+                    };
+                    reader.onloadend = () => {
+                        this.setState({
+                            loading: false,
+                        });
+                    };
+                    reader.readAsText(files[0]);
+                }, 500);
+            });
+        },
+        onProgress: (progress) => {
+            this.setState({
+                progress,
             });
         },
     }
@@ -237,6 +275,8 @@ class Editor extends Component {
             height: 0,
         },
         preview: false,
+        loading: false,
+        progress: 0,
     }
 
     componentDidMount() {
@@ -260,51 +300,53 @@ class Editor extends Component {
     }
 
     render() {
-        const { preview, selectedItem, canvasRect, zoomRatio } = this.state;
+        const { preview, selectedItem, canvasRect, zoomRatio, loading, progress } = this.state;
         const { onAdd, onRemove, onSelect, onModified, onChange, onZoom, onTooltip, onAction } = this.canvasHandlers;
-        const { onChangePreview } = this.handlers;
+        const { onChangePreview, onLoading, onProgress } = this.handlers;
         return (
             <div className="rde-main">
-                <div className="rde-title">
-                    <Title propertiesRef={this.propertiesRef} canvasRef={this.canvasRef} />
-                </div>
-                <div className="rde-content">
-                    <div className="rde-editor">
-                        {/* <nav className="rde-wireframe">
-                            <Wireframe canvasRef={this.canvasRef} />
-                        </nav> */}
-                        <aside className="rde-items">
-                            <Items canvasRef={this.canvasRef} />
-                        </aside>
-                        <header style={{ width: canvasRect.width }} className="rde-canvas-header">
-                            <HeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} onSelect={onSelect} />
-                        </header>
-                        <main
-                            ref={(c) => { this.container = c; }}
-                            className="rde-canvas-container"
-                        >
-                            <Canvas
-                                ref={this.canvasRef}
-                                width={canvasRect.width}
-                                height={canvasRect.height}
-                                propertiesToInclude={propertiesToInclude}
-                                onModified={onModified}
-                                onAdd={onAdd}
-                                onRemove={onRemove}
-                                onSelect={onSelect}
-                                onZoom={onZoom}
-                                onTooltip={onTooltip}
-                                onAction={onAction}
-                            />
-                        </main>
-                        <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
-                            <FooterToolbar canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} zoomRatio={zoomRatio} />
-                        </footer>
-                        <aside className="rde-properties">
-                            <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} canvasRef={this.canvasRef} />
-                        </aside>
+                <Spin size="large" spinning={loading} tip={`${progress}%`}>
+                    <div className="rde-title">
+                        <Title propertiesRef={this.propertiesRef} canvasRef={this.canvasRef} onLoading={onLoading} onProgress={onProgress} />
                     </div>
-                </div>
+                    <div className="rde-content">
+                        <div className="rde-editor">
+                            {/* <nav className="rde-wireframe">
+                                <Wireframe canvasRef={this.canvasRef} />
+                            </nav> */}
+                            <aside className="rde-items">
+                                <Items canvasRef={this.canvasRef} />
+                            </aside>
+                            <header style={{ width: canvasRect.width }} className="rde-canvas-header">
+                                <HeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} onSelect={onSelect} />
+                            </header>
+                            <main
+                                ref={(c) => { this.container = c; }}
+                                className="rde-canvas-container"
+                            >
+                                <Canvas
+                                    ref={this.canvasRef}
+                                    width={canvasRect.width}
+                                    height={canvasRect.height}
+                                    propertiesToInclude={propertiesToInclude}
+                                    onModified={onModified}
+                                    onAdd={onAdd}
+                                    onRemove={onRemove}
+                                    onSelect={onSelect}
+                                    onZoom={onZoom}
+                                    onTooltip={onTooltip}
+                                    onAction={onAction}
+                                />
+                            </main>
+                            <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
+                                <FooterToolbar canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} zoomRatio={zoomRatio} />
+                            </footer>
+                            <aside className="rde-properties">
+                                <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} canvasRef={this.canvasRef} />
+                            </aside>
+                        </div>
+                    </div>
+                </Spin>
                 <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onAction={onAction} />
             </div>
         );
