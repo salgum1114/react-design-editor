@@ -54,11 +54,6 @@ const workareaOption = {
     },
 };
 
-const canvasOption = {
-    preserveObjectStacking: true,
-    backgroundColor: '#f3f3f3',
-};
-
 class Canvas extends Component {
     static propsTypes = {
         fabricObjects: PropTypes.object,
@@ -114,7 +109,7 @@ class Canvas extends Component {
                 this.handlers.setByObject(obj, 'top', obj.top - (obj.height / 2));
             }
         },
-        add: (obj, centered = true) => {
+        add: (obj, centered = true, loaded = false) => {
             const { editable } = this.props;
             const option = {
                 hasControls: editable,
@@ -135,10 +130,10 @@ class Canvas extends Component {
             }
             const newOption = Object.assign({}, option, obj);
             if (obj.type === 'group') {
-                const objects = this.handlers.addGroup(newOption);
+                const objects = this.handlers.addGroup(newOption, centered, loaded);
                 const groupOption = Object.assign({}, newOption, { objects });
                 if (obj.type === 'image') {
-                    this.handlers.addImage(newOption, centered);
+                    this.handlers.addImage(newOption, centered, loaded);
                     return;
                 }
                 if (this.handlers.isElementType(obj.type)) {
@@ -150,20 +145,20 @@ class Canvas extends Component {
                     createdObj.on('mousedown', this.eventHandlers.object.mousedown);
                 }
                 this.canvas.add(createdObj);
-                if (obj.type !== 'polygon' && editable) {
+                if (obj.type !== 'polygon' && editable && !loaded) {
                     this.handlers.centerObject(createdObj, centered);
                 }
-                if (createdObj.animation && createdObj.animation.autoplay) {
+                if (!editable && createdObj.animation && createdObj.animation.autoplay) {
                     this.animationHandlers.play(createdObj.id);
                 }
                 const { onAdd } = this.props;
-                if (onAdd && editable) {
+                if (onAdd && editable && !loaded) {
                     onAdd(createdObj);
                 }
                 return createdObj;
             }
             if (obj.type === 'image') {
-                this.handlers.addImage(newOption, centered);
+                this.handlers.addImage(newOption, centered, loaded);
                 return;
             }
             if (this.handlers.isElementType(obj.type)) {
@@ -175,30 +170,31 @@ class Canvas extends Component {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }
             this.canvas.add(createdObj);
-            if (obj.type !== 'polygon' && editable) {
+            if (obj.type !== 'polygon' && editable && !loaded) {
                 this.handlers.centerObject(createdObj, centered);
             }
-            if (createdObj.animation && createdObj.animation.autoplay) {
+            if (!editable && createdObj.animation && createdObj.animation.autoplay) {
                 this.animationHandlers.play(createdObj.id);
             }
             const { onAdd } = this.props;
-            if (onAdd && editable) {
+            if (onAdd && editable && !loaded) {
                 onAdd(createdObj);
             }
             return createdObj;
         },
-        addGroup: (obj) => {
+        addGroup: (obj, centered = true, loaded = false) => {
             return obj.objects.map((child) => {
-                return this.handlers.add(child);
+                return this.handlers.add(child, centered, loaded);
             });
         },
-        addImage: (obj, centered = true) => {
+        addImage: (obj, centered = true, loaded = false) => {
             const { editable } = this.props;
             const image = new Image();
             const { src, file, ...otherOption } = obj;
             const createImage = (img) => {
                 const createdObj = new fabric.Image(img, {
                     src,
+                    file,
                     ...otherOption,
                     ...defaultOptions,
                 });
@@ -210,7 +206,7 @@ class Canvas extends Component {
                     this.handlers.centerObject(createdObj, centered);
                 }
                 const { onAdd } = this.props;
-                if (onAdd && editable) {
+                if (onAdd && editable && !loaded) {
                     onAdd(createdObj);
                 }
             };
@@ -230,7 +226,7 @@ class Canvas extends Component {
             };
             reader.readAsDataURL(file);
         },
-        addElement: (obj, centered = true) => {
+        addElement: (obj, centered = true, loaded = false) => {
             const { canvas } = this;
             const { editable } = this.props;
             const { src, file, code, ...otherOption } = obj;
@@ -254,11 +250,11 @@ class Canvas extends Component {
                     this.elementHandlers.set(createdObj, src || code);
                 }
             }
-            if (editable) {
+            if (editable && !loaded) {
                 this.handlers.centerObject(createdObj, centered);
             }
             const { onAdd } = this.props;
-            if (onAdd && editable) {
+            if (onAdd && editable && !loaded) {
                 onAdd(createdObj);
             }
         },
@@ -604,7 +600,7 @@ class Canvas extends Component {
                     }
                     this.workarea.set(obj);
                     this.canvas.centerObject(this.workarea);
-                    this.workareaHandlers.setImage(obj.src);
+                    this.workareaHandlers.setImage(obj.src, true);
                     this.workarea.setCoords();
                     return;
                 }
@@ -627,7 +623,7 @@ class Canvas extends Component {
                 if (this.handlers.isElementType(obj.type)) {
                     obj.id = uuid();
                 }
-                this.handlers.add(obj, false);
+                this.handlers.add(obj, false, true);
                 this.canvas.renderAll();
             });
             this.canvas.setZoom(1);
@@ -1586,7 +1582,7 @@ class Canvas extends Component {
             this.zoomHandlers.zoomToPoint(point, 1);
             canvas.renderAll();
         },
-        setResponsiveImage: (src) => {
+        setResponsiveImage: (src, loaded) => {
             const { canvas, workarea, zoomHandlers } = this;
             const { editable } = this.props;
             const imageFromUrl = (source) => {
@@ -1607,7 +1603,7 @@ class Canvas extends Component {
                         selectable: false,
                     });
                     canvas.centerObject(workarea);
-                    if (editable) {
+                    if (editable && !loaded) {
                         canvas.getObjects().forEach((obj, index) => {
                             if (index !== 0) {
                                 const objWidth = obj.width * scaleX;
@@ -1651,14 +1647,14 @@ class Canvas extends Component {
             };
             reader.readAsDataURL(src);
         },
-        setImage: (src) => {
+        setImage: (src, loaded = false) => {
             if (!src) {
                 return;
             }
             const { canvas, workarea, zoomHandlers, workareaHandlers } = this;
             const { editable } = this.props;
             if (workarea.layout === 'responsive') {
-                workareaHandlers.setResponsiveImage(src);
+                workareaHandlers.setResponsiveImage(src, loaded);
                 return;
             }
             const imageFromUrl = (source) => {
@@ -1682,7 +1678,7 @@ class Canvas extends Component {
                         selectable: false,
                     });
                     canvas.centerObject(workarea);
-                    if (editable) {
+                    if (editable && !loaded) {
                         const { layout } = workarea;
                         canvas.getObjects().forEach((obj, index) => {
                             if (index !== 0) {

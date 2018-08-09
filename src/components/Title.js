@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Table } from 'antd';
+import { Button } from 'antd';
 
 import { FlexBox } from './flex';
 import Icon from './Icon';
@@ -9,6 +9,7 @@ class Title extends Component {
     static propTypes = {
         propertiesRef: PropTypes.any,
         canvasRef: PropTypes.any,
+        onLoading: PropTypes.func,
     }
 
     state = {
@@ -27,10 +28,12 @@ class Title extends Component {
             this.setState({
                 data: canvasRef.current.handlers.exportJSON(),
             });
-            console.log(canvasRef.current.handlers.exportJSON());
         },
-        onImport: () => {
-            
+        onImport: (files) => {
+            const { canvasRef, onLoading} = this.props;
+            if (files && files.length) {
+                onLoading(files);
+            }
         },
         onCancel: () => {
             const { canvasRef } = this.props;
@@ -82,8 +85,9 @@ class Title extends Component {
                         }}
                         shape="circle"
                         size="large"
-                        onClick={this.handlers.onImport}
+                        onClick={() => { this.fileRef.click(); }}
                     >
+                        <input ref={(c) => { this.fileRef = c; }} accept=".json" type="file" hidden onChange={(e) => { this.handlers.onImport(e.target.files); }} />
                         <Icon name="file-import" size={1.5} />
                     </Button>
                     <Button
