@@ -346,8 +346,8 @@ class Editor extends Component {
                             </aside>
                         </div>
                     </div>
-                    <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onAction={onAction} />
                 </Spin>
+                <Preview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onAction={onAction} />
             </div>
         );
     }
