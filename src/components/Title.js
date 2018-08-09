@@ -17,12 +17,6 @@ class Title extends Component {
     }
 
     handlers = {
-        onSave: () => {
-            const { propertiesRef } = this.props;
-            propertiesRef.validateFields((error, values) => {
-                console.log(error, values);
-            });
-        },
         onExport: () => {
             const { canvasRef } = this.props;
             this.setState({
@@ -89,18 +83,6 @@ class Title extends Component {
                     >
                         <input ref={(c) => { this.fileRef = c; }} accept=".json" type="file" hidden onChange={(e) => { this.handlers.onImport(e.target.files); }} />
                         <Icon name="file-import" size={1.5} />
-                    </Button>
-                    <Button
-                        className="rde-action-btn"
-                        style={{
-                            marginRight: 8,
-                            color: 'white',
-                        }}
-                        shape="circle"
-                        size="large"
-                        onClick={this.handlers.onSave}
-                    >
-                        <Icon name="save" size={1.5} />
                     </Button>
                     <Button
                         className="rde-action-btn"

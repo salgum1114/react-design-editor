@@ -53,7 +53,7 @@ class Preview extends Component {
         return (
             <div className={previewClassName}>
                 <div ref={(c) => { this.container = c; }} style={{ overvlow: 'hidden', display: 'flex', flex: '1', height: '100%' }}>
-                    <Canvas editable={false} width={canvasRect.width} height={canvasRect.height} ref={this.canvasRef} onTooltip={onTooltip} onAction={onAction} />
+                    <Canvas ref={this.canvasRef} editable={false} width={canvasRect.width} height={canvasRect.height} onTooltip={onTooltip} onAction={onAction} />
                     <Button className="rde-action-btn rde-canvas-preview-close-btn" onClick={onChangePreview}>
                         <Icon name="times" size={1.5} />
                     </Button>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
-import { Badge, Button, Spin } from 'antd';
+import { Badge, Button, Spin, Tabs } from 'antd';
 import debounce from 'lodash/debounce';
 import '../libs/fontawesome-5.2.0/css/all.css';
 
@@ -14,6 +14,7 @@ import Title from './Title';
 import Preview from './Preview';
 
 import '../styles/index.less';
+import Definitions from './Definitions';
 
 const propertiesToInclude = [
     'id',
@@ -280,7 +281,7 @@ class Editor extends Component {
     }
 
     componentDidMount() {
-        this.resizeSensor = new ResizeSensor(this.container, (e) => {
+        this.resizeSensor = new ResizeSensor(this.container, () => {
             const { canvasRect: currentCanvasRect } = this.state;
             const canvasRect = Object.assign({}, currentCanvasRect, {
                 width: this.container.clientWidth,
@@ -300,7 +301,7 @@ class Editor extends Component {
     }
 
     render() {
-        const { preview, selectedItem, canvasRect, zoomRatio, loading, progress } = this.state;
+        const { preview, selectedItem, canvasRect, zoomRatio, loading, progress, animations, styles, dataSources } = this.state;
         const { onAdd, onRemove, onSelect, onModified, onChange, onZoom, onTooltip, onAction } = this.canvasHandlers;
         const { onChangePreview, onLoading, onProgress } = this.handlers;
         return (
@@ -341,8 +342,16 @@ class Editor extends Component {
                             <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
                                 <FooterToolbar canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} zoomRatio={zoomRatio} />
                             </footer>
-                            <aside className="rde-properties">
-                                <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} canvasRef={this.canvasRef} />
+                            <aside className="rde-definitions">
+                                <Definitions
+                                    ref={(c) => { this.definitionsRef = c; }}
+                                    onChange={onChange}
+                                    selectedItem={selectedItem}
+                                    canvasRef={this.canvasRef}
+                                    animations={animations}
+                                    styles={styles}
+                                    dataSources={dataSources}
+                                />
                             </aside>
                         </div>
                     </div>

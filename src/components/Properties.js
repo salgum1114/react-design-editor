@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Collapse, Table } from 'antd';
+import { Form, Collapse } from 'antd';
 
 import PropertyDefinition from './properties/PropertyDefinition';
 
