@@ -934,7 +934,6 @@ class Canvas extends Component {
     }
 
     modeHandlers = {
-        panning: false,
         selection: () => {
             this.interactionMode = 'selection';
             this.canvas.selection = true;
@@ -2425,7 +2424,7 @@ class Canvas extends Component {
         },
         mousedown: (opt) => {
             if (this.interactionMode === 'grab') {
-                this.modeHandlers.panning = true;
+                this.panning = true;
             }
             const { onSelect, editable } = this.props;
             const { target } = opt;
@@ -2447,7 +2446,7 @@ class Canvas extends Component {
             }
         },
         mousemove: (opt) => {
-            if (this.interactionMode === 'grab' && this.modeHandlers.panning) {
+            if (this.interactionMode === 'grab' && this.panning) {
                 this.modeHandlers.moving(opt.e);
             }
             if (!this.props.editable && opt.target) {
@@ -2478,12 +2477,12 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         mouseup: (opt) => {
+            if (this.interactionMode === 'grab') {
+                this.panning = false;
+            }
             this.verticalLines.length = 0;
             this.horizontalLines.length = 0;
             this.canvas.renderAll();
-            if (this.modeHandlers.mode === 'grab') {
-                this.modeHandlers.panning = false;
-            }
         },
         selection: (opt) => {
             const { onSelect } = this.props;
@@ -2697,6 +2696,7 @@ class Canvas extends Component {
         const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, selection, beforeRender, afterRender } = this.eventHandlers;
         if (editable) {
             this.interactionMode = 'selection';
+            this.panning = false;
             this.guidelineHandlers.init();
             this.canvas.on({
                 'object:modified': modified,
