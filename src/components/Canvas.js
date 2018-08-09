@@ -67,8 +67,19 @@ class Canvas extends Component {
             PropTypes.number,
             PropTypes.string,
         ]),
+        height: PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.string,
+        ]),
+        offsetWidth: PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.string,
+        ]),
+        offsetHeight: PropTypes.oneOfType([
+            PropTypes.number,
+            PropTypes.string,
+        ]),
         backgroundColor: PropTypes.string,
-        height: PropTypes.height,
         tooltip: PropTypes.any,
         zoom: PropTypes.bool,
         propertiesToInclude: PropTypes.array,
@@ -85,6 +96,8 @@ class Canvas extends Component {
         editable: true,
         width: 300,
         height: 150,
+        offsetWidth: 0,
+        offsetHeight: 0,
         backgroundColor: '#f3f3f3',
         tooltip: null,
         zoom: true,
@@ -2024,8 +2037,9 @@ class Canvas extends Component {
                 const tooltip = document.createElement('div');
                 tooltip.className = 'rde-canvas-tooltip-container';
                 let element = target.name;
-                if (this.props.onTooltip) {
-                    element = this.props.onTooltip(this.tooltipRef, target);
+                const { onTooltip, offsetWidth, offsetHeight } = this.props;
+                if (onTooltip) {
+                    element = onTooltip(this.tooltipRef, target);
                 }
                 tooltip.innerHTML = element;
                 this.tooltipRef.current.appendChild(tooltip);
@@ -2036,9 +2050,9 @@ class Canvas extends Component {
                 const { width, height, scaleX, scaleY } = target;
                 const { left, top } = target.getBoundingRect();
                 const objWidthDiff = (width * scaleX) * zoom;
-                const objHeightDiff = (((height * scaleY) * zoom) / 2) - ((clientHeight / 2) * zoom);
-                this.tooltipRef.current.style.left = `${left + objWidthDiff}px`;
-                this.tooltipRef.current.style.top = `${top + objHeightDiff}px`;
+                const objHeightDiff = (((height * scaleY) * zoom) / 2) - (((clientHeight / 2) + offsetHeight) * zoom);
+                this.tooltipRef.current.style.left = `${left + objWidthDiff + offsetWidth}px`;
+                    this.tooltipRef.current.style.top = `${top + objHeightDiff + offsetHeight}px`;
             }
         }, 100),
         hide: debounce((target) => {
