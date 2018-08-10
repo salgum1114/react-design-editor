@@ -202,7 +202,7 @@ class Canvas extends Component {
                     createdObj.on('mousedown', this.eventHandlers.object.mousedown);
                 }
                 this.canvas.add(createdObj);
-                if (editable) {
+                if (editable && !loaded) {
                     this.handlers.centerObject(createdObj, centered);
                 }
                 const { onAdd } = this.props;
