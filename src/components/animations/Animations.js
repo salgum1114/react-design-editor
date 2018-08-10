@@ -21,7 +21,11 @@ class Animations extends Component {
             if (!this.state.animation.type) {
                 this.state.animation.type = 'none';
             }
-            this.state.animations.push(this.state.animation);
+            if (this.state.current === 'add') {
+                this.state.animations.push(this.state.animation);
+            } else {
+                this.state.animations.splice(this.state.index, 1, this.state.animation);
+            }
             this.setState({
                 visible: false,
                 animations: this.state.animations,
@@ -46,9 +50,10 @@ class Animations extends Component {
                     validateStatus: '',
                     help: '',
                 },
+                current: 'add',
             });
         },
-        onEdit: (animation) => {
+        onEdit: (animation, index) => {
             this.setState({
                 visible: true,
                 animation,
@@ -56,20 +61,14 @@ class Animations extends Component {
                     validateStatus: '',
                     help: '',
                 },
+                current: 'modify',
+                index,
             });
         },
-        onDelete: (title) => {
-            let findIndex = null;
-            this.state.animations.some((animation, index) => {
-                if (animation.title === title) {
-                    findIndex = index;
-                    return true;
-                }
-                return false;
-            });
-            const newAnimations = this.state.animations.splice(findIndex + 1, 1);
+        onDelete: (index) => {
+            this.state.animations.splice(index, 1);
             this.setState({
-                animations: newAnimations,
+                animations: this.state.animations,
             });
         },
         onClear: () => {
@@ -124,6 +123,7 @@ class Animations extends Component {
             validateStatus: '',
             help: '',
         },
+        current: 'add',
     }
 
     render() {

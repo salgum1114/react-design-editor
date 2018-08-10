@@ -15,12 +15,12 @@ class AnimationList extends Component {
         return (
             <List
                 dataSource={animations}
-                renderItem={(animation) => {
+                renderItem={(animation, index) => {
                     const actions = [
-                        <Button className="rde-action-btn" shape="circle" onClick={() => { onEdit(animation); }}>
+                        <Button className="rde-action-btn" shape="circle" onClick={() => { onEdit(animation, index); }}>
                             <Icon name="edit" />
                         </Button>,
-                        <Button className="rde-action-btn" shape="circle" onClick={() => { onDelete(animation.title); }}>
+                        <Button className="rde-action-btn" shape="circle" onClick={() => { onDelete(index); }}>
                             <Icon name="times" />
                         </Button>,
                     ];
