@@ -32,6 +32,12 @@ class Definitions extends Component {
         activeKey: 'properties',
     }
 
+    getAnimations = () => this.animationsRef.state.animations;
+
+    getStyles = () => this.stylesRef.state.styles;
+
+    getDataSources = () => this.dataSourcesRef.state.dataSources;
+
     render() {
         const {
             onChange,

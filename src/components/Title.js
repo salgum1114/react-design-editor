@@ -6,25 +6,16 @@ import { FlexBox } from './flex';
 import Icon from './Icon';
 
 class Title extends Component {
-    static propTypes = {
-        propertiesRef: PropTypes.any,
-        canvasRef: PropTypes.any,
-        onLoading: PropTypes.func,
-    }
-
-    state = {
-        data: {},
-    }
-
     handlers = {
         onExport: () => {
             const { canvasRef } = this.props;
+            const data = Object.assign({}, canvasRef.current.handlers.exportJSON(), this.props.definitions);
             this.setState({
-                data: canvasRef.current.handlers.exportJSON(),
+                data,
             });
         },
         onImport: (files) => {
-            const { canvasRef, onLoading} = this.props;
+            const { onLoading } = this.props;
             if (files && files.length) {
                 onLoading(files);
             }
@@ -36,6 +27,16 @@ class Title extends Component {
         goGithub: () => {
             window.open('https://github.com/salgum1114/react-design-editor');
         },
+    }
+
+    static propTypes = {
+        definitions: PropTypes.object,
+        canvasRef: PropTypes.any,
+        onLoading: PropTypes.func,
+    }
+
+    state = {
+        data: {},
     }
 
     render() {

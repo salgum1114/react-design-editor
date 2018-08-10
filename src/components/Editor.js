@@ -329,21 +329,21 @@ class Editor extends Component {
         dataSources: this.getDataSources(),
     })
 
-    getAnimations = () => this.animationsRef.state.animations;
+    getAnimations = () => this.state.animations;
 
-    getStyles = () => this.stylesRef.state.styles;
+    getStyles = () => this.state.styles;
 
-    getDataSources = () => this.dataSourcesRef.state.dataSources;
+    getDataSources = () => this.state.dataSources;
 
     render() {
         const { preview, selectedItem, canvasRect, zoomRatio, loading, progress, animations, styles, dataSources } = this.state;
         const { onAdd, onRemove, onSelect, onModified, onChange, onZoom, onTooltip, onAction } = this.canvasHandlers;
-        const { onChangePreview, onLoading, onProgress, onChangeAnimations, onChangeStyles, onChangeDataSources } = this.handlers;
+        const { onChangePreview, onLoading, onChangeAnimations, onChangeStyles, onChangeDataSources } = this.handlers;
         return (
             <div className="rde-main">
                 <Spin size="large" spinning={loading} tip={`${progress}%`}>
                     <div className="rde-title">
-                        <Title propertiesRef={this.propertiesRef} canvasRef={this.canvasRef} onLoading={onLoading} onProgress={onProgress} />
+                        <Title propertiesRef={this.propertiesRef} canvasRef={this.canvasRef} onLoading={onLoading} definitions={this.getDefinitions()} />
                     </div>
                     <div className="rde-content">
                         <div className="rde-editor">
