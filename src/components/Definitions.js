@@ -8,10 +8,21 @@ import Styles from './styles/Styles';
 import DataSources from './datasources/DataSources';
 
 class Definitions extends Component {
+    handlers = {
+        onChangeTab: (activeKey) => {
+            this.setState({
+                activeKey,
+            });
+        },
+    }
+
     static propTypes = {
         canvasRef: PropTypes.any,
         selectedItem: PropTypes.object,
         onChange: PropTypes.func,
+        onChangeAnimations: PropTypes.func,
+        onChangeStyles: PropTypes.func,
+        onChangeDataSources: PropTypes.func,
         animations: PropTypes.array,
         styles: PropTypes.array,
         dataSources: PropTypes.array,
@@ -21,28 +32,18 @@ class Definitions extends Component {
         activeKey: 'properties',
     }
 
-    handlers = {
-        onChangeTab: (activeKey) => {
-            this.setState({
-                activeKey,
-            });
-        },
-    }
-
-    getAnimations = () => {
-        return this.animationsRef.state.animations;
-    }
-
-    getStyles = () => {
-        return this.stylesRef.state.styles;
-    }
-
-    getDataSources = () => {
-        return this.dataSourcesRef.state.dataSources;
-    }
-
     render() {
-        const { onChange, selectedItem, canvasRef } = this.props;
+        const {
+            onChange,
+            selectedItem,
+            canvasRef,
+            animations,
+            styles,
+            dataSources,
+            onChangeAnimations,
+            onChangeStyles,
+            onChangeDataSources,
+        } = this.props;
         const { activeKey } = this.state;
         const { onChangeTab } = this.handlers;
         return (
@@ -51,13 +52,13 @@ class Definitions extends Component {
                     <Properties onChange={onChange} selectedItem={selectedItem} canvasRef={canvasRef} />
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Animations" key="animations">
-                    <Animations ref={(c) => { this.animationsRef = c; }} />
+                    <Animations ref={(c) => { this.animationsRef = c; }} animations={animations} onChangeAnimations={onChangeAnimations} />
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Styles" key="styles">
-                    <Styles ref={(c) => { this.stylesRef = c; }} />
+                    <Styles ref={(c) => { this.stylesRef = c; }} styles={styles} onChangeStyles={onChangeStyles} />
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="DataSources" key="datasources">
-                    <DataSources ref={(c) => { this.dataSourcesRef = c; }} />
+                    <DataSources ref={(c) => { this.dataSourcesRef = c; }} dataSources={dataSources} onChangeDataSources={onChangeDataSources} />
                 </Tabs.TabPane>
             </Tabs>
         );

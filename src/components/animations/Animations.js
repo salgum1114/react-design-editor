@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Form, Button } from 'antd';
 
 import { FlexBox } from '../flex';
 import AnimationList from './AnimationList';
-import Icon from '../Icon';
 import AnimationModal from './AnimationModal';
+import Icon from '../Icon';
 
 class Animations extends Component {
     handlers = {
@@ -22,14 +23,15 @@ class Animations extends Component {
                 this.state.animation.type = 'none';
             }
             if (this.state.current === 'add') {
-                this.state.animations.push(this.state.animation);
+                this.props.animations.push(this.state.animation);
             } else {
-                this.state.animations.splice(this.state.index, 1, this.state.animation);
+                this.props.animations.splice(this.state.index, 1, this.state.animation);
             }
             this.setState({
                 visible: false,
-                animations: this.state.animations,
                 animation: {},
+            }, () => {
+                this.props.onChangeAnimations(this.props.animations);
             });
         },
         onCancel: () => {
@@ -66,15 +68,11 @@ class Animations extends Component {
             });
         },
         onDelete: (index) => {
-            this.state.animations.splice(index, 1);
-            this.setState({
-                animations: this.state.animations,
-            });
+            this.props.animations.splice(index, 1);
+            this.props.onChangeAnimations(this.props.animations);
         },
         onClear: () => {
-            this.setState({
-                animations: [],
-            });
+            this.props.onChangeAnimations([]);
         },
         onChange: (props, changedValues, allValues) => {
             const fields = changedValues[Object.keys(changedValues)[0]];
@@ -86,7 +84,7 @@ class Animations extends Component {
                 });
             }
             this.setState({
-                animation: allValues[Object.keys(allValues)[0]],
+                animation: { title: this.state.animation.title, ...allValues[Object.keys(allValues)[0]] },
             });
         },
         onValid: (value) => {
@@ -96,7 +94,7 @@ class Animations extends Component {
                     help: 'Please input title.',
                 };
             }
-            const exist = this.state.animations.some(animation => animation.title === value);
+            const exist = this.props.animations.some(animation => animation.title === value);
             if (!exist) {
                 return {
                     validateStatus: 'success',
@@ -110,13 +108,20 @@ class Animations extends Component {
         },
     }
 
+    static propTypes = {
+        animations: PropTypes.array,
+    }
+
+    static defaultProps = {
+        animations: [],
+    }
+
     constructor(props) {
         super(props);
         this.canvasRef = React.createRef();
     }
 
     state = {
-        animations: [],
         animation: {},
         visible: false,
         validateTitle: {
@@ -127,7 +132,8 @@ class Animations extends Component {
     }
 
     render() {
-        const { animations, visible, animation, validateTitle } = this.state;
+        const { animations } = this.props;
+        const { visible, animation, validateTitle } = this.state;
         const { onOk, onCancel, onAdd, onEdit, onDelete, onClear, onChange, onValid } = this.handlers;
         return (
             <Form>

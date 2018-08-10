@@ -235,10 +235,15 @@ class Editor extends Component {
                         }
                     };
                     reader.onload = (e) => {
-                        const json = JSON.parse(e.target.result);
-                        if (json.objects) {
+                        const { objects, animations, styles, dataSources } = JSON.parse(e.target.result);
+                        this.setState({
+                            animations,
+                            styles,
+                            dataSources,
+                        });
+                        if (objects) {
                             this.canvasRef.current.handlers.clear(true);
-                            const data = json.objects.filter((obj) => {
+                            const data = objects.filter((obj) => {
                                 if (!obj.id) {
                                     return false;
                                 }
@@ -261,6 +266,21 @@ class Editor extends Component {
                 progress,
             });
         },
+        onChangeAnimations: (animations) => {
+            this.setState({
+                animations,
+            });
+        },
+        onChangeStyles: (styles) => {
+            this.setState({
+                styles,
+            });
+        },
+        onChangeDataSources: (dataSources) => {
+            this.setState({
+                dataSources,
+            });
+        },
     }
 
     constructor(props) {
@@ -278,6 +298,9 @@ class Editor extends Component {
         preview: false,
         loading: false,
         progress: 0,
+        animations: [],
+        styles: [],
+        dataSources: [],
     }
 
     componentDidMount() {
@@ -300,10 +323,22 @@ class Editor extends Component {
         });
     }
 
+    getDefinitions = () => ({
+        animations: this.getAnimations(),
+        styles: this.getStyles(),
+        dataSources: this.getDataSources(),
+    })
+
+    getAnimations = () => this.animationsRef.state.animations;
+
+    getStyles = () => this.stylesRef.state.styles;
+
+    getDataSources = () => this.dataSourcesRef.state.dataSources;
+
     render() {
         const { preview, selectedItem, canvasRect, zoomRatio, loading, progress, animations, styles, dataSources } = this.state;
         const { onAdd, onRemove, onSelect, onModified, onChange, onZoom, onTooltip, onAction } = this.canvasHandlers;
-        const { onChangePreview, onLoading, onProgress } = this.handlers;
+        const { onChangePreview, onLoading, onProgress, onChangeAnimations, onChangeStyles, onChangeDataSources } = this.handlers;
         return (
             <div className="rde-main">
                 <Spin size="large" spinning={loading} tip={`${progress}%`}>
@@ -348,6 +383,9 @@ class Editor extends Component {
                                     onChange={onChange}
                                     selectedItem={selectedItem}
                                     canvasRef={this.canvasRef}
+                                    onChangeAnimations={onChangeAnimations}
+                                    onChangeStyles={onChangeStyles}
+                                    onChangeDataSources={onChangeDataSources}
                                     animations={animations}
                                     styles={styles}
                                     dataSources={dataSources}
