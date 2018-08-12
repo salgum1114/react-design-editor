@@ -14,6 +14,7 @@ import Preview from './Preview';
 
 import '../styles/index.less';
 import Definitions from './Definitions';
+import SandBox from './sandbox/SandBox';
 
 const propertiesToInclude = [
     'id',
@@ -174,6 +175,10 @@ class Editor extends Component {
         },
         onTooltip: (ref, target) => {
             const count = (Math.random() * 10) + 1;
+            const { animations, styles } = this.state;
+            const code = 'if (value > 7) { return 3; } else { return animations[0]; }';
+            const test = SandBox.compile(code);
+            console.log(test(count, animations, styles));
             return (
                 <div>
                     <div>
