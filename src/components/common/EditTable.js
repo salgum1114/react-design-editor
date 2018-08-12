@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table, Modal, Input, Form } from 'antd';
 
-import Icon from './Icon';
-import { FlexBox } from './flex';
+import Icon from '../icon/Icon';
+import { FlexBox } from '../flex';
 
 class EditTable extends Component {
     static propTypes = {

@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'antd';
 
-import Icon from './Icon';
+import Icon from './icon/Icon';
 import { FlexBox, FlexItem } from './flex';
-import CanvasList from './CanvasList';
+import CanvasList from './canvas/CanvasList';
 
 class HeaderToolbar extends Component {
     static propTypes = {

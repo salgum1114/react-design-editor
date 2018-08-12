@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'antd';
 
-import Icon from './Icon';
-import { FlexBox, FlexItem } from './flex';
+import Icon from '../icon/Icon';
+import { FlexBox, FlexItem } from '../flex';
 
 class CanvasList extends Component {
     static propTypes = {

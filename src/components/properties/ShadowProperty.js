@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Slider, Switch } from 'antd';
-import ColorPicker from '../ColorPicker';
+import ColorPicker from '../common/ColorPicker';
 
 export default {
     render(canvasRef, form, data) {

@@ -4,7 +4,7 @@ import { Button } from 'antd';
 import { ResizeSensor } from 'css-element-queries';
 import classnames from 'classnames';
 
-import Icon from './Icon';
+import Icon from './icon/Icon';
 import Canvas from './Canvas';
 
 class Preview extends Component {

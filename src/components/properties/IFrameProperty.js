@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form } from 'antd';
-import UrlModal from '../UrlModal';
+import UrlModal from '../common/UrlModal';
 
 export default {
     render(canvasRef, form, data) {

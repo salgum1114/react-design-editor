@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form } from 'antd';
-import EditTable from '../EditTable';
+import EditTable from '../common/EditTable';
 
 
 export default {

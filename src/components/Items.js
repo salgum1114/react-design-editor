@@ -4,7 +4,7 @@ import { Collapse, notification } from 'antd';
 import uuid from 'uuid/v4';
 
 import { FlexBox } from './flex';
-import Icon from './Icon';
+import Icon from './icon/Icon';
 
 notification.config({
     top: 80,

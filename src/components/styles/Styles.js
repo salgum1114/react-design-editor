@@ -5,7 +5,7 @@ import { Form, Button } from 'antd';
 import { FlexBox } from '../flex';
 import StyleList from './StyleList';
 import StyleModal from './StyleModal';
-import Icon from '../Icon';
+import Icon from '../icon/Icon';
 
 class Styles extends Component {
     handlers = {

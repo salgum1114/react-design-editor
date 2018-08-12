@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { List, Button } from 'antd';
-import Icon from '../Icon';
+import Icon from '../icon/Icon';
 
 class AnimationList extends Component {
     static propTypes = {

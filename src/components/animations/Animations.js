@@ -5,7 +5,7 @@ import { Form, Button } from 'antd';
 import { FlexBox } from '../flex';
 import AnimationList from './AnimationList';
 import AnimationModal from './AnimationModal';
-import Icon from '../Icon';
+import Icon from '../icon/Icon';
 
 class Animations extends Component {
     handlers = {

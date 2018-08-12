@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'antd';
 
 import { FlexBox } from './flex';
-import Icon from './Icon';
+import Icon from './icon/Icon';
 
 class Title extends Component {
     handlers = {

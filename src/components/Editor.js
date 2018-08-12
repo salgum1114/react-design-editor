@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
-import { Badge, Button, Spin, Tabs } from 'antd';
+import { Badge, Button, Spin } from 'antd';
 import debounce from 'lodash/debounce';
 import '../libs/fontawesome-5.2.0/css/all.css';
 
-import Wireframe from './Wireframe';
+import Wireframe from './wireframe/Wireframe';
 import Items from './Items';
 import Canvas from './Canvas';
-import Properties from './Properties';
 import FooterToolbar from './FooterToolbar';
 import HeaderToolbar from './HeaderToolbar';
 import Title from './Title';
