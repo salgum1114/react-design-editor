@@ -12,6 +12,7 @@ import IFrameProperty from './IFrameProperty';
 import AnimationProperty from './AnimationProperty';
 import ShadowProperty from './ShadowProperty';
 import UserProperty from './UserProperty';
+import TriggerProperty from './TriggerProperty';
 
 export default {
     map: {
@@ -62,6 +63,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        trigger: {
+            title: 'Trigger',
+            component: TriggerProperty,
         },
         userProperty: {
             title: 'User Property',
@@ -246,6 +251,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        trigger: {
+            title: 'Trigger',
+            component: TriggerProperty,
         },
         userProperty: {
             title: 'User Property',

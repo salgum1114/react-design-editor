@@ -46,7 +46,7 @@ const SandBox = {
         if (!includeWords.some(word => code.includes(word))) {
             throw new NoExistWordException();
         }
-        return new Function('value', 'animations', 'styles', '"use strict"; ' + newCode);
+        return new Function('value', 'animations', 'styles', 'userProperty', '"use strict"; ' + newCode);
     },
     compile: (code) => {
         try {

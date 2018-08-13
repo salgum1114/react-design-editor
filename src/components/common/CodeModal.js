@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Modal, Button, Input } from 'antd';
+import { Modal, Button, Form } from 'antd';
+import ReactAce from 'react-ace';
+import 'brace/mode/javascript';
+
 import Icon from '../icon/Icon';
 
-class UrlModal extends Component {
+class CodeModal extends Component {
     handlers = {
         onOk: () => {
             const { onChange } = this.props;
-            const { tempUrl } = this.state;
-            onChange(tempUrl);
+            const { tempCode } = this.state;
+            onChange(tempCode);
             this.setState({
                 visible: false,
-                url: tempUrl,
+                code: tempCode,
             });
         },
         onCancel: () => {
@@ -42,14 +45,14 @@ class UrlModal extends Component {
     }
 
     state = {
-        url: this.props.value || '',
-        tempUrl: '',
+        code: this.props.value,
+        tempCode: this.props.value,
         visible: false,
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            url: nextProps.value || '',
+            code: nextProps.value,
         });
     }
 
@@ -57,29 +60,28 @@ class UrlModal extends Component {
         const { onOk, onCancel, onClick } = this.handlers;
         const { form } = this.props;
         const { getFieldDecorator } = form;
-        const { url, visible } = this.state;
+        const { code, visible, tempCode } = this.state;
         const label = (
             <React.Fragment>
-                <span style={{ marginRight: 8 }}>URL</span>
+                <span style={{ marginRight: 8 }}>Code</span>
                 <Button onClick={onClick} shape="circle" className="rde-action-btn">
                     <Icon name="edit" />
                 </Button>
             </React.Fragment>
         );
+        const codeLabel = (
+            <span>Code (value, styles, animations, userProperty)</span>
+        );
         return (
             <React.Fragment>
                 <Form.Item label={label} colon={false}>
                     {
-                        getFieldDecorator('url', {
-                            rules: [{
-                                required: true,
-                                message: 'Please input url',
-                            }],
-                            initialValue: url || '',
+                        getFieldDecorator('trigger.code', {
+                            initialValue: code || this.props.value,
                         })(
-                            <span style={{ wordBreak: 'break-all' }}>
-                                {url}
-                            </span>,
+                            <pre style={{ wordBreak: 'break-all', lineHeight: '1.2em' }}>
+                                {code}
+                            </pre>,
                         )
                     }
                 </Form.Item>
@@ -88,8 +90,20 @@ class UrlModal extends Component {
                     onOk={onOk}
                     visible={visible}
                 >
-                    <Form.Item label="URL" colon={false}>
-                        <Input defaultValue={url} onChange={(e) => { this.setState({ tempUrl: e.target.value }); }} />
+                    <Form.Item label={codeLabel} colon={false}>
+                        <ReactAce
+                            ref={(c) => { this.jsRef = c; }}
+                            mode="javascript"
+                            theme="chrome"
+                            width="100%"
+                            height="200px"
+                            defaultValue={code}
+                            value={tempCode}
+                            editorProps={{
+                                $blockScrolling: true,
+                            }}
+                            onChange={(value) => { this.setState({ tempCode: value }); }}
+                        />
                     </Form.Item>
                 </Modal>
             </React.Fragment>
@@ -97,4 +111,4 @@ class UrlModal extends Component {
     }
 }
 
-export default UrlModal;
+export default CodeModal;

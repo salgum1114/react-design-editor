@@ -18,7 +18,9 @@ notification.config({
 });
 
 const defaultOptions = {
-    action: {},
+    action: {
+        enabled: false,
+    },
     tooltip: {
         enabled: true,
     },
@@ -26,6 +28,10 @@ const defaultOptions = {
         type: 'none',
     },
     userProperty: {},
+    trigger: {
+        enabled: false,
+        code: 'return null',
+    },
 };
 
 const workareaOption = {
@@ -2310,6 +2316,12 @@ class Canvas extends Component {
         },
         scalingGuidelines: (target) => {
             // TODO...
+        },
+    }
+
+    triggerHandlers = {
+        onTrigger: () => {
+
         },
     }
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { List, Button } from 'antd';
+import { List, Button, Avatar } from 'antd';
 import Icon from '../icon/Icon';
 
 class StyleList extends Component {
@@ -28,6 +28,7 @@ class StyleList extends Component {
                     return (
                         <List.Item actions={actions}>
                             <List.Item.Meta
+                                avatar={<Avatar>{index}</Avatar>}
                                 title={style.title}
                                 description={description}
                             />

@@ -22,6 +22,11 @@ class Animations extends Component {
             if (!this.state.animation.type) {
                 this.state.animation.type = 'none';
             }
+            if (Object.keys(this.state.animation).length === 2) {
+                this.modalRef.validateFields((err, values) => {
+                    Object.assign(this.state.animation, values.animation);
+                });
+            }
             if (this.state.current === 'add') {
                 this.props.animations.push(this.state.animation);
             } else {
@@ -145,7 +150,7 @@ class Animations extends Component {
                         <Button className="rde-action-btn" shape="circle" onClick={onClear}>
                             <Icon name="times" />
                         </Button>
-                        <AnimationModal validateTitle={validateTitle} visible={visible} onOk={onOk} animation={animation} onCancel={onCancel} onChange={onChange} onValid={onValid} />
+                        <AnimationModal ref={(c) => { this.modalRef = c; }} validateTitle={validateTitle} visible={visible} onOk={onOk} animation={animation} onCancel={onCancel} onChange={onChange} onValid={onValid} />
                     </FlexBox>
                     <AnimationList animations={animations} onEdit={onEdit} onDelete={onDelete} />
                 </FlexBox>

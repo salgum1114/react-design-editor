@@ -3,7 +3,9 @@ export default (mergeObjects) => {
     const defaultOptions = {
         fill: 'rgba(0, 0, 0, 1)',
         stroke: 'rgba(255, 255, 255, 0)',
-        action: {},
+        action: {
+            enabled: false,
+        },
         tooltip: {
             enabled: true,
         },
@@ -11,6 +13,9 @@ export default (mergeObjects) => {
             type: 'none',
         },
         userProperty: {},
+        trigger: {
+            enabled: false,
+        },
     };
     const fabricObjects = {
         group: {

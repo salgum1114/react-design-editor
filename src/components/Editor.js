@@ -36,6 +36,7 @@ const propertiesToInclude = [
     'code',
     'icon',
     'userProperty',
+    'trigger',
 ];
 
 class Editor extends Component {
@@ -154,6 +155,10 @@ class Editor extends Component {
                 this.canvasRef.current.handlers.set(changedKey, Object.keys(changedValue)[0]);
                 return;
             }
+            if (changedKey === 'trigger') {
+                this.canvasRef.current.handlers.set(changedKey, allValues.trigger);
+                return;
+            }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
         onChangeWokarea: (changedKey, changedValue, allValues) => {
@@ -174,11 +179,12 @@ class Editor extends Component {
             this.canvasRef.current.canvas.requestRenderAll();
         },
         onTooltip: (ref, target) => {
-            const count = (Math.random() * 10) + 1;
+            const value = (Math.random() * 10) + 1;
             const { animations, styles } = this.state;
-            const code = 'if (value > 7) { return 3; } else { return animations[0]; }';
-            const test = SandBox.compile(code);
-            console.log(test(count, animations, styles));
+            const { code } = target.trigger;
+            const compile = SandBox.compile(code);
+            const result = compile(value, animations, styles, target.userProperty);
+            console.log(result);
             return (
                 <div>
                     <div>
@@ -186,7 +192,7 @@ class Editor extends Component {
                             <Button>
                                 {target.id}
                             </Button>
-                            <Badge count={count} />
+                            <Badge count={value} />
                         </div>
                     </div>
                 </div>
@@ -194,14 +200,11 @@ class Editor extends Component {
         },
         onAction: (canvas, target) => {
             const { action } = target;
-            if (action.type === 'dashboard') {
-            } else if (action.type === 'url') {
-                if (action.state === 'current') {
-                    document.location.href = action.url;
-                    return;
-                }
-                window.open(action.url);
+            if (action.state === 'current') {
+                document.location.href = action.url;
+                return;
             }
+            window.open(action.url);
         },
     }
 

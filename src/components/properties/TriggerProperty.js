@@ -1,22 +1,31 @@
 import React from 'react';
-import { Form } from 'antd';
-import UrlModal from '../common/UrlModal';
+import { Form, Switch } from 'antd';
+import CodeModal from '../common/CodeModal';
 
 export default {
     render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
-                <Form.Item>
+                <Form.Item label="Enabled" colon={false}>
                     {
-                        getFieldDecorator('code', {
+                        getFieldDecorator('trigger.enabled', {
                             rules: [{
-                                required: true,
-                                message: 'Please select image',
+                                type: 'boolean',
                             }],
-                            initialValue: data.code,
+                            valuePropName: 'checked',
+                            initialValue: data.trigger.enabled,
                         })(
-                            <UrlModal form={form} />,
+                            <Switch />,
+                        )
+                    }
+                </Form.Item>
+                <Form.Item style={{ display: data.trigger.enabled ? 'block' : 'none' }}>
+                    {
+                        getFieldDecorator('trigger.code', {
+                            initialValue: data.trigger.code || 'return null;',
+                        })(
+                            <CodeModal form={form} />,
                         )
                     }
                 </Form.Item>
