@@ -1,3 +1,6 @@
+import UnsafetyWordException from '../exception/UnsafetyWordException';
+import NoExistWordException from '../exception/NoExistWordException';
+
 const excludeWords = [
     'window',
     'Window',
@@ -15,27 +18,12 @@ const includeWords = [
     'return',
 ];
 
-class UnsafetyWordException {
-    constructor() {
-        this.message = 'Includes unsafety word.';
-        this.name = 'UnsafetyWordException';
-    }
-
-    toString() {
-        return `${this.name}: ${this.message}`;
-    }
-}
-
-class NoExistWordException {
-    constructor() {
-        this.message = 'Does not exist word.';
-        this.name = 'NoExistWordException';
-    }
-
-    toString() {
-        return `${this.name}: ${this.message}`;
-    }
-}
+const parameters = [
+    'value',
+    'animations',
+    'styles',
+    'userProperty',
+];
 
 const SandBox = {
     verify: (code) => {
@@ -46,7 +34,7 @@ const SandBox = {
         if (!includeWords.some(word => code.includes(word))) {
             throw new NoExistWordException();
         }
-        return new Function('value', 'animations', 'styles', 'userProperty', '"use strict"; ' + newCode);
+        return new Function(parameters, '"use strict"; ' + newCode);
     },
     compile: (code) => {
         try {
