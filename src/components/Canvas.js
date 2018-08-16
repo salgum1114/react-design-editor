@@ -1596,8 +1596,14 @@ class Canvas extends Component {
                     let scaleY = canvas.getHeight() / img.height;
                     if (img.height > img.width) {
                         scaleX = scaleY;
+                        if (canvas.getWidth() < img.width * scaleX) {
+                            scaleX = scaleX * (canvas.getWidth() / (img.width * scaleX));
+                        }
                     } else {
                         scaleY = scaleX;
+                        if (canvas.getHeight() < img.height * scaleX) {
+                            scaleX = scaleX * (canvas.getHeight() / (img.height * scaleX));
+                        }
                     }
                     img.set({
                         originX: 'left',
