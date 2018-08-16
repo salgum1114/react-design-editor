@@ -2548,6 +2548,13 @@ class Canvas extends Component {
             if (this.workarea.layout === 'responsive') {
                 if (this.workarea.height > this.workarea.width) {
                     scaleX = scaleY;
+                    if (nextWidth < this.workarea.width * scaleX) {
+                        scaleX = scaleX * (nextWidth / (this.workarea.width * scaleX));
+                    }
+                } else {
+                    if (nextHeight < this.workarea.height * scaleX) {
+                        scaleX = scaleX * (nextHeight / (this.workarea.height * scaleX));
+                    }
                 }
                 const deltaPoint = new fabric.Point(diffWidth, diffHeight);
                 this.canvas.relativePan(deltaPoint);
