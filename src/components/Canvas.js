@@ -72,14 +72,6 @@ class Canvas extends Component {
             PropTypes.number,
             PropTypes.string,
         ]),
-        offsetWidth: PropTypes.oneOfType([
-            PropTypes.number,
-            PropTypes.string,
-        ]),
-        offsetHeight: PropTypes.oneOfType([
-            PropTypes.number,
-            PropTypes.string,
-        ]),
         backgroundColor: PropTypes.string,
         tooltip: PropTypes.any,
         zoom: PropTypes.bool,
@@ -97,8 +89,6 @@ class Canvas extends Component {
         editable: true,
         width: 300,
         height: 150,
-        offsetWidth: 0,
-        offsetHeight: 0,
         backgroundColor: '#f3f3f3',
         tooltip: null,
         zoom: true,
@@ -2038,32 +2028,33 @@ class Canvas extends Component {
     tooltipHandlers = {
         show: debounce((target) => {
             if (target.tooltip && target.tooltip.enabled) {
-                while (this.tooltipRef.current.hasChildNodes()) {
-                    this.tooltipRef.current.removeChild(this.tooltipRef.current.firstChild);
+                while (this.tooltipRef.hasChildNodes()) {
+                    this.tooltipRef.removeChild(this.tooltipRef.firstChild);
                 }
                 const tooltip = document.createElement('div');
                 tooltip.className = 'rde-canvas-tooltip-container';
                 let element = target.name;
-                const { onTooltip, offsetWidth, offsetHeight } = this.props;
+                const { onTooltip } = this.props;
                 if (onTooltip) {
                     element = onTooltip(this.tooltipRef, target);
                 }
                 tooltip.innerHTML = element;
-                this.tooltipRef.current.appendChild(tooltip);
+                this.tooltipRef.appendChild(tooltip);
                 ReactDOM.render(element, tooltip);
-                this.tooltipRef.current.classList.remove('tooltip-hidden');
+                this.tooltipRef.classList.remove('tooltip-hidden');
                 const zoom = this.canvas.getZoom();
-                const { clientHeight } = this.tooltipRef.current;
+                const { clientHeight } = this.tooltipRef;
                 const { width, height, scaleX, scaleY } = target;
                 const { left, top } = target.getBoundingRect();
+                const { _offset: offset } = this.canvas.calcOffset();
                 const objWidthDiff = (width * scaleX) * zoom;
-                const objHeightDiff = (((height * scaleY) * zoom) / 2) - (((clientHeight / 2) + offsetHeight) * zoom);
-                this.tooltipRef.current.style.left = `${left + objWidthDiff + offsetWidth}px`;
-                    this.tooltipRef.current.style.top = `${top + objHeightDiff + offsetHeight}px`;
+                const objHeightDiff = (((height * scaleY) * zoom) / 2) - (clientHeight / 2);
+                this.tooltipRef.style.left = `${offset.left + left + objWidthDiff}px`;
+                this.tooltipRef.style.top = `${offset.top + top + objHeightDiff}px`;
             }
         }, 100),
         hide: debounce((target) => {
-            this.tooltipRef.current.classList.add('tooltip-hidden');
+            this.tooltipRef.classList.add('tooltip-hidden');
         }, 100),
     }
 
@@ -2695,7 +2686,6 @@ class Canvas extends Component {
         super(props);
         this.fabricObjects = CanvasObjects(props.fabricObjects);
         this.container = React.createRef();
-        this.tooltipRef = React.createRef();
     }
 
     state = {
@@ -2740,6 +2730,10 @@ class Canvas extends Component {
             });
             this.attachEventListener();
         } else {
+            this.tooltipRef = document.createElement('div');
+            this.tooltipRef.id = `${id}_tooltip`;
+            this.tooltipRef.className = 'rde-canvas-tooltip tooltip-hidden';
+            document.body.appendChild(this.tooltipRef);
             this.canvas.on({
                 'mouse:move': mousemove,
             });
@@ -2756,6 +2750,7 @@ class Canvas extends Component {
 
     componentWillUnmount() {
         this.detachEventListener();
+        document.body.removeChild(this.tooltipRef);
     }
 
     attachEventListener = () => {
@@ -2771,15 +2766,7 @@ class Canvas extends Component {
     }
 
     render() {
-        const { editable } = this.props;
         const { id } = this.state;
-        const tooltipRender = editable ? null : (
-            <div
-                ref={this.tooltipRef}
-                id={`${id}_tooltip`}
-                className="rde-canvas-tooltip tooltip-hidden"
-            />
-        );
         return (
             <div
                 ref={this.container}
@@ -2787,7 +2774,6 @@ class Canvas extends Component {
                 className="rde-canvas"
             >
                 <canvas id={`canvas_${id}`} />
-                {tooltipRender}
             </div>
         );
     }

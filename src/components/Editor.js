@@ -181,10 +181,10 @@ class Editor extends Component {
         onTooltip: (ref, target) => {
             const value = (Math.random() * 10) + 1;
             const { animations, styles } = this.state;
-            const { code } = target.trigger;
-            const compile = SandBox.compile(code);
-            const result = compile(value, animations, styles, target.userProperty);
-            console.log(result);
+            // const { code } = target.trigger;
+            // const compile = SandBox.compile(code);
+            // const result = compile(value, animations, styles, target.userProperty);
+            // console.log(result);
             return (
                 <div>
                     <div>
@@ -192,8 +192,8 @@ class Editor extends Component {
                             <Button>
                                 {target.id}
                             </Button>
-                            <Badge count={value} />
                         </div>
+                        <Badge count={value} />
                     </div>
                 </div>
             );
