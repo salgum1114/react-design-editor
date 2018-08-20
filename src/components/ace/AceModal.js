@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button, notification } from 'antd';
-import Icon from '../Icon';
+import Icon from '../icon/Icon';
 import AceEditor from './AceEditor';
 
 notification.config({
@@ -91,9 +91,9 @@ class AceModal extends Component {
                         getFieldDecorator('html', {
                             initialValue: html || '',
                         })(
-                            <span style={{ wordBreak: 'break-all' }}>
+                            <pre style={{ wordBreak: 'break-all', lineHeight: '1.2em' }}>
                                 {html}
-                            </span>,
+                            </pre>,
                         )
                     }
                 </Form.Item>
@@ -102,9 +102,9 @@ class AceModal extends Component {
                         getFieldDecorator('css', {
                             initialValue: css || '',
                         })(
-                            <span style={{ wordBreak: 'break-all' }}>
+                            <pre style={{ wordBreak: 'break-all', lineHeight: '1.2em' }}>
                                 {css}
-                            </span>,
+                            </pre>,
                         )
                     }
                 </Form.Item>
@@ -113,9 +113,9 @@ class AceModal extends Component {
                         getFieldDecorator('js', {
                             initialValue: js || '',
                         })(
-                            <span style={{ wordBreak: 'break-all' }}>
+                            <pre style={{ wordBreak: 'break-all', lineHeight: '1.2em' }}>
                                 {js}
-                            </span>,
+                            </pre>,
                         )
                     }
                 </Form.Item>

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
 import { Button, Modal, Form, Col, Row, Input } from 'antd';
 
-import Icon from '../Icon';
+import Icon from './Icon';
 import icons from '../../libs/fontawesome-5.2.0/metadata/icons.json';
 
 class IconChooser extends Component {

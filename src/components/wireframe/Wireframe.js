@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlexBox } from './flex';
+import { FlexBox } from '../flex';
 
 class Wireframe extends Component {
     constructor(props) {

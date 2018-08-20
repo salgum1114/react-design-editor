@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Slider, Col, Select, Tag } from 'antd';
 import sortBy from 'lodash/sortBy';
 
-import Icon from '../Icon';
+import Icon from '../icon/Icon';
 import Fonts from '../font/fonts';
 
 const fonts = Fonts.getFonts();

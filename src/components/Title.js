@@ -3,34 +3,19 @@ import PropTypes from 'prop-types';
 import { Button } from 'antd';
 
 import { FlexBox } from './flex';
-import Icon from './Icon';
+import Icon from './icon/Icon';
 
 class Title extends Component {
-    static propTypes = {
-        propertiesRef: PropTypes.any,
-        canvasRef: PropTypes.any,
-        onLoading: PropTypes.func,
-    }
-
-    state = {
-        data: {},
-    }
-
     handlers = {
-        onSave: () => {
-            const { propertiesRef } = this.props;
-            propertiesRef.validateFields((error, values) => {
-                console.log(error, values);
-            });
-        },
         onExport: () => {
             const { canvasRef } = this.props;
+            const data = Object.assign({}, canvasRef.current.handlers.exportJSON(), this.props.definitions);
             this.setState({
-                data: canvasRef.current.handlers.exportJSON(),
+                data,
             });
         },
         onImport: (files) => {
-            const { canvasRef, onLoading} = this.props;
+            const { onLoading } = this.props;
             if (files && files.length) {
                 onLoading(files);
             }
@@ -42,6 +27,16 @@ class Title extends Component {
         goGithub: () => {
             window.open('https://github.com/salgum1114/react-design-editor');
         },
+    }
+
+    static propTypes = {
+        definitions: PropTypes.object,
+        canvasRef: PropTypes.any,
+        onLoading: PropTypes.func,
+    }
+
+    state = {
+        data: {},
     }
 
     render() {
@@ -89,18 +84,6 @@ class Title extends Component {
                     >
                         <input ref={(c) => { this.fileRef = c; }} accept=".json" type="file" hidden onChange={(e) => { this.handlers.onImport(e.target.files); }} />
                         <Icon name="file-import" size={1.5} />
-                    </Button>
-                    <Button
-                        className="rde-action-btn"
-                        style={{
-                            marginRight: 8,
-                            color: 'white',
-                        }}
-                        shape="circle"
-                        size="large"
-                        onClick={this.handlers.onSave}
-                    >
-                        <Icon name="save" size={1.5} />
                     </Button>
                     <Button
                         className="rde-action-btn"

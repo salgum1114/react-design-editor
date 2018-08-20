@@ -4,16 +4,17 @@ import { Badge, Button, Spin } from 'antd';
 import debounce from 'lodash/debounce';
 import '../libs/fontawesome-5.2.0/css/all.css';
 
-import Wireframe from './Wireframe';
+import Wireframe from './wireframe/Wireframe';
 import Items from './Items';
 import Canvas from './Canvas';
-import Properties from './Properties';
 import FooterToolbar from './FooterToolbar';
 import HeaderToolbar from './HeaderToolbar';
 import Title from './Title';
 import Preview from './Preview';
 
 import '../styles/index.less';
+import Definitions from './Definitions';
+import SandBox from './sandbox/SandBox';
 
 const propertiesToInclude = [
     'id',
@@ -35,6 +36,7 @@ const propertiesToInclude = [
     'code',
     'icon',
     'userProperty',
+    'trigger',
 ];
 
 class Editor extends Component {
@@ -153,6 +155,10 @@ class Editor extends Component {
                 this.canvasRef.current.handlers.set(changedKey, Object.keys(changedValue)[0]);
                 return;
             }
+            if (changedKey === 'trigger') {
+                this.canvasRef.current.handlers.set(changedKey, allValues.trigger);
+                return;
+            }
             this.canvasRef.current.handlers.set(changedKey, changedValue);
         },
         onChangeWokarea: (changedKey, changedValue, allValues) => {
@@ -173,7 +179,12 @@ class Editor extends Component {
             this.canvasRef.current.canvas.requestRenderAll();
         },
         onTooltip: (ref, target) => {
-            const count = (Math.random() * 10) + 1;
+            const value = (Math.random() * 10) + 1;
+            const { animations, styles } = this.state;
+            // const { code } = target.trigger;
+            // const compile = SandBox.compile(code);
+            // const result = compile(value, animations, styles, target.userProperty);
+            // console.log(result);
             return (
                 <div>
                     <div>
@@ -181,22 +192,19 @@ class Editor extends Component {
                             <Button>
                                 {target.id}
                             </Button>
-                            <Badge count={count} />
                         </div>
+                        <Badge count={value} />
                     </div>
                 </div>
             );
         },
         onAction: (canvas, target) => {
             const { action } = target;
-            if (action.type === 'dashboard') {
-            } else if (action.type === 'url') {
-                if (action.state === 'current') {
-                    document.location.href = action.url;
-                    return;
-                }
-                window.open(action.url);
+            if (action.state === 'current') {
+                document.location.href = action.url;
+                return;
             }
+            window.open(action.url);
         },
     }
 
@@ -234,10 +242,15 @@ class Editor extends Component {
                         }
                     };
                     reader.onload = (e) => {
-                        const json = JSON.parse(e.target.result);
-                        if (json.objects) {
+                        const { objects, animations, styles, dataSources } = JSON.parse(e.target.result);
+                        this.setState({
+                            animations,
+                            styles,
+                            dataSources,
+                        });
+                        if (objects) {
                             this.canvasRef.current.handlers.clear(true);
-                            const data = json.objects.filter((obj) => {
+                            const data = objects.filter((obj) => {
                                 if (!obj.id) {
                                     return false;
                                 }
@@ -260,6 +273,21 @@ class Editor extends Component {
                 progress,
             });
         },
+        onChangeAnimations: (animations) => {
+            this.setState({
+                animations,
+            });
+        },
+        onChangeStyles: (styles) => {
+            this.setState({
+                styles,
+            });
+        },
+        onChangeDataSources: (dataSources) => {
+            this.setState({
+                dataSources,
+            });
+        },
     }
 
     constructor(props) {
@@ -277,10 +305,13 @@ class Editor extends Component {
         preview: false,
         loading: false,
         progress: 0,
+        animations: [],
+        styles: [],
+        dataSources: [],
     }
 
     componentDidMount() {
-        this.resizeSensor = new ResizeSensor(this.container, (e) => {
+        this.resizeSensor = new ResizeSensor(this.container, () => {
             const { canvasRect: currentCanvasRect } = this.state;
             const canvasRect = Object.assign({}, currentCanvasRect, {
                 width: this.container.clientWidth,
@@ -299,15 +330,27 @@ class Editor extends Component {
         });
     }
 
+    getDefinitions = () => ({
+        animations: this.getAnimations(),
+        styles: this.getStyles(),
+        dataSources: this.getDataSources(),
+    })
+
+    getAnimations = () => this.state.animations;
+
+    getStyles = () => this.state.styles;
+
+    getDataSources = () => this.state.dataSources;
+
     render() {
-        const { preview, selectedItem, canvasRect, zoomRatio, loading, progress } = this.state;
+        const { preview, selectedItem, canvasRect, zoomRatio, loading, progress, animations, styles, dataSources } = this.state;
         const { onAdd, onRemove, onSelect, onModified, onChange, onZoom, onTooltip, onAction } = this.canvasHandlers;
-        const { onChangePreview, onLoading, onProgress } = this.handlers;
+        const { onChangePreview, onLoading, onChangeAnimations, onChangeStyles, onChangeDataSources } = this.handlers;
         return (
             <div className="rde-main">
                 <Spin size="large" spinning={loading} tip={`${progress}%`}>
                     <div className="rde-title">
-                        <Title propertiesRef={this.propertiesRef} canvasRef={this.canvasRef} onLoading={onLoading} onProgress={onProgress} />
+                        <Title propertiesRef={this.propertiesRef} canvasRef={this.canvasRef} onLoading={onLoading} definitions={this.getDefinitions()} />
                     </div>
                     <div className="rde-content">
                         <div className="rde-editor">
@@ -341,8 +384,19 @@ class Editor extends Component {
                             <footer style={{ width: canvasRect.width }} className="rde-canvas-footer">
                                 <FooterToolbar canvasRef={this.canvasRef} preview={preview} onChangePreview={onChangePreview} zoomRatio={zoomRatio} />
                             </footer>
-                            <aside className="rde-properties">
-                                <Properties ref={(c) => { this.propertiesRef = c; }} onChange={onChange} selectedItem={selectedItem} canvasRef={this.canvasRef} />
+                            <aside className="rde-definitions">
+                                <Definitions
+                                    ref={(c) => { this.definitionsRef = c; }}
+                                    onChange={onChange}
+                                    selectedItem={selectedItem}
+                                    canvasRef={this.canvasRef}
+                                    onChangeAnimations={onChangeAnimations}
+                                    onChangeStyles={onChangeStyles}
+                                    onChangeDataSources={onChangeDataSources}
+                                    animations={animations}
+                                    styles={styles}
+                                    dataSources={dataSources}
+                                />
                             </aside>
                         </div>
                     </div>

@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button, Input } from 'antd';
-import Icon from './Icon';
+import Icon from '../icon/Icon';
 
 class UrlModal extends Component {
-    static propTypes = {
-        value: PropTypes.any,
-        onChange: PropTypes.func,
-        form: PropTypes.any,
-    }
-
     handlers = {
         onOk: () => {
             const { onChange } = this.props;
@@ -41,6 +35,12 @@ class UrlModal extends Component {
         },
     }
 
+    static propTypes = {
+        value: PropTypes.any,
+        onChange: PropTypes.func,
+        form: PropTypes.any,
+    }
+
     state = {
         url: this.props.value || '',
         tempUrl: '',
@@ -61,7 +61,7 @@ class UrlModal extends Component {
         const label = (
             <React.Fragment>
                 <span style={{ marginRight: 8 }}>URL</span>
-                <Button onClick={onClick} shape="circle">
+                <Button onClick={onClick} shape="circle" className="rde-action-btn">
                     <Icon name="edit" />
                 </Button>
             </React.Fragment>

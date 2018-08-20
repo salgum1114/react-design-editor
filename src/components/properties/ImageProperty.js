@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Radio } from 'antd';
-import UrlModal from '../UrlModal';
-import FileUpload from '../FileUpload';
+import UrlModal from '../common/UrlModal';
+import FileUpload from '../common/FileUpload';
 
 export default {
     render(canvasRef, form, data) {
