@@ -8,7 +8,7 @@
 - The project is constantly being developed to support a variety of functions, and its goal is to be able to draw workflow (BPMN) in the future.
 
 # Demos
-[React Design Editor](https://salgum1114.github.io/)
+[React Design Editor](https://salgum1114.github.io/react-design-editor/)
 
 # Dependencies
 - React.js
