@@ -32,21 +32,24 @@
 ### 1. Fixed
 #### Workarea fixed
 
-![image](https://user-images.githubusercontent.com/19975642/43051975-b878d336-8e5b-11e8-8e71-6d727bb4bbea.png)
+![image](https://user-images.githubusercontent.com/19975642/45008644-cdae1900-b03e-11e8-84bb-a1742a03f6f0.PNG)
 
 ### 2. Responsive
 #### Preserves image quality
+##### Horizontal Image
+![image](https://user-images.githubusercontent.com/19975642/45008653-d30b6380-b03e-11e8-91d1-b3944fa798be.PNG)
 
-![image](https://user-images.githubusercontent.com/19975642/43051993-e1f916f8-8e5b-11e8-9ff4-8a619ef933ee.png)
+##### Vertical Image
+![image](https://user-images.githubusercontent.com/19975642/45008654-d3a3fa00-b03e-11e8-9e9d-5ed644539b3e.PNG)
 
 ### 3. Fullscreen
 #### Fills the container area
 
-![image](https://user-images.githubusercontent.com/19975642/43051999-f4a124e4-8e5b-11e8-816d-62cb1162ae87.png)
+![image](https://user-images.githubusercontent.com/19975642/45008657-d4d52700-b03e-11e8-8f6f-6b5ac3bcafb0.PNG)
 
 ### Preview mode
 
-![image](https://user-images.githubusercontent.com/19975642/42750820-9739ea94-8923-11e8-9d03-017a041c55d6.png)
+![image](https://user-images.githubusercontent.com/19975642/45008659-d6065400-b03e-11e8-9eb6-92ea6fbbfd6e.PNG)
 
 # Workflow
 to be contiuned..
