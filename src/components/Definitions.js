@@ -53,7 +53,7 @@ class Definitions extends Component {
         const { activeKey } = this.state;
         const { onChangeTab } = this.handlers;
         return (
-            <Tabs className="rde-definitions-tabs" activeKey={activeKey} onChange={onChangeTab}>
+            <Tabs activeKey={activeKey} onChange={onChangeTab}>
                 <Tabs.TabPane tab="Properties" key="properties">
                     <Properties onChange={onChange} selectedItem={selectedItem} canvasRef={canvasRef} />
                 </Tabs.TabPane>
