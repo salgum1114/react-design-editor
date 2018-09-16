@@ -1,18 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'antd';
+import { Button, Menu } from 'antd';
 
-import { FlexBox } from './flex';
-import Icon from './icon/Icon';
+import { FlexBox } from '../flex';
+import Icon from '../icon/Icon';
 
 class Title extends Component {
     handlers = {
         onExport: () => {
-            const { canvasRef } = this.props;
-            const data = Object.assign({}, canvasRef.current.handlers.exportJSON(), this.props.definitions);
-            this.setState({
-                data,
-            });
+            const { canvasRef, definitions } = this.props;
+            const data = Object.assign({}, canvasRef.current.handlers.exportJSON(), definitions);
+            this.exportRef.href = `data: text/json;charset-utf-8, ${encodeURIComponent(JSON.stringify(data))}`;
+            this.exportRef.download = 'metadata.json';
         },
         onImport: (files) => {
             const { onLoading } = this.props;
@@ -35,15 +34,10 @@ class Title extends Component {
         onLoading: PropTypes.func,
     }
 
-    state = {
-        data: {},
-    }
-
     render() {
-        const data = `data: text/json;charset-utf-8, ${encodeURIComponent(JSON.stringify(this.state.data))}`;
         return (
             <FlexBox style={{ background: 'linear-gradient(141deg,#23303e,#404040 51%,#23303e 75%)' }} flexWrap="wrap" flex="1" alignItems="center">
-                <div style={{ marginLeft: 8 }} flex="0 1 auto">
+                <FlexBox style={{ marginLeft: 8 }} flex="0 1 auto">
                     <span style={{ color: '#fff', fontSize: 24, fontWeight: 500 }}>React Design Editor</span>
                     <Button
                         className="rde-action-btn"
@@ -56,7 +50,13 @@ class Title extends Component {
                     >
                         <Icon name="github" prefix="fab" size={1.5} />
                     </Button>
-                </div>
+                </FlexBox>
+                <FlexBox style={{ marginLeft: 88 }}>
+                    <Menu mode="horizontal" theme="dark" style={{ background: 'transparent', fontSize: '16px' }} onClick={this.props.onClick} selectedKeys={[this.props.current]}>
+                        <Menu.Item key="imagemap" style={{ color: '#fff' }}>{'Image Map'}</Menu.Item>
+                        <Menu.Item key="workflow" style={{ color: '#fff' }}>{'Workflow'}</Menu.Item>
+                    </Menu>
+                </FlexBox>
                 <FlexBox style={{ marginRight: 8 }} flex="1" justifyContent="flex-end">
                     <Button
                         className="rde-action-btn"
@@ -68,7 +68,7 @@ class Title extends Component {
                         size="large"
                         onClick={this.handlers.onExport}
                     >
-                        <a href={data} download="metadata.json">
+                        <a ref={(c) => { this.exportRef = c; }}>
                             <Icon name="file-export" size={1.5} />
                         </a>
                     </Button>

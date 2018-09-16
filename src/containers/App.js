@@ -1,11 +1,24 @@
 import React, { Component } from 'react';
 
-import Editor from '../components/Editor';
+import ImageMap from '../components/imagemap/Editor';
+import Workflow from '../components/workflow/Editor';
 
 class App extends Component {
+    state = {
+        current: 'imagemap',
+    }
+
+    onChangeMenu = ({ key }) => {
+        this.setState({
+            current: key,
+        });
+    }
+
     render() {
-        return (
-            <Editor />
+        return this.state.current === 'imagemap' ? (
+            <ImageMap current={this.state.current} onChangeMenu={this.onChangeMenu} />
+        ) : (
+            <Workflow current={this.state.current} onChangeMenu={this.onChangeMenu} />
         );
     }
 }
