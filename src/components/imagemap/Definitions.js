@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
 
-import Properties from './Properties';
-import Animations from './animations/Animations';
-import Styles from './styles/Styles';
-import DataSources from './datasources/DataSources';
+import Properties from '../properties/Properties';
+import Animations from '../animations/Animations';
+import Styles from '../styles/Styles';
+import DataSources from '../datasources/DataSources';
 
 class Definitions extends Component {
     handlers = {

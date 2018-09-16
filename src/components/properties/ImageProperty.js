@@ -40,7 +40,7 @@ export default {
                                     initialValue: data.file,
                                 })(
                                     // <FileUpload fileList={data.file ? [data.file] : []} />,
-                                    <FileUpload />,
+                                    <FileUpload accept="image/*" />,
                                 )
                             }
                         </Form.Item>

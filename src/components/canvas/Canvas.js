@@ -10,7 +10,7 @@ import 'mediaelement/build/mediaelementplayer.min.css';
 import interact from 'interactjs';
 import anime from 'animejs';
 
-import CanvasObjects from './canvas/CanvasObjects';
+import CanvasObjects from './CanvasObjects';
 
 notification.config({
     top: 80,
@@ -2750,7 +2750,7 @@ class Canvas extends Component {
 
     componentWillUnmount() {
         this.detachEventListener();
-        document.body.removeChild(this.tooltipRef);
+        // document.body.removeChild(this.tooltipRef);
     }
 
     attachEventListener = () => {

@@ -2,19 +2,22 @@ import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
 import { Badge, Button, Spin } from 'antd';
 import debounce from 'lodash/debounce';
-import '../libs/fontawesome-5.2.0/css/all.css';
 
-import Wireframe from './wireframe/Wireframe';
-import Items from './Items';
-import Canvas from './Canvas';
+import Wireframe from '../wireframe/Wireframe';
+import Items from '../items/Items';
+import Canvas from '../canvas/Canvas';
 import FooterToolbar from './FooterToolbar';
 import HeaderToolbar from './HeaderToolbar';
 import Title from './Title';
 import Preview from './Preview';
 
-import '../styles/index.less';
 import Definitions from './Definitions';
-import SandBox from './sandbox/SandBox';
+import SandBox from '../sandbox/SandBox';
+
+import items from './items';
+
+import '../../libs/fontawesome-5.2.0/css/all.css';
+import '../../styles/index.less';
 
 const propertiesToInclude = [
     'id',
@@ -343,14 +346,39 @@ class Editor extends Component {
     getDataSources = () => this.state.dataSources;
 
     render() {
-        const { preview, selectedItem, canvasRect, zoomRatio, loading, progress, animations, styles, dataSources } = this.state;
-        const { onAdd, onRemove, onSelect, onModified, onChange, onZoom, onTooltip, onAction } = this.canvasHandlers;
-        const { onChangePreview, onLoading, onChangeAnimations, onChangeStyles, onChangeDataSources } = this.handlers;
+        const {
+            preview,
+            selectedItem,
+            canvasRect,
+            zoomRatio,
+            loading,
+            progress,
+            animations,
+            styles,
+            dataSources,
+        } = this.state;
+        const {
+            onAdd,
+            onRemove,
+            onSelect,
+            onModified,
+            onChange,
+            onZoom,
+            onTooltip,
+            onAction,
+        } = this.canvasHandlers;
+        const {
+            onChangePreview,
+            onLoading,
+            onChangeAnimations,
+            onChangeStyles,
+            onChangeDataSources,
+        } = this.handlers;
         return (
             <div className="rde-main">
                 <Spin size="large" spinning={loading} tip={`${progress}%`}>
                     <div className="rde-title">
-                        <Title propertiesRef={this.propertiesRef} canvasRef={this.canvasRef} onLoading={onLoading} definitions={this.getDefinitions()} />
+                        <Title canvasRef={this.canvasRef} current={this.props.current} onClick={this.props.onChangeMenu} onLoading={onLoading} definitions={this.getDefinitions()} />
                     </div>
                     <div className="rde-content">
                         <div className="rde-editor">
@@ -358,7 +386,7 @@ class Editor extends Component {
                                 <Wireframe canvasRef={this.canvasRef} />
                             </nav> */}
                             <aside className="rde-items">
-                                <Items canvasRef={this.canvasRef} />
+                                <Items canvasRef={this.canvasRef} items={items} />
                             </aside>
                             <header style={{ width: canvasRect.width }} className="rde-canvas-header">
                                 <HeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} onSelect={onSelect} />
@@ -386,10 +414,9 @@ class Editor extends Component {
                             </footer>
                             <aside className="rde-definitions">
                                 <Definitions
-                                    ref={(c) => { this.definitionsRef = c; }}
+                                    canvasRef={this.canvasRef}
                                     onChange={onChange}
                                     selectedItem={selectedItem}
-                                    canvasRef={this.canvasRef}
                                     onChangeAnimations={onChangeAnimations}
                                     onChangeStyles={onChangeStyles}
                                     onChangeDataSources={onChangeDataSources}

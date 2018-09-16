@@ -3,193 +3,14 @@ import PropTypes from 'prop-types';
 import { Collapse, notification } from 'antd';
 import uuid from 'uuid/v4';
 
-import { FlexBox } from './flex';
-import Icon from './icon/Icon';
+import { FlexBox } from '../flex';
+import Icon from '../icon/Icon';
 
 notification.config({
     top: 80,
     duration: 2,
 });
 const { Panel } = Collapse;
-
-const MARKER = [
-    {
-        key: 'default',
-        type: 'itext',
-        icon: {
-            prefix: 'fas',
-            name: 'map-marker-alt',
-        },
-        title: 'Marker',
-        option: {
-            type: 'i-text',
-            text: '\uf3c5', // map-marker
-            fontFamily: 'Font Awesome 5 Free',
-            fontWeight: 900,
-            fontSize: 60,
-            width: 30,
-            height: 30,
-            editable: false,
-            name: 'New marker',
-        },
-    },
-];
-
-const TEXT = [
-    {
-        key: 'default',
-        type: 'textbox',
-        icon: {
-            prefix: 'fas',
-            name: 'font',
-        },
-        title: 'Text',
-        option: {
-            type: 'textbox',
-            text: 'Input text',
-            name: 'New text',
-            fontSize: 32,
-        },
-    },
-];
-
-const IMAGE = [
-    {
-        key: 'image',
-        type: 'image',
-        icon: {
-            prefix: 'fas',
-            name: 'image',
-        },
-        title: 'Image',
-        option: {
-            type: 'image',
-            width: 160,
-            height: 160,
-            name: 'New image',
-            src: '/images/sample/transparentBg.png',
-        },
-    },
-];
-
-const DOM_ELEMENT = [
-    {
-        key: 'custom',
-        type: 'dom_element',
-        icon: {
-            prefix: 'fab',
-            name: 'html5',
-        },
-        title: 'Element',
-        option: {
-            type: 'element',
-            width: 480,
-            height: 270,
-            name: 'New Element',
-            autoplay: true,
-            muted: true,
-            loop: true,
-        },
-    },
-    {
-        key: 'iframe',
-        type: 'dom_element',
-        icon: {
-            prefix: 'fas',
-            name: 'window-maximize',
-        },
-        title: 'IFrame',
-        option: {
-            type: 'iframe',
-            width: 480,
-            height: 270,
-            name: 'New IFrame',
-            autoplay: true,
-            muted: true,
-            loop: true,
-        },
-    },
-    {
-        key: 'video',
-        type: 'dom_element',
-        icon: {
-            prefix: 'fas',
-            name: 'video',
-        },
-        title: 'Video',
-        option: {
-            type: 'video',
-            width: 480,
-            height: 270,
-            name: 'New video',
-            autoplay: true,
-            muted: true,
-            loop: true,
-        },
-    },
-];
-
-const SHAPE = [
-    {
-        key: 'default-triangle',
-        type: 'triangle',
-        icon: {
-            prefix: 'fas',
-            name: 'image',
-        },
-        title: 'Triangle',
-        option: {
-            type: 'triangle',
-            width: 30,
-            height: 30,
-            name: 'New shape',
-        },
-    },
-    {
-        key: 'default-rect',
-        type: 'rect',
-        icon: {
-            prefix: 'fas',
-            name: 'image',
-        },
-        title: 'Rectangle',
-        option: {
-            type: 'rect',
-            width: 40,
-            height: 40,
-            name: 'New shape',
-        },
-    },
-    {
-        key: 'default-circle',
-        type: 'circle',
-        icon: {
-            prefix: 'fas',
-            name: 'circle',
-        },
-        title: 'Circle',
-        option: {
-            type: 'circle',
-            radius: 30,
-            name: 'New shape',
-        },
-    },
-];
-
-const DRWAING = [
-    {
-        key: 'polygon',
-        type: 'polygon',
-        icon: {
-            prefix: 'fas',
-            name: 'draw-polygon',
-        },
-        title: 'Polygon',
-        option: {
-            type: 'polygon',
-        },
-    },
-];
 
 class Items extends Component {
     handlers = {
@@ -288,6 +109,7 @@ class Items extends Component {
 
     static propTypes = {
         canvasRef: PropTypes.any,
+        items: PropTypes.array,
     }
 
     componentDidMount() {
@@ -336,7 +158,7 @@ class Items extends Component {
     renderItems = (type, items) => (
         <FlexBox flexWrap="wrap">
             {
-                type === 'DRAWING' ? (
+                type === 'drawing' ? (
                     items.map(item => (
                         <div
                             key={item.key}
@@ -374,27 +196,18 @@ class Items extends Component {
     )
 
     render() {
-        const showArrow = false;
+        const { items } = this.props;
         return (
             <Collapse bordered={false}>
-                <Panel showArrow={showArrow} header="Marker">
-                    {this.renderItems('MARKER', MARKER)}
-                </Panel>
-                <Panel showArrow={showArrow} header="Text">
-                    {this.renderItems('TEXT', TEXT)}
-                </Panel>
-                <Panel showArrow={showArrow} header="Image">
-                    {this.renderItems('IMAGE', IMAGE)}
-                </Panel>
-                <Panel showArrow={showArrow} header="Shape">
-                    {this.renderItems('SHAPE', SHAPE)}
-                </Panel>
-                <Panel showArrow={showArrow} header="Drawing">
-                    {this.renderItems('DRAWING', DRWAING)}
-                </Panel>
-                <Panel showArrow={showArrow} header="Dom Element">
-                    {this.renderItems('DOM_ELEMENT', DOM_ELEMENT)}
-                </Panel>
+                {
+                    items.map((item) => {
+                        return (
+                            <Panel key={item.type} showArrow={false} header={item.header}>
+                                {this.renderItems(item.type, item.items)}
+                            </Panel>
+                        );
+                    })
+                }
             </Collapse>
         );
     }
