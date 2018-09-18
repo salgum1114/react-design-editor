@@ -1,5 +1,5 @@
 # react-design-editor
-- The project was developed as react.js, ant.design, fabric.js and started to create editable design tools such as PowerPoint and slides.
+- This project has started to develope Direct Manipulation of Editable Design Tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js
 
 - React Design Eidtor used fabric.js, because the main container starts with the canvas.
 
