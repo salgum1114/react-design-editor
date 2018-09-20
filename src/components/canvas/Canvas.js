@@ -2789,7 +2789,9 @@ class Canvas extends Component {
                 }
             });
         }
-        document.body.removeChild(this.tooltipRef);
+        if (this.tooltipRef) {
+            document.body.removeChild(this.tooltipRef);
+        }
     }
 
     attachEventListener = () => {
