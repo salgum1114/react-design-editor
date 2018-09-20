@@ -2051,9 +2051,11 @@ class Canvas extends Component {
                 const objHeightDiff = (((height * scaleY) * zoom) / 2) - (clientHeight / 2);
                 this.tooltipRef.style.left = `${offset.left + left + objWidthDiff}px`;
                 this.tooltipRef.style.top = `${offset.top + top + objHeightDiff}px`;
+                this.target = target;
             }
         }, 100),
         hide: debounce((target) => {
+            this.target = null;
             this.tooltipRef.classList.add('tooltip-hidden');
         }, 100),
     }
@@ -2463,7 +2465,9 @@ class Canvas extends Component {
                     return false;
                 }
                 if (opt.target.id !== 'workarea') {
-                    this.tooltipHandlers.show(opt.target);
+                    if (opt.target !== this.target) {
+                        this.tooltipHandlers.show(opt.target);
+                    }
                 } else {
                     this.tooltipHandlers.hide(opt.target);
                 }
@@ -2492,6 +2496,11 @@ class Canvas extends Component {
             this.verticalLines.length = 0;
             this.horizontalLines.length = 0;
             this.canvas.renderAll();
+        },
+        mouseout: (opt) => {
+            if (!opt.target) {
+                this.tooltipHandlers.hide();
+            }
         },
         selection: (opt) => {
             const { onSelect } = this.props;
@@ -2708,7 +2717,7 @@ class Canvas extends Component {
         });
         this.canvas.add(this.workarea);
         this.canvas.centerObject(this.workarea);
-        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, selection, beforeRender, afterRender } = this.eventHandlers;
+        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
         if (editable) {
             this.interactionMode = 'selection';
             this.panning = false;
@@ -2736,6 +2745,7 @@ class Canvas extends Component {
             document.body.appendChild(this.tooltipRef);
             this.canvas.on({
                 'mouse:move': mousemove,
+                'mouse:out': mouseout,
             });
         }
     }
@@ -2750,6 +2760,35 @@ class Canvas extends Component {
 
     componentWillUnmount() {
         this.detachEventListener();
+        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
+        if (this.props.editable) {
+            this.canvas.off({
+                'object:modified': modified,
+                'object:scaling': scaling,
+                'object:moving': moving,
+                'object:rotating': rotating,
+                'mouse:wheel': mousewheel,
+                'mouse:down': mousedown,
+                'mouse:move': mousemove,
+                'mouse:up': mouseup,
+                'selection:cleared': selection,
+                'selection:created': selection,
+                'selection:updated': selection,
+                'before:render': beforeRender,
+                'after:render': afterRender,
+            });
+        } else {
+            this.canvas.off({
+                'mouse:move': mousemove,
+                'mouse:out': mouseout,
+            });
+            this.canvas.getObjects().forEach((object) => {
+                object.off('mousedown', this.eventHandlers.object.mousedown);
+                if (object.anime) {
+                    anime.remove(object);
+                }
+            });
+        }
         document.body.removeChild(this.tooltipRef);
     }
 
