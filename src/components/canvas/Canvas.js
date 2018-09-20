@@ -2789,6 +2789,7 @@ class Canvas extends Component {
                 }
             });
         }
+        this.handlers.clear(true);
         if (this.tooltipRef) {
             document.body.removeChild(this.tooltipRef);
         }
