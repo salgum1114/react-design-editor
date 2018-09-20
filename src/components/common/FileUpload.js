@@ -16,6 +16,7 @@ class FileUpload extends Component {
 
     render() {
         const props = {
+            accept: this.props.accept,
             name: 'file',
             multiple: false,
             onChange: (info) => {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Form, Input } from 'antd';
 
-import Canvas from '../Canvas';
+import Canvas from '../canvas/Canvas';
 import StyleProperty from '../properties/StyleProperty';
 
 class StyleModal extends Component {

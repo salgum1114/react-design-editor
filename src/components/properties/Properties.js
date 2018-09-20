@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Collapse } from 'antd';
 
-import PropertyDefinition from './properties/PropertyDefinition';
+import PropertyDefinition from './PropertyDefinition';
 
 const { Panel } = Collapse;
 
