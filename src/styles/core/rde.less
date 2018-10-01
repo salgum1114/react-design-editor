@@ -287,7 +287,7 @@ video {
     -webkit-animation: visibility .3s linear;
     animation: visibility .3s linear;
     z-index: 600000;
-    .rde-canvas-tooltip-container {
+    &-right {
         position: relative;
         border-radius: 4px;
         background: rgba(0, 0, 0, 0.35);
@@ -295,22 +295,40 @@ video {
         font-size: 14px;
         padding: 8px;
         margin-left: 12px;
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0; /* To the left of the tooltip */
+            margin-left: -10px;
+            margin-top: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent rgba(0, 0, 0, 0.35) transparent transparent;
+        }
+    }
+    &-left {
+        position: relative;
+        border-radius: 4px;
+        background: rgba(0, 0, 0, 0.35);
+        color: #fff;
+        font-size: 14px;
+        padding: 8px;
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%; /* To the left of the tooltip */
+            margin-top: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent transparent rgba(0, 0, 0, 0.35);
+        }
     }
     &.tooltip-hidden {
         display: none;
         top: 0;
         left: 0;
-    }
-    &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 0; /* To the left of the tooltip */
-        margin-left: 2px;
-        margin-top: -5px;
-        border-width: 5px;
-        border-style: solid;
-        border-color: transparent rgba(0, 0, 0, 0.35) transparent transparent;
     }
 }
 

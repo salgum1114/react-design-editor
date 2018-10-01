@@ -2049,8 +2049,15 @@ class Canvas extends Component {
                 const { _offset: offset } = this.canvas.calcOffset();
                 const objWidthDiff = (width * scaleX) * zoom;
                 const objHeightDiff = (((height * scaleY) * zoom) / 2) - (clientHeight / 2);
-                this.tooltipRef.style.left = `${offset.left + left + objWidthDiff}px`;
-                this.tooltipRef.style.top = `${offset.top + top + objHeightDiff}px`;
+                const calcLeft = offset.left + left + objWidthDiff;
+                const calcTop = offset.top + top + objHeightDiff;
+                if (document.body.clientWidth <= (calcLeft + this.tooltipRef.offsetWidth)) {
+                    this.tooltipRef.style.left = `${left + offset.left - this.tooltipRef.offsetWidth}px`;
+                    tooltip.className = 'rde-canvas-tooltip-left';
+                } else {
+                    this.tooltipRef.style.left = `${calcLeft}px`;
+                }
+                this.tooltipRef.style.top = `${calcTop}px`;
                 this.target = target;
             }
         }, 100),
