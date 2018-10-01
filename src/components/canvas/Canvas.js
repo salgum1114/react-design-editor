@@ -2026,17 +2026,17 @@ class Canvas extends Component {
     }
 
     tooltipHandlers = {
-        show: debounce((target) => {
+        show: debounce(async (target) => {
             if (target.tooltip && target.tooltip.enabled) {
                 while (this.tooltipRef.hasChildNodes()) {
                     this.tooltipRef.removeChild(this.tooltipRef.firstChild);
                 }
                 const tooltip = document.createElement('div');
-                tooltip.className = 'rde-canvas-tooltip-container';
+                tooltip.className = 'rde-canvas-tooltip-right';
                 let element = target.name;
                 const { onTooltip } = this.props;
                 if (onTooltip) {
-                    element = onTooltip(this.tooltipRef, target);
+                    element = await onTooltip(this.tooltipRef, target);
                 }
                 tooltip.innerHTML = element;
                 this.tooltipRef.appendChild(tooltip);
