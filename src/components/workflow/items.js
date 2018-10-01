@@ -4,17 +4,15 @@ const items = [
         header: 'Temporary',
         items: [
             {
-                key: 'default-rect',
-                type: 'rect',
+                key: 'node',
+                type: 'node',
                 icon: {
                     prefix: 'fas',
                     name: 'image',
                 },
-                title: 'Rectangle',
+                title: 'Node',
                 option: {
-                    type: 'rect',
-                    width: 40,
-                    height: 40,
+                    type: 'node',
                     name: 'New shape',
                 },
             },
