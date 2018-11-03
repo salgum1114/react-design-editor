@@ -13,6 +13,7 @@ class Icon extends Component {
         innerClassName: PropTypes.string,
         innerSize: PropTypes.number,
         prefix: PropTypes.string,
+        onClick: PropTypes.func,
     };
 
     static defaultProps = {
@@ -33,7 +34,7 @@ class Icon extends Component {
             fontSize: `${size}em`,
             color,
         });
-        return (<i className={iconClassName} style={iconStyle} />);
+        return (<i className={iconClassName} style={iconStyle} onClick={this.props.onClick} />);
     }
 
     render() {

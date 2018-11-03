@@ -1,3 +1,5 @@
+@import 'workflow';
+
 * {
     margin: 0;
     padding: 0;
@@ -36,13 +38,6 @@ video {
         z-index: 2000;
     }
     .rde-content {
-        -webkit-box-flex: 1;
-        -ms-flex: 1;
-        flex: 1;
-        display: -webkit-box;
-        display: -ms-flexbox;
-        display: flex;
-        height: 100vh;
         padding-top: 60px;
     }
     .rde-canvas-preview {
@@ -216,7 +211,7 @@ video {
         height: 40px;
         // left: 360px;
         left: 200px;
-        bottom: 0;
+        bottom: 60px;
         position: absolute;
         width: 100%;
         z-index: 800;
@@ -332,9 +327,43 @@ video {
     }
 }
 
+.ant-btn {
+    &.rde-action-button {
+        background: transparent;
+        border-color: transparent;
+        &.ant-btn-danger {
+            color: #f04134;
+            &:focus {
+                color: #f04134;
+                background: unset;
+                border-color: transparent;
+            }
+            &:hover {
+                color: #fff;
+                background-color: #f46e65;
+                border-color: #f46e65;
+            }
+        }
+        &:focus {
+            color: unset;
+            background: unset;
+            border-color: transparent;
+        }
+        &:hover {
+            background: rgba(219, 234, 251, 0.85);
+            border-color: transparent;
+        }
+    }
+}
+
 .rde-action-btn {
     background: transparent;
     border: transparent;
+    button {
+        background: transparent !important;
+        border-color: transparent !important;
+        border: unset;
+    }
     &:hover {
         background: transparent;
         border: transparent;
@@ -405,4 +434,12 @@ video {
     -khtml-user-drag: element;
     -webkit-user-drag: element;
     cursor: move;
+}
+
+.rde-track-vertical {
+    right: 0px;
+    bottom: 2px;
+    top: 2px;
+    border-radius: 3px;
+    opacity: 0;
 }
