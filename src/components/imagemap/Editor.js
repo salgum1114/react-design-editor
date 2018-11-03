@@ -397,8 +397,11 @@ class Editor extends Component {
                             >
                                 <Canvas
                                     ref={this.canvasRef}
-                                    width={canvasRect.width}
-                                    height={canvasRect.height}
+                                    canvasOption={{
+                                        width: canvasRect.width,
+                                        height: canvasRect.height,
+                                        backgroundColor: '#f3f3f3',
+                                    }}
                                     propertiesToInclude={propertiesToInclude}
                                     onModified={onModified}
                                     onAdd={onAdd}

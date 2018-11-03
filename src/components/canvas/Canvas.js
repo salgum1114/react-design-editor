@@ -11,6 +11,8 @@ import interact from 'interactjs';
 import anime from 'animejs';
 
 import CanvasObjects from './CanvasObjects';
+import OrthogonalLink from '../workflow/link/OrthogonalLink';
+import CurvedLink from '../workflow/link/CurvedLink';
 
 notification.config({
     top: 80,
@@ -34,7 +36,16 @@ const defaultOptions = {
     },
 };
 
-const workareaOption = {
+const defaultCanvasOption = {
+    preserveObjectStacking: true,
+    width: 300,
+    height: 150,
+    selection: true,
+    defaultCursor: 'default',
+    backgroundColor: '#fff',
+};
+
+const defaultWorkareaOption = {
     width: 600,
     height: 400,
     workareaWidth: 600,
@@ -64,18 +75,16 @@ class Canvas extends Component {
     static propsTypes = {
         fabricObjects: PropTypes.object,
         editable: PropTypes.bool,
-        width: PropTypes.oneOfType([
-            PropTypes.number,
-            PropTypes.string,
-        ]),
-        height: PropTypes.oneOfType([
-            PropTypes.number,
-            PropTypes.string,
-        ]),
-        backgroundColor: PropTypes.string,
+        selection: PropTypes.bool,
+        canvasOption: PropTypes.object,
         tooltip: PropTypes.any,
-        zoom: PropTypes.bool,
+        zoomEnabled: PropTypes.bool,
+        minZoom: PropTypes.number,
+        maxZoom: PropTypes.number,
         propertiesToInclude: PropTypes.array,
+        guidelineOption: PropTypes.obj,
+        workareaOption: PropTypes.obj,
+        gridOption: PropTypes.obj,
         onModified: PropTypes.func,
         onAdd: PropTypes.func,
         onRemove: PropTypes.func,
@@ -87,12 +96,160 @@ class Canvas extends Component {
 
     static defaultProps = {
         editable: true,
-        width: 300,
-        height: 150,
-        backgroundColor: '#f3f3f3',
+        canvasOption: {},
         tooltip: null,
-        zoom: true,
+        zoomEnabled: true,
+        minZoom: 0,
+        maxZoom: 300,
         propertiesToInclude: [],
+        workareaOption: {},
+        gridOption: {
+            enabled: false,
+            grid: 50,
+            snapToGrid: false,
+        },
+        guidelineOption: {
+            enabled: true,
+        },
+    }
+
+    constructor(props) {
+        super(props);
+        this.fabricObjects = CanvasObjects(props.fabricObjects);
+        this.container = React.createRef();
+    }
+
+    state = {
+        id: uuid(),
+        clipboard: null,
+    }
+
+    componentDidMount() {
+        const { id } = this.state;
+        const { editable, canvasOption, workareaOption, guidelineOption } = this.props;
+        const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption);
+        this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
+        this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
+        const mergedWorkareaOption = Object.assign({}, defaultWorkareaOption, workareaOption);
+        this.workarea = new fabric.Image(null, mergedWorkareaOption);
+        this.canvas.add(this.workarea);
+        this.canvas.centerObject(this.workarea);
+        this.canvas.renderAll();
+        this.gridHandlers.init();
+        const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
+        if (editable) {
+            this.interactionMode = 'selection';
+            this.panning = false;
+            if (guidelineOption.enabled) {
+                this.guidelineHandlers.init();
+            }
+            this.canvas.on({
+                'object:modified': modified,
+                'object:scaling': scaling,
+                'object:moving': moving,
+                'object:moved': moved,
+                'object:rotating': rotating,
+                'mouse:wheel': mousewheel,
+                'mouse:down': mousedown,
+                'mouse:move': mousemove,
+                'mouse:up': mouseup,
+                'selection:cleared': selection,
+                'selection:created': selection,
+                'selection:updated': selection,
+                'before:render': guidelineOption.enabled ? beforeRender : null,
+                'after:render': guidelineOption.enabled ? afterRender : null,
+            });
+            this.attachEventListener();
+        } else {
+            this.tooltipRef = document.createElement('div');
+            this.tooltipRef.id = `${id}_tooltip`;
+            this.tooltipRef.className = 'rde-canvas-tooltip tooltip-hidden';
+            document.body.appendChild(this.tooltipRef);
+            this.canvas.on({
+                'mouse:move': mousemove,
+                'mouse:out': mouseout,
+            });
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        const { canvasOption: { width: currentWidth, height: currentHeight } } = this.props;
+        const { canvasOption: { width: prevWidth, height: prevHeight } } = prevProps;
+        if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
+            this.eventHandlers.resize(prevWidth, prevHeight, currentWidth, currentHeight);
+        }
+        if (JSON.stringify(this.props.canvasOption) !== JSON.stringify(prevProps.canvasOption)) {
+            this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
+            this.canvas.selection = this.props.canvasOption.selection;
+        }
+        if (JSON.stringify(this.props.fabricObjects) !== JSON.stringify(prevProps.fabricObjects)) {
+            this.fabricObjects = CanvasObjects(this.props.fabricObjects);
+        } else if (JSON.stringify(this.props.workareaOption) !== JSON.stringify(prevProps.workareaOption)) {
+            this.workarea.set({
+                ...this.props.workareaOption,
+            });
+        } else if (JSON.stringify(this.props.guidelineOption) !== JSON.stringify(prevProps.guidelineOption)) {
+            if (this.props.guidelineOption.enabled) {
+                this.canvas.on({
+                    'before:render': this.eventHandlers.beforeRender,
+                    'after:render': this.eventHandlers.afterRender,
+                });
+            } else {
+                this.canvas.off({
+                    'before:render': this.eventHandlers.beforeRender,
+                    'after:render': this.eventHandlers.afterRender,
+                });
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        this.detachEventListener();
+        const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;        if (this.props.editable) {
+            this.canvas.off({
+                'object:modified': modified,
+                'object:scaling': scaling,
+                'object:moving': moving,
+                'object:moved': moved,
+                'object:rotating': rotating,
+                'mouse:wheel': mousewheel,
+                'mouse:down': mousedown,
+                'mouse:move': mousemove,
+                'mouse:up': mouseup,
+                'selection:cleared': selection,
+                'selection:created': selection,
+                'selection:updated': selection,
+                'before:render': beforeRender,
+                'after:render': afterRender,
+            });
+        } else {
+            this.canvas.off({
+                'mouse:move': mousemove,
+                'mouse:out': mouseout,
+            });
+            this.canvas.getObjects().forEach((object) => {
+                object.off('mousedown', this.eventHandlers.object.mousedown);
+                if (object.anime) {
+                    anime.remove(object);
+                }
+            });
+        }
+        this.handlers.clear(true);
+        if (this.tooltipRef) {
+            document.body.removeChild(this.tooltipRef);
+        }
+    }
+
+    attachEventListener = () => {
+        // if add canvas wrapper element event, tabIndex = 1000;
+        this.canvas.wrapperEl.tabIndex = 1000;
+        document.addEventListener('keydown', this.eventHandlers.keydown, false);
+        document.addEventListener('paste', this.eventHandlers.paste, false);
+    }
+
+    detachEventListener = () => {
+        document.removeEventListener('keydown', this.eventHandlers.keydown);
+        document.removeEventListener('paste', this.eventHandlers.paste);
     }
 
     handlers = {
@@ -101,8 +258,8 @@ class Canvas extends Component {
                 this.canvas.centerObject(obj);
                 obj.setCoords();
             } else {
-                this.handlers.setByObject(obj, 'left', obj.left - (obj.width / 2));
-                this.handlers.setByObject(obj, 'top', obj.top - (obj.height / 2));
+                this.handlers.setByObject(obj, 'left', (obj.left / this.canvas.getZoom()) - (obj.width / 2) - (this.canvas.viewportTransform[4] / this.canvas.getZoom()));
+                this.handlers.setByObject(obj, 'top', (obj.top / this.canvas.getZoom()) - (obj.height / 2) - (this.canvas.viewportTransform[5] / this.canvas.getZoom()));
             }
         },
         add: (obj, centered = true, loaded = false) => {
@@ -125,6 +282,7 @@ class Canvas extends Component {
                 option.scaleY = this.workarea.scaleY;
             }
             const newOption = Object.assign({}, option, obj);
+            let createdObj;
             if (obj.type === 'group') {
                 const objects = this.handlers.addGroup(newOption, centered, loaded);
                 const groupOption = Object.assign({}, newOption, { objects });
@@ -136,7 +294,7 @@ class Canvas extends Component {
                     this.handlers.addElement(newOption, centered);
                     return;
                 }
-                const createdObj = this.fabricObjects[obj.type].create({ ...groupOption });
+                createdObj = this.fabricObjects[obj.type].create({ ...groupOption });
                 if (!editable && !this.handlers.isElementType(obj.type)) {
                     createdObj.on('mousedown', this.eventHandlers.object.mousedown);
                 }
@@ -161,13 +319,22 @@ class Canvas extends Component {
                 this.handlers.addElement(newOption, centered);
                 return;
             }
-            const createdObj = this.fabricObjects[obj.type].create({ ...newOption });
+            if (obj.superType === 'link') {
+                return this.linkHandlers.create({ ...newOption });
+            }
+            createdObj = this.fabricObjects[obj.type].create({ ...newOption });
             if (!editable && !this.handlers.isElementType(obj.type)) {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }
             this.canvas.add(createdObj);
-            if (obj.type !== 'polygon' && editable && !loaded) {
+            if (obj.type !== 'polygon' && obj.superType !== 'link' && editable && !loaded) {
                 this.handlers.centerObject(createdObj, centered);
+            }
+            if (createdObj.superType === 'node') {
+                this.portHandlers.createPort(createdObj);
+                if (createdObj.iconButton) {
+                    this.canvas.add(createdObj.iconButton);
+                }
             }
             if (!editable && createdObj.animation && createdObj.animation.autoplay) {
                 this.animationHandlers.play(createdObj.id);
@@ -266,6 +433,28 @@ class Canvas extends Component {
                     this.elementHandlers.removeStyleById(activeObject.id);
                     this.elementHandlers.removeScriptById(activeObject.id);
                 }
+                if (activeObject.superType === 'link') {
+                    this.linkHandlers.remove(activeObject);
+                } else if (activeObject.superType === 'node') {
+                    if (activeObject.toPort) {
+                        if (activeObject.toPort.links.length) {
+                            activeObject.toPort.links.forEach((link) => {
+                                this.linkHandlers.remove(link, 'from');
+                            });
+                        }
+                        this.canvas.remove(activeObject.toPort);
+                    }
+                    if (activeObject.fromPort && activeObject.fromPort.length) {
+                        activeObject.fromPort.forEach((port) => {
+                            if (port.links.length) {
+                                port.links.forEach((link) => {
+                                    this.linkHandlers.remove(link, 'to');
+                                });
+                            }
+                            this.canvas.remove(port);
+                        });
+                    }
+                }
                 this.canvas.remove(activeObject);
             } else {
                 const { _objects: activeObjects } = activeObject;
@@ -275,6 +464,11 @@ class Canvas extends Component {
                         this.elementHandlers.removeById(obj.id);
                         this.elementHandlers.removeStyleById(obj.id);
                         this.elementHandlers.removeScriptById(obj.id);
+                    } else if (obj.superType === 'node') {
+                        this.canvas.remove(obj.toPort);
+                        obj.fromPort.forEach((port) => {
+                            this.canvas.remove(port);
+                        });
                     }
                     this.canvas.remove(obj);
                 });
@@ -316,6 +510,7 @@ class Canvas extends Component {
                 if (clonedObj.type === 'activeSelection') {
                     clonedObj.canvas = this.canvas;
                     clonedObj.forEachObject((obj) => {
+                        obj.set('name', `${obj.name}_clone`);
                         obj.set('id', uuid());
                         this.canvas.add(obj);
                     });
@@ -324,6 +519,7 @@ class Canvas extends Component {
                     }
                     clonedObj.setCoords();
                 } else {
+                    clonedObj.set('name', `${clonedObj.name}_clone`);
                     clonedObj.set('id', uuid());
                     this.canvas.add(clonedObj);
                     if (onAdd) {
@@ -331,6 +527,7 @@ class Canvas extends Component {
                     }
                 }
                 this.canvas.setActiveObject(clonedObj);
+                this.portHandlers.createPort(clonedObj);
                 this.canvas.requestRenderAll();
             }, propertiesToInclude);
         },
@@ -343,6 +540,7 @@ class Canvas extends Component {
                         left: cloned.left + 10,
                         top: cloned.top + 10,
                         id: uuid(),
+                        name: `${cloned.name}_clone`,
                         evented: true,
                     });
                     this.canvas.add(cloned);
@@ -350,6 +548,7 @@ class Canvas extends Component {
                         onAdd(cloned);
                     }
                     this.canvas.setActiveObject(cloned);
+                    this.portHandlers.createPort(clonedObj);
                     this.canvas.requestRenderAll();
                 }, propertiesToInclude);
             }
@@ -380,6 +579,7 @@ class Canvas extends Component {
                     clonedObj.canvas = this.canvas;
                     clonedObj.forEachObject((obj) => {
                         obj.set('id', uuid());
+                        obj.set('name', `${obj.name}_clone`);
                         this.canvas.add(obj);
                     });
                     if (onAdd) {
@@ -388,6 +588,7 @@ class Canvas extends Component {
                     clonedObj.setCoords();
                 } else {
                     clonedObj.set('id', uuid());
+                    clonedObj.set('name', `${clonedObj.name}_clone`);
                     this.canvas.add(clonedObj);
                     if (onAdd) {
                         onAdd(clonedObj);
@@ -401,6 +602,7 @@ class Canvas extends Component {
                     clipboard: newClipboard,
                 });
                 this.canvas.setActiveObject(clonedObj);
+                this.portHandlers.createPort(clonedObj);
                 this.canvas.requestRenderAll();
             }, propertiesToInclude);
         },
@@ -440,7 +642,7 @@ class Canvas extends Component {
             }
             obj.set(key, value);
             obj.setCoords();
-            this.canvas.requestRenderAll();
+            this.canvas.renderAll();
             const { onModified } = this.props;
             if (onModified) {
                 onModified(obj);
@@ -520,6 +722,9 @@ class Canvas extends Component {
                 if (obj.id === 'workarea') {
                     return false;
                 }
+                if (!obj.evented) {
+                    return false;
+                }
                 if (this.handlers.isElementType(obj.type)) {
                     return false;
                 }
@@ -581,16 +786,31 @@ class Canvas extends Component {
             if (typeof json === 'string') {
                 json = JSON.parse(json);
             }
-            let prevLeft;
-            let prevTop;
+            let prevLeft = 0;
+            let prevTop = 0;
             this.canvas.setBackgroundColor(this.props.backgroundColor);
+            const workareaExist = json.some(obj => obj.id === 'workarea');
+            if (!workareaExist) {
+                if (!this.workarea) {
+                    this.workarea = new fabric.Image(null, {
+                        ...defaultWorkareaOption,
+                        ...this.props.workareaOption,
+                    });
+                    this.canvas.add(this.workarea);
+                }
+                this.canvas.centerObject(this.workarea);
+                this.workarea.setCoords();
+                prevLeft = this.workarea.left;
+                prevTop = this.workarea.top;
+            }
             json.forEach((obj) => {
-                if (obj.id === 'workarea') {
+                if (workareaExist && obj.id === 'workarea') {
                     prevLeft = obj.left;
                     prevTop = obj.top;
                     if (!this.workarea) {
                         this.workarea = new fabric.Image(null, {
-                            ...workareaOption,
+                            ...defaultWorkareaOption,
+                            ...this.props.workareaOption,
                         });
                         this.canvas.add(this.workarea);
                     }
@@ -628,6 +848,16 @@ class Canvas extends Component {
             }
         },
         exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude),
+        getObjects: () => this.canvas.getObjects().filter((obj) => {
+            if (obj.id === 'workarea') {
+                return false;
+            } else if (obj.id === 'grid') {
+                return false;
+            } else if (obj.superType === 'port') {
+                return false;
+            }
+            return true;
+        }),
         bringForward: () => {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
@@ -930,24 +1160,53 @@ class Canvas extends Component {
     }
 
     modeHandlers = {
-        selection: () => {
+        selection: (callback) => {
             this.interactionMode = 'selection';
-            this.canvas.selection = true;
-            this.canvas.setCursor('pointer');
+            // this.canvas.selection = true;
+            this.canvas.defaultCursor = 'default';
             this.canvas.getObjects().forEach((obj) => {
                 if (obj.id !== 'workarea') {
-                    obj.selectable = true;
+                    if (obj.id === 'grid') {
+                        obj.selectable = false;
+                        obj.evented = false;
+                        return;
+                    }
+                    if (callback) {
+                        const ret = callback(obj);
+                        if (typeof ret === 'object') {
+                            obj.selectable = ret.selectable;
+                            obj.evented = ret.evented;
+                        } else {
+                            obj.selectable = ret;
+                            obj.evented = ret;
+                        }
+                    } else {
+                        obj.selectable = true;
+                        obj.evented = true;
+                    }
                 }
             });
             this.canvas.renderAll();
         },
-        grab: () => {
+        grab: (callback) => {
             this.interactionMode = 'grab';
-            this.canvas.selection = false;
-            this.canvas.setCursor('grab');
+            // this.canvas.selection = false;
+            this.canvas.defaultCursor = 'grab';
             this.canvas.getObjects().forEach((obj) => {
                 if (obj.id !== 'workarea') {
-                    obj.selectable = false;
+                    if (callback) {
+                        const ret = callback(obj);
+                        if (typeof ret === 'object') {
+                            obj.selectable = ret.selectable;
+                            obj.evented = ret.evented;
+                        } else {
+                            obj.selectable = ret;
+                            obj.evented = ret;
+                        }
+                    } else {
+                        obj.selectable = false;
+                        obj.evented = false;
+                    }
                 }
             });
             this.canvas.renderAll();
@@ -959,19 +1218,19 @@ class Canvas extends Component {
     }
 
     animationHandlers = {
-        play: (id) => {
+        play: (id, hasControls) => {
             const findObject = this.handlers.findById(id);
             if (!findObject) {
                 return;
             }
             if (findObject.anime) {
-                findObject.anime.play();
+                findObject.anime.restart();
                 return;
             }
             if (findObject.animation.type === 'none') {
                 return;
             }
-            const instance = this.animationHandlers.getAnimation(findObject);
+            const instance = this.animationHandlers.getAnimation(findObject, hasControls);
             if (instance) {
                 findObject.set('anime', instance);
                 instance.play();
@@ -991,14 +1250,14 @@ class Canvas extends Component {
             }
             this.animationHandlers.initAnimation(findObject);
         },
-        initAnimation: (obj) => {
+        initAnimation: (obj, hasControls = true) => {
             if (!obj.anime) {
                 return;
             }
             anime.remove(obj);
             const option = {
                 anime: null,
-                hasControls: true,
+                hasControls,
                 lockMovementX: false,
                 lockMovementY: false,
                 hoverCursor: 'move',
@@ -1053,12 +1312,12 @@ class Canvas extends Component {
                     origniStroke: null,
                 });
             } else {
-                console.warn('Not supportes type.');
+                console.warn('Not supported type.');
             }
             obj.set(option);
             this.canvas.renderAll();
         },
-        getAnimation: (obj) => {
+        getAnimation: (obj, hasControls) => {
             const { delay = 100, duration = 100, autoplay = false, loop = false, type, ...other } = obj.animation;
             const option = {
                 targets: obj,
@@ -1089,7 +1348,7 @@ class Canvas extends Component {
                     this.canvas.renderAll();
                 },
                 complete: () => {
-                    this.animationHandlers.initAnimation(obj);
+                    this.animationHandlers.initAnimation(obj, hasControls);
                 },
             };
             if (type === 'fade') {
@@ -1728,32 +1987,492 @@ class Canvas extends Component {
         },
     }
 
-    drawingHandlers = {
-        initDraw: () => {
-            this.interactionMode = 'polygon';
-            this.pointArray = [];
-            this.lineArray = [];
-            this.activeLine = null;
-            this.activeShape = null;
-        },
-        finishDraw: () => {
-            this.interactionMode = 'selection';
-            this.pointArray.forEach((point) => {
-                this.canvas.remove(point);
+    nodeHandlers = {
+        selectByPath: (path) => {
+            const splitPath = path.reduce((prev, curr, index) => {
+                if (!path[index + 1]) {
+                    return prev;
+                }
+                const newPath = [path[index], path[index + 1]];
+                prev.push(newPath);
+                return prev;
+            }, []);
+            const targetObjects = this.handlers.getObjects().filter(object => path.some(id => id === object.id));
+            const nonTargetObjects = this.handlers.getObjects().filter(object => path.some(id => id !== object.id));
+            nonTargetObjects.forEach((object) => {
+                if (object.superType === 'link') {
+                    const { fromNode, toNode } = object;
+                    if (splitPath.some(findPath => fromNode.id === findPath[0] && toNode.id === findPath[1])) {
+                        object.set({
+                            opacity: 1,
+                        });
+                        object.setShadow({
+                            color: object.stroke,
+                        });
+                        this.nodeHandlers.highlightingNode(object, 300);
+                        this.canvas.renderAll();
+                        return;
+                    }
+                }
+                object.set({
+                    opacity: 0.2,
+                });
+                if (!object.isAnimated) {
+                    object.setShadow({
+                        blur: 0,
+                    });
+                }
             });
-            this.lineArray.forEach((line) => {
-                this.canvas.remove(line);
+            targetObjects.forEach((object) => {
+                object.set({
+                    opacity: 1,
+                });
+                object.setShadow({
+                    color: object.fill,
+                });
+                this.nodeHandlers.highlightingNode(object, 300);
+                if (object.toPort) {
+                    object.toPort.set({
+                        opacity: 1,
+                    });
+                }
+                if (object.fromPort) {
+                    object.fromPort.forEach((port) => {
+                        port.set({
+                            opacity: 1,
+                        });
+                    });
+                }
             });
-            this.canvas.remove(this.activeLine);
-            this.canvas.remove(this.activeShape);
-            this.pointArray = [];
-            this.lineArray = [];
-            this.activeLine = null;
-            this.activeShape = null;
-            this.canvas.selection = true;
             this.canvas.renderAll();
         },
+        selectById: (id) => {
+            this.handlers.getObjects().forEach((object) => {
+                if (id === object.id) {
+                    object.setShadow({
+                        color: object.fill,
+                        blur: 50,
+                    });
+                    return;
+                } else if (id === object.nodeId) {
+                    return;
+                }
+                object.setShadow({
+                    blur: 0,
+                });
+            });
+            this.canvas.renderAll();
+        },
+        deselect: () => {
+            this.handlers.getObjects().forEach((object) => {
+                object.set({
+                    opacity: 1,
+                });
+                if (!object.isAnimated) {
+                    object.setShadow({
+                        blur: 0,
+                    });
+                }
+            });
+            this.canvas.renderAll();
+        },
+        highlightingByPath: (path) => {
+            const splitPath = path.reduce((prev, curr, index) => {
+                if (!path[index + 1]) {
+                    return prev;
+                }
+                const newPath = [path[index], path[index + 1]];
+                prev.push(newPath);
+                return prev;
+            }, []);
+            const targetObjects = this.handlers.getObjects().filter(object => path.some(id => id === object.id));
+            const nonTargetObjects = this.handlers.getObjects().filter(object => path.some(id => id !== object.id));
+            const lastObject = targetObjects.filter(obj => obj.id === path[path.length - 1])[0];
+            targetObjects.forEach((object) => {
+                object.setShadow({
+                    color: lastObject.fill,
+                });
+                this.nodeHandlers.highlightingNode(object);
+            });
+            nonTargetObjects.forEach((object) => {
+                if (object.superType === 'link') {
+                    const { fromNode, toNode } = object;
+                    if (splitPath.some(findPath => fromNode.id === findPath[0] && toNode.id === findPath[1])) {
+                        object.setShadow({
+                            color: lastObject.stroke,
+                        });
+                        this.nodeHandlers.highlightingNode(object);
+                        this.nodeHandlers.highlightingLink(object, lastObject);
+                    }
+                }
+            });
+            this.canvas.renderAll();
+        },
+        highlightingLink: (object, targetObject, duration = 500) => {
+            object.animation = {
+                duration,
+                type: 'flash',
+                stroke: targetObject.stroke,
+                loop: 1,
+                delay: 0,
+            };
+            this.animationHandlers.play(object.id, false);
+        },
+        highlightingNode: (object, duration = 500) => {
+            const maxBlur = 50;
+            const minBlur = 0;
+            const onComplete = () => {
+                if (object.shadow.blur === maxBlur) {
+                    object.isAnimated = true;
+                    object.animate('shadow.blur', minBlur, {
+                        easing: fabric.util.ease.easeInOutQuad,
+                        onChange: (value) => {
+                            object.shadow.blur = value;
+                            this.canvas.renderAll();
+                        },
+                        onComplete: () => {
+                            object.isAnimated = false;
+                            if (object.superType === 'link') {
+                                object.set({
+                                    stroke: object.originStroke,
+                                });
+                            }
+                        },
+                    });
+                }
+            };
+            object.isAnimated = true;
+            object.animate('shadow.blur', maxBlur, {
+                easing: fabric.util.ease.easeInOutQuad,
+                duration,
+                onChange: (value) => {
+                    object.shadow.blur = value;
+                    this.canvas.renderAll();
+                },
+                onComplete,
+            });
+        },
+    }
+
+    portHandlers = {
+        createPort: (target) => {
+            if (!target.createToPort) {
+                return;
+            }
+            const toPort = target.createToPort(target.left + (target.width / 2), target.top);
+            if (toPort) {
+                toPort.on('mouseover', () => {
+                    if (this.interactionMode === 'link' && this.activeLine && this.activeLine.class === 'line') {
+                        if (toPort.links.some(link => link.fromNode.id ===  this.activeLine.fromNode)) {
+                            toPort.set({
+                                fill: toPort.errorFill,
+                            });
+                            this.canvas.renderAll();
+                            return;
+                        }
+                        toPort.set({
+                            fill: toPort.hoverFill,
+                        });
+                        this.canvas.renderAll();
+                    }
+                });
+                toPort.on('mouseout', () => {
+                    toPort.set({
+                        fill: toPort.originFill,
+                    });
+                    this.canvas.renderAll();
+                });
+                this.canvas.add(toPort);
+                toPort.setCoords();
+                this.canvas.bringToFront(toPort);
+            }
+            const fromPort = target.createFromPort(target.left + (target.width / 2), target.top + target.height);
+            if (fromPort && fromPort.length) {
+                fromPort.forEach((port) => {
+                    if (port) {
+                        port.on('mouseover', () => {
+                            if (port.enabled) {
+                                if (this.activeLine) {
+                                    port.set({
+                                        fill: port.errorFill,
+                                    });
+                                    this.canvas.renderAll();
+                                    return;
+                                }
+                                port.set({
+                                    fill: port.hoverFill,
+                                });
+                                this.canvas.renderAll();
+                                return;
+                            }
+                            port.set({
+                                fill: port.errorFill,
+                            });
+                            this.canvas.renderAll();
+                        });
+                        port.on('mouseout', () => {
+                            port.set({
+                                fill: port.originFill,
+                            });
+                            this.canvas.renderAll();
+                        });
+                        this.canvas.add(port);
+                        port.setCoords();
+                        this.canvas.bringToFront(port);
+                    }
+                });
+            }
+        },
+        setCoords: (target) => {
+            if (target.toPort) {
+                const toCoords = {
+                    left: target.left + (target.width / 2),
+                    top: target.top,
+                };
+                target.toPort.set({
+                    ...toCoords,
+                });
+                target.toPort.setCoords();
+                if (target.toPort.links.length) {
+                    target.toPort.links.forEach((link) => {
+                        const fromPort = link.fromNode.fromPort.filter(port => port.id === link.fromPort)[0];
+                        this.linkHandlers.setCoords(fromPort.left, fromPort.top, toCoords.left, toCoords.top, link);
+                    });
+                }
+            }
+            if (target.fromPort) {
+                const fromCoords = {
+                    left: target.left + (target.width / 2),
+                    top: target.top + target.height,
+                };
+                target.fromPort.forEach((port) => {
+                    const left = port.leftDiff ? fromCoords.left + port.leftDiff : fromCoords.left;
+                    const top = port.topDiff ? fromCoords.top + port.topDiff : fromCoords.top;
+                    port.set({
+                        left,
+                        top,
+                    });
+                    port.setCoords();
+                    if (port.links.length) {
+                        port.links.forEach((link) => {
+                            this.linkHandlers.setCoords(left, top, link.toNode.toPort.left, link.toNode.toPort.top, link);
+                        });
+                    }
+                });
+            }
+        },
+        recreatePort: (target) => {
+            const { fromPort, toPort } = target;
+            if (target.ports) {
+                target.ports.forEach((port) => {
+                    target.removeWithUpdate(port);
+                    this.canvas.remove(port.fromPort);
+                });
+            }
+            this.canvas.remove(target.toPort);
+            if (target.toPort) {
+                target.toPort.links.forEach((link) => {
+                    this.linkHandlers.remove(link, 'from');
+                });
+            }
+            if (target.fromPort) {
+                target.fromPort.forEach((port) => {
+                    if (port.links.length) {
+                        port.links.forEach((link) => {
+                            this.linkHandlers.remove(link, 'to');
+                        });
+                    }
+                });
+            }
+            this.portHandlers.createPort(target);
+            toPort.links.forEach((link) => {
+                link.fromNode = link.fromNode.id;
+                link.toNode = target.toPort.nodeId;
+                this.linkHandlers.create(link);
+            });
+            fromPort.filter(op => target.fromPort.some(np => np.id === op.id)).forEach((port) => {
+                port.links.forEach((link) => {
+                    if (link.fromPort === port.id) {
+                        link.fromNode = port.nodeId;
+                        link.toNode = link.toNode.id;
+                        this.linkHandlers.create(link);
+                        this.portHandlers.setCoords(target);
+                    }
+                });
+            });
+        },
+    }
+
+    linkHandlers = {
+        init: (target) => {
+            if (!target.enabled) {
+                console.warn('이미 연결된 노드가 존재 합니다.');
+                return;
+            }
+            this.interactionMode = 'link';
+            const { left, top } = target;
+            // const points = [left, top, left, top];
+            const fromPort = { left, top };
+            const toPort = { left, top };
+            this.activeLine = new CurvedLink(target.nodeId, fromPort, null, toPort, {
+                strokeWidth: 2,
+                fill: '#999999',
+                stroke: '#999999',
+                class: 'line',
+                originX: 'center',
+                originY: 'center',
+                selectable: false,
+                hasBorders: false,
+                hasControls: false,
+                evented: false,
+                fromNode: target.nodeId,
+                fromPort: target.id,
+            });
+            this.canvas.add(this.activeLine);
+            this.canvas.selection = false;
+        },
+        finish: () => {
+            this.interactionMode = 'selection';
+            this.canvas.remove(this.activeLine);
+            this.activeLine = null;
+            // this.canvas.selection = true;
+            this.canvas.renderAll();
+        },
+        generate: (target) => {
+            if (target.nodeId === this.activeLine.fromNode) {
+                console.warn('같은 노드를 선택할 수 없습니다.');
+                return;
+            }
+            const link = {
+                type: 'CurvedLink',
+                fromNode: this.activeLine.fromNode,
+                fromPort: this.activeLine.fromPort,
+                toNode: target.nodeId,
+                toPort: target.id,
+            };
+            this.linkHandlers.create(link);
+            this.linkHandlers.finish();
+        },
+        create: (link) => {
+            const fromNode = this.handlers.findById(link.fromNode);
+            const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPort || !port.id)[0];
+            const toNode = this.handlers.findById(link.toNode);
+            const { toPort } = toNode;
+            const createdObj = this.fabricObjects[link.type].create(fromNode, fromPort, toNode, toPort, { ...link });
+            this.canvas.add(createdObj);
+            this.canvas.renderAll();
+            createdObj.setPort(fromNode, fromPort, toNode, toPort);
+            this.portHandlers.setCoords(fromNode);
+            this.portHandlers.setCoords(toNode);
+            return createdObj;
+        },
+        setCoords: (x1, y1, x2, y2, link) => {
+            link.set({
+                x1,
+                y1,
+                x2,
+                y2,
+            });
+            link.setCoords();
+        },
+        removeFrom: (link) => {
+            if (link.fromNode.fromPort.length) {
+                let index = -1;
+                link.fromNode.fromPort.forEach((port) => {
+                    if (port.links.length) {
+                        port.links.some((portLink, i) => {
+                            if (link.id === portLink.id) {
+                                index = i;
+                                return true;
+                            }
+                            return false;
+                        });
+                        if (index > -1) {
+                            port.links.splice(index, 1);
+                        }
+                    }
+                    link.setPortEnabled(link.fromNode, port, true);
+                });
+            }
+        },
+        removeTo: (link) => {
+            if (link.toNode.toPort.links.length) {
+                let index = -1;
+                link.toNode.toPort.links.some((portLink, i) => {
+                    if (link.id === portLink.id) {
+                        index = i;
+                        return true;
+                    }
+                    return false;
+                });
+                if (index > -1) {
+                    link.toNode.toPort.links.splice(index, 1);
+                }
+                link.setPortEnabled(link.toNode, link.toNode.toPort, true);
+            }
+        },
+        removeAll: (link) => {
+            this.linkHandlers.removeFrom(link);
+            this.linkHandlers.removeTo(link);
+        },
+        remove: (link, type) => {
+            if (type === 'from') {
+                this.linkHandlers.removeFrom(link);
+            } else if (type === 'to') {
+                this.linkHandlers.removeTo(link);
+            } else {
+                this.linkHandlers.removeAll(link);
+            }
+            this.canvas.remove(link);
+        },
+        exception: {
+            alreadyConnect: (target) => {
+                if (!target.enabled) {
+                    console.warn('이미 연결된 노드가 존재 합니다.');
+                    return;
+                }
+            },
+            duplicate: (target) => {
+                if (target.links.some(link => link.fromNode.id ===  this.activeLine.fromNode)) {
+                    console.warn('중복된 연결을 할 수 없습니다.');
+                    return;
+                }
+            },
+            alreadyDrawing: () => {
+                if (this.interactionMode === 'link' && this.activeLine) {
+                    console.warn('이미 링크를 그리는 중입니다.');
+                    return;
+                }
+            },
+        },
+    }
+
+    drawingHandlers = {
         polygon: {
+            initDraw: () => {
+                this.interactionMode = 'polygon';
+                this.pointArray = [];
+                this.lineArray = [];
+                this.activeLine = null;
+                this.activeShape = null;
+            },
+            finishDraw: () => {
+                this.interactionMode = 'selection';
+                this.pointArray.forEach((point) => {
+                    this.canvas.remove(point);
+                });
+                this.lineArray.forEach((line) => {
+                    this.canvas.remove(line);
+                });
+                this.canvas.remove(this.activeLine);
+                this.canvas.remove(this.activeShape);
+                this.pointArray = [];
+                this.lineArray = [];
+                this.activeLine = null;
+                this.activeShape = null;
+                this.canvas.selection = true;
+                this.canvas.renderAll();
+            },
             addPoint: (opt) => {
                 const id = uuid();
                 const { e, absolutePointer } = opt;
@@ -1914,7 +2633,7 @@ class Canvas extends Component {
             },
         },
         line: {
-
+            
         },
     }
 
@@ -1961,12 +2680,21 @@ class Canvas extends Component {
 
     zoomHandlers = {
         zoomToPoint: (point, zoom) => {
-            const { onZoom } = this.props;
-            this.canvas.zoomToPoint(point, zoom);
+            const { onZoom, zoomEnabled, minZoom, maxZoom } = this.props;
+            if (!zoomEnabled) {
+                return;
+            }
+            let zoomRatio = zoom;
+            if (zoom <= (minZoom / 100)) {
+                zoomRatio = minZoom / 100;
+            } else if (zoom >= (maxZoom / 100)) {
+                zoomRatio = maxZoom / 100;
+            }
+            this.canvas.zoomToPoint(point, zoomRatio);
             this.canvas.getObjects().forEach((obj) => {
                 if (this.handlers.isElementType(obj.type)) {
-                    const width = obj.width * obj.scaleX * zoom;
-                    const height = obj.height * obj.scaleY * zoom;
+                    const width = obj.width * obj.scaleX * zoomRatio;
+                    const height = obj.height * obj.scaleY * zoomRatio;
                     const el = this.elementHandlers.findById(obj.id);
                     // update the element
                     this.elementHandlers.setSize(el, width, height);
@@ -1978,7 +2706,7 @@ class Canvas extends Component {
                 }
             });
             if (onZoom) {
-                onZoom(zoom);
+                onZoom(zoomRatio);
             }
         },
         zoomOneToOne: () => {
@@ -2005,7 +2733,7 @@ class Canvas extends Component {
         },
         zoomIn: () => {
             let zoomRatio = this.canvas.getZoom();
-            zoomRatio += 0.01;
+            zoomRatio += 0.05;
             const center = this.canvas.getCenter();
             const point = {
                 x: center.left,
@@ -2015,7 +2743,7 @@ class Canvas extends Component {
         },
         zoomOut: () => {
             let zoomRatio = this.canvas.getZoom();
-            zoomRatio -= 0.01;
+            zoomRatio -= 0.05;
             const center = this.canvas.getCenter();
             const point = {
                 x: center.left,
@@ -2134,7 +2862,10 @@ class Canvas extends Component {
             // but we're not doing it here for perf. reasons -- as this a function that's invoked on every mouse move
 
             for (let i = canvasObjects.length; i--;) {
-                if (canvasObjects[i] === target) {
+                if (canvasObjects[i] === target
+                    || canvasObjects[i].superType === 'port'
+                    || canvasObjects[i].superType === 'link'
+                    || !canvasObjects[i].evented) {
                     continue;
                 }
 
@@ -2331,6 +3062,56 @@ class Canvas extends Component {
         },
     }
 
+    gridHandlers = {
+        init: () => {
+            const { gridOption } = this.props;
+            if (gridOption.enabled && gridOption.grid) {
+                const width = 5000;
+                const gridLength = width / gridOption.grid;
+                const lineOptions = {
+                    stroke: '#ebebeb',
+                    // strokeWidth: 1,
+                    selectable: false,
+                    evented: false,
+                    id: 'grid',
+                };
+                this.horizontalGridLines = [];
+                this.verticalGridLines = [];
+                for (let i = 0; i < gridLength; i++) {
+                    const distance = i * gridOption.grid;
+                    const fhorizontal = new fabric.Line([distance, -width, distance, width], lineOptions);
+                    const shorizontal = new fabric.Line([distance - width, -width, distance - width, width], lineOptions);
+                    this.canvas.add(fhorizontal);
+                    this.canvas.add(shorizontal);
+                    const fvertical = new fabric.Line([-width, distance - width, width, distance - width], lineOptions);
+                    const svertical = new fabric.Line([-width, distance, width, distance], lineOptions);
+                    this.canvas.add(fvertical);
+                    this.canvas.add(svertical);
+                    if (i % 5 === 0) {
+                        fhorizontal.set({ stroke: '#cccccc' });
+                        shorizontal.set({ stroke: '#cccccc' });
+                        fvertical.set({ stroke: '#cccccc', top: fvertical.top + 10 });
+                        svertical.set({ stroke: '#cccccc', top: svertical.top + 10 });
+                    } else {
+                        fvertical.set({ top: fvertical.top + 10 });
+                        svertical.set({ top: svertical.top + 10 });
+                    }
+                }
+            }
+        },
+        setCoords: (target) => {
+            const { gridOption: { enabled, grid, snapToGrid } } = this.props;
+            if (enabled && grid && snapToGrid) {
+                target.set({
+                    left: Math.round(target.left / grid) * grid,
+                    top: Math.round(target.top / grid) * grid,
+                });
+                target.setCoords();
+                this.portHandlers.setCoords(target);
+            }
+        },
+    }
+
     eventHandlers = {
         object: {
             mousedown: (opt) => {
@@ -2345,8 +3126,8 @@ class Canvas extends Component {
         },
         modified: (opt) => {
             const { onModified } = this.props;
+            const { target } = opt;
             if (onModified) {
-                const { target } = opt;
                 if (!target) {
                     return;
                 }
@@ -2361,13 +3142,27 @@ class Canvas extends Component {
             if (this.interactionMode === 'crop') {
                 this.cropHandlers.moving(opt);
             } else {
-                this.guidelineHandlers.movingGuidelines(target);
-                if (this.handlers.isElementType(target.type)) {
+                if (this.props.guidelineOption.enabled) {
+                    this.guidelineHandlers.movingGuidelines(target);
+                }
+                if (target.superType === 'node') {
+                    this.portHandlers.setCoords(target);
+                    if (target.iconButton) {
+                        target.iconButton.set({
+                            left: target.left + 5,
+                            top: target.top + 5,
+                        });
+                    }
+                } else if (this.handlers.isElementType(target.type)) {
                     const el = this.elementHandlers.findById(target.id);
                     // update the element
                     this.elementHandlers.setPosition(el, target.left, target.top);
                 }
             }
+        },
+        moved: (opt) => {
+            const { target } = opt;
+            this.gridHandlers.setCoords(target);
         },
         scaling: (opt) => {
             const { target } = opt;
@@ -2423,22 +3218,16 @@ class Canvas extends Component {
             }
         },
         mousewheel: (opt) => {
-            const { zoom, onZoom } = this.props;
-            if (zoom) {
-                const delta = opt.e.deltaY;
-                let zoomRatio = this.canvas.getZoom();
-                if (delta > 0) {
-                    zoomRatio -= 0.01;
-                } else {
-                    zoomRatio += 0.01;
-                }
-                this.zoomHandlers.zoomToPoint(new fabric.Point(this.canvas.width / 2, this.canvas.height / 2), zoomRatio);
-                opt.e.preventDefault();
-                opt.e.stopPropagation();
-                if (onZoom) {
-                    onZoom(zoomRatio);
-                }
+            const delta = opt.e.deltaY;
+            let zoomRatio = this.canvas.getZoom();
+            if (delta > 0) {
+                zoomRatio -= 0.05;
+            } else {
+                zoomRatio += 0.05;
             }
+            this.zoomHandlers.zoomToPoint(new fabric.Point(this.canvas.width / 2, this.canvas.height / 2), zoomRatio);
+            opt.e.preventDefault();
+            opt.e.stopPropagation();
         },
         mousedown: (opt) => {
             if (this.interactionMode === 'grab') {
@@ -2447,6 +3236,22 @@ class Canvas extends Component {
             const { onSelect, editable } = this.props;
             const { target } = opt;
             if (editable) {
+                if (target && target.type === 'fromPort') {
+                    if (this.interactionMode === 'link' && this.activeLine) {
+                        console.warn('이미 링크를 그리는 중입니다.');
+                        return;
+                    }
+                    this.linkHandlers.init(target);
+                    return;
+                }
+                if (target && this.interactionMode === 'link' && target.type === 'toPort') {
+                    if (target.links.some(link => link.fromNode.id ===  this.activeLine.fromNode)) {
+                        console.warn('중복된 연결을 할 수 없습니다.');
+                        return;
+                    }
+                    this.linkHandlers.generate(target);
+                    return;
+                }
                 this.viewportTransform = this.canvas.viewportTransform;
                 this.zoom = this.canvas.getZoom();
                 if (this.interactionMode === 'selection') {
@@ -2466,6 +3271,7 @@ class Canvas extends Component {
         mousemove: (opt) => {
             if (this.interactionMode === 'grab' && this.panning) {
                 this.modeHandlers.moving(opt.e);
+                this.canvas.requestRenderAll();
             }
             if (!this.props.editable && opt.target) {
                 if (this.handlers.isElementType(opt.target.type)) {
@@ -2491,17 +3297,24 @@ class Canvas extends Component {
                     this.activeShape.set({
                         points,
                     });
-                    this.canvas.renderAll();
+                    this.canvas.requestRenderAll();
                 }
+            } else if (this.interactionMode === 'link') {
+                if (this.activeLine && this.activeLine.class === 'line') {
+                    const pointer = this.canvas.getPointer(opt.e);
+                    this.activeLine.set({ x2: pointer.x, y2: pointer.y });
+                }
+                this.canvas.requestRenderAll();
             }
-            this.canvas.renderAll();
         },
         mouseup: (opt) => {
             if (this.interactionMode === 'grab') {
                 this.panning = false;
             }
-            this.verticalLines.length = 0;
-            this.horizontalLines.length = 0;
+            if (this.props.guidelineOption.enabled) {
+                this.verticalLines.length = 0;
+                this.horizontalLines.length = 0;
+            }
             this.canvas.renderAll();
         },
         mouseout: (opt) => {
@@ -2684,134 +3497,19 @@ class Canvas extends Component {
             } else if (e.ctrlKey && e.keyCode === 67) {
                 e.preventDefault();
                 this.handlers.copy();
-            }
-            // else if (e.ctrlKey && e.keyCode === 86) {
-            //     e.preventDefault();
-            //     console.log('tewqttweq');
-            //     this.handlers.paste();
-            // } 
-            else if (e.keyCode === 27) {
-                if (this.interactionMode === 'polygon') {
-                    this.drawingHandlers.finishDraw();
+            } else if (e.ctrlKey && e.keyCode === 86) {
+                e.preventDefault();
+                this.handlers.paste();
+            } else if (e.keyCode === 27) {
+                if (this.interactionMode === 'selection') {
+                    this.canvas.discardActiveObject();
+                } else if (this.interactionMode === 'polygon') {
+                    this.drawingHandlers.polygon.finishDraw();
+                } else if (this.interactionMode === 'link') {
+                    this.linkHandlers.finish();
                 }
             }
         },
-    }
-
-    constructor(props) {
-        super(props);
-        this.fabricObjects = CanvasObjects(props.fabricObjects);
-        this.container = React.createRef();
-    }
-
-    state = {
-        id: uuid(),
-        clipboard: null,
-    }
-
-    componentDidMount() {
-        const { id } = this.state;
-        const { editable, backgroundColor, width, height } = this.props;
-        this.canvas = new fabric.Canvas(`canvas_${id}`, {
-            preserveObjectStacking: true,
-            backgroundColor,
-            width,
-            height,
-            selection: editable,
-        });
-        this.workarea = new fabric.Image(null, {
-            ...workareaOption,
-        });
-        this.canvas.add(this.workarea);
-        this.canvas.centerObject(this.workarea);
-        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
-        if (editable) {
-            this.interactionMode = 'selection';
-            this.panning = false;
-            this.guidelineHandlers.init();
-            this.canvas.on({
-                'object:modified': modified,
-                'object:scaling': scaling,
-                'object:moving': moving,
-                'object:rotating': rotating,
-                'mouse:wheel': mousewheel,
-                'mouse:down': mousedown,
-                'mouse:move': mousemove,
-                'mouse:up': mouseup,
-                'selection:cleared': selection,
-                'selection:created': selection,
-                'selection:updated': selection,
-                'before:render': beforeRender,
-                'after:render': afterRender,
-            });
-            this.attachEventListener();
-        } else {
-            this.tooltipRef = document.createElement('div');
-            this.tooltipRef.id = `${id}_tooltip`;
-            this.tooltipRef.className = 'rde-canvas-tooltip tooltip-hidden';
-            document.body.appendChild(this.tooltipRef);
-            this.canvas.on({
-                'mouse:move': mousemove,
-                'mouse:out': mouseout,
-            });
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        const { width: currentWidth, height: currentHeight } = this.props;
-        const { width: prevWidth, height: prevHeight } = prevProps;
-        if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
-            this.eventHandlers.resize(prevWidth, prevHeight, currentWidth, currentHeight);
-        }
-    }
-
-    componentWillUnmount() {
-        this.detachEventListener();
-        const { modified, moving, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
-        if (this.props.editable) {
-            this.canvas.off({
-                'object:modified': modified,
-                'object:scaling': scaling,
-                'object:moving': moving,
-                'object:rotating': rotating,
-                'mouse:wheel': mousewheel,
-                'mouse:down': mousedown,
-                'mouse:move': mousemove,
-                'mouse:up': mouseup,
-                'selection:cleared': selection,
-                'selection:created': selection,
-                'selection:updated': selection,
-                'before:render': beforeRender,
-                'after:render': afterRender,
-            });
-        } else {
-            this.canvas.off({
-                'mouse:move': mousemove,
-                'mouse:out': mouseout,
-            });
-            this.canvas.getObjects().forEach((object) => {
-                object.off('mousedown', this.eventHandlers.object.mousedown);
-                if (object.anime) {
-                    anime.remove(object);
-                }
-            });
-        }
-        this.handlers.clear(true);
-        if (this.tooltipRef) {
-            document.body.removeChild(this.tooltipRef);
-        }
-    }
-
-    attachEventListener = () => {
-        // if add canvas wrapper element event, tabIndex = 1000;
-        this.canvas.wrapperEl.tabIndex = 1000;
-        document.addEventListener('keydown', this.eventHandlers.keydown, false);
-        document.addEventListener('paste', this.eventHandlers.paste, false);
-    }
-
-    detachEventListener = () => {
-        document.removeEventListener('keydown', this.eventHandlers.keydown);
-        document.removeEventListener('paste', this.eventHandlers.paste);
     }
 
     render() {
@@ -2821,6 +3519,7 @@ class Canvas extends Component {
                 ref={this.container}
                 id="rde-canvas"
                 className="rde-canvas"
+                style={{ width: '100%', height: '100%' }}
             >
                 <canvas id={`canvas_${id}`} />
             </div>
