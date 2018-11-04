@@ -1,5 +1,5 @@
 # React Design Editor
-- React Design Editor has started to develope Direct Manipulation of Editable Design Tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js
+- React Design Editor has started to develope direct manipulation of editable design tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js
 
 - Layouts and components such as property edits, item lists, toolbars were developed as react.js and the ant.design component was primarily used.
 
@@ -28,29 +28,19 @@
 # Image Map
 ## Three layout mode
 ### 1. Fixed
-#### Workarea fixed
-
-![image](https://user-images.githubusercontent.com/19975642/45008644-cdae1900-b03e-11e8-84bb-a1742a03f6f0.PNG)
+![fixed](https://user-images.githubusercontent.com/19975642/47961458-b5627680-e04e-11e8-99e0-9d4276c4e9e5.PNG)
 
 ### 2. Responsive
-#### Preserves image quality
-##### Horizontal Image
-![image](https://user-images.githubusercontent.com/19975642/45008653-d30b6380-b03e-11e8-91d1-b3944fa798be.PNG)
-
-##### Vertical Image
-![image](https://user-images.githubusercontent.com/19975642/45008654-d3a3fa00-b03e-11e8-9e9d-5ed644539b3e.PNG)
+![responsive](https://user-images.githubusercontent.com/19975642/47961459-b7c4d080-e04e-11e8-84b0-b4921270eddd.PNG)
 
 ### 3. Fullscreen
-#### Fills the container area
-
-![image](https://user-images.githubusercontent.com/19975642/45008657-d4d52700-b03e-11e8-8f6f-6b5ac3bcafb0.PNG)
+![fullscreen](https://user-images.githubusercontent.com/19975642/47961460-b98e9400-e04e-11e8-9df3-14f12edb3a5f.PNG)
 
 ### Preview mode
-
-![image](https://user-images.githubusercontent.com/19975642/45008659-d6065400-b03e-11e8-9eb6-92ea6fbbfd6e.PNG)
+![preview](https://user-images.githubusercontent.com/19975642/47961461-babfc100-e04e-11e8-8f52-b5dd88e5a5b9.PNG)
 
 # Workflow
-to be contiuned..
+![workflow](https://user-images.githubusercontent.com/19975642/47961462-bbf0ee00-e04e-11e8-9185-de5759f2463a.PNG)
 
 # Supported
 - [x] Add
@@ -65,7 +55,7 @@ to be contiuned..
 - [x] Drag & Drop
 - [x] Upload (Drag & Drop)
 - [x] Alignments
-- [x] Drawing - Polygon
+- [x] Drawing - Polygon, Link
 - [x] Export / Import - JSON
 - [x] Video
 - [x] Dom Element
