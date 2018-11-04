@@ -24,6 +24,12 @@ class StyleModal extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        if (JSON.stringify(nextProps.style) !== JSON.stringify(this.props.style)) {
+            delete nextProps.style.strokeDashArray;
+            Object.keys(nextProps.style).forEach((key) => {
+                this.canvasRef.handlers.setById('styles', key, nextProps.style[key]);
+            });
+        }
         nextProps.form.resetFields();
     }
 
@@ -33,6 +39,25 @@ class StyleModal extends Component {
                 this.setState({
                     width: container.clientWidth,
                     height: container.clientHeight,
+                }, () => {
+                    const option = {
+                        type: 'i-text',
+                        text: '\uf3c5',
+                        fontFamily: 'Font Awesome 5 Free',
+                        fontWeight: 900,
+                        fontSize: 60,
+                        width: 30,
+                        height: 30,
+                        editable: false,
+                        name: 'New marker',
+                        tooltip: {
+                            enabled: false,
+                        },
+                        left: 200,
+                        top: 50,
+                        id: 'styles',
+                    };
+                    this.canvasRef.handlers.add(option);
                 });
                 return;
             }
@@ -54,7 +79,12 @@ class StyleModal extends Component {
                 </Form.Item>
                 {StyleProperty.render(this.canvasRef, form, style)}
                 <div ref={(c) => { this.containerRef = c; }}>
-                    <Canvas ref={this.canvasRef} editable={false} width={width} height={height} />
+                    <Canvas
+                        ref={(c) => { this.canvasRef = c;}}
+                        editable={false}
+                        canvasOption={{ width, height, backgroundColor: '#f3f3f3' }}
+                        workareaOption={{ backgroundColor: 'transparent' }}
+                    />
                 </div>
             </Modal>
         );

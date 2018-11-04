@@ -24,6 +24,15 @@ class AnimationModal extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        if (!nextProps.visible) {
+            if (this.canvasRef) {
+                this.canvasRef.animationHandlers.stop('animations');
+            }
+            return;
+        }
+        if (JSON.stringify(nextProps.animation) !== JSON.stringify(this.props.animation)) {
+            this.canvasRef.handlers.setById('animations', 'animation', nextProps.animation);
+        }
         nextProps.form.resetFields();
     }
 
@@ -33,6 +42,25 @@ class AnimationModal extends Component {
                 this.setState({
                     width: container.clientWidth,
                     height: container.clientHeight,
+                }, () => {
+                    const option = {
+                        type: 'i-text',
+                        text: '\uf3c5',
+                        fontFamily: 'Font Awesome 5 Free',
+                        fontWeight: 900,
+                        fontSize: 60,
+                        width: 30,
+                        height: 30,
+                        editable: false,
+                        name: 'New marker',
+                        tooltip: {
+                            enabled: false,
+                        },
+                        left: 200,
+                        top: 50,
+                        id: 'animations',
+                    };
+                    this.canvasRef.handlers.add(option);
                 });
                 return;
             }
@@ -52,9 +80,14 @@ class AnimationModal extends Component {
                 <Form.Item label="Title" required colon={false} hasFeedback help={validateTitle.help} validateStatus={validateTitle.validateStatus}>
                     <Input value={animation.title} onChange={(e) => { onChange(null, { animation: { title: e.target.value } }, { animation: { ...animation, title: e.target.value } }); }} />
                 </Form.Item>
-                {AnimationProperty.render(this.canvasRef, form, { animation })}
+                {AnimationProperty.render(this.canvasRef, form, { animation, id: 'animations' })}
                 <div ref={(c) => { this.containerRef = c; }}>
-                    <Canvas ref={this.canvasRef} editable={false} width={width} height={height} />
+                    <Canvas
+                        ref={(c) => { this.canvasRef = c;}}
+                        editable={false}
+                        canvasOption={{ width, height, backgroundColor: '#f3f3f3' }}
+                        workareaOption={{ backgroundColor: 'transparent' }}
+                    />
                 </div>
             </Modal>
         );

@@ -127,7 +127,6 @@ class Canvas extends Component {
     componentDidMount() {
         const { id } = this.state;
         const { editable, canvasOption, workareaOption, guidelineOption } = this.props;
-        console.log(canvasOption);
         const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption);
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));

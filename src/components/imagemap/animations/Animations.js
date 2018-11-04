@@ -18,7 +18,6 @@ class Animations extends Component {
 
     constructor(props) {
         super(props);
-        this.canvasRef = React.createRef();
     }
 
     state = {
