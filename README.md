@@ -42,7 +42,7 @@
 # Workflow
 ![workflow](https://user-images.githubusercontent.com/19975642/47961462-bbf0ee00-e04e-11e8-9185-de5759f2463a.PNG)
 
-# Supported
+# Features
 - [x] Add
 - [x] Remove
 - [x] Resize
@@ -68,6 +68,8 @@
 - [x] Interaction Mode - grap / selection
 - [x] Group / Ungroup
 - [x] Image Cropping
+- [x] Snap To Grid
+- [x] Multiple Layout - Fixed / Responsive / Fullscreen / Grid
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Undo / Redo - development
