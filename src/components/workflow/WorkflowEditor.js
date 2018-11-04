@@ -24,7 +24,7 @@ class WorkflowEditor extends Component {
 
     state = {
         loading: true,
-        zoomRatio: parseFloat(storage.read('zoomRatio')) || 1,
+        zoomRatio: 1,
         canvasRect: {
             width: 0,
             height: 0,
@@ -40,7 +40,6 @@ class WorkflowEditor extends Component {
             this.setState({
                 descriptors,
             }, () => {
-                this.canvasRef.canvas.setZoom(this.state.zoomRatio);
                 this.hideLoading();
             });
         });
@@ -64,7 +63,6 @@ class WorkflowEditor extends Component {
 
     canvasHandlers = {
         onZoom: (zoom) => {
-            storage.write('zoomRatio', zoom);
             this.setState({
                 zoomRatio: zoom,
             });
