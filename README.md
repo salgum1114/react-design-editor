@@ -69,6 +69,7 @@
 - [x] Group / Ungroup
 - [x] Image Cropping
 - [x] Snap To Grid
+- [x] Multiple Layout - Fixed / Responsive / Fullscreen / Grid
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Undo / Redo - development
