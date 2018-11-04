@@ -358,8 +358,8 @@ class Canvas extends Component {
                 const createdObj = new fabric.Image(img, {
                     src,
                     file,
-                    ...otherOption,
                     ...defaultOptions,
+                    ...otherOption,
                 });
                 if (!editable) {
                     createdObj.on('mousedown', this.eventHandlers.object.mousedown);
@@ -397,8 +397,8 @@ class Canvas extends Component {
                 src,
                 file,
                 code,
-                ...otherOption,
                 ...defaultOptions,
+                ...otherOption,
                 fill: 'rgba(255, 255, 255, 0)',
                 stroke: 'rgba(255, 255, 255, 0)',
             });
