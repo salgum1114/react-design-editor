@@ -1,8 +1,6 @@
 # React Design Editor
 - React Design Editor has started to develope Direct Manipulation of Editable Design Tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js
 
-- React Design Eidtor used fabric.js, because the main container starts with the canvas.
-
 - Layouts and components such as property edits, item lists, toolbars were developed as react.js and the ant.design component was primarily used.
 
 - The project is constantly being developed to support a variety of functions, and its goal is to be able to draw workflow (BPMN) in the future.
@@ -63,13 +61,12 @@ to be contiuned..
 - [x] Reorder
 - [x] Zoom
 - [x] Preview
-- [x] Copy & Paste (Local/External)
+- [x] Copy & Paste
 - [x] Drag & Drop
-- [x] Image Upload (Local/External)
-- [x] External Drag & Drop Upload
+- [x] Upload (Drag & Drop)
 - [x] Alignments
 - [x] Drawing - Polygon
-- [x] Export / Import - JSON, PNG
+- [x] Export / Import - JSON
 - [x] Video
 - [x] Dom Element
 - [x] Code Editor - HTML / CSS / JS / Preview
@@ -77,7 +74,7 @@ to be contiuned..
 - [x] Animation - Fade / Bounce / Shake / Scaling / Rotation / Flash
 - [x] Icon Chooser - fontawesome 5.2.0 free version
 - [x] Google Fonts - 20 fonts
-- [x] Align Guidlines - moving / resize (development)
+- [x] Align Guidlines - moving
 - [x] Interaction Mode - grap / selection
 - [x] Group / Ungroup
 - [x] Image Cropping
