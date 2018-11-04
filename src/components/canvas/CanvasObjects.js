@@ -1,5 +1,4 @@
 import { fabric } from 'fabric';
-import { Node } from './CustomObjects';
 
 export default (mergeObjects) => {
     const defaultOptions = {
@@ -72,16 +71,11 @@ export default (mergeObjects) => {
             create: ({ points, ...option }) => new fabric.Polygon(points, {
                 ...defaultOptions,
                 ...option,
+                perPixelTargetFind: true,
             }),
         },
         line: {
             create: ({ points, ...option }) => new fabric.Line(points, {
-                ...defaultOptions,
-                ...option,
-            }),
-        },
-        node: {
-            create: option => new Node({
                 ...defaultOptions,
                 ...option,
             }),

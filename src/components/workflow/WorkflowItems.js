@@ -16,7 +16,6 @@ class WorkflowItems extends Component {
     static propTypes = {
         canvasRef: PropTypes.any,
         descriptors: PropTypes.object,
-        zoomRatio: PropTypes.number,
     }
 
     state = {
@@ -171,14 +170,15 @@ class WorkflowItems extends Component {
                         onClick={e => this.handlers.onAddItem(item)}
                         onDragStart={e => this.events.onDragStart(e, item)}
                         onDragEnd={e => this.events.onDragEnd(e, item)}
-                        className="rde-canvas-editor-items-item"
+                        className="rde-editor-items-item"
+                        style={{ justifyContent: this.state.collapse ? 'center' : null }}
                     >
-                        <span className="rde-canvas-editor-items-item-icon">
+                        <span className="rde-editor-items-item-icon">
                             <Icon name={item.icon && item.icon.length ? item.icon : 'image'} color={NODE_COLORS[item.type].fill} />
                         </span>
                         {
                             this.state.collapse ? null : (
-                                <span className="rde-canvas-editor-items-item-text">
+                                <span className="rde-editor-items-item-text">
                                     {item.name}
                                 </span>
                             )
@@ -192,7 +192,7 @@ class WorkflowItems extends Component {
     render() {
         const { descriptors } = this.props;
         const { activeKey, filteredDescriptors, collapse, textSearch } = this.state;
-        const className = classnames('rde-canvas-editor-items', {
+        const className = classnames('rde-editor-items', {
             minimize: collapse,
         });
         return (

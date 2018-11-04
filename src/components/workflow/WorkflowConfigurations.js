@@ -37,7 +37,7 @@ class WorkflowConfigurations extends Component {
     render() {
         const { canvasRef, selectedItem, workflow, onChange } = this.props;
         const { collapse, activeKey } = this.state;
-        const className = classnames('rde-canvas-editor-configurations', {
+        const className = classnames('rde-editor-configurations', {
             minimize: collapse,
         });
         return (

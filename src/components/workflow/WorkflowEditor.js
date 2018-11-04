@@ -40,6 +40,7 @@ class WorkflowEditor extends Component {
             this.setState({
                 descriptors,
             }, () => {
+                this.canvasRef.canvas.setZoom(this.state.zoomRatio);
                 this.hideLoading();
             });
         });
@@ -166,40 +167,6 @@ class WorkflowEditor extends Component {
             inputEl.click();
             inputEl.remove();
         },
-        onChange: (selectedItem, changedValues, allValues) => {
-            if (!this.state.editing) {
-                this.changeEditing(true);
-            }
-            if (changedValues.workflow) {
-                const workflow = Object.assign({}, this.state.workflow, changedValues.workflow);
-                this.setState({
-                    workflow,
-                });
-            } else {
-                setTimeout(() => {
-                    const configurationList = Object.keys(allValues.configuration).map(key => `configuration.${key}`);
-                    const errors = this.nodeConfigurationRef.props.form.getFieldsError(configurationList.concat(['name']));
-                    if (Object.values(errors.configuration).filter(error => error).length || errors.name) {
-                        selectedItem.setErrors(true);
-                    } else {
-                        selectedItem.setErrors(false);
-                    }
-                    this.canvasRef.canvas.renderAll();
-                }, 0);
-                const configuration = Object.assign({}, selectedItem.configuration, changedValues.configuration);
-                this.canvasRef.handlers.setObject({
-                    configuration,
-                    name: allValues.name,
-                    description: allValues.description,
-                });
-                selectedItem.label.set({
-                    text: getEllipsis(allValues.name, 18),
-                });
-                if (selectedItem.descriptor.outPortType === OUT_PORT_TYPE.DYNAMIC) {
-                    this.canvasRef.portHandlers.recreatePort(selectedItem);
-                }
-            }
-        },
         onDownload: () => {
             this.showLoading();
             const workflow = this.handlers.exportJsonCode();
@@ -261,6 +228,40 @@ class WorkflowEditor extends Component {
                 this.canvasRef.handlers.selectById(error.nodeId);
                 message.error(error.message);
                 this.hideLoading();
+            }
+        },
+        onChange: (selectedItem, changedValues, allValues) => {
+            if (!this.state.editing) {
+                this.changeEditing(true);
+            }
+            if (changedValues.workflow) {
+                const workflow = Object.assign({}, this.state.workflow, changedValues.workflow);
+                this.setState({
+                    workflow,
+                });
+            } else {
+                setTimeout(() => {
+                    const configurationList = Object.keys(allValues.configuration).map(key => `configuration.${key}`);
+                    const errors = this.nodeConfigurationRef.props.form.getFieldsError(configurationList.concat(['name']));
+                    if (Object.values(errors.configuration).filter(error => error).length || errors.name) {
+                        selectedItem.setErrors(true);
+                    } else {
+                        selectedItem.setErrors(false);
+                    }
+                    this.canvasRef.canvas.renderAll();
+                }, 0);
+                const configuration = Object.assign({}, selectedItem.configuration, changedValues.configuration);
+                this.canvasRef.handlers.setObject({
+                    configuration,
+                    name: allValues.name,
+                    description: allValues.description,
+                });
+                selectedItem.label.set({
+                    text: getEllipsis(allValues.name, 18),
+                });
+                if (selectedItem.descriptor.outPortType === OUT_PORT_TYPE.DYNAMIC) {
+                    this.canvasRef.portHandlers.recreatePort(selectedItem);
+                }
             }
         },
     }
@@ -339,6 +340,8 @@ class WorkflowEditor extends Component {
         );
         const titleContent = (
             <React.Fragment>
+                <span>{'Workflow Editor'}</span>
+                <span style={{ width: 40, textAlign: 'center' }}>/</span>
                 <span style={{ color: workflow.enabled ? '#49a9ee' : 'rgba(0, 0, 0, 0.65)' }}>{workflow.name}</span>
             </React.Fragment>
         );
@@ -349,9 +352,9 @@ class WorkflowEditor extends Component {
             />
         );
         const content = (
-            <div className="rde-canvas-editor">
-                <WorkflowItems canvasRef={this.canvasRef} descriptors={descriptors} zoomRatio={zoomRatio} />
-                <div ref={(c) => { this.container = c; }} className="rde-canvas-editor-canvas">
+            <div className="rde-editor">
+                <WorkflowItems canvasRef={this.canvasRef} descriptors={descriptors} />
+                <div ref={(c) => { this.container = c; }} className="rde-editor-canvas">
                     <Canvas
                         ref={(c) => { this.canvasRef = c; }}
                         canvasOption={{
@@ -373,7 +376,7 @@ class WorkflowEditor extends Component {
                         onRemove={onRemove}
                         onModified={onModified}
                     />
-                    <div className="rde-canvas-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
+                    <div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
                         <WorkflowNodeConfigurations
                             wrappedComponentRef={(c) => { this.nodeConfigurationRef = c; }}
                             workflow={workflow}
@@ -383,7 +386,7 @@ class WorkflowEditor extends Component {
                             onChange={onChange}
                         />
                     </div>
-                    <div className="rde-canvas-editor-toolbar">
+                    <div className="rde-editor-toolbar">
                         <WorkflowToolbar canvasRef={this.canvasRef} zoomRatio={zoomRatio} />
                     </div>
                 </div>

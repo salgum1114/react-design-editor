@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
-import ImageMap from '../components/imagemap/Editor';
+import ImageMapEditor from '../components/imagemap/ImageMapEditor';
 import WorkflowEditor from '../components/workflow/WorkflowEditor';
-import Title from '../components/workflow/Title';
+import Title from './Title';
 
 class App extends Component {
     state = {
@@ -16,15 +16,19 @@ class App extends Component {
     }
 
     render() {
-        return this.state.current === 'imagemap' ? (
-            <ImageMap current={this.state.current} onChangeMenu={this.onChangeMenu} />
-        ) : (
+        return (
             <div className="rde-main">
                 <div className="rde-title">
                     <Title onChangeMenu={this.onChangeMenu} current={this.state.current} />
                 </div>
                 <div className="rde-content">
-                    <WorkflowEditor />
+                    {
+                        this.state.current === 'imagemap' ? (
+                            <ImageMapEditor />
+                        ) : (
+                            <WorkflowEditor />
+                        )
+                    }
                 </div>
             </div>
         );

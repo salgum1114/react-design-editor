@@ -127,6 +127,7 @@ class Canvas extends Component {
     componentDidMount() {
         const { id } = this.state;
         const { editable, canvasOption, workareaOption, guidelineOption } = this.props;
+        console.log(canvasOption);
         const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption);
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
@@ -163,7 +164,7 @@ class Canvas extends Component {
         } else {
             this.tooltipRef = document.createElement('div');
             this.tooltipRef.id = `${id}_tooltip`;
-            this.tooltipRef.className = 'rde-canvas-tooltip tooltip-hidden';
+            this.tooltipRef.className = 'rde-tooltip tooltip-hidden';
             document.body.appendChild(this.tooltipRef);
             this.canvas.on({
                 'mouse:move': mousemove,
@@ -173,12 +174,12 @@ class Canvas extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { canvasOption: { width: currentWidth, height: currentHeight } } = this.props;
-        const { canvasOption: { width: prevWidth, height: prevHeight } } = prevProps;
-        if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
-            this.eventHandlers.resize(prevWidth, prevHeight, currentWidth, currentHeight);
-        }
         if (JSON.stringify(this.props.canvasOption) !== JSON.stringify(prevProps.canvasOption)) {
+            const { canvasOption: { width: currentWidth, height: currentHeight } } = this.props;
+            const { canvasOption: { width: prevWidth, height: prevHeight } } = prevProps;
+            if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
+                this.eventHandlers.resize(prevWidth, prevHeight, currentWidth, currentHeight);
+            }
             this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
             this.canvas.selection = this.props.canvasOption.selection;
         }
@@ -548,7 +549,7 @@ class Canvas extends Component {
                         onAdd(cloned);
                     }
                     this.canvas.setActiveObject(cloned);
-                    this.portHandlers.createPort(clonedObj);
+                    this.portHandlers.createPort(cloned);
                     this.canvas.requestRenderAll();
                 }, propertiesToInclude);
             }
@@ -788,7 +789,8 @@ class Canvas extends Component {
             }
             let prevLeft = 0;
             let prevTop = 0;
-            this.canvas.setBackgroundColor(this.props.backgroundColor);
+            console.log(this.props.canvasOption.backgroundColor);
+            this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor);
             const workareaExist = json.some(obj => obj.id === 'workarea');
             if (!workareaExist) {
                 if (!this.workarea) {
@@ -854,6 +856,8 @@ class Canvas extends Component {
             } else if (obj.id === 'grid') {
                 return false;
             } else if (obj.superType === 'port') {
+                return false;
+            } else if (!obj.id) {
                 return false;
             }
             return true;
@@ -1164,6 +1168,7 @@ class Canvas extends Component {
             this.interactionMode = 'selection';
             // this.canvas.selection = true;
             this.canvas.defaultCursor = 'default';
+            this.workarea.hoverCursor = 'default';
             this.canvas.getObjects().forEach((obj) => {
                 if (obj.id !== 'workarea') {
                     if (obj.id === 'grid') {
@@ -1192,6 +1197,7 @@ class Canvas extends Component {
             this.interactionMode = 'grab';
             // this.canvas.selection = false;
             this.canvas.defaultCursor = 'grab';
+            this.workarea.hoverCursor = 'grab';
             this.canvas.getObjects().forEach((obj) => {
                 if (obj.id !== 'workarea') {
                     if (callback) {
@@ -2760,7 +2766,7 @@ class Canvas extends Component {
                     this.tooltipRef.removeChild(this.tooltipRef.firstChild);
                 }
                 const tooltip = document.createElement('div');
-                tooltip.className = 'rde-canvas-tooltip-right';
+                tooltip.className = 'rde-tooltip-right';
                 let element = target.name;
                 const { onTooltip } = this.props;
                 if (onTooltip) {
@@ -2781,7 +2787,7 @@ class Canvas extends Component {
                 const calcTop = offset.top + top + objHeightDiff;
                 if (document.body.clientWidth <= (calcLeft + this.tooltipRef.offsetWidth)) {
                     this.tooltipRef.style.left = `${left + offset.left - this.tooltipRef.offsetWidth}px`;
-                    tooltip.className = 'rde-canvas-tooltip-left';
+                    tooltip.className = 'rde-tooltip-left';
                 } else {
                     this.tooltipRef.style.left = `${calcLeft}px`;
                 }

@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { Button } from 'antd';
 import PropTypes from 'prop-types';
+import { Button, Switch } from 'antd';
 import i18n from 'i18next';
 
 import CommonButton from '../common/CommonButton';
 
-class WorkflowToolbar extends Component {
+class ImageMapFooterToolbar extends Component {
     static propTypes = {
         canvasRef: PropTypes.any,
-        selectedItem: PropTypes.object,
+        preview: PropTypes.bool,
+        onChangePreview: PropTypes.func,
         zoomRatio: PropTypes.number,
     }
 
@@ -24,6 +25,25 @@ class WorkflowToolbar extends Component {
     componentWillUnmount() {
         const { canvasRef } = this.props;
         this.detachEventListener(canvasRef);
+    }
+
+    waitForCanvasRender = (canvas) => {
+        setTimeout(() => {
+            if (canvas) {
+                this.attachEventListener(canvas);
+                return;
+            }
+            const { canvasRef } = this.props;
+            this.waitForCanvasRender(canvasRef);
+        }, 5);
+    };
+
+    attachEventListener = (canvasRef) => {
+        canvasRef.canvas.wrapperEl.addEventListener('keydown', this.events.keydown, false);
+    }
+
+    detachEventListener = (canvasRef) => {
+        canvasRef.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
     }
 
     handlers = {
@@ -55,33 +75,17 @@ class WorkflowToolbar extends Component {
         },
     }
 
-    waitForCanvasRender = (canvas) => {
-        setTimeout(() => {
-            if (canvas) {
-                this.attachEventListener(canvas);
-                return;
-            }
-            const { canvasRef } = this.props;
-            this.waitForCanvasRender(canvasRef);
-        }, 5);
-    };
-
-    attachEventListener = (canvasRef) => {
-        canvasRef.canvas.wrapperEl.addEventListener('keydown', this.events.keydown, false);
-    }
-
-    detachEventListener = (canvasRef) => {
-        canvasRef.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
-    }
-
     render() {
-        const { canvasRef, zoomRatio, debugEnabled, setDebugEnabled } = this.props;
+        const { canvasRef, preview, zoomRatio, onChangePreview } = this.props;
         const { interactionMode } = this.state;
         const { selection, grab } = this.handlers;
+        if (!canvasRef) {
+            return null;
+        }
         const zoomValue = parseInt((zoomRatio * 100).toFixed(2), 10);
         return (
             <React.Fragment>
-                <div className="rde-editor-toolbar-interaction">
+                <div className="rde-editor-footer-toolbar-interaction">
                     <Button.Group>
                         <CommonButton
                             type={interactionMode === 'selection' ? 'primary' : 'default'}
@@ -99,7 +103,7 @@ class WorkflowToolbar extends Component {
                         />
                     </Button.Group>
                 </div>
-                <div className="rde-editor-toolbar-zoom">
+                <div className="rde-editor-footer-toolbar-zoom">
                     <Button.Group>
                         <CommonButton
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
@@ -114,6 +118,12 @@ class WorkflowToolbar extends Component {
                             {zoomValue}%
                         </CommonButton>
                         <CommonButton
+                            onClick={() => { canvasRef.zoomHandlers.zoomToFit(); }}
+                            tooltipTitle={i18n.t('rule-chains.tooltip-one-to-one')}
+                        >
+                            {'Fit'}
+                        </CommonButton>
+                        <CommonButton
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
                             onClick={() => { canvasRef.zoomHandlers.zoomOut(); }}
                             icon="search-minus"
@@ -121,9 +131,12 @@ class WorkflowToolbar extends Component {
                         />
                     </Button.Group>
                 </div>
+                <div className="rde-editor-footer-toolbar-preview">
+                    <Switch checked={preview} onChange={onChangePreview} />
+                </div>
             </React.Fragment>
         );
     }
 }
 
-export default WorkflowToolbar
+export default ImageMapFooterToolbar;

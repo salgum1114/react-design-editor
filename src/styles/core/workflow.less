@@ -1,127 +1,4 @@
-.rde-content-layout {
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    background: #F2F4F8;
-    &-title {
-        // overflow: hidden;
-        // position: relative;
-        width: 100%;
-        height: 38px;
-        background: rgba(217, 217, 217, 0.45);
-        border-bottom: 1px solid #f3f3f3;
-        line-height: 38px;
-        &-title {
-            justify-content: flex-start;
-            // float: left;
-            margin-left: 30px;
-            font-size: 24px;
-            color: #f3f3f3;
-            font-weight: 500;
-            div {
-                line-height:35px;
-            }
-        }
-        &-content {
-            margin-left: 60px;
-            .search-item {
-                margin-right: 12px;
-            }
-            &-flexiblefilter {
-                display: none;
-            }
-        }
-        &-action {
-            margin-right: 12px;
-        }
-        .rde-grid-qua {
-            float: left;
-            margin: 0 0 0 10px;
-            .ant-tag {
-                padding: 2px 15px;
-                background: #f3f3f3;
-                color: #f3f3f3;
-                border: unset;
-            }
-        }
-        .rde-filter-search {
-            float: left;
-            margin: 0 20px;
-            width: 240px;
-            input {
-                background: transparent;
-                border-radius: 0;
-                border: none;
-                border-bottom: 1px solid #f3f3f3;
-            }
-            input:focus {
-                box-shadow: none;
-                border-bottom: 1px solid #f3f3f3;
-            }
-        }
-    }
-    &-main {
-        padding: 20px;
-    }
-    &-sider {
-        background: #f3f3f3;
-        border-right: 1px solid #f3f3f3;
-        .ant-tree {
-            margin: 5px 0;
-            li {
-                padding: 0;
-            }
-            .ant-tag {
-                width: 18px;
-                height: 18px;
-                line-height: 16px;
-                font-size: 8px;
-                padding: 0 4px;
-                opacity: 0.8;
-            }
-            .ant-badge {
-                opacity: 0.8;
-                margin-left: 8px;
-            }
-        }
-    }
-    .rde-sidebar-toggle {
-        width: 0;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        background: #f3f3f3;
-        button {
-            background: #f3f3f3;
-            color: #f3f3f3;
-            // border: unset;
-            margin-left: -1px;
-            padding: 20px 5px 35px 5px;
-            border-radius: 0px 4px 4px 0px;
-            border-top: 1px solid #e2e2e2;
-            border-right: 1px solid #e2e2e2;
-            border-bottom: 1px solid #e2e2e2;
-            border-left: unset;
-        }
-    }
-    .ant-layout {
-        background: #F2F4F8;
-    }
-    .ant-table-wrapper {
-        //margin: 20px;
-    }
-    table {
-        border: 1px solid #f3f3f3;
-        background: white;
-        .ant-table-thead {
-            th {
-                background: #f3f3f3;
-            }
-        }
-    }
-}
-
-.rde-canvas-editor {
+.rde-editor {
     overflow: hidden;
     display: -webkit-box;
     display: -ms-flexbox;
@@ -268,6 +145,9 @@
             .ant-tabs-content {
                 padding-right: 0;
                 height: 100%;
+                .ant-tabs-tabpane {
+                    height: 100%;
+                }
             }
         }
         .ant-list-item {
@@ -307,7 +187,7 @@
             }
         }
         &:hover {
-            .track-vertical {
+            .rde-track-vertical {
                 opacity: 1;
                 z-index: 9999;
             }
