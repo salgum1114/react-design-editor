@@ -105,13 +105,13 @@ export default {
                             <Form.Item label="Playback" colon={false}>
                                 <Row>
                                     <Col span={8}>
-                                        <Button onClick={() => { canvasRef.current.animationHandlers.play(data.id); }}>Start</Button>
+                                        <Button onClick={() => { canvasRef.animationHandlers.play(data.id); }}>Start</Button>
                                     </Col>
                                     <Col span={8}>
-                                        <Button onClick={() => { canvasRef.current.animationHandlers.pause(data.id); }}>Pause</Button>
+                                        <Button onClick={() => { canvasRef.animationHandlers.pause(data.id); }}>Pause</Button>
                                     </Col>
                                     <Col span={8}>
-                                        <Button onClick={() => { canvasRef.current.animationHandlers.stop(data.id); }}>Stop</Button>
+                                        <Button onClick={() => { canvasRef.animationHandlers.stop(data.id); }}>Stop</Button>
                                     </Col>
                                 </Row>
                             </Form.Item>

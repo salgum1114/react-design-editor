@@ -789,7 +789,6 @@ class Canvas extends Component {
             }
             let prevLeft = 0;
             let prevTop = 0;
-            console.log(this.props.canvasOption.backgroundColor);
             this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor);
             const workareaExist = json.some(obj => obj.id === 'workarea');
             if (!workareaExist) {
