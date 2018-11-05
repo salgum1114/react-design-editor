@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { ResizeSensor } from 'css-element-queries';
 import i18n from 'i18next';
@@ -21,7 +20,6 @@ import NodeConfigurationError from './error/NodeConfigurationError';
 import CommonButton from '../common/CommonButton';
 
 class WorkflowEditor extends Component {
-
     state = {
         loading: true,
         zoomRatio: 1,
