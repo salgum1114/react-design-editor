@@ -2051,11 +2051,14 @@ class Canvas extends Component {
                         });
                         workarea.set({
                             ...img,
+                            selectable: false,
+                        });
+                    } else {
+                        workarea.set({
+                            _element: null,
+                            selectable: false,
                         });
                     }
-                    workarea.set({
-                        selectable: false,
-                    });
                     canvas.centerObject(workarea);
                     if (editable && !loaded) {
                         const { layout } = workarea;
