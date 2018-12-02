@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
 import classnames from 'classnames';
 
-import Properties from './properties/Properties';
+import NodeProperties from './properties/NodeProperties';
+import MapProperties from './properties/MapProperties';
 import Animations from './animations/Animations';
 import Styles from './styles/Styles';
 import DataSources from './datasources/DataSources';
@@ -24,14 +25,8 @@ class ImageMapConfigurations extends Component {
     }
 
     state = {
-        activeKey: 'properties',
+        activeKey: 'map',
     }
-
-    getAnimations = () => this.animationsRef.state.animations;
-
-    getStyles = () => this.stylesRef.state.styles;
-
-    getDataSources = () => this.dataSourcesRef.state.dataSources;
 
     handlers = {
         onChangeTab: (activeKey) => {
@@ -79,14 +74,17 @@ class ImageMapConfigurations extends Component {
                     onChange={onChangeTab}
                     tabBarStyle={{ marginTop: 60 }}
                 >
-                    <Tabs.TabPane tab={<Icon name="cog" />} key="properties">
-                        <Properties onChange={onChange} selectedItem={selectedItem} canvasRef={canvasRef} />
+                    <Tabs.TabPane tab={<Icon name="cog" />} key="map">
+                        <MapProperties onChange={onChange} canvasRef={canvasRef} />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab={<Icon name="cogs" />} key="node">
+                        <NodeProperties onChange={onChange} selectedItem={selectedItem} canvasRef={canvasRef} />
                     </Tabs.TabPane>
                     <Tabs.TabPane tab={<Icon name="vine" prefix="fab" />} key="animations">
-                        <Animations ref={(c) => { this.animationsRef = c; }} animations={animations} onChangeAnimations={onChangeAnimations} />
+                        <Animations animations={animations} onChangeAnimations={onChangeAnimations} />
                     </Tabs.TabPane>
                     <Tabs.TabPane tab={<Icon name="star-half-alt" />} key="styles">
-                        <Styles ref={(c) => { this.stylesRef = c; }} styles={styles} onChangeStyles={onChangeStyles} />
+                        <Styles styles={styles} onChangeStyles={onChangeStyles} />
                     </Tabs.TabPane>
                     {/* <Tabs.TabPane tab={<Icon name="table" />} key="datasources">
                         <DataSources ref={(c) => { this.dataSourcesRef = c; }} dataSources={dataSources} onChangeDataSources={onChangeDataSources} />

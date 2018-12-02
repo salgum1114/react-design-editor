@@ -41,13 +41,42 @@ const propertiesToInclude = [
     'icon',
     'userProperty',
     'trigger',
+    'configuration',
+    'superType',
 ];
 
-class ImageMapEditor extends Component {
-    constructor(props) {
-        super(props);
-    }
+const defaultOptions = {
+    fill: 'rgba(0, 0, 0, 1)',
+    stroke: 'rgba(255, 255, 255, 0)',
+    resource: {},
+    action: {
+        enabled: false,
+        type: 'resource',
+        state: 'new',
+        dashboard: {},
+    },
+    tooltip: {
+        enabled: true,
+        type: 'resource',
+        template: '<div>{{message.name}}</div>',
+    },
+    animation: {
+        type: 'none',
+        loop: true,
+        autoplay: true,
+        delay: 100,
+        duration: 1000,
+    },
+    userProperty: {},
+    trigger: {
+        enabled: false,
+        type: 'alarm',
+        script: 'return message.measurement.avg > 0;',
+        effect: 'style',
+    },
+};
 
+class ImageMapEditor extends Component {
     state = {
         selectedItem: null,
         zoomRatio: 1,
@@ -66,12 +95,12 @@ class ImageMapEditor extends Component {
     }
 
     componentDidMount() {
-        this.showLoading();
+        this.showLoading(true);
         import('./Descriptors.json').then((descriptors) => {
             this.setState({
                 descriptors,
             }, () => {
-                this.hideLoading();
+                this.showLoading(false);
             });
         });
         this.resizeSensor = new ResizeSensor(this.container, () => {
@@ -89,24 +118,15 @@ class ImageMapEditor extends Component {
                 width: this.container.clientWidth,
                 height: this.container.clientHeight,
             },
-            selectedItem: this.canvasRef.workarea,
+            selectedItem: null,
         });
     }
 
-    getDefinitions = () => ({
-        animations: this.getAnimations(),
-        styles: this.getStyles(),
-        dataSources: this.getDataSources(),
-    })
-
-    getAnimations = () => this.state.animations;
-
-    getStyles = () => this.state.styles;
-
-    getDataSources = () => this.state.dataSources;
-
     canvasHandlers = {
         onAdd: (target) => {
+            if (!this.state.editing) {
+                this.changeEditing(true);
+            }
             if (target.type === 'activeSelection') {
                 this.canvasHandlers.onSelect(null);
                 return;
@@ -118,13 +138,16 @@ class ImageMapEditor extends Component {
             && target.id
             && target.id !== 'workarea'
             && target.type !== 'activeSelection') {
+                if (this.state.selectedItem && target.id === this.state.selectedItem.id) {
+                    return;
+                }
                 this.setState({
                     selectedItem: target,
                 });
                 return;
             }
             this.setState({
-                selectedItem: this.canvasRef.workarea,
+                selectedItem: null,
             });
         },
         onRemove: (target) => {
@@ -147,7 +170,7 @@ class ImageMapEditor extends Component {
                 return;
             }
             this.setState({
-                selectedItem: this.canvasRef.workarea,
+                selectedItem: null,
             });
         }, 300),
         onZoom: (zoom) => {
@@ -161,9 +184,8 @@ class ImageMapEditor extends Component {
             }
             const changedKey = Object.keys(changedValues)[0];
             const changedValue = changedValues[changedKey];
-            console.log(selectedItem, changedValues, allValues);
-            if (selectedItem.id === 'workarea') {
-                this.canvasHandlers.onChangeWokarea(changedKey, changedValue, allValues);
+            if (allValues.workarea) {
+                this.canvasHandlers.onChangeWokarea(changedKey, changedValue, allValues.workarea);
                 return;
             }
             if (changedKey === 'width' || changedKey === 'height') {
@@ -190,15 +212,18 @@ class ImageMapEditor extends Component {
                 return;
             }
             if (changedKey === 'action') {
-                this.canvasRef.handlers.set(changedKey, allValues.action);
+                const action = Object.assign({}, defaultOptions.action, allValues.action);
+                this.canvasRef.handlers.set(changedKey, action);
                 return;
             }
             if (changedKey === 'tooltip') {
-                this.canvasRef.handlers.set(changedKey, allValues.tooltip);
+                const tooltip = Object.assign({}, defaultOptions.tooltip, allValues.tooltip);
+                this.canvasRef.handlers.set(changedKey, tooltip);
                 return;
             }
             if (changedKey === 'animation') {
-                this.canvasRef.handlers.set(changedKey, allValues.animation);
+                const animation = Object.assign({}, defaultOptions.animation, allValues.animation);
+                this.canvasRef.handlers.set(changedKey, animation);
                 return;
             }
             if (changedKey === 'icon') {
@@ -294,16 +319,13 @@ class ImageMapEditor extends Component {
                 preview: typeof checked === 'object' ? false : checked,
             }, () => {
                 if (this.state.preview) {
-                    setTimeout(() => {
-                        const data = this.canvasRef.handlers.exportJSON().objects.filter((obj) => {
-                            if (!obj.id) {
-                                return false;
-                            }
-                            return true;
-                        });
-                        const json = JSON.stringify(data);
-                        this.preview.canvasRef.handlers.importJSON(json);
-                    }, 0);
+                    const data = this.canvasRef.handlers.exportJSON().objects.filter((obj) => {
+                        if (!obj.id) {
+                            return false;
+                        }
+                        return true;
+                    });
+                    this.preview.canvasRef.handlers.importJSON(data);
                     return;
                 }
                 this.preview.canvasRef.handlers.clear(true);
@@ -316,7 +338,7 @@ class ImageMapEditor extends Component {
         },
         onImport: (files) => {
             if (files) {
-                this.showLoading();
+                this.showLoading(true);
                 setTimeout(() => {
                     const reader = new FileReader();
                     reader.onprogress = (e) => {
@@ -326,13 +348,12 @@ class ImageMapEditor extends Component {
                         }
                     };
                     reader.onload = (e) => {
-                        // const { objects, animations, styles, dataSources } = JSON.parse(e.target.result);
-                        // this.setState({
-                        //     animations,
-                        //     styles,
-                        //     dataSources,
-                        // });
-                        const objects = JSON.parse(e.target.result);
+                        const { objects, animations, styles, dataSources } = JSON.parse(e.target.result);
+                        this.setState({
+                            animations,
+                            styles,
+                            dataSources,
+                        });
                         if (objects) {
                             this.canvasRef.handlers.clear(true);
                             const data = objects.filter((obj) => {
@@ -345,10 +366,10 @@ class ImageMapEditor extends Component {
                         }
                     };
                     reader.onloadend = () => {
-                        this.hideLoading();
+                        this.showLoading(false);
                     };
                     reader.onerror = () => {
-                        this.hideLoading();
+                        this.showLoading(false);
                     };
                     reader.readAsText(files[0]);
                 }, 500);
@@ -367,47 +388,57 @@ class ImageMapEditor extends Component {
             inputEl.remove();
         },
         onDownload: () => {
-            this.showLoading();
+            this.showLoading(true);
             const objects = this.canvasRef.handlers.exportJSON().objects.filter((obj) => {
                 if (!obj.id) {
                     return false;
                 }
                 return true;
             });
+            const { animations, styles, dataSources } = this.state;
+            const exportDatas = {
+                objects,
+                animations,
+                styles,
+                dataSources,
+            };
             const anchorEl = document.createElement('a');
-            anchorEl.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(objects, null, '\t'))}`;
-            anchorEl.download = `${objects[0].name}.json`;
+            anchorEl.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exportDatas, null, '\t'))}`;
+            anchorEl.download = `${this.canvasRef.workarea.name || 'sample'}.json`;
             document.body.appendChild(anchorEl); // required for firefox
             anchorEl.click();
             anchorEl.remove();
-            this.hideLoading();
+            this.showLoading(false);
         },
         onChangeAnimations: (animations) => {
+            if (!this.state.editing) {
+                this.changeEditing(true);
+            }
             this.setState({
                 animations,
             });
         },
         onChangeStyles: (styles) => {
+            if (!this.state.editing) {
+                this.changeEditing(true);
+            }
             this.setState({
                 styles,
             });
         },
         onChangeDataSources: (dataSources) => {
+            if (!this.state.editing) {
+                this.changeEditing(true);
+            }
             this.setState({
                 dataSources,
             });
         },
     }
 
-    showLoading = () => {
+    showLoading = (loading) => {
         this.setState({
-            loading: true,
-        });
-    }
-
-    hideLoading = () => {
-        this.setState({
-            loading: false,
+            loading,
         });
     }
 
@@ -520,6 +551,7 @@ class ImageMapEditor extends Component {
                                 backgroundColor: '#f3f3f3',
                                 selection: true,
                             }}
+                            defaultOptions={defaultOptions}
                             propertiesToInclude={propertiesToInclude}
                             onModified={onModified}
                             onAdd={onAdd}

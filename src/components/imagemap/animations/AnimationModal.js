@@ -31,9 +31,19 @@ class AnimationModal extends Component {
             return;
         }
         if (JSON.stringify(nextProps.animation) !== JSON.stringify(this.props.animation)) {
-            this.canvasRef.handlers.setById('animations', 'animation', nextProps.animation);
+            this.waitForCanvasRender(this.canvasRef, nextProps.animation);
         }
         nextProps.form.resetFields();
+    }
+
+    waitForCanvasRender = (canvas, animation) => {
+        setTimeout(() => {
+            if (canvas) {
+                canvas.handlers.setById('animations', 'animation', animation);
+                return;
+            }
+            this.waitForCanvasRender(this.canvasRef, animation);
+        }, 5);
     }
 
     waitForContainerRender = (container) => {
@@ -59,6 +69,8 @@ class AnimationModal extends Component {
                         left: 200,
                         top: 50,
                         id: 'animations',
+                        fill: 'rgba(0, 0, 0, 1)',
+                        stroke: 'rgba(255, 255, 255, 0)',
                     };
                     this.canvasRef.handlers.add(option);
                 });
@@ -83,7 +95,7 @@ class AnimationModal extends Component {
                 {AnimationProperty.render(this.canvasRef, form, { animation, id: 'animations' })}
                 <div ref={(c) => { this.containerRef = c; }}>
                     <Canvas
-                        ref={(c) => { this.canvasRef = c;}}
+                        ref={(c) => { this.canvasRef = c; }}
                         editable={false}
                         canvasOption={{ width, height, backgroundColor: '#f3f3f3' }}
                         workareaOption={{ backgroundColor: 'transparent' }}

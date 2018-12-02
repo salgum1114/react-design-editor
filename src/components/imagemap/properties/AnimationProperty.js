@@ -40,7 +40,7 @@ export default {
                                                     type: 'boolean',
                                                 }],
                                                 valuePropName: 'checked',
-                                                initialValue: data.animation.autoplay || false,
+                                                initialValue: data.animation.autoplay,
                                             })(
                                                 <Switch />,
                                             )
@@ -55,7 +55,7 @@ export default {
                                                     type: 'boolean',
                                                 }],
                                                 valuePropName: 'checked',
-                                                initialValue: data.animation.loop || false,
+                                                initialValue: data.animation.loop,
                                             })(
                                                 <Switch />,
                                             )
@@ -75,7 +75,7 @@ export default {
                                                             min: 100,
                                                             max: 5000,
                                                         }],
-                                                        initialValue: data.animation.delay || 100,
+                                                        initialValue: data.animation.delay,
                                                     })(
                                                         <Slider min={100} max={5000} step={100} />,
                                                     )
@@ -91,7 +91,7 @@ export default {
                                                             min: 100,
                                                             max: 5000,
                                                         }],
-                                                        initialValue: data.animation.duration || 1000,
+                                                        initialValue: data.animation.duration,
                                                     })(
                                                         <Slider min={100} max={5000} step={100} />,
                                                     )

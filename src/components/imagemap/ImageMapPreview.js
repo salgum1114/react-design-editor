@@ -15,10 +15,6 @@ class ImageMapPreview extends Component {
         onAction: PropTypes.func,
     }
 
-    constructor(props) {
-        super(props);
-    }
-
     state = {
         canvasRect: {
             width: 0,
@@ -59,6 +55,7 @@ class ImageMapPreview extends Component {
                             width: canvasRect.width,
                             height: canvasRect.height,
                             backgroundColor: '#f3f3f3',
+                            selection: false,
                         }}
                         onTooltip={onTooltip}
                         onAction={onAction}

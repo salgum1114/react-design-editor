@@ -19,23 +19,6 @@ notification.config({
     duration: 2,
 });
 
-const defaultOptions = {
-    action: {
-        enabled: false,
-    },
-    tooltip: {
-        enabled: true,
-    },
-    animation: {
-        type: 'none',
-    },
-    userProperty: {},
-    trigger: {
-        enabled: false,
-        code: 'return null',
-    },
-};
-
 const defaultCanvasOption = {
     preserveObjectStacking: true,
     width: 300,
@@ -67,7 +50,7 @@ const defaultWorkareaOption = {
     layout: 'fixed', // fixed, responsive, fullscreen
     action: {},
     tooltip: {
-        enabled: true,
+        enabled: false,
     },
 };
 
@@ -75,8 +58,9 @@ class Canvas extends Component {
     static propsTypes = {
         fabricObjects: PropTypes.object,
         editable: PropTypes.bool,
-        selection: PropTypes.bool,
         canvasOption: PropTypes.object,
+        defaultOptions: PropTypes.object,
+        activeSelection: PropTypes.object,
         tooltip: PropTypes.any,
         zoomEnabled: PropTypes.bool,
         minZoom: PropTypes.number,
@@ -96,7 +80,13 @@ class Canvas extends Component {
 
     static defaultProps = {
         editable: true,
-        canvasOption: {},
+        canvasOption: {
+            selection: true,
+        },
+        defaultOptions: {},
+        activeSelection: {
+            hasControls: true,
+        },
         tooltip: null,
         zoomEnabled: true,
         minZoom: 0,
@@ -115,8 +105,9 @@ class Canvas extends Component {
 
     constructor(props) {
         super(props);
-        this.fabricObjects = CanvasObjects(props.fabricObjects);
+        this.fabricObjects = CanvasObjects(props.fabricObjects, props.defaultOptions);
         this.container = React.createRef();
+        this.objects = [];
     }
 
     state = {
@@ -133,6 +124,7 @@ class Canvas extends Component {
         const mergedWorkareaOption = Object.assign({}, defaultWorkareaOption, workareaOption);
         this.workarea = new fabric.Image(null, mergedWorkareaOption);
         this.canvas.add(this.workarea);
+        this.objects.push(this.workarea);
         this.canvas.centerObject(this.workarea);
         this.canvas.renderAll();
         this.gridHandlers.init();
@@ -166,8 +158,11 @@ class Canvas extends Component {
             this.tooltipRef.className = 'rde-tooltip tooltip-hidden';
             document.body.appendChild(this.tooltipRef);
             this.canvas.on({
+                'mouse:down': mousedown,
                 'mouse:move': mousemove,
                 'mouse:out': mouseout,
+                'mouse:up': mouseup,
+                'mouse:wheel': mousewheel,
             });
         }
     }
@@ -205,7 +200,8 @@ class Canvas extends Component {
 
     componentWillUnmount() {
         this.detachEventListener();
-        const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;        if (this.props.editable) {
+        const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
+        if (this.props.editable) {
             this.canvas.off({
                 'object:modified': modified,
                 'object:scaling': scaling,
@@ -224,8 +220,11 @@ class Canvas extends Component {
             });
         } else {
             this.canvas.off({
+                'mouse:down': mousedown,
                 'mouse:move': mousemove,
                 'mouse:out': mouseout,
+                'mouse:up': mouseup,
+                'mouse:wheel': mousewheel,
             });
             this.canvas.getObjects().forEach((object) => {
                 object.off('mousedown', this.eventHandlers.object.mousedown);
@@ -299,6 +298,7 @@ class Canvas extends Component {
                     createdObj.on('mousedown', this.eventHandlers.object.mousedown);
                 }
                 this.canvas.add(createdObj);
+                this.objects.push(createdObj);
                 if (obj.type !== 'polygon' && editable && !loaded) {
                     this.handlers.centerObject(createdObj, centered);
                 }
@@ -327,6 +327,7 @@ class Canvas extends Component {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }
             this.canvas.add(createdObj);
+            this.objects.push(createdObj);
             if (obj.type !== 'polygon' && obj.superType !== 'link' && editable && !loaded) {
                 this.handlers.centerObject(createdObj, centered);
             }
@@ -358,15 +359,19 @@ class Canvas extends Component {
                 const createdObj = new fabric.Image(img, {
                     src,
                     file,
-                    ...defaultOptions,
+                    ...this.props.defaultOptions,
                     ...otherOption,
                 });
                 if (!editable) {
                     createdObj.on('mousedown', this.eventHandlers.object.mousedown);
                 }
                 this.canvas.add(createdObj);
+                this.objects.push(createdObj);
                 if (editable && !loaded) {
                     this.handlers.centerObject(createdObj, centered);
+                }
+                if (!editable && createdObj.animation && createdObj.animation.autoplay) {
+                    this.animationHandlers.play(createdObj.id);
                 }
                 const { onAdd } = this.props;
                 if (onAdd && editable && !loaded) {
@@ -397,7 +402,7 @@ class Canvas extends Component {
                 src,
                 file,
                 code,
-                ...defaultOptions,
+                ...this.props.defaultOptions,
                 ...otherOption,
                 fill: 'rgba(255, 255, 255, 0)',
                 stroke: 'rgba(255, 255, 255, 0)',
@@ -406,6 +411,7 @@ class Canvas extends Component {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }
             canvas.add(createdObj);
+            this.objects.push(createdObj);
             if (src || file || code) {
                 if (obj.type === 'video') {
                     this.videoHandlers.set(createdObj, src || file);
@@ -456,6 +462,7 @@ class Canvas extends Component {
                     }
                 }
                 this.canvas.remove(activeObject);
+                this.handlers.removeOriginById(activeObject.id);
             } else {
                 const { _objects: activeObjects } = activeObject;
                 this.canvas.discardActiveObject();
@@ -471,6 +478,7 @@ class Canvas extends Component {
                         });
                     }
                     this.canvas.remove(obj);
+                    this.handlers.removeOriginById(obj.id);
                 });
             }
             const { onRemove } = this.props;
@@ -492,6 +500,7 @@ class Canvas extends Component {
                     this.elementHandlers.removeScriptById(findObject.id);
                 }
                 this.canvas.remove(findObject);
+                this.handlers.removeOriginById(findObject.id);
             }
         },
         duplicate: () => {
@@ -513,6 +522,7 @@ class Canvas extends Component {
                         obj.set('name', `${obj.name}_clone`);
                         obj.set('id', uuid());
                         this.canvas.add(obj);
+                        this.objects.push(obj);
                     });
                     if (onAdd) {
                         onAdd(clonedObj);
@@ -522,6 +532,7 @@ class Canvas extends Component {
                     clonedObj.set('name', `${clonedObj.name}_clone`);
                     clonedObj.set('id', uuid());
                     this.canvas.add(clonedObj);
+                    this.objects.push(clonedObj);
                     if (onAdd) {
                         onAdd(clonedObj);
                     }
@@ -544,6 +555,7 @@ class Canvas extends Component {
                         evented: true,
                     });
                     this.canvas.add(cloned);
+                    this.objects.push(cloned);
                     if (onAdd) {
                         onAdd(cloned);
                     }
@@ -581,6 +593,7 @@ class Canvas extends Component {
                         obj.set('id', uuid());
                         obj.set('name', `${obj.name}_clone`);
                         this.canvas.add(obj);
+                        this.objects.push(obj);
                     });
                     if (onAdd) {
                         onAdd(clonedObj);
@@ -590,6 +603,7 @@ class Canvas extends Component {
                     clonedObj.set('id', uuid());
                     clonedObj.set('name', `${clonedObj.name}_clone`);
                     this.canvas.add(clonedObj);
+                    this.objects.push(clonedObj);
                     if (onAdd) {
                         onAdd(clonedObj);
                     }
@@ -681,6 +695,12 @@ class Canvas extends Component {
             });
         },
         setImage: (obj, src) => {
+            if (!src) {
+                this.handlers.loadImage(obj, null);
+                obj.set('file', null);
+                obj.set('src', null);
+                return;
+            }
             if (typeof src === 'string') {
                 this.handlers.loadImage(obj, src);
                 obj.set('file', null);
@@ -689,7 +709,13 @@ class Canvas extends Component {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.handlers.loadImage(obj, e.target.result);
-                    obj.set('file', src);
+                    const file = {
+                        name: src.name,
+                        size: src.size,
+                        uid: src.uid,
+                        type: src.type,
+                    };
+                    obj.set('file', file);
                     obj.set('src', null);
                 };
                 reader.readAsDataURL(src);
@@ -743,6 +769,7 @@ class Canvas extends Component {
             }
             const activeSelection = new fabric.ActiveSelection(filteredObjects, {
                 canvas,
+                ...this.props.activeSelection,
             });
             canvas.setActiveObject(activeSelection);
             canvas.renderAll();
@@ -789,63 +816,61 @@ class Canvas extends Component {
             let prevLeft = 0;
             let prevTop = 0;
             this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor);
-            const workareaExist = json.some(obj => obj.id === 'workarea');
-            if (!workareaExist) {
-                if (!this.workarea) {
-                    this.workarea = new fabric.Image(null, {
-                        ...defaultWorkareaOption,
-                        ...this.props.workareaOption,
-                    });
-                    this.canvas.add(this.workarea);
-                }
+            const workareaExist = json.filter(obj => obj.id === 'workarea');
+            if (!this.workarea) {
+                this.workarea = new fabric.Image(null, {
+                    ...defaultWorkareaOption,
+                    ...this.props.workareaOption,
+                });
+                this.canvas.add(this.workarea);
+                this.objects.push(this.workarea);
+            }
+            if (!workareaExist.length) {
                 this.canvas.centerObject(this.workarea);
                 this.workarea.setCoords();
                 prevLeft = this.workarea.left;
                 prevTop = this.workarea.top;
+            } else {
+                const workarea = workareaExist[0];
+                prevLeft = workarea.left;
+                prevTop = workarea.top;
+                this.workarea.set(workarea);
+                this.canvas.centerObject(this.workarea);
+                this.workareaHandlers.setImage(workarea.src, true);
+                this.workarea.setCoords();
             }
-            json.forEach((obj) => {
-                if (workareaExist && obj.id === 'workarea') {
-                    prevLeft = obj.left;
-                    prevTop = obj.top;
-                    if (!this.workarea) {
-                        this.workarea = new fabric.Image(null, {
-                            ...defaultWorkareaOption,
-                            ...this.props.workareaOption,
-                        });
-                        this.canvas.add(this.workarea);
+            setTimeout(() => {
+                json.forEach((obj) => {
+                    if (obj.id === 'workarea') {
+                        return;
                     }
-                    this.workarea.set(obj);
-                    this.canvas.centerObject(this.workarea);
-                    this.workareaHandlers.setImage(obj.src, true);
-                    this.workarea.setCoords();
-                    return;
+                    const canvasWidth = this.canvas.getWidth();
+                    const canvasHeight = this.canvas.getHeight();
+                    const { width, height, scaleX, scaleY, layout, left, top } = this.workarea;
+                    if (layout === 'fullscreen') {
+                        const leftRatio = canvasWidth / (width * scaleX);
+                        const topRatio = canvasHeight / (height * scaleY);
+                        obj.left *= leftRatio;
+                        obj.top *= topRatio;
+                        obj.scaleX *= leftRatio;
+                        obj.scaleY *= topRatio;
+                    } else {
+                        const diffLeft = left - prevLeft;
+                        const diffTop = top - prevTop;
+                        obj.left += diffLeft;
+                        obj.top += diffTop;
+                    }
+                    if (this.handlers.isElementType(obj.type)) {
+                        obj.id = uuid();
+                    }
+                    this.handlers.add(obj, false, true);
+                    this.canvas.renderAll();
+                });
+                if (callback) {
+                    callback(this.canvas);
                 }
-                const canvasWidth = this.canvas.getWidth();
-                const canvasHeight = this.canvas.getHeight();
-                const { width, height, scaleX, scaleY, layout, left, top } = this.workarea;
-                if (layout === 'fullscreen') {
-                    const leftRatio = canvasWidth / (width * scaleX);
-                    const topRatio = canvasHeight / (height * scaleY);
-                    obj.left *= leftRatio;
-                    obj.top *= topRatio;
-                    obj.scaleX *= leftRatio;
-                    obj.scaleY *= topRatio;
-                } else {
-                    const diffLeft = left - prevLeft;
-                    const diffTop = top - prevTop;
-                    obj.left += diffLeft;
-                    obj.top += diffTop;
-                }
-                if (this.handlers.isElementType(obj.type)) {
-                    obj.id = uuid();
-                }
-                this.handlers.add(obj, false, true);
-                this.canvas.renderAll();
-            });
+            }, 300);
             this.canvas.setZoom(1);
-            if (callback) {
-                callback(this.canvas);
-            }
         },
         exportJSON: () => this.canvas.toDatalessJSON(this.props.propertiesToInclude),
         getObjects: () => this.canvas.getObjects().filter((obj) => {
@@ -937,7 +962,7 @@ class Canvas extends Component {
             group.set({
                 id: uuid(),
                 name: 'New group',
-                ...defaultOptions,
+                ...this.props.defaultOptions,
             });
             canvas.renderAll();
         },
@@ -954,6 +979,48 @@ class Canvas extends Component {
         },
         isElementType: (type) => {
             return type === 'video' || type === 'element' || type === 'iframe';
+        },
+        getOriginObjects: () => this.objects,
+        findOriginById: (id) => {
+            let findObject;
+            const exist = this.objects.some((obj) => {
+                if (obj.id === id) {
+                    findObject = obj;
+                    return true;
+                }
+                return false;
+            });
+            if (!exist) {
+                console.warn('Not found object by id.');
+                return exist;
+            }
+            return findObject;
+        },
+        findOriginByIdWithIndex: (id) => {
+            let findObject;
+            let index;
+            const exist = this.objects.some((obj, i) => {
+                if (obj.id === id) {
+                    findObject = obj;
+                    index = i;
+                    return true;
+                }
+                return false;
+            });
+            if (!exist) {
+                console.warn('Not found object by id.');
+                return exist;
+            }
+            return {
+                object: findObject,
+                index,
+            };
+        },
+        removeOriginById: (id) => {
+            const object = this.handlers.findOriginByIdWithIndex(id);
+            if (object) {
+                this.objects.splice(object.index, 1);
+            }
         },
     }
 
@@ -1164,7 +1231,7 @@ class Canvas extends Component {
     modeHandlers = {
         selection: (callback) => {
             this.interactionMode = 'selection';
-            // this.canvas.selection = true;
+            this.canvas.selection = this.props.canvasOption.selection;
             this.canvas.defaultCursor = 'default';
             this.workarea.hoverCursor = 'default';
             this.canvas.getObjects().forEach((obj) => {
@@ -1193,7 +1260,7 @@ class Canvas extends Component {
         },
         grab: (callback) => {
             this.interactionMode = 'grab';
-            // this.canvas.selection = false;
+            this.canvas.selection = false;
             this.canvas.defaultCursor = 'grab';
             this.workarea.hoverCursor = 'grab';
             this.canvas.getObjects().forEach((obj) => {
@@ -1209,7 +1276,31 @@ class Canvas extends Component {
                         }
                     } else {
                         obj.selectable = false;
-                        obj.evented = false;
+                        obj.evented = this.props.editable ? false : true;
+                    }
+                }
+            });
+            this.canvas.renderAll();
+        },
+        drawing: (callback) => {
+            this.interactionMode = 'polygon';
+            this.canvas.selection = false;
+            this.canvas.defaultCursor = 'pointer';
+            this.workarea.hoverCursor = 'pointer';
+            this.canvas.getObjects().forEach((obj) => {
+                if (obj.id !== 'workarea') {
+                    if (callback) {
+                        const ret = callback(obj);
+                        if (typeof ret === 'object') {
+                            obj.selectable = ret.selectable;
+                            obj.evented = ret.evented;
+                        } else {
+                            obj.selectable = ret;
+                            obj.evented = ret;
+                        }
+                    } else {
+                        obj.selectable = false;
+                        obj.evented = this.props.editable ? false : true;
                     }
                 }
             });
@@ -1247,12 +1338,23 @@ class Canvas extends Component {
             }
             findObject.anime.pause();
         },
-        stop: (id) => {
+        stop: (id, hasControls = true) => {
             const findObject = this.handlers.findById(id);
             if (!findObject) {
                 return;
             }
-            this.animationHandlers.initAnimation(findObject);
+            this.animationHandlers.initAnimation(findObject, hasControls);
+        },
+        restart: (id) => {
+            const findObject = this.handlers.findById(id);
+            if (!findObject) {
+                return;
+            }
+            if (!findObject.anime) {
+                return;
+            }
+            this.animationHandlers.stop(id);
+            this.animationHandlers.play(id);
         },
         initAnimation: (obj, hasControls = true) => {
             if (!obj.anime) {
@@ -1262,9 +1364,9 @@ class Canvas extends Component {
             const option = {
                 anime: null,
                 hasControls,
-                lockMovementX: false,
-                lockMovementY: false,
-                hoverCursor: 'move',
+                lockMovementX: !hasControls,
+                lockMovementY: !hasControls,
+                hoverCursor: hasControls ? 'move' : 'pointer',
             };
             const { type } = obj.animation;
             if (type === 'fade') {
@@ -1866,6 +1968,9 @@ class Canvas extends Component {
                         ...img,
                         selectable: false,
                     });
+                    if (!source) {
+                        scaleX = 1;
+                    }
                     canvas.centerObject(workarea);
                     if (editable && !loaded) {
                         canvas.getObjects().forEach((obj, index) => {
@@ -1895,6 +2000,13 @@ class Canvas extends Component {
                     canvas.renderAll();
                 });
             };
+            if (!src) {
+                workarea.set({
+                    src,
+                });
+                imageFromUrl(src);
+                return;
+            }
             if (typeof src === 'string') {
                 workarea.set({
                     src,
@@ -1912,9 +2024,6 @@ class Canvas extends Component {
             reader.readAsDataURL(src);
         },
         setImage: (src, loaded = false) => {
-            if (!src) {
-                return;
-            }
             const { canvas, workarea, zoomHandlers, workareaHandlers } = this;
             const { editable } = this.props;
             if (workarea.layout === 'responsive') {
@@ -1929,16 +2038,22 @@ class Canvas extends Component {
                         width = workarea.width * workarea.scaleX;
                         height = workarea.height * workarea.scaleY;
                     }
-                    let scaleX = width / img.width;
-                    let scaleY = height / img.height;
-                    img.set({
-                        originX: 'left',
-                        originY: 'top',
-                        scaleX,
-                        scaleY,
-                    });
+                    let scaleX = 1;
+                    let scaleY = 1;
+                    if (source) {
+                        scaleX = width / img.width;
+                        scaleY = height / img.height;
+                        img.set({
+                            originX: 'left',
+                            originY: 'top',
+                            scaleX,
+                            scaleY,
+                        });
+                        workarea.set({
+                            ...img,
+                        });
+                    }
                     workarea.set({
-                        ...img,
                         selectable: false,
                     });
                     canvas.centerObject(workarea);
@@ -1973,6 +2088,13 @@ class Canvas extends Component {
                     canvas.renderAll();
                 });
             };
+            if (!src) {
+                workarea.set({
+                    src,
+                });
+                imageFromUrl(src);
+                return;
+            }
             if (typeof src === 'string') {
                 workarea.set({
                     src,
@@ -1993,6 +2115,9 @@ class Canvas extends Component {
 
     nodeHandlers = {
         selectByPath: (path) => {
+            if (!path || !path.length) {
+                return;
+            }
             const splitPath = path.reduce((prev, curr, index) => {
                 if (!path[index + 1]) {
                     return prev;
@@ -2001,8 +2126,8 @@ class Canvas extends Component {
                 prev.push(newPath);
                 return prev;
             }, []);
-            const targetObjects = this.handlers.getObjects().filter(object => path.some(id => id === object.id));
-            const nonTargetObjects = this.handlers.getObjects().filter(object => path.some(id => id !== object.id));
+            const targetObjects = this.handlers.getOriginObjects().filter(object => path.some(id => id === object.id));
+            const nonTargetObjects = this.handlers.getOriginObjects().filter(object => path.some(id => id !== object.id));
             nonTargetObjects.forEach((object) => {
                 if (object.superType === 'link') {
                     const { fromNode, toNode } = object;
@@ -2021,6 +2146,18 @@ class Canvas extends Component {
                 object.set({
                     opacity: 0.2,
                 });
+                if (object.superType === 'node') {
+                    if (object.toPort) {
+                        object.toPort.set({
+                            opacity: 0.2,
+                        });
+                    }
+                    object.fromPort.forEach((port) => {
+                        port.set({
+                            opacity: 0.2,
+                        });
+                    });
+                }
                 if (!object.isAnimated) {
                     object.setShadow({
                         blur: 0,
@@ -2051,7 +2188,7 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         selectById: (id) => {
-            this.handlers.getObjects().forEach((object) => {
+            this.handlers.getOriginObjects().forEach((object) => {
                 if (id === object.id) {
                     object.setShadow({
                         color: object.fill,
@@ -2068,10 +2205,22 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         deselect: () => {
-            this.handlers.getObjects().forEach((object) => {
+            this.handlers.getOriginObjects().forEach((object) => {
                 object.set({
                     opacity: 1,
                 });
+                if (object.superType === 'node') {
+                    if (object.toPort) {
+                        object.toPort.set({
+                            opacity: 1,
+                        });
+                    }
+                    object.fromPort.forEach((port) => {
+                        port.set({
+                            opacity: 1,
+                        });
+                    });
+                }
                 if (!object.isAnimated) {
                     object.setShadow({
                         blur: 0,
@@ -2081,6 +2230,9 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         highlightingByPath: (path) => {
+            if (!path || !path.length) {
+                return;
+            }
             const splitPath = path.reduce((prev, curr, index) => {
                 if (!path[index + 1]) {
                     return prev;
@@ -2089,22 +2241,34 @@ class Canvas extends Component {
                 prev.push(newPath);
                 return prev;
             }, []);
-            const targetObjects = this.handlers.getObjects().filter(object => path.some(id => id === object.id));
-            const nonTargetObjects = this.handlers.getObjects().filter(object => path.some(id => id !== object.id));
+            const targetObjects = this.handlers.getOriginObjects().filter(object => path.some(id => id === object.id));
+            const nonTargetObjects = this.handlers.getOriginObjects().filter(object => path.some(id => id !== object.id));
             const lastObject = targetObjects.filter(obj => obj.id === path[path.length - 1])[0];
             targetObjects.forEach((object) => {
-                object.setShadow({
-                    color: lastObject.fill,
-                });
+                if (lastObject) {
+                    object.setShadow({
+                        color: lastObject.fill,
+                    });
+                } else {
+                    object.setShadow({
+                        color: object.fill,
+                    });
+                }
                 this.nodeHandlers.highlightingNode(object);
             });
             nonTargetObjects.forEach((object) => {
                 if (object.superType === 'link') {
                     const { fromNode, toNode } = object;
                     if (splitPath.some(findPath => fromNode.id === findPath[0] && toNode.id === findPath[1])) {
-                        object.setShadow({
-                            color: lastObject.stroke,
-                        });
+                        if (lastObject) {
+                            object.setShadow({
+                                color: lastObject.stroke,
+                            });
+                        } else {
+                            object.setShadow({
+                                color: object.stroke,
+                            });
+                        }
                         this.nodeHandlers.highlightingNode(object);
                         this.nodeHandlers.highlightingLink(object, lastObject);
                     }
@@ -2116,7 +2280,7 @@ class Canvas extends Component {
             object.animation = {
                 duration,
                 type: 'flash',
-                stroke: targetObject.stroke,
+                stroke: targetObject ? targetObject.stroke : object.stroke,
                 loop: 1,
                 delay: 0,
             };
@@ -2333,13 +2497,11 @@ class Canvas extends Component {
                 fromPort: target.id,
             });
             this.canvas.add(this.activeLine);
-            this.canvas.selection = false;
         },
         finish: () => {
             this.interactionMode = 'selection';
             this.canvas.remove(this.activeLine);
             this.activeLine = null;
-            // this.canvas.selection = true;
             this.canvas.renderAll();
         },
         generate: (target) => {
@@ -2354,16 +2516,21 @@ class Canvas extends Component {
                 toNode: target.nodeId,
                 toPort: target.id,
             };
-            this.linkHandlers.create(link);
+            this.linkHandlers.create(link, true);
             this.linkHandlers.finish();
         },
-        create: (link) => {
+        create: (link, init = false) => {
             const fromNode = this.handlers.findById(link.fromNode);
             const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPort || !port.id)[0];
             const toNode = this.handlers.findById(link.toNode);
             const { toPort } = toNode;
             const createdObj = this.fabricObjects[link.type].create(fromNode, fromPort, toNode, toPort, { ...link });
             this.canvas.add(createdObj);
+            this.objects.push(createdObj);
+            const { onAdd } = this.props;
+            if (onAdd && this.props.editable && init) {
+                onAdd(createdObj);
+            }
             this.canvas.renderAll();
             createdObj.setPort(fromNode, fromPort, toNode, toPort);
             this.portHandlers.setCoords(fromNode);
@@ -2428,6 +2595,7 @@ class Canvas extends Component {
                 this.linkHandlers.removeAll(link);
             }
             this.canvas.remove(link);
+            this.handlers.removeOriginById(link.id);
         },
         exception: {
             alreadyConnect: (target) => {
@@ -2437,7 +2605,7 @@ class Canvas extends Component {
                 }
             },
             duplicate: (target) => {
-                if (target.links.some(link => link.fromNode.id ===  this.activeLine.fromNode)) {
+                if (target.links.some(link => link.fromNode.id === this.activeLine.fromNode)) {
                     console.warn('중복된 연결을 할 수 없습니다.');
                     return;
                 }
@@ -2454,14 +2622,13 @@ class Canvas extends Component {
     drawingHandlers = {
         polygon: {
             initDraw: () => {
-                this.interactionMode = 'polygon';
+                this.modeHandlers.drawing();
                 this.pointArray = [];
                 this.lineArray = [];
                 this.activeLine = null;
                 this.activeShape = null;
             },
             finishDraw: () => {
-                this.interactionMode = 'selection';
                 this.pointArray.forEach((point) => {
                     this.canvas.remove(point);
                 });
@@ -2474,7 +2641,6 @@ class Canvas extends Component {
                 this.lineArray = [];
                 this.activeLine = null;
                 this.activeShape = null;
-                this.canvas.selection = true;
                 this.canvas.renderAll();
             },
             addPoint: (opt) => {
@@ -2555,7 +2721,6 @@ class Canvas extends Component {
                 this.lineArray.push(line);
                 this.canvas.add(line);
                 this.canvas.add(circle);
-                this.canvas.selection = false;
             },
             generatePolygon: (pointArray) => {
                 const points = [];
@@ -2578,16 +2743,17 @@ class Canvas extends Component {
                     stroke: 'rgba(0, 0, 0, 1)',
                     strokeWidth: 3,
                     strokeDashArray: [10, 5],
-                    fill: 'rgba(255, 255, 255, 0)',
+                    fill: 'rgba(0, 0, 0, 0.25)',
                     opacity: 1,
                     objectCaching: !this.props.editable,
+                    name: 'New polygon',
+                    superType: 'DRAWING',
                 };
                 this.handlers.add(option, false);
                 this.pointArray = [];
                 this.activeLine = null;
                 this.activeShape = null;
-                this.interactionMode = 'selection';
-                this.canvas.selection = true;
+                this.modeHandlers.selection();
             },
             // TODO... polygon resize
             createResize: (target, points) => {
@@ -2684,10 +2850,7 @@ class Canvas extends Component {
 
     zoomHandlers = {
         zoomToPoint: (point, zoom) => {
-            const { onZoom, zoomEnabled, minZoom, maxZoom } = this.props;
-            if (!zoomEnabled) {
-                return;
-            }
+            const { onZoom, minZoom, maxZoom } = this.props;
             let zoomRatio = zoom;
             if (zoom <= (minZoom / 100)) {
                 zoomRatio = minZoom / 100;
@@ -2723,16 +2886,27 @@ class Canvas extends Component {
             this.zoomHandlers.zoomToPoint(point, 1);
         },
         zoomToFit: () => {
-            let scaleX = this.canvas.getWidth() / this.workarea.width;
-            const scaleY = this.canvas.getHeight() / this.workarea.height;
+            let scaleX;
+            let scaleY;
+            scaleX = this.canvas.getWidth() / this.workarea.width;
+            scaleY = this.canvas.getHeight() / this.workarea.height;
             if (this.workarea.height > this.workarea.width) {
                 scaleX = scaleY;
+                if (this.canvas.getWidth() < this.workarea.width * scaleX) {
+                    scaleX = scaleX * (this.canvas.getWidth() / (this.workarea.width * scaleX));
+                }
+            } else {
+                scaleY = scaleX;
+                if (this.canvas.getHeight() < this.workarea.height * scaleX) {
+                    scaleX = scaleX * (this.canvas.getHeight() / (this.workarea.height * scaleX));
+                }
             }
             const center = this.canvas.getCenter();
             const point = {
                 x: center.left,
                 y: center.top,
             };
+            this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
             this.zoomHandlers.zoomToPoint(point, scaleX);
         },
         zoomIn: () => {
@@ -2769,6 +2943,9 @@ class Canvas extends Component {
                 const { onTooltip } = this.props;
                 if (onTooltip) {
                     element = await onTooltip(this.tooltipRef, target);
+                    if (!element) {
+                        return;
+                    }
                 }
                 tooltip.innerHTML = element;
                 this.tooltipRef.appendChild(tooltip);
@@ -3060,12 +3237,6 @@ class Canvas extends Component {
         },
     }
 
-    triggerHandlers = {
-        onTrigger: () => {
-
-        },
-    }
-
     gridHandlers = {
         init: () => {
             const { gridOption } = this.props;
@@ -3146,7 +3317,7 @@ class Canvas extends Component {
             if (this.interactionMode === 'crop') {
                 this.cropHandlers.moving(opt);
             } else {
-                if (this.props.guidelineOption.enabled) {
+                if (this.props.editable && this.props.guidelineOption.enabled) {
                     this.guidelineHandlers.movingGuidelines(target);
                 }
                 if (target.superType === 'node') {
@@ -3222,6 +3393,10 @@ class Canvas extends Component {
             }
         },
         mousewheel: (opt) => {
+            const { zoomEnabled } = this.props;
+            if (!zoomEnabled) {
+                return;
+            }
             const delta = opt.e.deltaY;
             let zoomRatio = this.canvas.getZoom();
             if (delta > 0) {
@@ -3236,6 +3411,7 @@ class Canvas extends Component {
         mousedown: (opt) => {
             if (this.interactionMode === 'grab') {
                 this.panning = true;
+                return;
             }
             const { onSelect, editable } = this.props;
             const { target } = opt;
@@ -3249,7 +3425,7 @@ class Canvas extends Component {
                     return;
                 }
                 if (target && this.interactionMode === 'link' && target.type === 'toPort') {
-                    if (target.links.some(link => link.fromNode.id ===  this.activeLine.fromNode)) {
+                    if (target.links.some(link => link.fromNode.id === this.activeLine.fromNode)) {
                         console.warn('중복된 연결을 할 수 없습니다.');
                         return;
                     }
@@ -3276,6 +3452,7 @@ class Canvas extends Component {
             if (this.interactionMode === 'grab' && this.panning) {
                 this.modeHandlers.moving(opt.e);
                 this.canvas.requestRenderAll();
+                return;
             }
             if (!this.props.editable && opt.target) {
                 if (this.handlers.isElementType(opt.target.type)) {
@@ -3314,8 +3491,9 @@ class Canvas extends Component {
         mouseup: (opt) => {
             if (this.interactionMode === 'grab') {
                 this.panning = false;
+                return;
             }
-            if (this.props.guidelineOption.enabled) {
+            if (this.props.editable && this.props.guidelineOption.enabled) {
                 this.verticalLines.length = 0;
                 this.horizontalLines.length = 0;
             }
@@ -3327,8 +3505,13 @@ class Canvas extends Component {
             }
         },
         selection: (opt) => {
-            const { onSelect } = this.props;
+            const { onSelect, activeSelection } = this.props;
             const { target } = opt;
+            if (target && target.type === 'activeSelection') {
+                target.set({
+                    ...activeSelection,
+                });
+            }
             if (onSelect) {
                 onSelect(target);
             }

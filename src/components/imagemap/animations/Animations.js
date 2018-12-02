@@ -6,22 +6,28 @@ import { FlexBox } from '../../flex';
 import AnimationList from './AnimationList';
 import AnimationModal from './AnimationModal';
 import Icon from '../../icon/Icon';
+import Scrollbar from '../../common/Scrollbar';
+
+const initialAnimation = {
+    type: 'none',
+    loop: true,
+    autoplay: true,
+    delay: 100,
+    duration: 1000,
+};
 
 class Animations extends Component {
     static propTypes = {
         animations: PropTypes.array,
+        onChangeAnimations: PropTypes.func,
     }
 
     static defaultProps = {
         animations: [],
     }
 
-    constructor(props) {
-        super(props);
-    }
-
     state = {
-        animation: {},
+        animation: initialAnimation,
         visible: false,
         validateTitle: {
             validateStatus: '',
@@ -29,7 +35,7 @@ class Animations extends Component {
         },
         current: 'add',
     }
-    
+
     handlers = {
         onOk: () => {
             if (this.state.validateTitle.validateStatus === 'error') {
@@ -64,7 +70,7 @@ class Animations extends Component {
         onCancel: () => {
             this.setState({
                 visible: false,
-                animation: {},
+                animation: initialAnimation,
                 validateTitle: {
                     validateStatus: '',
                     help: '',
@@ -74,7 +80,7 @@ class Animations extends Component {
         onAdd: () => {
             this.setState({
                 visible: true,
-                animation: {},
+                animation: initialAnimation,
                 validateTitle: {
                     validateStatus: '',
                     help: '',
@@ -111,7 +117,7 @@ class Animations extends Component {
                 });
             }
             this.setState({
-                animation: { title: this.state.animation.title, ...allValues[Object.keys(allValues)[0]] },
+                animation: { title: this.state.animation.title, ...initialAnimation, ...allValues[Object.keys(allValues)[0]] },
             });
         },
         onValid: (value) => {
@@ -140,20 +146,22 @@ class Animations extends Component {
         const { visible, animation, validateTitle } = this.state;
         const { onOk, onCancel, onAdd, onEdit, onDelete, onClear, onChange, onValid } = this.handlers;
         return (
-            <Form>
-                <FlexBox flexDirection="column">
-                    <FlexBox justifyContent="flex-end" style={{ padding: 8 }}>
-                        <Button className="rde-action-btn" shape="circle" onClick={onAdd}>
-                            <Icon name="plus" />
-                        </Button>
-                        <Button className="rde-action-btn" shape="circle" onClick={onClear}>
-                            <Icon name="times" />
-                        </Button>
-                        <AnimationModal ref={(c) => { this.modalRef = c; }} validateTitle={validateTitle} visible={visible} onOk={onOk} animation={animation} onCancel={onCancel} onChange={onChange} onValid={onValid} />
+            <Scrollbar>
+                <Form>
+                    <FlexBox flexDirection="column">
+                        <FlexBox justifyContent="flex-end" style={{ padding: 8 }}>
+                            <Button className="rde-action-btn" shape="circle" onClick={onAdd}>
+                                <Icon name="plus" />
+                            </Button>
+                            <Button className="rde-action-btn" shape="circle" onClick={onClear}>
+                                <Icon name="times" />
+                            </Button>
+                            <AnimationModal ref={(c) => { this.modalRef = c; }} validateTitle={validateTitle} visible={visible} onOk={onOk} animation={animation} onCancel={onCancel} onChange={onChange} onValid={onValid} />
+                        </FlexBox>
+                        <AnimationList animations={animations} onEdit={onEdit} onDelete={onDelete} />
                     </FlexBox>
-                    <AnimationList animations={animations} onEdit={onEdit} onDelete={onDelete} />
-                </FlexBox>
-            </Form>
+                </Form>
+            </Scrollbar>
         );
     }
 }

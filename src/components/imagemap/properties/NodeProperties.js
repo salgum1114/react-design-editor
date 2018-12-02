@@ -4,17 +4,22 @@ import { Form, Collapse } from 'antd';
 
 import PropertyDefinition from './PropertyDefinition';
 import Scrollbar from '../../common/Scrollbar';
+import { FlexBox } from '../../flex';
 
 const { Panel } = Collapse;
 
-class Properties extends Component {
+class NodeProperties extends Component {
     static propTypes = {
         canvasRef: PropTypes.any,
         selectedItem: PropTypes.object,
     }
 
     componentWillReceiveProps(nextProps) {
-        nextProps.form.resetFields();
+        if (this.props.selectedItem && nextProps.selectedItem) {
+            if (this.props.selectedItem.id !== nextProps.selectedItem.id) {
+                nextProps.form.resetFields();
+            }
+        }
     }
 
     render() {
@@ -25,7 +30,7 @@ class Properties extends Component {
                 <Form layout="horizontal">
                     <Collapse bordered={false}>
                         {
-                            selectedItem && selectedItem.id !== 'workarea' ? (
+                            selectedItem ? (
                                 Object.keys(PropertyDefinition[selectedItem.type]).map((key) => {
                                     return (
                                         <Panel key={key} header={PropertyDefinition[selectedItem.type][key].title} showArrow={showArrow}>
@@ -33,13 +38,15 @@ class Properties extends Component {
                                         </Panel>
                                     );
                                 })
-                            ) : Object.keys(PropertyDefinition.map).map((key) => {
-                                return (
-                                    <Panel key={key} header={PropertyDefinition.map[key].title} showArrow={showArrow}>
-                                        {PropertyDefinition.map[key].component.render(canvasRef, form, selectedItem)}
-                                    </Panel>
-                                );
-                            })
+                            ) : (
+                                <FlexBox
+                                    justifyContent="center"
+                                    alignItems="center"
+                                    style={{ width: '100%', height: '100%', color: 'rgba(0, 0, 0, 0.45)', fontSie: 16, padding: 16 }}
+                                >
+                                    Select Node
+                                </FlexBox>
+                            )
                         }
                     </Collapse>
                 </Form>
@@ -53,4 +60,4 @@ export default Form.create({
         const { onChange, selectedItem } = props;
         onChange(selectedItem, changedValues, allValues);
     },
-})(Properties);
+})(NodeProperties);

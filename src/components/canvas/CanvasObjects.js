@@ -1,23 +1,6 @@
 import { fabric } from 'fabric';
 
-export default (mergeObjects) => {
-    const defaultOptions = {
-        fill: 'rgba(0, 0, 0, 1)',
-        stroke: 'rgba(255, 255, 255, 0)',
-        action: {
-            enabled: false,
-        },
-        tooltip: {
-            enabled: true,
-        },
-        animation: {
-            type: 'none',
-        },
-        userProperty: {},
-        trigger: {
-            enabled: false,
-        },
-    };
+export default (mergedObjects, defaultOptions) => {
     const fabricObjects = {
         group: {
             create: ({ objects, ...option }) => new fabric.Group(objects, {
@@ -81,8 +64,8 @@ export default (mergeObjects) => {
             }),
         },
     };
-    if (mergeObjects) {
-        Object.assign(fabricObjects, defaultOptions, mergeObjects);
+    if (mergedObjects) {
+        Object.assign(fabricObjects, mergedObjects);
     }
     return fabricObjects;
 };

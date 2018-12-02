@@ -24,7 +24,7 @@ export default {
                                 min: 0,
                                 max: 1,
                             }],
-                            initialValue: data.opacity || 0,
+                            initialValue: data.opacity || 1,
                         })(
                             <Slider min={0} max={1} step={0.1} />,
                         )

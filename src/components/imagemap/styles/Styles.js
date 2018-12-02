@@ -8,6 +8,25 @@ import StyleModal from './StyleModal';
 import Icon from '../../icon/Icon';
 
 class Styles extends Component {
+    static propTypes = {
+        styles: PropTypes.array,
+        onChangeStyles: PropTypes.func,
+    }
+
+    static defaultProps = {
+        styles: [],
+    }
+
+    state = {
+        style: {},
+        visible: false,
+        validateTitle: {
+            validateStatus: '',
+            help: '',
+        },
+        current: 'add',
+    }
+
     handlers = {
         onOk: () => {
             if (this.state.validateTitle.validateStatus === 'error') {
@@ -107,29 +126,6 @@ class Styles extends Component {
                 help: 'Already exist title.',
             };
         },
-    }
-
-    static propTypes = {
-        styles: PropTypes.array,
-    }
-
-    static defaultProps = {
-        styles: [],
-    }
-
-    constructor(props) {
-        super(props);
-        this.canvasRef = React.createRef();
-    }
-
-    state = {
-        style: {},
-        visible: false,
-        validateTitle: {
-            validateStatus: '',
-            help: '',
-        },
-        current: 'add',
     }
 
     render() {

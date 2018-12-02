@@ -24,13 +24,30 @@ class StyleModal extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (JSON.stringify(nextProps.style) !== JSON.stringify(this.props.style)) {
-            delete nextProps.style.strokeDashArray;
-            Object.keys(nextProps.style).forEach((key) => {
-                this.canvasRef.handlers.setById('styles', key, nextProps.style[key]);
-            });
+        let { style } = nextProps;
+        if (!style || !Object.keys(style).length) {
+            style = {
+                fill: 'rgba(0, 0, 0, 1)',
+                opacity: 1,
+                stroke: 'rgba(255, 255, 255, 0)',
+                strokeWidth: 1,
+            };
         }
+        delete style.strokeDashArray;
+        this.waitForCanvasRender(this.canvasRef, style);
         nextProps.form.resetFields();
+    }
+
+    waitForCanvasRender = (canvas, style) => {
+        setTimeout(() => {
+            if (canvas) {
+                Object.keys(style).forEach((key) => {
+                    canvas.handlers.setById('styles', key, style[key]);
+                });
+                return;
+            }
+            this.waitForCanvasRender(this.canvasRef, style);
+        }, 5);
     }
 
     waitForContainerRender = (container) => {
@@ -80,7 +97,7 @@ class StyleModal extends Component {
                 {StyleProperty.render(this.canvasRef, form, style)}
                 <div ref={(c) => { this.containerRef = c; }}>
                     <Canvas
-                        ref={(c) => { this.canvasRef = c;}}
+                        ref={(c) => { this.canvasRef = c; }}
                         editable={false}
                         canvasOption={{ width, height, backgroundColor: '#f3f3f3' }}
                         workareaOption={{ backgroundColor: 'transparent' }}
