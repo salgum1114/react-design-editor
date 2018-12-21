@@ -27,6 +27,7 @@ const plugins = [
     new WorkboxPlugin.InjectManifest({
         swSrc: './src/sw.js',
         swDest: 'sw.js',
+        globPatterns: ['**/*.{html,js,css,ico}'],
     }),
     new WorkboxPlugin.GenerateSW({
         swDest: 'sw.js',

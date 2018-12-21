@@ -4,12 +4,13 @@
     "icons": [
         {
             "src": "favicon.ico",
-            "sizes": "192x192",
+            "sizes": "64x64",
             "type": "image/png"
         }
     ],
     "start_url": "./index.html",
     "display": "standalone",
     "theme_color": "#000000",
-    "background_color": "#ffffff"
+    "background_color": "#ffffff",
+    "gcm_sender_id": "653317226796"
 }
