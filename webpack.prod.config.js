@@ -28,11 +28,6 @@ const plugins = [
         swSrc: './src/sw.js',
         swDest: 'sw.js',
     }),
-    new WorkboxPlugin.GenerateSW({
-        swDest: 'sw.js',
-        clientsClaim: true,
-        skipWaiting: true,
-    }),
 ];
 if (isClean) {
     // Build시 chunk 파일 삭제
