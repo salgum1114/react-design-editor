@@ -3,8 +3,8 @@ self.__precacheManifest = [
     "url": "./fonts/a80a033f0cf0b8186287fa277c334efb.woff2"
   },
   {
-    "revision": "b05e3360c84b1b38da56",
-    "url": "./js/app.b05e3360c84b1b38.js"
+    "revision": "0fe47e7540de7283c3d3",
+    "url": "./js/app.0fe47e7540de7283.js"
   },
   {
     "url": "./fonts/6537892df3329ee8024ec1bd09ca6122.woff"
@@ -21,7 +21,7 @@ self.__precacheManifest = [
     "url": "./fonts/47c9d192065844298d0c77e8d9b5728b.ttf"
   },
   {
-    "revision": "86e6c5d35652dfac63874b66b02fc677",
+    "revision": "5e2a68016ad2c7b912c3aaa906020dd9",
     "url": "./index.html"
   },
   {

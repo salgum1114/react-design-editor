@@ -24,16 +24,19 @@ export default function register() {
                 };
                 // Use serviceWorker.ready to ensure that you can subscribe for push
                 navigator.serviceWorker.ready.then((serviceWorkerRegistration) => {
-                    registration.pushManager.getSubscription().then((subscription) => {
+                    registration.pushManager.getSubscription().then(async (subscription) => {
                         if (subscription) {
                             // Update UI to ask user to register for Push
                             return subscription;
                         }
+                        const response = await fetch('https://serviceworke.rs/push-simple/vapidPublicKey');
+                        const vapidPublicKey = await response.text();
+                        // Chrome doesn't accept the base64-encoded (string) vapidPublicKey yet
+                        // urlBase64ToUint8Array() is defined in /tools.js
+                        const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
                         const options = {
                             userVisibleOnly: true,
-                            applicationServerKey: urlBase64ToUint8Array(
-                                'BLSXpcaBTf_fzxyQZ_slIXZG07EOF4GS2RvGVD96-k2Aa-FZSzgDGPMFbSvtYojiwPCf2gC6RCJuiYsHPWnUX6Q',
-                            ),
+                            applicationServerKey: convertedVapidKey,
                         };
                         return serviceWorkerRegistration.pushManager.subscribe(options);
                     }).then((subscription) => {
@@ -41,6 +44,16 @@ export default function register() {
                         // server are now available, and can be sent to it using,
                         // for example, an XMLHttpRequest.
                         console.log('Endpoint URL: ', subscription);
+                        // Send the subscription details to the server using the Fetch API.
+                        fetch('https://serviceworke.rs/push-simple/register', {
+                            method: 'post',
+                            headers: {
+                                'Content-type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                subscription: subscription
+                            }),
+                        });
                     }).catch((error) => {
                         // During development it often helps to log errors to the
                         // console. In a production environment it might make sense to
@@ -63,6 +76,11 @@ export default function register() {
 export function unregister() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then((registration) => {
+            registration.pushManager.getSubscription().then(function(subscription) {
+                if (subscription) {
+                    return subscription.unsubscribe();
+                }
+            });
             registration.unregister();
         });
     }
