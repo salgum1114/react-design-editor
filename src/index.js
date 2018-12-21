@@ -4,6 +4,8 @@ import { AppContainer } from 'react-hot-loader';
 
 import App from './containers/App';
 
+import registerServiceWorker from './registerServiceWorker';
+
 const render = (Component) => {
     const rootElement = document.getElementById('root');
     ReactDom.render(
@@ -20,3 +22,5 @@ if (module.hot) {
         render(App);
     });
 }
+
+registerServiceWorker();

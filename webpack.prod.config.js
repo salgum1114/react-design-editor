@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseConfig = require('./webpack.common.config.js');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 const pathsToClean = [
     'js',
@@ -22,6 +23,15 @@ const plugins = [
     // index.html 로 의존성 파일들 inject해주는 플러그인
     new HtmlWebpackPlugin({
         template: './src/index.html',
+    }),
+    new WorkboxPlugin.InjectManifest({
+        swSrc: './src/sw.js',
+        swDest: 'sw.js',
+    }),
+    new WorkboxPlugin.GenerateSW({
+        swDest: 'sw.js',
+        clientsClaim: true,
+        skipWaiting: true,
     }),
 ];
 if (isClean) {
