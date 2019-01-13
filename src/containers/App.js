@@ -16,14 +16,15 @@ class App extends Component {
     }
 
     render() {
+        const { current } = this.state;
         return (
             <div className="rde-main">
                 <div className="rde-title">
-                    <Title onChangeMenu={this.onChangeMenu} current={this.state.current} />
+                    <Title onChangeMenu={this.onChangeMenu} current={current} />
                 </div>
                 <div className="rde-content">
                     {
-                        this.state.current === 'imagemap' ? (
+                        current === 'imagemap' ? (
                             <ImageMapEditor />
                         ) : (
                             <WorkflowEditor />

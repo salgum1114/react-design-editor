@@ -27,7 +27,13 @@
             }
         ],
         "jsx-a11y/anchor-is-valid": 0,
-        "object-curly-newline": 0
+        "object-curly-newline": 0,
+        "import/no-unresolved": [
+            "error",
+            {
+              "ignore": [ "src/" ]
+            }
+        ]
     },
     "env": {
         "browser": true,

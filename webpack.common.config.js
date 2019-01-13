@@ -4,29 +4,32 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.(js|jsx|tsx|ts)$/,
                 loader: 'babel-loader?cacheDirectory',
                 include: path.resolve(__dirname, 'src'),
                 options: {
                     presets: [
-                        ['es2015', { loose: true, modules: false }],
-                        'stage-0',
-                        'react',
+                        ['@babel/preset-env', { modules: false }],
+                        '@babel/preset-react',
+                        '@babel/preset-typescript',
                     ],
                     plugins: [
-                        'syntax-async-functions',
+                        '@babel/plugin-transform-runtime',
+                        '@babel/plugin-syntax-dynamic-import',
+                        ['@babel/plugin-proposal-decorators', { legacy: true }],
+                        '@babel/plugin-syntax-async-generators',
+                        ['@babel/plugin-proposal-class-properties', { loose: false }],
+                        '@babel/plugin-proposal-object-rest-spread',
                         'react-hot-loader/babel',
-                        'syntax-dynamic-import',
                         'dynamic-import-webpack',
                         ['import', { libraryName: 'antd', style: true }],
-                        'transform-decorators-legacy',
                     ],
                 },
                 exclude: /node_modules/,
             },
             {
                 test: /\.(css|less)$/,
-                use: ['style-loader', 'css-loader?importLoaders=1', 'less-loader'],
+                use: ['style-loader', 'css-loader', 'less-loader'],
             },
             {
                 test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -52,14 +55,13 @@ module.exports = {
         },
         noEmitOnErrors: true,
     },
+    resolve: {
+        // Add `.ts` and `.tsx` as a resolvable extension.
+        extensions: ['.ts', '.tsx', '.js', 'jsx'],
+    },
     node: {
         net: 'empty',
         fs: 'empty',
         tls: 'empty',
-    },
-    resolve: {
-        alias: {
-            'ag-grid-root': path.resolve(__dirname, '/node_modules/ag-grid'),
-        },
     },
 };

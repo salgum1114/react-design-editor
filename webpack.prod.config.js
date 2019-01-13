@@ -39,8 +39,10 @@ module.exports = merge(baseConfig, {
         vendor: [
             'react',
             'react-dom',
+            'lodash',
+            'fabric',
         ],
-        app: ['babel-polyfill', path.resolve(__dirname, 'src/index.js')],
+        app: ['@babel/polyfill', path.resolve(__dirname, 'src/index.js')],
     },
     output: {
         // entry에 존재하는 app.js, vendor.js로 뽑혀 나온다.

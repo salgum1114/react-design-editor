@@ -1,0 +1,7 @@
+{
+    "extends": ["tslint:recommended", "tslint-react"],
+    "rules": {},
+    "linterOptions": {
+		"exclude": ["**/node_modules/**"]
+	}
+}
