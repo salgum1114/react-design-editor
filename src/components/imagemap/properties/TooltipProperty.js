@@ -20,7 +20,7 @@ export default {
                             valuePropName: 'checked',
                             initialValue: data.tooltip.enabled,
                         })(
-                            <Switch />,
+                            <Switch size="small" />,
                         )
                     }
                 </Form.Item>

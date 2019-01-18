@@ -16,7 +16,7 @@ export default {
                             valuePropName: 'checked',
                             initialValue: data.trigger.enabled,
                         })(
-                            <Switch />,
+                            <Switch size="small" />,
                         )
                     }
                 </Form.Item>

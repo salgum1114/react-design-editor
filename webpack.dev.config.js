@@ -3,7 +3,6 @@ const merge = require('webpack-merge');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseConfig = require('./webpack.common.config.js');
-const WorkboxPlugin = require('workbox-webpack-plugin');
 
 const devPort = 8080;
 const host = 'localhost';
@@ -52,10 +51,6 @@ module.exports = merge(baseConfig, {
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: `${__dirname}/src/index.html`,
-        }),
-        new WorkboxPlugin.InjectManifest({
-            swSrc: './src/sw.js',
-            swDest: 'sw.js',
         }),
     ],
 });

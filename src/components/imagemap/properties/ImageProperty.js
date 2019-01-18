@@ -21,7 +21,7 @@ export default {
                             }],
                             initialValue: imageLoadType,
                         })(
-                            <Radio.Group size="large">
+                            <Radio.Group size="small">
                                 <Radio.Button value="file">File Upload</Radio.Button>
                                 <Radio.Button value="src">Image URL</Radio.Button>
                             </Radio.Group>,

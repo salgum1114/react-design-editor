@@ -42,7 +42,7 @@ export default {
                                                 valuePropName: 'checked',
                                                 initialValue: data.animation.autoplay,
                                             })(
-                                                <Switch />,
+                                                <Switch size="small" />,
                                             )
                                         }
                                     </Form.Item>
@@ -57,7 +57,7 @@ export default {
                                                 valuePropName: 'checked',
                                                 initialValue: data.animation.loop,
                                             })(
-                                                <Switch />,
+                                                <Switch size="small" />,
                                             )
                                         }
                                     </Form.Item>

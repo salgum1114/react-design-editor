@@ -211,7 +211,7 @@ class ImageMapItems extends Component {
         </FlexBox>
     )
 
-    renderItem = (item) => (
+    renderItem = (item, centered) => (
         item.type === 'drawing' ? (
             <div
                 key={item.name}
@@ -235,7 +235,7 @@ class ImageMapItems extends Component {
             <div
                 key={item.name}
                 draggable
-                onClick={e => this.handlers.onAddItem(item)}
+                onClick={e => this.handlers.onAddItem(item, centered)}
                 onDragStart={e => this.events.onDragStart(e, item)}
                 onDragEnd={e => this.events.onDragEnd(e, item)}
                 className="rde-editor-items-item"

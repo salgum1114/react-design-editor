@@ -107,9 +107,9 @@ class ImageMapFooterToolbar extends Component {
                     <Button.Group>
                         <CommonButton
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
-                            onClick={() => { canvasRef.zoomHandlers.zoomIn(); }}
-                            icon="search-plus"
-                            tooltipTitle={i18n.t('rule-chains.tooltip-zoom-in')}
+                            onClick={() => { canvasRef.zoomHandlers.zoomOut(); }}
+                            icon="search-minus"
+                            tooltipTitle={i18n.t('rule-chains.tooltip-zoom-out')}
                         />
                         <CommonButton
                             onClick={() => { canvasRef.zoomHandlers.zoomOneToOne(); }}
@@ -125,9 +125,9 @@ class ImageMapFooterToolbar extends Component {
                         </CommonButton>
                         <CommonButton
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
-                            onClick={() => { canvasRef.zoomHandlers.zoomOut(); }}
-                            icon="search-minus"
-                            tooltipTitle={i18n.t('rule-chains.tooltip-zoom-out')}
+                            onClick={() => { canvasRef.zoomHandlers.zoomIn(); }}
+                            icon="search-plus"
+                            tooltipTitle={i18n.t('rule-chains.tooltip-zoom-in')}
                         />
                     </Button.Group>
                 </div>

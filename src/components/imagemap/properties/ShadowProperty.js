@@ -14,7 +14,7 @@ export default {
                             valuePropName: 'checked',
                             initialValue: enabeld,
                         })(
-                            <Switch />,
+                            <Switch size="small" />,
                         )
                     }
                 </Form.Item>

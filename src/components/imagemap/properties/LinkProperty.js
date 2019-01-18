@@ -6,27 +6,27 @@ export default {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
-                <Form.Item label="Action Enabled" colon={false}>
+                <Form.Item label="Link Enabled" colon={false}>
                     {
-                        getFieldDecorator('action.enabled', {
+                        getFieldDecorator('link.enabled', {
                             rules: [{
                                 required: true,
                                 message: 'Please select enabled',
                             }],
                             valuePropName: 'checked',
-                            initialValue: data.action.enabled,
+                            initialValue: data.link.enabled,
                         })(
-                            <Switch />,
+                            <Switch size="small" />,
                         )
                     }
                 </Form.Item>
                 {
-                    data.action.enabled ? (
+                    data.link.enabled ? (
                         <React.Fragment>
                             <Form.Item label="State" colon={false}>
                                 {
-                                    getFieldDecorator('action.state', {
-                                        initialValue: data.action.state || 'current',
+                                    getFieldDecorator('link.state', {
+                                        initialValue: data.link.state || 'current',
                                     })(
                                         <Select>
                                             <Select.Option value="current">Current</Select.Option>
@@ -37,12 +37,12 @@ export default {
                             </Form.Item>
                             <Form.Item label="URL" colon={false}>
                                 {
-                                    getFieldDecorator('action.url', {
+                                    getFieldDecorator('link.url', {
                                         rules: [{
                                             required: true,
                                             message: 'Please input url',
                                         }],
-                                        initialValue: data.action.url || '',
+                                        initialValue: data.link.url || '',
                                     })(
                                         <Input />,
                                     )

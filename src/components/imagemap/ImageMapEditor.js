@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
-import { Badge, Button, Spin, Popconfirm } from 'antd';
+import { Badge, Button, Spin, Popconfirm, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
 import storage from 'store/storages/localStorage';
@@ -26,7 +26,7 @@ const propertiesToInclude = [
     'lock',
     'file',
     'src',
-    'action',
+    'link',
     'tooltip',
     'animation',
     'layout',
@@ -49,7 +49,7 @@ const defaultOptions = {
     fill: 'rgba(0, 0, 0, 1)',
     stroke: 'rgba(255, 255, 255, 0)',
     resource: {},
-    action: {
+    link: {
         enabled: false,
         type: 'resource',
         state: 'new',
@@ -71,7 +71,7 @@ const defaultOptions = {
     trigger: {
         enabled: false,
         type: 'alarm',
-        script: 'return message.measurement.avg > 0;',
+        script: 'return message.value > 0;',
         effect: 'style',
     },
 };
@@ -81,8 +81,8 @@ class ImageMapEditor extends Component {
         selectedItem: null,
         zoomRatio: 1,
         canvasRect: {
-            width: 0,
-            height: 0,
+            width: 300,
+            height: 150,
         },
         preview: false,
         loading: false,
@@ -141,11 +141,21 @@ class ImageMapEditor extends Component {
                 if (this.state.selectedItem && target.id === this.state.selectedItem.id) {
                     return;
                 }
+                this.canvasRef.handlers.getObjects().forEach((obj) => {
+                    if (obj) {
+                        this.canvasRef.animationHandlers.initAnimation(obj, true);
+                    }
+                });
                 this.setState({
                     selectedItem: target,
                 });
                 return;
             }
+            this.canvasRef.handlers.getObjects().forEach((obj) => {
+                if (obj) {
+                    this.canvasRef.animationHandlers.initAnimation(obj, true);
+                }
+            });
             this.setState({
                 selectedItem: null,
             });
@@ -211,9 +221,9 @@ class ImageMapEditor extends Component {
                 }
                 return;
             }
-            if (changedKey === 'action') {
-                const action = Object.assign({}, defaultOptions.action, allValues.action);
-                this.canvasRef.handlers.set(changedKey, action);
+            if (changedKey === 'link') {
+                const link = Object.assign({}, defaultOptions.link, allValues.link);
+                this.canvasRef.handlers.set(changedKey, link);
                 return;
             }
             if (changedKey === 'tooltip') {
@@ -261,7 +271,8 @@ class ImageMapEditor extends Component {
                 return;
             }
             if (changedKey === 'trigger') {
-                this.canvasRef.handlers.set(changedKey, allValues.trigger);
+                const trigger = Object.assign({}, defaultOptions.trigger, allValues.trigger);
+                this.canvasRef.handlers.set(changedKey, trigger);
                 return;
             }
             this.canvasRef.handlers.set(changedKey, changedValue);
@@ -303,13 +314,75 @@ class ImageMapEditor extends Component {
                 </div>
             );
         },
-        onAction: (canvas, target) => {
-            const { action } = target;
-            if (action.state === 'current') {
-                document.location.href = action.url;
+        onLink: (canvas, target) => {
+            const { link } = target;
+            if (link.state === 'current') {
+                document.location.href = link.url;
                 return;
             }
-            window.open(action.url);
+            window.open(link.url);
+        },
+        onContext: (ref, event, target) => {
+            if ((target && target.id === 'workarea') || !target) {
+                const { layerX: left, layerY: top } = event;
+                return (
+                    <Menu>
+                        <Menu.SubMenu key="add" style={{ width: 120 }} title={'Add'}>
+                            {
+                                this.transformList().map((item) => {
+                                    const option = Object.assign({}, item.option, { left, top });
+                                    const newItem = Object.assign({}, item, { option });
+                                    return (
+                                        <Menu.Item style={{ padding: 0 }} key={item.name}>
+                                            {this.itemsRef.renderItem(newItem, false)}
+                                        </Menu.Item>
+                                    );
+                                })
+                            }
+                        </Menu.SubMenu>
+                    </Menu>
+                );
+            }
+            if (target.type === 'activeSelection') {
+                return (
+                    <Menu>
+                        <Menu.Item onClick={() => { this.canvasRef.handlers.toGroup(); }}>
+                            {'Group'}
+                        </Menu.Item>
+                        <Menu.Item onClick={() => { this.canvasRef.handlers.duplicate(); }}>
+                            {'Clone'}
+                        </Menu.Item>
+                        <Menu.Item onClick={() => { this.canvasRef.handlers.remove(); }}>
+                            {'Delete'}
+                        </Menu.Item>
+                    </Menu>
+                );
+            }
+            if (target.type === 'group') {
+                return (
+                    <Menu>
+                        <Menu.Item onClick={() => { this.canvasRef.handlers.toActiveSelection(); }}>
+                            {'Ungroup'}
+                        </Menu.Item>
+                        <Menu.Item onClick={() => { this.canvasRef.handlers.duplicate(); }}>
+                            {'Clone'}
+                        </Menu.Item>
+                        <Menu.Item onClick={() => { this.canvasRef.handlers.remove(); }}>
+                            {'Delete'}
+                        </Menu.Item>
+                    </Menu>
+                );
+            }
+            return (
+                <Menu>
+                    <Menu.Item onClick={() => { this.canvasRef.handlers.duplicateById(target.id); }}>
+                        {'Clone'}
+                    </Menu.Item>
+                    <Menu.Item onClick={() => { this.canvasRef.handlers.removeById(target.id); }}>
+                        {'Delete'}
+                    </Menu.Item>
+                </Menu>
+            );
         },
     }
 
@@ -436,6 +509,10 @@ class ImageMapEditor extends Component {
         },
     }
 
+    transformList = () => {
+        return Object.values(this.state.descriptors).reduce((prev, curr) => prev.concat(curr), []);
+    }
+
     showLoading = (loading) => {
         this.setState({
             loading,
@@ -470,7 +547,8 @@ class ImageMapEditor extends Component {
             onChange,
             onZoom,
             onTooltip,
-            onAction,
+            onLink,
+            onContext,
         } = this.canvasHandlers;
         const {
             onChangePreview,
@@ -534,7 +612,7 @@ class ImageMapEditor extends Component {
         );
         const content = (
             <div className="rde-editor">
-                <ImageMapItems canvasRef={this.canvasRef} descriptors={descriptors} />
+                <ImageMapItems ref={(c) => { this.itemsRef = c; }} canvasRef={this.canvasRef} descriptors={descriptors} />
                 <div className="rde-editor-canvas-container">
                     <div className="rde-editor-header-toolbar">
                         <ImageMapHeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} onSelect={onSelect} />
@@ -551,6 +629,7 @@ class ImageMapEditor extends Component {
                                 backgroundColor: '#f3f3f3',
                                 selection: true,
                             }}
+                            minZoom={30}
                             defaultOptions={defaultOptions}
                             propertiesToInclude={propertiesToInclude}
                             onModified={onModified}
@@ -559,7 +638,8 @@ class ImageMapEditor extends Component {
                             onSelect={onSelect}
                             onZoom={onZoom}
                             onTooltip={onTooltip}
-                            onAction={onAction}
+                            onLink={onLink}
+                            onContext={onContext}
                         />
                     </div>
                     <div className="rde-editor-footer-toolbar">
@@ -577,7 +657,7 @@ class ImageMapEditor extends Component {
                     styles={styles}
                     dataSources={dataSources}
                 />
-                <ImageMapPreview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onAction={onAction} />
+                <ImageMapPreview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onLink={onLink} />
             </div>
         );
         return (

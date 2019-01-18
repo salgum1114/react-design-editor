@@ -171,6 +171,7 @@ class EditTable extends Component {
                     </Button>
                 </FlexBox>
                 <Table
+                    size="small"
                     pagination={{
                         pageSize: 5,
                     }}

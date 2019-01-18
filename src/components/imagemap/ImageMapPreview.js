@@ -43,7 +43,7 @@ class ImageMapPreview extends Component {
 
     render() {
         const { canvasRect } = this.state;
-        const { onChangePreview, onTooltip, onAction, preview } = this.props;
+        const { onChangePreview, onTooltip, onLink, preview } = this.props;
         const previewClassName = classnames('rde-preview', { preview });
         return (
             <div className={previewClassName}>
@@ -58,7 +58,7 @@ class ImageMapPreview extends Component {
                             selection: false,
                         }}
                         onTooltip={onTooltip}
-                        onAction={onAction}
+                        onLink={onLink}
                     />
                     <Button className="rde-action-btn rde-preview-close-btn" onClick={onChangePreview}>
                         <Icon name="times" size={1.5} />

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-import { notification } from 'antd';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 import debounce from 'lodash/debounce';
@@ -14,10 +13,8 @@ import CanvasObjects from './CanvasObjects';
 import OrthogonalLink from '../workflow/link/OrthogonalLink';
 import CurvedLink from '../workflow/link/CurvedLink';
 
-notification.config({
-    top: 80,
-    duration: 2,
-});
+import '../../styles/core/tooltip.less';
+import '../../styles/core/contextmenu.less';
 
 const defaultCanvasOption = {
     preserveObjectStacking: true,
@@ -48,10 +45,19 @@ const defaultWorkareaOption = {
     id: 'workarea',
     type: 'image',
     layout: 'fixed', // fixed, responsive, fullscreen
-    action: {},
+    link: {},
     tooltip: {
         enabled: false,
     },
+};
+
+const defaultKeyboardEvent = {
+    move: true,
+    all: true,
+    copy: true,
+    paste: true,
+    esc: true,
+    del: true,
 };
 
 class Canvas extends Component {
@@ -75,7 +81,8 @@ class Canvas extends Component {
         onSelect: PropTypes.func,
         onZoom: PropTypes.func,
         onTooltip: PropTypes.func,
-        onAction: PropTypes.func,
+        onLink: PropTypes.func,
+        keyEvent: PropTypes.object,
     }
 
     static defaultProps = {
@@ -101,6 +108,7 @@ class Canvas extends Component {
         guidelineOption: {
             enabled: true,
         },
+        keyEvent: {},
     }
 
     constructor(props) {
@@ -108,6 +116,7 @@ class Canvas extends Component {
         this.fabricObjects = CanvasObjects(props.fabricObjects, props.defaultOptions);
         this.container = React.createRef();
         this.objects = [];
+        this.keyEvent = Object.assign({}, defaultKeyboardEvent, props.keyEvent);
     }
 
     state = {
@@ -135,6 +144,10 @@ class Canvas extends Component {
             if (guidelineOption.enabled) {
                 this.guidelineHandlers.init();
             }
+            this.contextmenuRef = document.createElement('div');
+            this.contextmenuRef.id = `${id}_contextmenu`;
+            this.contextmenuRef.className = 'rde-contextmenu contextmenu-hidden';
+            document.body.appendChild(this.contextmenuRef);
             this.canvas.on({
                 'object:modified': modified,
                 'object:scaling': scaling,
@@ -176,6 +189,9 @@ class Canvas extends Component {
             }
             this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
             this.canvas.selection = this.props.canvasOption.selection;
+        }
+        if (JSON.stringify(this.props.keyEvent) !== JSON.stringify(prevProps.keyEvent)) {
+            this.keyEvent = Object.assign({}, defaultKeyboardEvent, this.props.keyEvent);
         }
         if (JSON.stringify(this.props.fabricObjects) !== JSON.stringify(prevProps.fabricObjects)) {
             this.fabricObjects = CanvasObjects(this.props.fabricObjects);
@@ -244,11 +260,15 @@ class Canvas extends Component {
         this.canvas.wrapperEl.tabIndex = 1000;
         document.addEventListener('keydown', this.eventHandlers.keydown, false);
         document.addEventListener('paste', this.eventHandlers.paste, false);
+        document.addEventListener('mousedown', this.eventHandlers.onmousedown, false);
+        this.canvas.wrapperEl.addEventListener('contextmenu', this.eventHandlers.contextmenu, false);
     }
 
     detachEventListener = () => {
         document.removeEventListener('keydown', this.eventHandlers.keydown);
         document.removeEventListener('paste', this.eventHandlers.paste);
+        document.removeEventListener('mousedown', this.eventHandlers.onmousedown);
+        this.canvas.wrapperEl.removeEventListener('contextmenu', this.eventHandlers.contextmenu);
     }
 
     handlers = {
@@ -343,6 +363,14 @@ class Canvas extends Component {
             const { onAdd } = this.props;
             if (onAdd && editable && !loaded) {
                 onAdd(createdObj);
+            }
+            if (!loaded) {
+                if (createdObj.superType === 'node') {
+                    createdObj.setShadow({
+                        color: createdObj.stroke,
+                    });
+                    this.nodeHandlers.highlightingNode(createdObj);
+                }
             }
             return createdObj;
         },
@@ -567,11 +595,17 @@ class Canvas extends Component {
         },
         copy: () => {
             const { propertiesToInclude } = this.props;
-            this.canvas.getActiveObject().clone((cloned) => {
-                this.setState({
-                    clipboard: cloned,
-                });
-            }, propertiesToInclude);
+            const activeObject = this.canvas.getActiveObject();
+            if (activeObject && activeObject.superType === 'link') {
+                return false;
+            }
+            if (activeObject) {
+                activeObject.clone((cloned) => {
+                    this.setState({
+                        clipboard: cloned,
+                    });
+                }, propertiesToInclude);
+            }
         },
         paste: () => {
             const { onAdd, propertiesToInclude } = this.props;
@@ -964,6 +998,10 @@ class Canvas extends Component {
                 name: 'New group',
                 ...this.props.defaultOptions,
             });
+            const { onSelect } = this.props;
+            if (onSelect) {
+                onSelect(group);
+            }
             canvas.renderAll();
         },
         toActiveSelection: () => {
@@ -974,7 +1012,11 @@ class Canvas extends Component {
             if (canvas.getActiveObject().type !== 'group') {
                 return;
             }
-            canvas.getActiveObject().toActiveSelection();
+            const activeObject = canvas.getActiveObject().toActiveSelection();
+            const { onSelect } = this.props;
+            if (onSelect) {
+                onSelect(activeObject);
+            }
             canvas.renderAll();
         },
         isElementType: (type) => {
@@ -1328,6 +1370,13 @@ class Canvas extends Component {
             const instance = this.animationHandlers.getAnimation(findObject, hasControls);
             if (instance) {
                 findObject.set('anime', instance);
+                findObject.set({
+                    hasControls: false,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    hoverCursor: 'pointer',
+                });
+                this.canvas.renderAll();
                 instance.play();
             }
         },
@@ -1360,14 +1409,25 @@ class Canvas extends Component {
             if (!obj.anime) {
                 return;
             }
+            let option;
+            if (this.props.editable) {
+                option = {
+                    anime: null,
+                    hasControls,
+                    lockMovementX: !hasControls,
+                    lockMovementY: !hasControls,
+                    hoverCursor: hasControls ? 'move' : 'pointer',
+                };
+            } else {
+                option = {
+                    anime: null,
+                    hasControls: false,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    hoverCursor: 'pointer',
+                };
+            }
             anime.remove(obj);
-            const option = {
-                anime: null,
-                hasControls,
-                lockMovementX: !hasControls,
-                lockMovementY: !hasControls,
-                hoverCursor: hasControls ? 'move' : 'pointer',
-            };
             const { type } = obj.animation;
             if (type === 'fade') {
                 Object.assign(option, {
@@ -1424,7 +1484,7 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         getAnimation: (obj, hasControls) => {
-            const { delay = 100, duration = 100, autoplay = false, loop = false, type, ...other } = obj.animation;
+            const { delay = 100, duration = 100, autoplay = true, loop = true, type, ...other } = obj.animation;
             const option = {
                 targets: obj,
                 delay,
@@ -2829,7 +2889,7 @@ class Canvas extends Component {
             if (activeObject && activeObject.type === 'activeSelection') {
                 activeObject.forEachObject((obj) => {
                     obj.set({
-                        left: 0 - (obj.width / 2),
+                        left: 0 - ((obj.width * obj.scaleX) / 2),
                     });
                     obj.setCoords();
                     this.canvas.renderAll();
@@ -2842,7 +2902,7 @@ class Canvas extends Component {
                 const activeObjectLeft = (activeObject.width / 2);
                 activeObject.forEachObject((obj) => {
                     obj.set({
-                        left: activeObjectLeft - obj.width,
+                        left: activeObjectLeft - (obj.width * obj.scaleX),
                     });
                     obj.setCoords();
                     this.canvas.renderAll();
@@ -2976,6 +3036,31 @@ class Canvas extends Component {
         hide: debounce((target) => {
             this.target = null;
             this.tooltipRef.classList.add('tooltip-hidden');
+        }, 100),
+    }
+
+    contextmenuHandlers = {
+        show: debounce(async (e, target) => {
+            const { onContext } = this.props;
+            while (this.contextmenuRef.hasChildNodes()) {
+                this.contextmenuRef.removeChild(this.contextmenuRef.firstChild);
+            }
+            const contextmenu = document.createElement('div');
+            contextmenu.className = 'rde-contextmenu-right';
+            const element = await onContext(this.contextmenuRef, e, target);
+            if (!element) {
+                return;
+            }
+            contextmenu.innerHTML = element;
+            this.contextmenuRef.appendChild(contextmenu);
+            ReactDOM.render(element, contextmenu);
+            this.contextmenuRef.classList.remove('contextmenu-hidden');
+            const { clientX: left, clientY: top } = e;
+            this.contextmenuRef.style.left = `${left}px`;
+            this.contextmenuRef.style.top = `${top}px`;
+        }),
+        hide: debounce((target) => {
+            this.contextmenuRef.classList.add('contextmenu-hidden');
         }, 100),
     }
 
@@ -3294,10 +3379,10 @@ class Canvas extends Component {
         object: {
             mousedown: (opt) => {
                 const { target } = opt;
-                if (target && target.action && target.action.enabled) {
-                    const { onAction } = this.props;
-                    if (onAction) {
-                        onAction(this.canvas, target);
+                if (target && target.link && target.link.enabled) {
+                    const { onLink } = this.props;
+                    if (onLink) {
+                        onLink(this.canvas, target);
                     }
                 }
             },
@@ -3374,6 +3459,9 @@ class Canvas extends Component {
             if (!activeObject) {
                 return false;
             }
+            if (activeObject.id === 'workarea') {
+                return false;
+            }
             if (e.keyCode === 38) {
                 activeObject.set('top', activeObject.top - 2);
                 activeObject.setCoords();
@@ -3416,9 +3504,14 @@ class Canvas extends Component {
                 this.panning = true;
                 return;
             }
-            const { onSelect, editable } = this.props;
+            const { editable } = this.props;
             const { target } = opt;
             if (editable) {
+                if (this.prevTarget && this.prevTarget.superType === 'link') {
+                    this.prevTarget.set({
+                        stroke: this.prevTarget.originStroke,
+                    });
+                }
                 if (target && target.type === 'fromPort') {
                     if (this.interactionMode === 'link' && this.activeLine) {
                         console.warn('이미 링크를 그리는 중입니다.');
@@ -3427,20 +3520,29 @@ class Canvas extends Component {
                     this.linkHandlers.init(target);
                     return;
                 }
-                if (target && this.interactionMode === 'link' && target.type === 'toPort') {
-                    if (target.links.some(link => link.fromNode.id === this.activeLine.fromNode)) {
+                if (target && this.interactionMode === 'link' && (target.type === 'toPort' || target.superType === 'node')) {
+                    let toPort;
+                    if (target.superType === 'node') {
+                        toPort = target.toPort;
+                    } else {
+                        toPort = target;
+                    }
+                    if (toPort.links.some(link => link.fromNode.id === this.activeLine.fromNode)) {
                         console.warn('중복된 연결을 할 수 없습니다.');
                         return;
                     }
-                    this.linkHandlers.generate(target);
+                    this.linkHandlers.generate(toPort);
                     return;
                 }
                 this.viewportTransform = this.canvas.viewportTransform;
                 this.zoom = this.canvas.getZoom();
                 if (this.interactionMode === 'selection') {
-                    if (onSelect) {
-                        onSelect(target);
+                    if (target && target.superType === 'link') {
+                        target.set({
+                            stroke: target.selectedStroke || 'green',
+                        });
                     }
+                    this.prevTarget = target;
                 }
                 if (this.interactionMode === 'polygon') {
                     if (target && this.pointArray.length && target.id === this.pointArray[0].id) {
@@ -3664,9 +3766,7 @@ class Canvas extends Component {
                                 };
                                 this.handlers.add(item, true);
                             } else {
-                                notification.warn({
-                                    message: 'Not supported file type',
-                                });
+                                console.error('Not supported file type');
                             }
                         });
                     }
@@ -3677,20 +3777,25 @@ class Canvas extends Component {
             if (this.canvas.wrapperEl !== document.activeElement) {
                 return false;
             }
-            if (e.keyCode === 46) {
+            const { keyEvent } = this;
+            if (!Object.keys(keyEvent).length) {
+                return false;
+            }
+            const { move, all, copy, paste, esc, del } = keyEvent;
+            if (e.keyCode === 46 && del) {
                 this.handlers.remove();
-            } else if (e.code.includes('Arrow')) {
+            } else if (e.code.includes('Arrow') && move) {
                 this.eventHandlers.arrowmoving(e);
-            } else if (e.ctrlKey && e.keyCode === 65) {
+            } else if (e.ctrlKey && e.keyCode === 65 && all) {
                 e.preventDefault();
                 this.handlers.allSelect();
-            } else if (e.ctrlKey && e.keyCode === 67) {
+            } else if (e.ctrlKey && e.keyCode === 67 && copy) {
                 e.preventDefault();
                 this.handlers.copy();
-            } else if (e.ctrlKey && e.keyCode === 86) {
+            } else if (e.ctrlKey && e.keyCode === 86 && paste) {
                 e.preventDefault();
                 this.handlers.paste();
-            } else if (e.keyCode === 27) {
+            } else if (e.keyCode === 27 && esc) {
                 if (this.interactionMode === 'selection') {
                     this.canvas.discardActiveObject();
                 } else if (this.interactionMode === 'polygon') {
@@ -3699,6 +3804,20 @@ class Canvas extends Component {
                     this.linkHandlers.finish();
                 }
             }
+        },
+        contextmenu: (e) => {
+            e.preventDefault();
+            const { editable, onContext } = this.props;
+            if (editable && onContext) {
+                const target = this.canvas.findTarget(e);
+                if (target && target.type !== 'activeSelection') {
+                    this.handlers.select(target);
+                }
+                this.contextmenuHandlers.show(e, target);
+            }
+        },
+        onmousedown: (e) => {
+            this.contextmenuHandlers.hide();
         },
     }
 

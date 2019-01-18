@@ -40,9 +40,6 @@ class Title extends Component {
                         <Menu.Item key="workflow" style={{ color: '#fff' }}>{'Workflow'}</Menu.Item>
                     </Menu>
                 </FlexBox>
-                <FlexBox justifyContent="flex-end" flex="1">
-                    <Button id="pushTest">Push Test</Button>
-                </FlexBox>
             </FlexBox>
         );
     }

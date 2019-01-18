@@ -28,7 +28,7 @@ export default {
                         getFieldDecorator('layout', {
                             initialValue: layout,
                         })(
-                            <Radio.Group>
+                            <Radio.Group size="small">
                                 <Radio.Button value="fixed">Fixed</Radio.Button>
                                 <Radio.Button value="responsive">Responsive</Radio.Button>
                                 <Radio.Button value="fullscreen">FullScreen</Radio.Button>

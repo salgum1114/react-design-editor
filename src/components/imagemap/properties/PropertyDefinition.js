@@ -5,7 +5,7 @@ import TooltipProperty from './TooltipProperty';
 import ImageProperty from './ImageProperty';
 import TextProperty from './TextProperty';
 import MapProperty from './MapProperty';
-import ActionProperty from './ActionProperty';
+import LinkProperty from './LinkProperty';
 import VideoProperty from './VideoProperty';
 import ElementProperty from './ElementProperty';
 import IFrameProperty from './IFrameProperty';
@@ -44,9 +44,9 @@ export default {
             title: 'Marker',
             component: MarkerProperty,
         },
-        action: {
-            title: 'Action',
-            component: ActionProperty,
+        link: {
+            title: 'Link',
+            component: LinkProperty,
         },
         tooltip: {
             title: 'Tooltip',
@@ -82,9 +82,9 @@ export default {
             title: 'Text',
             component: TextProperty,
         },
-        action: {
-            title: 'Action',
-            component: ActionProperty,
+        link: {
+            title: 'Link',
+            component: LinkProperty,
         },
         tooltip: {
             title: 'Tooltip',
@@ -101,6 +101,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        trigger: {
+            title: 'Trigger',
+            component: TriggerProperty,
         },
         userProperty: {
             title: 'User Property',
@@ -116,9 +120,9 @@ export default {
             title: 'Image',
             component: ImageProperty,
         },
-        action: {
-            title: 'Action',
-            component: ActionProperty,
+        link: {
+            title: 'Link',
+            component: LinkProperty,
         },
         tooltip: {
             title: 'Tooltip',
@@ -135,6 +139,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        trigger: {
+            title: 'Trigger',
+            component: TriggerProperty,
         },
         userProperty: {
             title: 'User Property',
@@ -146,9 +154,9 @@ export default {
             title: 'General',
             component: GeneralProperty,
         },
-        action: {
-            title: 'Action',
-            component: ActionProperty,
+        link: {
+            title: 'Link',
+            component: LinkProperty,
         },
         tooltip: {
             title: 'Tooltip',
@@ -158,9 +166,17 @@ export default {
             title: 'Style',
             component: StyleProperty,
         },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
+        },
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        trigger: {
+            title: 'Trigger',
+            component: TriggerProperty,
         },
         userProperty: {
             title: 'User Property',
@@ -172,9 +188,9 @@ export default {
             title: 'General',
             component: GeneralProperty,
         },
-        action: {
-            title: 'Action',
-            component: ActionProperty,
+        link: {
+            title: 'Link',
+            component: LinkProperty,
         },
         tooltip: {
             title: 'Tooltip',
@@ -191,6 +207,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        trigger: {
+            title: 'Trigger',
+            component: TriggerProperty,
         },
         userProperty: {
             title: 'User Property',
@@ -202,9 +222,9 @@ export default {
             title: 'General',
             component: GeneralProperty,
         },
-        action: {
-            title: 'Action',
-            component: ActionProperty,
+        link: {
+            title: 'Link',
+            component: LinkProperty,
         },
         tooltip: {
             title: 'Tooltip',
@@ -222,6 +242,10 @@ export default {
             title: 'Animation',
             component: AnimationProperty,
         },
+        trigger: {
+            title: 'Trigger',
+            component: TriggerProperty,
+        },
         userProperty: {
             title: 'User Property',
             component: UserProperty,
@@ -232,9 +256,9 @@ export default {
             title: 'General',
             component: GeneralProperty,
         },
-        action: {
-            title: 'Action',
-            component: ActionProperty,
+        link: {
+            title: 'Link',
+            component: LinkProperty,
         },
         tooltip: {
             title: 'Tooltip',
@@ -266,9 +290,9 @@ export default {
             title: 'General',
             component: GeneralProperty,
         },
-        action: {
-            title: 'Action',
-            component: ActionProperty,
+        link: {
+            title: 'Link',
+            component: LinkProperty,
         },
         tooltip: {
             title: 'Tooltip',
@@ -285,6 +309,10 @@ export default {
         animation: {
             title: 'Animation',
             component: AnimationProperty,
+        },
+        trigger: {
+            title: 'Trigger',
+            component: TriggerProperty,
         },
         userProperty: {
             title: 'User Property',

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Collapse } from 'antd';
+import { Form, Collapse, List } from 'antd';
 
 import PropertyDefinition from './PropertyDefinition';
 import Scrollbar from '../../common/Scrollbar';
@@ -44,7 +44,7 @@ class NodeProperties extends Component {
                                     alignItems="center"
                                     style={{ width: '100%', height: '100%', color: 'rgba(0, 0, 0, 0.45)', fontSie: 16, padding: 16 }}
                                 >
-                                    Select Node
+                                    <List />
                                 </FlexBox>
                             )
                         }

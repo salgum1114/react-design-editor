@@ -17,7 +17,7 @@ export default {
                                     valuePropName: 'checked',
                                     initialValue: data.lock,
                                 })(
-                                    <Switch />,
+                                    <Switch size="small" />,
                                 )
                             }
                         </Form.Item>
@@ -32,7 +32,7 @@ export default {
                                     valuePropName: 'checked',
                                     initialValue: data.visible,
                                 })(
-                                    <Switch />,
+                                    <Switch size="small" />,
                                 )
                             }
                         </Form.Item>
@@ -53,12 +53,14 @@ export default {
                             {
                                 getFieldDecorator('width', {
                                     rules: [{
+                                        type: 'number',
                                         required: true,
                                         message: 'Please input width',
+                                        min: 1,
                                     }],
-                                    initialValue: data.width * data.scaleX,
+                                    initialValue: parseInt(data.width * data.scaleX, 10),
                                 })(
-                                    <InputNumber />,
+                                    <InputNumber min={1} />,
                                 )
                             }
                         </Form.Item>
@@ -68,12 +70,14 @@ export default {
                             {
                                 getFieldDecorator('height', {
                                     rules: [{
+                                        type: 'number',
                                         required: true,
                                         message: 'Please input height',
+                                        min: 1,
                                     }],
-                                    initialValue: data.height * data.scaleY,
+                                    initialValue: parseInt(data.height * data.scaleY, 10),
                                 })(
-                                    <InputNumber />,
+                                    <InputNumber min={1} />,
                                 )
                             }
                         </Form.Item>
