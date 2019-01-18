@@ -24,6 +24,8 @@ const Link = fabric.util.createClass(fabric.Line, {
             hasControls: false,
             hasBorders: false,
             perPixelTargetFind: true,
+            lockMovementX: true,
+            lockMovementY: true,
             fromNode,
             toNode,
         });

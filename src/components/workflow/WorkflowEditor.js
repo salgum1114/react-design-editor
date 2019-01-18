@@ -364,6 +364,9 @@ class WorkflowEditor extends Component {
                             height: 0,
                         }}
                         gridOption={{ enabled: true, grid: 20, snapToGrid: true }}
+                        activeSelection={{
+                            hasControls: false,
+                        }}
                         minZoom={50}
                         maxZoom={150}
                         onZoom={onZoom}
@@ -371,6 +374,7 @@ class WorkflowEditor extends Component {
                         onAdd={onAdd}
                         onRemove={onRemove}
                         onModified={onModified}
+                        keyEvent={{ move: false }}
                     />
                     <div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
                         <WorkflowNodeConfigurations
