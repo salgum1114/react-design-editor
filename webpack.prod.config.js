@@ -14,7 +14,6 @@ const cleanOptions = {
     root: path.resolve(__dirname, 'public'),
     verbose: true,
 };
-const isClean = process.argv.length > 5;
 const plugins = [
     // 로더들에게 옵션을 넣어주는 플러그인
     new webpack.LoaderOptionsPlugin({
@@ -28,11 +27,8 @@ const plugins = [
         swSrc: './src/sw.js',
         swDest: 'sw.js',
     }),
+    new CleanWebpackPlugin(pathsToClean, cleanOptions),
 ];
-if (isClean) {
-    // Build시 chunk 파일 삭제
-    plugins.push(new CleanWebpackPlugin(pathsToClean, cleanOptions));
-}
 module.exports = merge(baseConfig, {
     mode: 'production',
     entry: {

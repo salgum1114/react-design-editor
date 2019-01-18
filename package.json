@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "webpack -p --config webpack.prod.config.js --clean",
     "build": "webpack -p --config webpack.prod.config.js",
     "start": "npm install && npm run start:dev",
     "start:dev": "webpack-dev-server --config webpack.dev.config.js --inline",
