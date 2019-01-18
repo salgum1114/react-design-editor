@@ -70,7 +70,7 @@
 - [x] Image Cropping
 - [x] Snap To Grid
 - [x] Multiple Layout - Fixed / Responsive / Fullscreen / Grid
+- [x] Context menu
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Undo / Redo - development
-- [ ] Context menu
