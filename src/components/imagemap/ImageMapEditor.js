@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
-import { Badge, Button, Spin, Popconfirm, Menu } from 'antd';
+import { Badge, Button, Spin, Popconfirm, Menu, Modal } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
 import storage from 'store/storages/localStorage';

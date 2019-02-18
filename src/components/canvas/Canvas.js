@@ -2705,6 +2705,7 @@ class Canvas extends Component {
                 this.activeLine = null;
                 this.activeShape = null;
                 this.canvas.renderAll();
+                this.modeHandlers.selection();
             },
             addPoint: (opt) => {
                 const id = uuid();

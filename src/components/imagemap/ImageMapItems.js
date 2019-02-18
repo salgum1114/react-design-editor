@@ -101,6 +101,10 @@ class ImageMapItems extends Component {
                     return;
                 }
             }
+            if (canvasRef.interactionMode === 'polygon') {
+                message.info('Already drawing');
+                return;
+            }
             const id = uuid();
             const option = Object.assign({}, item.option, { id });
             canvasRef.handlers.add(option, centered);
