@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Collapse, notification, Input } from 'antd';
+import { Collapse, notification, Input, message } from 'antd';
 import uuid from 'uuid/v4';
 import classnames from 'classnames';
 import i18n from 'i18next';
@@ -114,6 +114,10 @@ class ImageMapItems extends Component {
                     });
                     return;
                 }
+            }
+            if (canvasRef.interactionMode === 'polygon') {
+                message.info('Already drawing');
+                return;
             }
             canvasRef.drawingHandlers.polygon.initDraw();
         },
