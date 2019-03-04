@@ -12,6 +12,7 @@ import anime from 'animejs';
 import CanvasObjects from './CanvasObjects';
 import OrthogonalLink from '../workflow/link/OrthogonalLink';
 import CurvedLink from '../workflow/link/CurvedLink';
+import Arrow from './Arrow';
 
 import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
@@ -348,7 +349,9 @@ class Canvas extends Component {
             }
             this.canvas.add(createdObj);
             this.objects.push(createdObj);
-            if (obj.type !== 'polygon' && obj.superType !== 'link' && editable && !loaded) {
+            if (obj.superType !== 'drawing' && obj.superType !== 'link'
+            && editable
+            && !loaded) {
                 this.handlers.centerObject(createdObj, centered);
             }
             if (createdObj.superType === 'node') {
@@ -1324,8 +1327,8 @@ class Canvas extends Component {
             });
             this.canvas.renderAll();
         },
-        drawing: (callback) => {
-            this.interactionMode = 'polygon';
+        drawing: (callback, type) => {
+            this.interactionMode = type;
             this.canvas.selection = false;
             this.canvas.defaultCursor = 'pointer';
             this.workarea.hoverCursor = 'pointer';
@@ -2684,14 +2687,14 @@ class Canvas extends Component {
 
     drawingHandlers = {
         polygon: {
-            initDraw: () => {
-                this.modeHandlers.drawing();
+            init: () => {
+                this.modeHandlers.drawing(null, 'polygon');
                 this.pointArray = [];
                 this.lineArray = [];
                 this.activeLine = null;
                 this.activeShape = null;
             },
-            finishDraw: () => {
+            finish: () => {
                 this.pointArray.forEach((point) => {
                     this.canvas.remove(point);
                 });
@@ -2786,7 +2789,7 @@ class Canvas extends Component {
                 this.canvas.add(line);
                 this.canvas.add(circle);
             },
-            generatePolygon: (pointArray) => {
+            generate: (pointArray) => {
                 const points = [];
                 const id = uuid();
                 pointArray.forEach((point) => {
@@ -2811,7 +2814,7 @@ class Canvas extends Component {
                     opacity: 1,
                     objectCaching: !this.props.editable,
                     name: 'New polygon',
-                    superType: 'DRAWING',
+                    superType: 'drawing',
                 };
                 this.handlers.add(option, false);
                 this.pointArray = [];
@@ -2867,7 +2870,168 @@ class Canvas extends Component {
             },
         },
         line: {
-            
+            init: () => {
+                this.modeHandlers.drawing(null, 'line');
+                this.pointArray = [];
+                this.activeLine = null;
+            },
+            finish: () => {
+                this.pointArray.forEach((point) => {
+                    this.canvas.remove(point);
+                });
+                this.canvas.remove(this.activeLine);
+                this.pointArray = [];
+                this.activeLine = null;
+                this.canvas.renderAll();
+                this.modeHandlers.selection();
+            },
+            addPoint: (opt) => {
+                const { absolutePointer } = opt;
+                const { x, y } = absolutePointer;
+                const circle = new fabric.Circle({
+                    radius: 3,
+                    fill: '#ffffff',
+                    stroke: '#333333',
+                    strokeWidth: 0.5,
+                    left: x,
+                    top: y,
+                    selectable: false,
+                    hasBorders: false,
+                    hasControls: false,
+                    originX: 'center',
+                    originY: 'center',
+                    hoverCursor: 'pointer',
+                });
+                if (!this.pointArray.length) {
+                    circle.set({
+                        fill: 'red',
+                    });
+                }
+                const points = [x, y, x, y];
+                this.activeLine = new fabric.Line(points, {
+                    strokeWidth: 2,
+                    fill: '#999999',
+                    stroke: '#999999',
+                    class: 'line',
+                    originX: 'center',
+                    originY: 'center',
+                    selectable: false,
+                    hasBorders: false,
+                    hasControls: false,
+                    evented: false,
+                });
+                this.pointArray.push(circle);
+                this.canvas.add(this.activeLine);
+                this.canvas.add(circle);
+            },
+            generate: (opt) => {
+                const { absolutePointer } = opt;
+                const { x, y } = absolutePointer;
+                let points = [];
+                const id = uuid();
+                this.pointArray.forEach((point) => {
+                    points = points.concat(point.left, point.top, x, y);
+                    this.canvas.remove(point);
+                });
+                this.canvas.remove(this.activeLine);
+                const option = {
+                    id,
+                    points,
+                    type: 'line',
+                    stroke: 'rgba(0, 0, 0, 1)',
+                    strokeWidth: 3,
+                    opacity: 1,
+                    objectCaching: !this.props.editable,
+                    name: 'New line',
+                    superType: 'drawing',
+                };
+                this.handlers.add(option, false);
+                this.pointArray = [];
+                this.activeLine = null;
+                this.modeHandlers.selection();
+            },
+        },
+        arrow: {
+            init: () => {
+                this.modeHandlers.drawing(null, 'arrow');
+                this.pointArray = [];
+                this.activeLine = null;
+            },
+            finish: () => {
+                this.pointArray.forEach((point) => {
+                    this.canvas.remove(point);
+                });
+                this.canvas.remove(this.activeLine);
+                this.pointArray = [];
+                this.activeLine = null;
+                this.canvas.renderAll();
+                this.modeHandlers.selection();
+            },
+            addPoint: (opt) => {
+                const { absolutePointer } = opt;
+                const { x, y } = absolutePointer;
+                const circle = new fabric.Circle({
+                    radius: 3,
+                    fill: '#ffffff',
+                    stroke: '#333333',
+                    strokeWidth: 0.5,
+                    left: x,
+                    top: y,
+                    selectable: false,
+                    hasBorders: false,
+                    hasControls: false,
+                    originX: 'center',
+                    originY: 'center',
+                    hoverCursor: 'pointer',
+                });
+                if (!this.pointArray.length) {
+                    circle.set({
+                        fill: 'red',
+                    });
+                }
+                const points = [x, y, x, y];
+                this.activeLine = new Arrow(points, {
+                    strokeWidth: 2,
+                    fill: '#999999',
+                    stroke: '#999999',
+                    class: 'line',
+                    originX: 'center',
+                    originY: 'center',
+                    selectable: false,
+                    hasBorders: false,
+                    hasControls: false,
+                    evented: false,
+                });
+                this.pointArray.push(circle);
+                this.canvas.add(this.activeLine);
+                this.canvas.add(circle);
+            },
+            generate: (opt) => {
+                const { absolutePointer } = opt;
+                const { x, y } = absolutePointer;
+                let points = [];
+                const id = uuid();
+                this.pointArray.forEach((point) => {
+                    points = points.concat(point.left, point.top, x, y);
+                    this.canvas.remove(point);
+                });
+                this.canvas.remove(this.activeLine);
+                const option = {
+                    id,
+                    points,
+                    type: 'arrow',
+                    stroke: 'rgba(0, 0, 0, 1)',
+                    strokeWidth: 3,
+                    opacity: 1,
+                    objectCaching: !this.props.editable,
+                    name: 'New line',
+                    superType: 'drawing',
+                };
+                this.handlers.add(option, false);
+                this.pointArray = [];
+                this.activeLine = null;
+                this.modeHandlers.selection();
+            },
         },
     }
 
@@ -3544,12 +3708,25 @@ class Canvas extends Component {
                         });
                     }
                     this.prevTarget = target;
+                    return;
                 }
                 if (this.interactionMode === 'polygon') {
                     if (target && this.pointArray.length && target.id === this.pointArray[0].id) {
-                        this.drawingHandlers.polygon.generatePolygon(this.pointArray);
+                        this.drawingHandlers.polygon.generate(this.pointArray);
                     } else {
                         this.drawingHandlers.polygon.addPoint(opt);
+                    }
+                } else if (this.interactionMode === 'line') {
+                    if (this.pointArray.length && this.activeLine) {
+                        this.drawingHandlers.line.generate(opt);
+                    } else {
+                        this.drawingHandlers.line.addPoint(opt);
+                    }
+                } else if (this.interactionMode === 'arrow') {
+                    if (this.pointArray.length && this.activeLine) {
+                        this.drawingHandlers.arrow.generate(opt);
+                    } else {
+                        this.drawingHandlers.arrow.addPoint(opt);
                     }
                 }
             }
@@ -3586,6 +3763,18 @@ class Canvas extends Component {
                     });
                     this.canvas.requestRenderAll();
                 }
+            } else if (this.interactionMode === 'line') {
+                if (this.activeLine && this.activeLine.class === 'line') {
+                    const pointer = this.canvas.getPointer(opt.e);
+                    this.activeLine.set({ x2: pointer.x, y2: pointer.y });
+                }
+                this.canvas.requestRenderAll();
+            } else if (this.interactionMode === 'arrow') {
+                if (this.activeLine && this.activeLine.class === 'line') {
+                    const pointer = this.canvas.getPointer(opt.e);
+                    this.activeLine.set({ x2: pointer.x, y2: pointer.y });
+                }
+                this.canvas.requestRenderAll();
             } else if (this.interactionMode === 'link') {
                 if (this.activeLine && this.activeLine.class === 'line') {
                     const pointer = this.canvas.getPointer(opt.e);
@@ -3800,7 +3989,11 @@ class Canvas extends Component {
                 if (this.interactionMode === 'selection') {
                     this.canvas.discardActiveObject();
                 } else if (this.interactionMode === 'polygon') {
-                    this.drawingHandlers.polygon.finishDraw();
+                    this.drawingHandlers.polygon.finish();
+                } else if (this.interactionMode === 'line') {
+                    this.drawingHandlers.line.finish();
+                } else if (this.interactionMode === 'arrow') {
+                    this.drawingHandlers.arrow.finish();
                 } else if (this.interactionMode === 'link') {
                     this.linkHandlers.finish();
                 }

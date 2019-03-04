@@ -117,7 +117,33 @@
                 "type": "polygon",
                 "name": "New polygon"
             }
-		}
+        },
+        {
+            "name": "Line",
+            "description": "",
+            "type": "drawing",
+			"icon": {
+                "prefix": "fas",
+                "name": "long-arrow-alt-right"
+            },
+            "option": {
+                "type": "line",
+                "name": "New line"
+            }
+        },
+        {
+            "name": "Arrow",
+            "description": "",
+            "type": "drawing",
+			"icon": {
+                "prefix": "fas",
+                "name": "long-arrow-alt-right"
+            },
+            "option": {
+                "type": "arrow",
+                "name": "New arrow"
+            }
+        }
 	],
 	"ELEMENT": [
 		{

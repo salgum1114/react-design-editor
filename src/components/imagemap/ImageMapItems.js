@@ -123,7 +123,13 @@ class ImageMapItems extends Component {
                 message.info('Already drawing');
                 return;
             }
-            canvasRef.drawingHandlers.polygon.initDraw();
+            if (item.option.type === 'line') {
+                canvasRef.drawingHandlers.line.init();
+            } else if (item.option.type === 'arrow') {
+                canvasRef.drawingHandlers.arrow.init();
+            } else {
+                canvasRef.drawingHandlers.polygon.init();
+            }
         },
         onChangeActiveKey: (activeKey) => {
             this.setState({

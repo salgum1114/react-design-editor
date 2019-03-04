@@ -1,5 +1,7 @@
 import { fabric } from 'fabric';
 
+import Arrow from './Arrow';
+
 export default (mergedObjects, defaultOptions) => {
     const fabricObjects = {
         group: {
@@ -59,6 +61,12 @@ export default (mergedObjects, defaultOptions) => {
         },
         line: {
             create: ({ points, ...option }) => new fabric.Line(points, {
+                ...defaultOptions,
+                ...option,
+            }),
+        },
+        arrow: {
+            create: ({ points, ...option }) => new Arrow(points, {
                 ...defaultOptions,
                 ...option,
             }),
