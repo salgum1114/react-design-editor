@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
 
 import ImageMapEditor from '../components/imagemap/ImageMapEditor';
 import WorkflowEditor from '../components/workflow/WorkflowEditor';
@@ -19,6 +20,14 @@ class App extends Component {
         const { current } = this.state;
         return (
             <div className="rde-main">
+                <Helmet>
+                    <meta charSet="utf-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <link rel="manifest" href="./manifest.json" />
+                    <link rel="shortcut icon" href="./favicon.ico" />
+                    <link rel="stylesheet" href="http://fonts.googleapis.com/earlyaccess/notosanskr.css" />
+                    <title>React Design Editor</title>
+                </Helmet>
                 <div className="rde-title">
                     <Title onChangeMenu={this.onChangeMenu} current={current} />
                 </div>

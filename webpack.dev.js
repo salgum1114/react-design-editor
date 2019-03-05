@@ -50,7 +50,7 @@ module.exports = merge(baseConfig, {
         new webpack.HotModuleReplacementPlugin(), // HMR을 사용하기 위한 플러그인
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: `${__dirname}/src/index.html`,
+            title: 'React Design Editor',
         }),
     ],
 });

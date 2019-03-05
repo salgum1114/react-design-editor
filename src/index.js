@@ -6,6 +6,10 @@ import App from './containers/App';
 
 import registerServiceWorker from './registerServiceWorker';
 
+const root = document.createElement('div');
+root.id = 'root';
+document.body.appendChild(root);
+
 const render = (Component) => {
     const rootElement = document.getElementById('root');
     ReactDom.render(
