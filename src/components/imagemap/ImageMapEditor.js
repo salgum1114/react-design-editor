@@ -399,7 +399,6 @@ class ImageMapEditor extends Component {
                         }
                         return true;
                     });
-                    console.log(data);
                     this.preview.canvasRef.handlers.importJSON(data);
                     return;
                 }

@@ -3033,6 +3033,12 @@ class Canvas extends Component {
                 this.modeHandlers.selection();
             },
         },
+        orthogonal: {
+
+        },
+        curve: {
+
+        },
     }
 
     alignmentHandlers = {
