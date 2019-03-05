@@ -7,13 +7,6 @@ const Arrow = fabric.util.createClass(fabric.Line, {
         options = options || {};
         this.callSuper('initialize', points, options);
     },
-    toObject() {
-        return fabric.util.object.extend(this.callSuper('toObject'), {
-            id: this.get('id'),
-            name: this.get('name'),
-            superType: this.get('superType'),
-        });
-    },
     _render(ctx) {
         this.callSuper('_render', ctx);
         ctx.save();

@@ -30,7 +30,7 @@ class NodeProperties extends Component {
                 <Form layout="horizontal">
                     <Collapse bordered={false}>
                         {
-                            selectedItem ? (
+                            selectedItem && PropertyDefinition[selectedItem.type] ? (
                                 Object.keys(PropertyDefinition[selectedItem.type]).map((key) => {
                                     return (
                                         <Panel key={key} header={PropertyDefinition[selectedItem.type][key].title} showArrow={showArrow}>

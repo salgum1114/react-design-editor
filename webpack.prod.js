@@ -2,10 +2,11 @@ const webpack = require('webpack');
 const path = require('path');
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const baseConfig = require('./webpack.common.config.js');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
+
+const baseConfig = require('./webpack.common.js');
 
 const pathsToClean = [
     'js',

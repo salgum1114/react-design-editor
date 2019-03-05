@@ -65,7 +65,10 @@
 			"type": "shape",
 			"icon": {
                 "prefix": "fas",
-                "name": "image"
+                "name": "play",
+                "style": {
+                    "transform": "rotate(270deg)"
+                }
             },
             "option": {
                 "type": "triangle",
@@ -80,7 +83,7 @@
 			"type": "shape",
 			"icon": {
                 "prefix": "fas",
-                "name": "image"
+                "name": "stop"
             },
             "option": {
                 "type": "rect",
@@ -124,7 +127,7 @@
             "type": "drawing",
 			"icon": {
                 "prefix": "fas",
-                "name": "long-arrow-alt-right"
+                "name": "minus"
             },
             "option": {
                 "type": "line",

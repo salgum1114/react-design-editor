@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -p --config webpack.prod.config.js",
+    "build": "webpack -p --config webpack.prod.js",
     "start": "npm install && npm run start:dev",
-    "start:dev": "webpack-dev-server --config webpack.dev.config.js --inline",
+    "start:dev": "webpack-dev-server --config webpack.dev.js --inline",
     "deploy": "npm install && npm run build && gh-pages -d public",
     "postinstall": "npm install --no-save --no-optional fabric@~2.3.3",
     "lint": "tslint '**/*.ts'"

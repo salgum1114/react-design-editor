@@ -63,12 +63,14 @@ export default (mergedObjects, defaultOptions) => {
             create: ({ points, ...option }) => new fabric.Line(points, {
                 ...defaultOptions,
                 ...option,
+                points,
             }),
         },
         arrow: {
             create: ({ points, ...option }) => new Arrow(points, {
                 ...defaultOptions,
                 ...option,
+                points,
             }),
         },
     };

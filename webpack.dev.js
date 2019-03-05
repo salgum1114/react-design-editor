@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const merge = require('webpack-merge');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const baseConfig = require('./webpack.common.config.js');
+const baseConfig = require('./webpack.common.js');
 
 const devPort = 8080;
 const host = 'localhost';

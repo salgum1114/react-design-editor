@@ -341,9 +341,9 @@ class Canvas extends Component {
                 return;
             }
             if (obj.superType === 'link') {
-                return this.linkHandlers.create({ ...newOption });
+                return this.linkHandlers.create(newOption);
             }
-            createdObj = this.fabricObjects[obj.type].create({ ...newOption });
+            createdObj = this.fabricObjects[obj.type].create(newOption);
             if (!editable && !this.handlers.isElementType(obj.type)) {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }

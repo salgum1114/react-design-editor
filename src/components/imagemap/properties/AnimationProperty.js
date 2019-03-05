@@ -1,6 +1,7 @@
 import React from 'react';
 import { Row, Col, Form, Button, Select, Switch, Slider, InputNumber } from 'antd';
 import ColorPicker from '../../common/ColorPicker';
+import Icon from '../../icon/Icon';
 
 export default {
     render(canvasRef, form, data) {
@@ -105,13 +106,22 @@ export default {
                             <Form.Item label="Playback" colon={false}>
                                 <Row>
                                     <Col span={8}>
-                                        <Button onClick={() => { canvasRef.animationHandlers.play(data.id); }}>Start</Button>
+                                        <Button size="small" onClick={() => { canvasRef.animationHandlers.play(data.id); }}>
+                                            <Icon name="play" style={{ marginRight: 8 }} />
+                                            {'Start'}
+                                        </Button>
                                     </Col>
                                     <Col span={8}>
-                                        <Button onClick={() => { canvasRef.animationHandlers.pause(data.id); }}>Pause</Button>
+                                        <Button size="small" onClick={() => { canvasRef.animationHandlers.pause(data.id); }}>
+                                            <Icon name="pause" style={{ marginRight: 8 }} />
+                                            {'Pause'}
+                                        </Button>
                                     </Col>
                                     <Col span={8}>
-                                        <Button onClick={() => { canvasRef.animationHandlers.stop(data.id); }}>Stop</Button>
+                                        <Button size="small" onClick={() => { canvasRef.animationHandlers.stop(data.id); }}>
+                                            <Icon name="stop" style={{ marginRight: 8 }} />
+                                            {'Stop'}
+                                        </Button>
                                     </Col>
                                 </Row>
                             </Form.Item>
