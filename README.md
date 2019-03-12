@@ -71,6 +71,7 @@
 - [x] Snap To Grid
 - [x] Multiple Layout - Fixed / Responsive / Fullscreen / Grid
 - [x] Context menu
+- [x] Save Image - Canvas, Target Object
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Undo / Redo - development
