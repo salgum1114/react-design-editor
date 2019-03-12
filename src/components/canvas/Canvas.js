@@ -217,8 +217,9 @@ class Canvas extends Component {
 
     componentWillUnmount() {
         this.detachEventListener();
+        const { editable } = this.props;
         const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
-        if (this.props.editable) {
+        if (editable) {
             this.canvas.off({
                 'object:modified': modified,
                 'object:scaling': scaling,
@@ -272,6 +273,7 @@ class Canvas extends Component {
         this.canvas.wrapperEl.removeEventListener('contextmenu', this.eventHandlers.contextmenu);
     }
 
+    /* eslint-disable react/sort-comp, react/prop-types */
     handlers = {
         centerObject: (obj, centered) => {
             if (centered) {
@@ -314,7 +316,7 @@ class Canvas extends Component {
                     this.handlers.addElement(newOption, centered);
                     return;
                 }
-                createdObj = this.fabricObjects[obj.type].create({ ...groupOption });
+                createdObj = this.fabricObjects[obj.type].create({ name: 'New Group', ...groupOption });
                 if (!editable && !this.handlers.isElementType(obj.type)) {
                     createdObj.on('mousedown', this.eventHandlers.object.mousedown);
                 }
@@ -1065,6 +1067,37 @@ class Canvas extends Component {
             const object = this.handlers.findOriginByIdWithIndex(id);
             if (object) {
                 this.objects.splice(object.index, 1);
+            }
+        },
+        saveImage: (targetObject, option = { name: 'New Image', format: 'png', quality: 1 }) => {
+            let dataUrl;
+            let target = targetObject;
+            if (target) {
+                dataUrl = target.toDataURL(option);
+            } else {
+                target = this.canvas.getActiveObject();
+                if (target) {
+                    dataUrl = target.toDataURL(option);
+                }
+            }
+            if (dataUrl) {
+                const anchorEl = document.createElement('a');
+                anchorEl.href = dataUrl;
+                anchorEl.download = `${option.name}.png`;
+                document.body.appendChild(anchorEl); // required for firefox
+                anchorEl.click();
+                anchorEl.remove();
+            }
+        },
+        saveCanvasImage: (option = { name: 'New Image', format: 'png', quality: 1 }) => {
+            const dataUrl = this.canvas.toDataURL(option);
+            if (dataUrl) {
+                const anchorEl = document.createElement('a');
+                anchorEl.href = dataUrl;
+                anchorEl.download = `${option.name}.png`;
+                document.body.appendChild(anchorEl); // required for firefox
+                anchorEl.click();
+                anchorEl.remove();
             }
         },
     }

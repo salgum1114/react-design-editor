@@ -508,6 +508,9 @@ class ImageMapEditor extends Component {
                 dataSources,
             });
         },
+        onSaveImage: () => {
+            this.canvasRef.handlers.saveCanvasImage();
+        },
     }
 
     transformList = () => {
@@ -558,6 +561,7 @@ class ImageMapEditor extends Component {
             onChangeAnimations,
             onChangeStyles,
             onChangeDataSources,
+            onSaveImage,
         } = this.handlers;
         const action = (
             <React.Fragment>
@@ -598,6 +602,14 @@ class ImageMapEditor extends Component {
                         />
                     )
                 }
+                <CommonButton
+                    className="rde-action-btn"
+                    shape="circle"
+                    icon="image"
+                    tooltipTitle="Save image"
+                    onClick={onSaveImage}
+                    tooltipPlacement="bottomRight"
+                />
             </React.Fragment>
         );
         const titleContent = (
