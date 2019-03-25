@@ -55,7 +55,7 @@
 - [x] Drag & Drop
 - [x] Upload (Drag & Drop)
 - [x] Alignments
-- [x] Drawing - Polygon, Link
+- [x] Drawing - Polygon, Link, Line, Arrow Line
 - [x] Export / Import - JSON
 - [x] Video
 - [x] Dom Element
