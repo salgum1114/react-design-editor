@@ -293,7 +293,7 @@ class ImageMapItems extends Component {
                                     placeholder={i18n.t('rule-chains.rule-node-search')}
                                     onChange={this.handlers.onSearchNode}
                                     value={textSearch}
-                                    suffix={textSearch.length ? <Icon name="times" style={{ cursor: 'pointer' }} onClick={() => { this.setState({ textSearch: '' }); }} /> : null}
+                                    allowClear
                                 />
                             )
                         }

@@ -4027,6 +4027,7 @@ class Canvas extends Component {
             } else if (e.keyCode === 27 && esc) {
                 if (this.interactionMode === 'selection') {
                     this.canvas.discardActiveObject();
+                    this.canvas.renderAll();
                 } else if (this.interactionMode === 'polygon') {
                     this.drawingHandlers.polygon.finish();
                 } else if (this.interactionMode === 'line') {
