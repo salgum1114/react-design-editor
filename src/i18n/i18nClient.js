@@ -13,7 +13,7 @@ const i18nClient = i18n
     .use(LanguageDetector)
     .init({
         load: 'all',
-        whitelist: ['en-US', 'ko', 'ko-KR'],
+        whitelist: ['en', 'en-US', 'ko', 'ko-KR'],
         nonExplicitWhitelist: false,
         lngs: ['en-US', 'ko-KR'],
         fallbackLng: 'en-US',
@@ -26,6 +26,9 @@ const i18nClient = i18n
         },
         defaultNS: 'locale.constant',
         resources: {
+            en: {
+                'locale.constant': translation,
+            },
             'en-US': {
                 'locale.constant': translation,
             },
