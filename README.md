@@ -28,19 +28,19 @@
 # Image Map
 ## Three layout mode
 ### 1. Fixed
-![fixed](https://user-images.githubusercontent.com/19975642/47961458-b5627680-e04e-11e8-99e0-9d4276c4e9e5.PNG)
+![fixed](https://user-images.githubusercontent.com/19975642/55678049-6aff6180-592e-11e9-8b29-8e1d60df178a.PNG)
 
 ### 2. Responsive
-![responsive](https://user-images.githubusercontent.com/19975642/47961459-b7c4d080-e04e-11e8-84b0-b4921270eddd.PNG)
+![responsive](https://user-images.githubusercontent.com/19975642/55678050-6cc92500-592e-11e9-8a57-c82d371e4be1.PNG)
 
 ### 3. Fullscreen
-![fullscreen](https://user-images.githubusercontent.com/19975642/47961460-b98e9400-e04e-11e8-9df3-14f12edb3a5f.PNG)
+![fullscreen](https://user-images.githubusercontent.com/19975642/55678051-6dfa5200-592e-11e9-9b9e-b8d8ee3ccb08.PNG)
 
 ### Preview mode
-![preview](https://user-images.githubusercontent.com/19975642/47961461-babfc100-e04e-11e8-8f52-b5dd88e5a5b9.PNG)
+![preview](https://user-images.githubusercontent.com/19975642/55678052-6fc41580-592e-11e9-9958-9a9be8239bd7.PNG)
 
 # Workflow
-![workflow](https://user-images.githubusercontent.com/19975642/47961462-bbf0ee00-e04e-11e8-9185-de5759f2463a.PNG)
+![workflow](https://user-images.githubusercontent.com/19975642/55678053-718dd900-592e-11e9-9996-cce9b46d8433.PNG)
 
 # Features
 - [x] Add
