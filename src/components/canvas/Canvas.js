@@ -880,7 +880,13 @@ class Canvas extends Component {
             }
             setTimeout(() => {
                 json.forEach((obj) => {
-                    if (obj.id === 'workarea') {
+                    if (workareaExist.length && obj.id === 'workarea') {
+                        prevLeft = obj.left;
+                        prevTop = obj.top;
+                        this.workarea.set(obj);
+                        this.canvas.centerObject(this.workarea);
+                        this.workareaHandlers.setImage(obj.src, true);
+                        this.workarea.setCoords();
                         return;
                     }
                     const canvasWidth = this.canvas.getWidth();
