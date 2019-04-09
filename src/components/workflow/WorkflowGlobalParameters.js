@@ -195,7 +195,7 @@ class WorkflowGlobalParameters extends Component {
         }
         return (
             <WorkflowSiderContainer
-                title={i18n.t('rule-chains.rule-chains-variables')}
+                title={i18n.t('workflow.variables')}
                 icon="globe"
             >
                 <FlexBox justifyContent="flex-end">
@@ -252,7 +252,7 @@ class WorkflowGlobalParameters extends Component {
                     }}
                 />
                 <Modal
-                    title={isEdit ? i18n.t('rule-chains.rule-chains-variables-modify') : i18n.t('rule-chains.rule-chains-variables-add')}
+                    title={isEdit ? i18n.t('workflow.variables-modify') : i18n.t('workflow.variables-add')}
                     onOk={this.handlers.onOk}
                     onCancel={this.handlers.onCancel}
                     visible={visible}

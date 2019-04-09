@@ -93,13 +93,13 @@ class ImageMapFooterToolbar extends Component {
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
                             onClick={() => { selection(); }}
                             icon="mouse-pointer"
-                            tooltipTitle={i18n.t('tooltip.selection')}
+                            tooltipTitle={i18n.t('action.selection')}
                         />
                         <CommonButton
                             type={interactionMode === 'grab' ? 'primary' : 'default'}
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
                             onClick={() => { grab(); }}
-                            tooltipTitle={i18n.t('tooltip.grap')}
+                            tooltipTitle={i18n.t('action.grab')}
                             icon="hand-rock"
                         />
                     </Button.Group>
@@ -110,30 +110,29 @@ class ImageMapFooterToolbar extends Component {
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
                             onClick={() => { canvasRef.zoomHandlers.zoomOut(); }}
                             icon="search-minus"
-                            tooltipTitle={i18n.t('tooltip.zoom-out')}
+                            tooltipTitle={i18n.t('action.zoom-out')}
                         />
                         <CommonButton
                             onClick={() => { canvasRef.zoomHandlers.zoomOneToOne(); }}
-                            tooltipTitle={i18n.t('tooltip.one-to-one')}
+                            tooltipTitle={i18n.t('action.one-to-one')}
                         >
                             {`${zoomValue}%`}
                         </CommonButton>
                         <CommonButton
                             onClick={() => { canvasRef.zoomHandlers.zoomToFit(); }}
-                            tooltipTitle={i18n.t('tooltip.fit')}
-                        >
-                            {'Fit'}
-                        </CommonButton>
+                            tooltipTitle={i18n.t('action.fit')}
+                            icon="expand"
+                        />
                         <CommonButton
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
                             onClick={() => { canvasRef.zoomHandlers.zoomIn(); }}
                             icon="search-plus"
-                            tooltipTitle={i18n.t('tooltip.zoom-in')}
+                            tooltipTitle={i18n.t('action.zoom-in')}
                         />
                     </Button.Group>
                 </div>
                 <div className="rde-editor-footer-toolbar-preview">
-                    <Tooltip title={i18n.t('tooltip.preview')}>
+                    <Tooltip title={i18n.t('action.preview')}>
                         <Switch checked={preview} onChange={onChangePreview} />
                     </Tooltip>
                 </div>

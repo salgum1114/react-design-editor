@@ -50,7 +50,7 @@ class WorkflowInfo extends Component {
                         form.getFieldDecorator('name', {
                             initialValue: workflow.name,
                             rules: [
-                                { required: true, message: i18n.t('common.enter-property') },
+                                { required: true, message: i18n.t('validation.enter-property', { arg: i18n.t('common.name') }) },
                             ],
                         })(<Input />)
                     }
@@ -66,7 +66,7 @@ class WorkflowInfo extends Component {
                     }
                 </Form.Item>
                 <Form.Item
-                    label={i18n.t('alarm.enabled')}
+                    label={i18n.t('common.enabled')}
                     colon={false}
                 >
                     {
@@ -94,11 +94,12 @@ class WorkflowInfo extends Component {
                 shape="circle"
                 icon={isEdit ? 'save' : 'edit'}
                 onClick={this.handlers.onClick}
+                tooltipTitle={isEdit ? i18n.t('action.save') : i18n.t('action.modify')}
             />
         );
         return (
             <WorkflowSiderContainer
-                title={i18n.t('rule-chains.rule-chains-info')}
+                title={i18n.t('workflow.workflow-info')}
                 icon="cog"
                 extra={extra}
             >

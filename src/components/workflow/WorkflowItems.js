@@ -210,10 +210,10 @@ class WorkflowItems extends Component {
                             collapse ? null : (
                                 <Input
                                     style={{ margin: '8px' }}
-                                    placeholder={i18n.t('rule-chains.rule-node-search')}
+                                    placeholder={i18n.t('action.search-list')}
                                     onChange={this.handlers.onSearchNode}
                                     value={textSearch}
-                                    suffix={textSearch.length ? <Icon name="times" style={{ cursor: 'pointer' }} onClick={() => { this.setState({ textSearch: '' }); }} /> : null}
+                                    allowClear
                                 />
                             )
                         }

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Form, Radio } from 'antd';
+import i18n from 'i18next';
+
 import UrlModal from '../../common/UrlModal';
 import FileUpload from '../../common/FileUpload';
 
@@ -12,34 +14,29 @@ export default {
         const imageLoadType = data.imageLoadType || 'file';
         return (
             <React.Fragment>
-                <Form.Item label="Image Load Type" colon={false}>
+                <Form.Item label={i18n.t('imagemap.image.image-load-type')} colon={false}>
                     {
                         getFieldDecorator('imageLoadType', {
-                            rules: [{
-                                // required: true,
-                                // message: 'Please select icon',
-                            }],
                             initialValue: imageLoadType,
                         })(
                             <Radio.Group size="small">
-                                <Radio.Button value="file">File Upload</Radio.Button>
-                                <Radio.Button value="src">Image URL</Radio.Button>
+                                <Radio.Button value="file">{i18n.t('imagemap.image.file-upload')}</Radio.Button>
+                                <Radio.Button value="src">{i18n.t('imagemap.image.image-url')}</Radio.Button>
                             </Radio.Group>,
                         )
                     }
                 </Form.Item>
                 {
                     imageLoadType === 'file' ? (
-                        <Form.Item label="File" colon={false}>
+                        <Form.Item label={i18n.t('common.file')} colon={false}>
                             {
                                 getFieldDecorator('file', {
                                     rules: [{
                                         required: true,
-                                        message: 'Please select image',
+                                        message: i18n.t('validation.enter-property', { arg: i18n.t('common.file') }),
                                     }],
                                     initialValue: data.file,
                                 })(
-                                    // <FileUpload fileList={data.file ? [data.file] : []} />,
                                     <FileUpload accept="image/*" />,
                                 )
                             }
@@ -48,10 +45,6 @@ export default {
                         <Form.Item>
                             {
                                 getFieldDecorator('src', {
-                                    rules: [{
-                                        required: true,
-                                        message: 'Please select image',
-                                    }],
                                     initialValue: data.src,
                                 })(
                                     <UrlModal form={form} />,

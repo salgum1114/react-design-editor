@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button, Input } from 'antd';
+import i18n from 'i18next';
+
 import Icon from '../icon/Icon';
 
 class UrlModal extends Component {
@@ -60,7 +62,7 @@ class UrlModal extends Component {
         const { url, visible } = this.state;
         const label = (
             <React.Fragment>
-                <span style={{ marginRight: 8 }}>URL</span>
+                <span style={{ marginRight: 8 }}>{i18n.t('common.url')}</span>
                 <Button onClick={onClick} shape="circle" className="rde-action-btn">
                     <Icon name="edit" />
                 </Button>
@@ -73,7 +75,7 @@ class UrlModal extends Component {
                         getFieldDecorator('url', {
                             rules: [{
                                 required: true,
-                                message: 'Please input url',
+                                message: i18n.t('validation.enter-property', { arg: i18n.t('common.url') }),
                             }],
                             initialValue: url || '',
                         })(
@@ -88,7 +90,7 @@ class UrlModal extends Component {
                     onOk={onOk}
                     visible={visible}
                 >
-                    <Form.Item label="URL" colon={false}>
+                    <Form.Item label={i18n.t('common.url')} colon={false}>
                         <Input defaultValue={url} onChange={(e) => { this.setState({ tempUrl: e.target.value }); }} />
                     </Form.Item>
                 </Modal>

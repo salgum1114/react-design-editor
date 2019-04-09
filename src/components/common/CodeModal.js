@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Modal, Button, Form } from 'antd';
 import ReactAce from 'react-ace';
 import 'brace/mode/javascript';
+import i18n from 'i18next';
 
 import Icon from '../icon/Icon';
 
@@ -63,7 +64,7 @@ class CodeModal extends Component {
         const { code, visible, tempCode } = this.state;
         const label = (
             <React.Fragment>
-                <span style={{ marginRight: 8 }}>Code</span>
+                <span style={{ marginRight: 8 }}>{i18n.t('common.code')}</span>
                 <Button onClick={onClick} shape="circle" className="rde-action-btn">
                     <Icon name="edit" />
                 </Button>

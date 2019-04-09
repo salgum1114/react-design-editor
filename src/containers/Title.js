@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Menu } from 'antd';
 import PropTypes from 'prop-types';
+import i18n from 'i18next';
 
 import { FlexBox } from '../components/flex';
 import Icon from '../components/icon/Icon';
@@ -36,8 +37,8 @@ class Title extends Component {
                 </FlexBox>
                 <FlexBox style={{ marginLeft: 88 }}>
                     <Menu mode="horizontal" theme="dark" style={{ background: 'transparent', fontSize: '16px' }} onClick={this.props.onChangeMenu} selectedKeys={[this.props.current]}>
-                        <Menu.Item key="imagemap" style={{ color: '#fff' }}>{'Image Map'}</Menu.Item>
-                        <Menu.Item key="workflow" style={{ color: '#fff' }}>{'Workflow'}</Menu.Item>
+                        <Menu.Item key="imagemap" style={{ color: '#fff' }}>{i18n.t('imagemap.imagemap')}</Menu.Item>
+                        <Menu.Item key="workflow" style={{ color: '#fff' }}>{i18n.t('workflow.workflow')}</Menu.Item>
                     </Menu>
                 </FlexBox>
             </FlexBox>

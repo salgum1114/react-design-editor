@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
 import { Button, Modal, Form, Col, Row, Input } from 'antd';
+import i18n from 'i18next';
 
 import Icon from './Icon';
 import icons from '../../libs/fontawesome-5.2.0/metadata/icons.json';
@@ -98,7 +99,7 @@ class IconChooser extends Component {
         const { icon, visible, textSearch } = this.state;
         const label = (
             <React.Fragment>
-                <span style={{ marginRight: 8 }}>Icon</span>
+                <span style={{ marginRight: 8 }}>{i18n.t('common.icon')}</span>
                 <Icon name={Object.keys(icon)[0]} prefix={this.getPrefix(icon[Object.keys(icon)[0]].styles[0])} />
             </React.Fragment>
         );
@@ -108,7 +109,7 @@ class IconChooser extends Component {
             <div style={{ padding: '0 24px' }}>
                 <Input
                     onChange={(e) => { onSearch(e.target.value); }}
-                    placeholder={`Search ${filteredIconsLength} icons for...`}
+                    placeholder={i18n.t('imagemap.marker.search-icon', { length: filteredIconsLength })}
                 />
             </div>
         );
@@ -116,7 +117,7 @@ class IconChooser extends Component {
             <React.Fragment>
                 <Form.Item label={label} colon={false}>
                     <Button onClick={onClick}>
-                        Choose Icon from Library
+                        {i18n.t('imagemap.marker.choose-icon')}
                     </Button>
                 </Form.Item>
                 <Modal

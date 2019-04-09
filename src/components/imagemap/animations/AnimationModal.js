@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Form, Input } from 'antd';
+import i18n from 'i18next';
 
 import Canvas from '../../canvas/Canvas';
 import AnimationProperty from '../properties/AnimationProperty';
@@ -89,7 +90,7 @@ class AnimationModal extends Component {
                 onCancel={onCancel}
                 visible={visible}
             >
-                <Form.Item label="Title" required colon={false} hasFeedback help={validateTitle.help} validateStatus={validateTitle.validateStatus}>
+                <Form.Item label={i18n.t('common.title')} required colon={false} hasFeedback help={validateTitle.help} validateStatus={validateTitle.validateStatus}>
                     <Input value={animation.title} onChange={(e) => { onChange(null, { animation: { title: e.target.value } }, { animation: { ...animation, title: e.target.value } }); }} />
                 </Form.Item>
                 {AnimationProperty.render(this.canvasRef, form, { animation, id: 'animations' })}

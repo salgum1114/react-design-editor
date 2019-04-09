@@ -90,6 +90,7 @@ class ImageMapItems extends Component {
         canvas.canvas.wrapperEl.removeEventListener('drop', this.events.onDrop);
     }
 
+    /* eslint-disable react/sort-comp, react/prop-types */
     handlers = {
         onAddItem: (item, centered) => {
             const { canvasRef } = this.props;
@@ -219,7 +220,7 @@ class ImageMapItems extends Component {
         },
     }
 
-    renderItems = (items) => (
+    renderItems = items => (
         <FlexBox flexWrap="wrap" flexDirection="column" style={{ width: '100%' }}>
             {items.map(item => this.renderItem(item))}
         </FlexBox>
@@ -290,7 +291,7 @@ class ImageMapItems extends Component {
                             collapse ? null : (
                                 <Input
                                     style={{ margin: '8px' }}
-                                    placeholder={i18n.t('rule-chains.rule-node-search')}
+                                    placeholder={i18n.t('action.search-list')}
                                     onChange={this.handlers.onSearchNode}
                                     value={textSearch}
                                     allowClear
