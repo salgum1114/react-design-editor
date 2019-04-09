@@ -88,13 +88,13 @@ class WorkflowToolbar extends Component {
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
                             onClick={() => { selection(); }}
                             icon="mouse-pointer"
-                            tooltipTitle={i18n.t('rule-chains.tooltip-selection')}
+                            tooltipTitle={i18n.t('action.selection')}
                         />
                         <CommonButton
                             type={interactionMode === 'grab' ? 'primary' : 'default'}
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
                             onClick={() => { grab(); }}
-                            tooltipTitle={i18n.t('rule-chains.tooltip-grap')}
+                            tooltipTitle={i18n.t('action.grab')}
                             icon="hand-rock"
                         />
                     </Button.Group>
@@ -105,19 +105,19 @@ class WorkflowToolbar extends Component {
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
                             onClick={() => { canvasRef.zoomHandlers.zoomIn(); }}
                             icon="search-plus"
-                            tooltipTitle={i18n.t('rule-chains.tooltip-zoom-in')}
+                            tooltipTitle={i18n.t('action.zoom-in')}
                         />
                         <CommonButton
                             onClick={() => { canvasRef.zoomHandlers.zoomOneToOne(); }}
-                            tooltipTitle={i18n.t('rule-chains.tooltip-one-to-one')}
+                            tooltipTitle={i18n.t('action.one-to-one')}
                         >
-                            {zoomValue}%
+                            {`${zoomValue}%`}
                         </CommonButton>
                         <CommonButton
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
                             onClick={() => { canvasRef.zoomHandlers.zoomOut(); }}
                             icon="search-minus"
-                            tooltipTitle={i18n.t('rule-chains.tooltip-zoom-out')}
+                            tooltipTitle={i18n.t('action.zoom-out')}
                         />
                     </Button.Group>
                 </div>

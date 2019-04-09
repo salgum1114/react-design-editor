@@ -1,5 +1,7 @@
 import React from 'react';
 import { Form, Slider, Switch } from 'antd';
+import i18n from 'i18next';
+
 import ColorPicker from '../../common/ColorPicker';
 
 export default {
@@ -8,7 +10,7 @@ export default {
         const enabeld = data.shadow ? data.shadow.enabled || false : false;
         return (
             <React.Fragment>
-                <Form.Item label="Enbaled" colon={false}>
+                <Form.Item label={i18n.t('imagemap.shadow.shadow-enabled')} colon={false}>
                     {
                         getFieldDecorator('shadow.enabled', {
                             valuePropName: 'checked',
@@ -21,7 +23,7 @@ export default {
                 {
                     enabeld ? (
                         <React.Fragment>
-                            <Form.Item label="Color" colon={false}>
+                            <Form.Item label={i18n.t('common.color')} colon={false}>
                                 {
                                     getFieldDecorator('shadow.color', {
                                         initialValue: data.shadow.color || 'rgba(0, 0, 0, 0)',
@@ -30,7 +32,7 @@ export default {
                                     )
                                 }
                             </Form.Item>
-                            <Form.Item label="Blur" colon={false}>
+                            <Form.Item label={i18n.t('common.blur')} colon={false}>
                                 {
                                     getFieldDecorator('shadow.blur', {
                                         rules: [{
@@ -44,7 +46,7 @@ export default {
                                     )
                                 }
                             </Form.Item>
-                            <Form.Item label="OffsetX" colon={false}>
+                            <Form.Item label={i18n.t('imagemap.shadow.offset-x')} colon={false}>
                                 {
                                     getFieldDecorator('shadow.offsetX', {
                                         rules: [{
@@ -58,7 +60,7 @@ export default {
                                     )
                                 }
                             </Form.Item>
-                            <Form.Item label="OffsetY" colon={false}>
+                            <Form.Item label={i18n.t('imagemap.shadow.offset-y')} colon={false}>
                                 {
                                     getFieldDecorator('shadow.offsetY', {
                                         rules: [{

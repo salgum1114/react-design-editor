@@ -7,12 +7,12 @@ const { Dragger } = Upload;
 class FileUpload extends Component {
     static propTypes = {
         onChange: PropTypes.func,
-        fileLimit: PropTypes.number,
+        limit: PropTypes.number,
         accept: PropTypes.string,
     }
 
     static defaultProps = {
-        fileLimit: 5,
+        limit: 5,
     }
 
     state = {
@@ -26,14 +26,15 @@ class FileUpload extends Component {
     }
 
     render() {
+        const { accept, limit, fileList } = this.props;
         const props = {
-            accept: this.props.accept,
+            accept,
             name: 'file',
             multiple: false,
             onChange: (info) => {
-                const isLimit = info.file.size / 1024 / 1024 < this.props.fileLimit;
+                const isLimit = info.file.size / 1024 / 1024 < limit;
                 if (!isLimit) {
-                    message.error('Limited to 5MB or less');
+                    message.error(`Limited to ${limit}MB or less`);
                     return false;
                 }
                 const { onChange } = this.props;
@@ -53,7 +54,7 @@ class FileUpload extends Component {
                 });
             },
             beforeUpload: (file) => {
-                const isLimit = file.size / 1024 / 1024 < this.props.fileLimit;
+                const isLimit = file.size / 1024 / 1024 < limit;
                 if (!isLimit) {
                     return false;
                 }
@@ -62,7 +63,7 @@ class FileUpload extends Component {
                 });
                 return false;
             },
-            fileList: this.state.fileList,
+            fileList,
         };
         return (
             <Dragger {...props}>
@@ -70,7 +71,7 @@ class FileUpload extends Component {
                     <Icon type="inbox" />
                 </p>
                 <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                <p className="ant-upload-hint">Support for a single upload. Limited to 5MB or less</p>
+                <p className="ant-upload-hint">{`Support for a single upload. Limited to ${limit}MB or less`}</p>
             </Dragger>
         );
     }

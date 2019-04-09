@@ -39,6 +39,7 @@ module.exports = merge(baseConfig, {
             'react-dom',
             'lodash',
             'fabric',
+            'antd',
         ],
         app: ['@babel/polyfill', path.resolve(__dirname, 'src/index.js')],
     },

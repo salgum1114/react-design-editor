@@ -1,17 +1,18 @@
 import React from 'react';
 import { Form, Select, Switch, Input } from 'antd';
+import i18n from 'i18next';
 
 export default {
     render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
-                <Form.Item label="Link Enabled" colon={false}>
+                <Form.Item label={i18n.t('imagemap.link.link-enabled')} colon={false}>
                     {
                         getFieldDecorator('link.enabled', {
                             rules: [{
                                 required: true,
-                                message: 'Please select enabled',
+                                message: i18n.t('validation.enter-property', { arg: i18n.t('imagemap.marker.link-enabled') }),
                             }],
                             valuePropName: 'checked',
                             initialValue: data.link.enabled,
@@ -23,24 +24,24 @@ export default {
                 {
                     data.link.enabled ? (
                         <React.Fragment>
-                            <Form.Item label="State" colon={false}>
+                            <Form.Item label={i18n.t('common.state')} colon={false}>
                                 {
                                     getFieldDecorator('link.state', {
                                         initialValue: data.link.state || 'current',
                                     })(
                                         <Select>
-                                            <Select.Option value="current">Current</Select.Option>
-                                            <Select.Option value="new">New</Select.Option>
+                                            <Select.Option value="current">{i18n.t('common.current')}</Select.Option>
+                                            <Select.Option value="new">{i18n.t('common.new')}</Select.Option>
                                         </Select>,
                                     )
                                 }
                             </Form.Item>
-                            <Form.Item label="URL" colon={false}>
+                            <Form.Item label={i18n.t('common.url')} colon={false}>
                                 {
                                     getFieldDecorator('link.url', {
                                         rules: [{
                                             required: true,
-                                            message: 'Please input url',
+                                            message: i18n.t('validation.enter-property', { arg: i18n.t('common.url') }),
                                         }],
                                         initialValue: data.link.url || '',
                                     })(

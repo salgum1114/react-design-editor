@@ -37,13 +37,13 @@ class NodeDescriptor extends Component {
                 this.setState({
                     loading: false,
                 });
-                message.success(i18n.t('rule-chains.virtual-button-execute-success', { name: selectedItem.name }));
+                message.success(i18n.t('workflow.virtual-button-execute-success', { name: selectedItem.name }));
             } catch (error) {
                 this.setState({
                     loading: false,
                 });
                 console.error(`[ERROR] ${this.constructor.name} triggerVirtualButton()`, error);
-                message.error(`${i18n.t('rule-chains.virtual-button-execute-failed', { name: selectedItem.name })}, ${error.message}`);
+                message.error(`${i18n.t('workflow.virtual-button-execute-failed', { name: selectedItem.name })}, ${error.message}`);
             }
         },
     }

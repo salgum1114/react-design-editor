@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Switch } from 'antd';
+import { Button, Switch, Tooltip } from 'antd';
 import i18n from 'i18next';
 
 import CommonButton from '../common/CommonButton';
@@ -46,6 +46,7 @@ class ImageMapFooterToolbar extends Component {
         canvasRef.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
     }
 
+    /* eslint-disable react/sort-comp, react/prop-types */
     handlers = {
         selection: () => {
             this.props.canvasRef.modeHandlers.selection((obj) => {
@@ -92,13 +93,13 @@ class ImageMapFooterToolbar extends Component {
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
                             onClick={() => { selection(); }}
                             icon="mouse-pointer"
-                            tooltipTitle={i18n.t('rule-chains.tooltip-selection')}
+                            tooltipTitle={i18n.t('action.selection')}
                         />
                         <CommonButton
                             type={interactionMode === 'grab' ? 'primary' : 'default'}
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
                             onClick={() => { grab(); }}
-                            tooltipTitle={i18n.t('rule-chains.tooltip-grap')}
+                            tooltipTitle={i18n.t('action.grab')}
                             icon="hand-rock"
                         />
                     </Button.Group>
@@ -109,30 +110,31 @@ class ImageMapFooterToolbar extends Component {
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
                             onClick={() => { canvasRef.zoomHandlers.zoomOut(); }}
                             icon="search-minus"
-                            tooltipTitle={i18n.t('rule-chains.tooltip-zoom-out')}
+                            tooltipTitle={i18n.t('action.zoom-out')}
                         />
                         <CommonButton
                             onClick={() => { canvasRef.zoomHandlers.zoomOneToOne(); }}
-                            tooltipTitle={i18n.t('rule-chains.tooltip-one-to-one')}
+                            tooltipTitle={i18n.t('action.one-to-one')}
                         >
-                            {zoomValue}%
+                            {`${zoomValue}%`}
                         </CommonButton>
                         <CommonButton
                             onClick={() => { canvasRef.zoomHandlers.zoomToFit(); }}
-                            tooltipTitle={i18n.t('rule-chains.tooltip-one-to-one')}
-                        >
-                            {'Fit'}
-                        </CommonButton>
+                            tooltipTitle={i18n.t('action.fit')}
+                            icon="expand"
+                        />
                         <CommonButton
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
                             onClick={() => { canvasRef.zoomHandlers.zoomIn(); }}
                             icon="search-plus"
-                            tooltipTitle={i18n.t('rule-chains.tooltip-zoom-in')}
+                            tooltipTitle={i18n.t('action.zoom-in')}
                         />
                     </Button.Group>
                 </div>
                 <div className="rde-editor-footer-toolbar-preview">
-                    <Switch checked={preview} onChange={onChangePreview} />
+                    <Tooltip title={i18n.t('action.preview')}>
+                        <Switch checked={preview} onChange={onChangePreview} />
+                    </Tooltip>
                 </div>
             </React.Fragment>
         );

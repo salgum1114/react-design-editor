@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { FlexBox, FlexItem } from '../flex';
 
-class WorkflowTitle extends Component {
+class ImageMapTitle extends Component {
     render() {
         const { title, content, action, children } = this.props;
         return children || (
@@ -30,4 +30,4 @@ class WorkflowTitle extends Component {
     }
 }
 
-export default WorkflowTitle;
+export default ImageMapTitle;

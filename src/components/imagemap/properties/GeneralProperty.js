@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form, Input, Slider, Switch, Col, InputNumber, Row } from 'antd';
+import i18n from 'i18next';
 
 export default {
     render(canvasRef, form, data) {
@@ -8,7 +9,7 @@ export default {
             <React.Fragment>
                 <Row>
                     <Col span={12}>
-                        <Form.Item label="Lock" colon={false}>
+                        <Form.Item label={i18n.t('common.lock')} colon={false}>
                             {
                                 getFieldDecorator('lock', {
                                     rules: [{
@@ -23,7 +24,7 @@ export default {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item label="Visible" colon={false}>
+                        <Form.Item label={i18n.t('common.visible')} colon={false}>
                             {
                                 getFieldDecorator('visible', {
                                     rules: [{
@@ -38,7 +39,7 @@ export default {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Form.Item label="Name" colon={false}>
+                <Form.Item label={i18n.t('common.name')} colon={false}>
                     {
                         getFieldDecorator('name', {
                             initialValue: data.name,
@@ -49,7 +50,7 @@ export default {
                 </Form.Item>
                 <Row>
                     <Col span={12}>
-                        <Form.Item label="Width" colon={false}>
+                        <Form.Item label={i18n.t('common.width')} colon={false}>
                             {
                                 getFieldDecorator('width', {
                                     rules: [{
@@ -66,7 +67,7 @@ export default {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item label="Height" colon={false}>
+                        <Form.Item label={i18n.t('common.height')} colon={false}>
                             {
                                 getFieldDecorator('height', {
                                     rules: [{
@@ -85,7 +86,7 @@ export default {
                 </Row>
                 <Row>
                     <Col span={12}>
-                        <Form.Item label="Left" colon={false}>
+                        <Form.Item label={i18n.t('common.left')} colon={false}>
                             {
                                 getFieldDecorator('left', {
                                     rules: [{
@@ -100,7 +101,7 @@ export default {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item label="Top" colon={false}>
+                        <Form.Item label={i18n.t('common.top')} colon={false}>
                             {
                                 getFieldDecorator('top', {
                                     rules: [{
@@ -115,7 +116,7 @@ export default {
                         </Form.Item>
                     </Col>
                 </Row>
-                <Form.Item label="Rotation" colon={false}>
+                <Form.Item label={i18n.t('common.angle')} colon={false}>
                     {
                         getFieldDecorator('angle', {
                             rules: [{

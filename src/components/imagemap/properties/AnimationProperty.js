@@ -1,5 +1,7 @@
 import React from 'react';
 import { Row, Col, Form, Button, Select, Switch, Slider, InputNumber } from 'antd';
+import i18n from 'i18next';
+
 import ColorPicker from '../../common/ColorPicker';
 import Icon from '../../icon/Icon';
 
@@ -12,19 +14,19 @@ export default {
         const type = data.animation.type || 'none';
         return (
             <React.Fragment>
-                <Form.Item label="Animation Type" colon={false}>
+                <Form.Item label={i18n.t('imagemap.animation.animation-type')} colon={false}>
                     {
                         getFieldDecorator('animation.type', {
                             initialValue: type,
                         })(
                             <Select>
-                                <Select.Option value="none">None</Select.Option>
-                                <Select.Option value="fade">Fade</Select.Option>
-                                <Select.Option value="bounce">Bounce</Select.Option>
-                                <Select.Option value="shake">Shake</Select.Option>
-                                <Select.Option value="scaling">Scaling</Select.Option>
-                                <Select.Option value="rotation">Rotation</Select.Option>
-                                <Select.Option value="flash">Flash</Select.Option>
+                                <Select.Option value="none">{i18n.t('imagemap.animation.none')}</Select.Option>
+                                <Select.Option value="fade">{i18n.t('imagemap.animation.fade')}</Select.Option>
+                                <Select.Option value="bounce">{i18n.t('imagemap.animation.bounce')}</Select.Option>
+                                <Select.Option value="shake">{i18n.t('imagemap.animation.shake')}</Select.Option>
+                                <Select.Option value="scaling">{i18n.t('imagemap.animation.scaling')}</Select.Option>
+                                <Select.Option value="rotation">{i18n.t('imagemap.animation.rotation')}</Select.Option>
+                                <Select.Option value="flash">{i18n.t('imagemap.animation.flash')}</Select.Option>
                             </Select>,
                         )
                     }
@@ -34,7 +36,7 @@ export default {
                         <React.Fragment>
                             <Row>
                                 <Col span={12}>
-                                    <Form.Item label="Auto Play" colon={false}>
+                                    <Form.Item label={i18n.t('imagemap.animation.auto-play')} colon={false}>
                                         {
                                             getFieldDecorator('animation.autoplay', {
                                                 rules: [{
@@ -49,7 +51,7 @@ export default {
                                     </Form.Item>
                                 </Col>
                                 <Col span={12}>
-                                    <Form.Item label="Loop" colon={false}>
+                                    <Form.Item label={i18n.t('common.loop')} colon={false}>
                                         {
                                             getFieldDecorator('animation.loop', {
                                                 rules: [{
@@ -68,7 +70,7 @@ export default {
                                 type !== 'shake' ? (
                                     <Row>
                                         <Col span={12}>
-                                            <Form.Item label="Delay" colon={false}>
+                                            <Form.Item label={i18n.t('common.delay')} colon={false}>
                                                 {
                                                     getFieldDecorator('animation.delay', {
                                                         rules: [{
@@ -84,7 +86,7 @@ export default {
                                             </Form.Item>
                                         </Col>
                                         <Col span={12}>
-                                            <Form.Item label="Duration" colon={false}>
+                                            <Form.Item label={i18n.t('common.duration')} colon={false}>
                                                 {
                                                     getFieldDecorator('animation.duration', {
                                                         rules: [{
@@ -103,24 +105,24 @@ export default {
                                 ) : null
                             }
                             {this.getComponentType(type, data, getFieldDecorator)}
-                            <Form.Item label="Playback" colon={false}>
+                            <Form.Item label={i18n.t('imagemap.animation.playback')} colon={false}>
                                 <Row>
                                     <Col span={8}>
-                                        <Button size="small" onClick={() => { canvasRef.animationHandlers.play(data.id); }}>
+                                        <Button block size="small" onClick={() => { canvasRef.animationHandlers.play(data.id); }}>
                                             <Icon name="play" style={{ marginRight: 8 }} />
-                                            {'Start'}
+                                            {i18n.t('action.start')}
                                         </Button>
                                     </Col>
                                     <Col span={8}>
-                                        <Button size="small" onClick={() => { canvasRef.animationHandlers.pause(data.id); }}>
+                                        <Button block size="small" onClick={() => { canvasRef.animationHandlers.pause(data.id); }}>
                                             <Icon name="pause" style={{ marginRight: 8 }} />
-                                            {'Pause'}
+                                            {i18n.t('action.pause')}
                                         </Button>
                                     </Col>
                                     <Col span={8}>
-                                        <Button size="small" onClick={() => { canvasRef.animationHandlers.stop(data.id); }}>
+                                        <Button block size="small" onClick={() => { canvasRef.animationHandlers.stop(data.id); }}>
                                             <Icon name="stop" style={{ marginRight: 8 }} />
-                                            {'Stop'}
+                                            {i18n.t('action.stop')}
                                         </Button>
                                     </Col>
                                 </Row>
@@ -135,7 +137,7 @@ export default {
         let component;
         if (type === 'fade') {
             component = (
-                <Form.Item label="Opacity" colon={false}>
+                <Form.Item label={i18n.t('common.opacity')} colon={false}>
                     {
                         getFieldDecorator('animation.opacity', {
                             rules: [{
@@ -153,7 +155,7 @@ export default {
         } else if (type === 'bounce') {
             component = (
                 <React.Fragment>
-                    <Form.Item label="Bounce Type" colon={false}>
+                    <Form.Item label={i18n.t('imagemap.animation.bounce-type')} colon={false}>
                         {
                             getFieldDecorator('animation.bounce', {
                                 initialValue: data.animation.bounce || 'hotizontal',
@@ -165,7 +167,7 @@ export default {
                             )
                         }
                     </Form.Item>
-                    <Form.Item label="Offset" colon={false}>
+                    <Form.Item label={i18n.t('common.offset')} colon={false}>
                         {
                             getFieldDecorator('animation.offset', {
                                 rules: [{
@@ -184,19 +186,19 @@ export default {
         } else if (type === 'shake') {
             component = (
                 <React.Fragment>
-                    <Form.Item label="Shake Type" colon={false}>
+                    <Form.Item label={i18n.t('imagemap.animation.shake-type')} colon={false}>
                         {
                             getFieldDecorator('animation.shake', {
                                 initialValue: data.animation.shake || 'hotizontal',
                             })(
                                 <Select>
-                                    <Select.Option value="hotizontal">Horizontal</Select.Option>
-                                    <Select.Option value="vertical">Vertical</Select.Option>
+                                    <Select.Option value="hotizontal">{i18n.t('common.horizontal')}</Select.Option>
+                                    <Select.Option value="vertical">{i18n.t('common.vertical')}</Select.Option>
                                 </Select>,
                             )
                         }
                     </Form.Item>
-                    <Form.Item label="Offset" colon={false}>
+                    <Form.Item label={i18n.t('common.offset')} colon={false}>
                         {
                             getFieldDecorator('animation.offset', {
                                 rules: [{
@@ -214,7 +216,7 @@ export default {
             );
         } else if (type === 'scaling') {
             component = (
-                <Form.Item label="Scaling" colon={false}>
+                <Form.Item label={i18n.t('imagemap.animation.scaling')} colon={false}>
                     {
                         getFieldDecorator('animation.scale', {
                             rules: [{
@@ -231,7 +233,7 @@ export default {
             );
         } else if (type === 'rotation') {
             component = (
-                <Form.Item label="Angle" colon={false}>
+                <Form.Item label={i18n.t('common.angle')} colon={false}>
                     {
                         getFieldDecorator('animation.angle', {
                             rules: [{
@@ -250,7 +252,7 @@ export default {
             component = (
                 <Row>
                     <Col span={12}>
-                        <Form.Item label="Fill Color" colon={false}>
+                        <Form.Item label={i18n.t('imagemap.style.fill-color')} colon={false}>
                             {
                                 getFieldDecorator('animation.fill', {
                                     initialValue: data.animation.fill || data.fill,
@@ -261,7 +263,7 @@ export default {
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item label="Stroke Color" colon={false}>
+                        <Form.Item label={i18n.t('imagemap.style.stroke-color')} colon={false}>
                             {
                                 getFieldDecorator('animation.stroke', {
                                     initialValue: data.animation.stroke || data.stroke,
@@ -277,7 +279,7 @@ export default {
             component = (
                 <Row>
                     <Col span={12}>
-                        <Form.Item label="Value" colon={false}>
+                        <Form.Item label={i18n.t('common.value')} colon={false}>
                             {
                                 getFieldDecorator('animation.value', {
                                     rules: [{

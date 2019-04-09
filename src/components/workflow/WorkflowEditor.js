@@ -184,7 +184,7 @@ class WorkflowEditor extends Component {
                 this.canvasRef.handlers.getObjects().forEach((obj) => {
                     if (obj.superType === 'node') {
                         if (obj.errorFlag.visible) {
-                            throw new NodeConfigurationError(i18n.t('rule-chains.validate-fields-error'), obj.id, obj.name);
+                            throw new NodeConfigurationError(i18n.t('workflow.validate-fields-error'), obj.id, obj.name);
                         }
                         const node = {
                             id: obj.id,
@@ -300,14 +300,14 @@ class WorkflowEditor extends Component {
                     shape="circle"
                     icon="file-download"
                     disabled={!editing}
-                    tooltipTitle={i18n.t('action.save')}
+                    tooltipTitle={i18n.t('action.download')}
                     onClick={onDownload}
                     tooltipPlacement="bottomRight"
                 />
                 {
                     editing ? (
                         <Popconfirm
-                            title={i18n.t('rule-chains.rule-chains-editing-confirm')}
+                            title={i18n.t('workflow.workflow-editing-confirm')}
                             okText={i18n.t('action.ok')}
                             cancelText={i18n.t('action.cancel')}
                             onConfirm={onUpload}
@@ -317,7 +317,7 @@ class WorkflowEditor extends Component {
                                 className="rde-action-btn"
                                 shape="circle"
                                 icon="file-upload"
-                                tooltipTitle={i18n.t('action.exit')}
+                                tooltipTitle={i18n.t('action.upload')}
                                 tooltipPlacement="bottomRight"
                             />
                         </Popconfirm>
@@ -326,7 +326,7 @@ class WorkflowEditor extends Component {
                             className="rde-action-btn"
                             shape="circle"
                             icon="file-upload"
-                            tooltipTitle={i18n.t('action.back')}
+                            tooltipTitle={i18n.t('action.upload')}
                             tooltipPlacement="bottomRight"
                             onClick={onUpload}
                         />
@@ -336,7 +336,7 @@ class WorkflowEditor extends Component {
         );
         const titleContent = (
             <React.Fragment>
-                <span>{'Workflow Editor'}</span>
+                <span>{i18n.t('workflow.workflow-editor')}</span>
                 <span style={{ width: 40, textAlign: 'center' }}>/</span>
                 <span style={{ color: workflow.enabled ? '#49a9ee' : 'rgba(0, 0, 0, 0.65)' }}>{workflow.name}</span>
             </React.Fragment>

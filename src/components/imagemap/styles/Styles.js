@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button } from 'antd';
+import i18n from 'i18next';
 
 import { FlexBox } from '../../flex';
 import StyleList from './StyleList';
@@ -111,7 +112,7 @@ class Styles extends Component {
             if (!value || !value.length) {
                 return {
                     validateStatus: 'error',
-                    help: 'Please input title.',
+                    help: i18n.t('validation.enter-property', { arg: i18n.t('common.title') }),
                 };
             }
             const exist = this.props.styles.some(style => style.title === value);
@@ -123,7 +124,7 @@ class Styles extends Component {
             }
             return {
                 validateStatus: 'error',
-                help: 'Already exist title.',
+                help: i18n.t('validation.already-property', { arg: i18n.t('common.title') }),
             };
         },
     }

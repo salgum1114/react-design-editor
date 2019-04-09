@@ -44,10 +44,9 @@ class WorkflowNodeConfigurations extends Component {
                                             form.getFieldDecorator('name', {
                                                 initialValue: selectedItem.name,
                                                 rules: [
-                                                    { required: true, message: i18n.t('common.enter-arg', { arg: i18n.t('common.name') }) },
-                                                    { max: 30, message: i18n.t('common.enter-max-arg', { arg: 30 }) },
+                                                    { required: true, message: i18n.t('validation.enter-property', { arg: i18n.t('common.name') }) },
                                                 ],
-                                            })(<Input minLength={0} maxLength={30} placeholder={i18n.t('rule-chains.node-name-required')} />)
+                                            })(<Input minLength={0} maxLength={30} placeholder={i18n.t('workflow.node-name-required')} />)
                                         }
                                     </Form.Item>
                                     <Form.Item
@@ -57,11 +56,11 @@ class WorkflowNodeConfigurations extends Component {
                                         {
                                             form.getFieldDecorator('description', {
                                                 initialValue: selectedItem.description,
-                                            })(<Input.TextArea style={{ maxHeight: 200 }} placeholder={i18n.t('rule-chains.node-description-required')} />)
+                                            })(<Input.TextArea style={{ maxHeight: 200 }} placeholder={i18n.t('workflow.node-description-required')} />)
                                         }
                                     </Form.Item>
                                 </FlexBox>
-                                <Divider>{i18n.t('rule-chains.rule-node-configuration')}</Divider>
+                                <Divider>{i18n.t('workflow.node-configuration')}</Divider>
                                 <FlexBox flexDirection="column" style={{ height: '100%', overflowY: 'hidden', margin: '8px 16px' }}>
                                     <NodeConfiguration
                                         canvasRef={canvasRef}

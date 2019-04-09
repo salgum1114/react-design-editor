@@ -1,5 +1,7 @@
 import React from 'react';
-import { Form, Slider, Select, Col, Row } from 'antd';
+import { Form, Slider, Select } from 'antd';
+import i18n from 'i18next';
+
 import ColorPicker from '../../common/ColorPicker';
 
 export default {
@@ -7,7 +9,7 @@ export default {
         const { getFieldDecorator } = form;
         return (
             <React.Fragment>
-                <Form.Item label="Fill Color" colon={false}>
+                <Form.Item label={i18n.t('imagemap.style.fill-color')} colon={false}>
                     {
                         getFieldDecorator('fill', {
                             initialValue: data.fill || 'rgba(0, 0, 0, 1)',
@@ -16,7 +18,7 @@ export default {
                         )
                     }
                 </Form.Item>
-                <Form.Item label="Opacity" colon={false}>
+                <Form.Item label={i18n.t('common.opacity')} colon={false}>
                     {
                         getFieldDecorator('opacity', {
                             rules: [{
@@ -30,7 +32,7 @@ export default {
                         )
                     }
                 </Form.Item>
-                <Form.Item label="Stroke Color" colon={false}>
+                <Form.Item label={i18n.t('imagemap.style.stroke-color')} colon={false}>
                     {
                         getFieldDecorator('stroke', {
                             initialValue: data.stroke || 'rgba(255, 255, 255, 0)',
@@ -39,39 +41,22 @@ export default {
                         )
                     }
                 </Form.Item>
-                <Row>
-                    <Col span={12}>
-                        <Form.Item label="Stroke Width" colon={false}>
-                            {
-                                getFieldDecorator('strokeWidth', {
-                                    initialValue: data.strokeWidth || 1,
-                                })(
-                                    <Select showSearch style={{ width: '100%' }}>
-                                        {
-                                            Array.from({ length: 12 }, (v, k) => {
-                                                const value = k + 1;
-                                                return <Select.Option key={value} value={value}>{value}</Select.Option>;
-                                            })
-                                        }
-                                    </Select>,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item label="Stroke Style" colon={false}>
-                            {
-                                getFieldDecorator('strokeDashArray', {
-                                    initialValue: '-----',
-                                })(
-                                    <Select style={{ width: '100%' }}>
-                                        <Select.Option value="-----">------</Select.Option>
-                                    </Select>,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                </Row>
+                <Form.Item label={i18n.t('imagemap.style.stroke-width')} colon={false}>
+                    {
+                        getFieldDecorator('strokeWidth', {
+                            initialValue: data.strokeWidth || 1,
+                        })(
+                            <Select showSearch style={{ width: '100%' }}>
+                                {
+                                    Array.from({ length: 12 }, (v, k) => {
+                                        const value = k + 1;
+                                        return <Select.Option key={value} value={value}>{value}</Select.Option>;
+                                    })
+                                }
+                            </Select>,
+                        )
+                    }
+                </Form.Item>
             </React.Fragment>
         );
     },

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Form } from 'antd';
+
 import IconChooser from '../../icon/IconChooser';
 
 export default {
@@ -10,10 +11,6 @@ export default {
                 <Form.Item>
                     {
                         getFieldDecorator('icon', {
-                            rules: [{
-                                required: true,
-                                message: 'Please select icon',
-                            }],
                             initialValue: data.icon,
                         })(
                             <IconChooser icon={data.icon} />,

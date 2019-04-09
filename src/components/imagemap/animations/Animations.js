@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button } from 'antd';
+import i18n from 'i18next';
 
 import { FlexBox } from '../../flex';
 import AnimationList from './AnimationList';
@@ -124,7 +125,7 @@ class Animations extends Component {
             if (!value || !value.length) {
                 return {
                     validateStatus: 'error',
-                    help: 'Please input title.',
+                    help: i18n.t('validation.enter-property', { arg: i18n.t('common.title') }),
                 };
             }
             const exist = this.props.animations.some(animation => animation.title === value);
@@ -136,7 +137,7 @@ class Animations extends Component {
             }
             return {
                 validateStatus: 'error',
-                help: 'Already exist title.',
+                help: i18n.t('validation.already-property', { arg: i18n.t('common.title') }),
             };
         },
     }

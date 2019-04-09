@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Form, Input } from 'antd';
+import i18n from 'i18next';
 
 import Canvas from '../../canvas/Canvas';
 import StyleProperty from '../properties/StyleProperty';
@@ -91,7 +92,7 @@ class StyleModal extends Component {
                 onCancel={onCancel}
                 visible={visible}
             >
-                <Form.Item label="Title" required colon={false} hasFeedback help={validateTitle.help} validateStatus={validateTitle.validateStatus}>
+                <Form.Item label={i18n.t('common.title')} required colon={false} hasFeedback help={validateTitle.help} validateStatus={validateTitle.validateStatus}>
                     <Input value={style.title} onChange={(e) => { onChange(null, { title: e.target.value }, { ...style, title: e.target.value }); }} />
                 </Form.Item>
                 {StyleProperty.render(this.canvasRef, form, style)}

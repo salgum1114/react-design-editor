@@ -21,8 +21,8 @@ class RuleChainSiderContainer extends Component {
             <FlexBox flexDirection="column" style={{ height: '100%' }}>
                 <FlexBox style={Object.assign({}, { background: '#f5f4f3', height: '40px' }, titleStyle)}>
                     <FlexBox flex="1" justifyContent="flex-start" alignItems="center" style={{ marginLeft: '8px', color: '#4d5360' }}>
-                        <Icon name={icon} />
-                        <h4>{title}</h4>
+                        <Icon name={icon} style={{ marginRight: 8 }} />
+                        <h4 style={{ marginBottom: 0 }}>{title}</h4>
                     </FlexBox>
                     {
                         extra ? (

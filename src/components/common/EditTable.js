@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table, Modal, Input, Form } from 'antd';
+import i18n from 'i18next';
 
 import Icon from '../icon/Icon';
 import { FlexBox } from '../flex';
@@ -67,13 +68,13 @@ class EditTable extends Component {
         onChangeKey: (value) => {
             let validateStatus = 'success';
             let help = '';
-            if (this.state.current === 'add' && this.state.userProperty[value]
+            if (this.state.current === 'add' && Object.keys(this.state.userProperty).some(p => p === value)
             || this.state.current === 'modify' && this.state.originKey !== value && this.state.userProperty[value]) {
                 validateStatus = 'error';
-                help = 'Already exist key';
+                help = i18n.t('validation.already-property', { arg: i18n.t('common.key') });
             } else if (!value.length) {
                 validateStatus = 'error';
-                help = 'Please input key';
+                help = i18n.t('validation.enter-property', { arg: i18n.t('common.key') });
             } else {
                 validateStatus = 'success';
                 help = '';
@@ -136,11 +137,11 @@ class EditTable extends Component {
         const { onOk, onCancel, onChangeKey } = this.handlers;
         const columns = [
             {
-                title: 'Key',
+                title: i18n.t('common.key'),
                 dataIndex: 'key',
             },
             {
-                title: 'Value',
+                title: i18n.t('common.value'),
                 dataIndex: 'value',
             },
             {
@@ -183,10 +184,10 @@ class EditTable extends Component {
                     onOk={onOk}
                     visible={visible}
                 >
-                    <Form.Item required label="Key" colon={false} hasFeedback validateStatus={validateStatus} help={help}>
+                    <Form.Item required label={i18n.t('common.key')} colon={false} hasFeedback validateStatus={validateStatus} help={help}>
                         <Input defaultValue={tempKey} value={tempKey} onChange={(e) => { onChangeKey(e.target.value); }} />
                     </Form.Item>
-                    <Form.Item label="Value" colon={false}>
+                    <Form.Item label={i18n.t('common.value')} colon={false}>
                         <Input defaultValue={tempValue} value={tempValue} onChange={(e) => { this.setState({ tempValue: e.target.value }); }} />
                     </Form.Item>
                 </Modal>
