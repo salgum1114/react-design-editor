@@ -21,6 +21,13 @@ class App extends Component {
         return (
             <div className="rde-main">
                 <Helmet>
+                    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-97485289-3"></script>
+                    <script>
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+                        gtag('config', 'UA-97485289-3');
+                    </script>
                     <meta charSet="utf-8" />
                     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                     <link rel="manifest" href="./manifest.json" />
