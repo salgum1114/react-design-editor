@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
@@ -53,10 +53,10 @@ module.exports = merge(baseConfig, {
     optimization: {
         minimizer: [
             // we specify a custom UglifyJsPlugin here to get source maps in production
-            new UglifyJsPlugin({
+            new TerserPlugin({
                 cache: true,
                 parallel: true,
-                uglifyOptions: {
+                terserOptions: {
                     warnings: false,
                     compress: {
                         warnings: false,
