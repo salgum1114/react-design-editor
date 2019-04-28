@@ -54,7 +54,7 @@
                 "width": 160,
                 "height": 160,
                 "name": "New image",
-                "src": "/images/sample/transparentBg.png"
+                "src": "./images/sample/transparentBg.png"
             }
 		}
 	],
