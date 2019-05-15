@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { ResizeSensor } from 'css-element-queries';
 import i18n from 'i18next';
-import { Popconfirm, message, Button } from 'antd';
-import storage from 'store/storages/localStorage';
+import { Popconfirm, message } from 'antd';
 
 import Container from '../common/Container';
 import WorkflowTitle from './WorkflowTitle';
@@ -374,7 +372,7 @@ class WorkflowEditor extends Component {
                         onAdd={onAdd}
                         onRemove={onRemove}
                         onModified={onModified}
-                        keyEvent={{ move: false }}
+                        keyEvent={{ move: false, transaction: false }}
                     />
                     <div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
                         <WorkflowNodeConfigurations
