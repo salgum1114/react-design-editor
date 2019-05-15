@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import i18n from 'i18next';
+import { Button } from 'antd';
 
 import { FlexBox, FlexItem } from '../flex';
 import CanvasList from '../canvas/CanvasList';
 import { CommonButton } from '../common';
+import Icon from '../icon/Icon';
 
 class ImageMapHeaderToolbar extends Component {
     static propTypes = {
@@ -158,16 +160,24 @@ class ImageMapHeaderToolbar extends Component {
                         tooltipTitle={i18n.t('action.delete')}
                     />
                 </FlexItem>
-                {/* <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
-                    <Button className="rde-action-btn" disabled={isCropping}>
+                <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
+                    <Button
+                        className="rde-action-btn"
+                        disabled={isCropping || (canvasRef && !canvasRef.undos.length)}
+                        onClick={() => canvasRef.transactionHandlers.undo()}
+                    >
                         <Icon name="undo-alt" style={{ marginRight: 8 }} />
                         {'Undo'}
                     </Button>
-                    <Button className="rde-action-btn" disabled={isCropping}>
+                    <Button
+                        className="rde-action-btn"
+                        disabled={isCropping || (canvasRef && !canvasRef.redos.length)}
+                        onClick={() => canvasRef.transactionHandlers.redo()}
+                    >
                         {'Redo'}
                         <Icon name="redo-alt" style={{ marginLeft: 8 }} />
                     </Button>
-                </FlexItem> */}
+                </FlexItem>
             </FlexBox>
         );
     }

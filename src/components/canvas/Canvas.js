@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 import interact from 'interactjs';
@@ -59,6 +60,7 @@ const defaultKeyboardEvent = {
     paste: true,
     esc: true,
     del: true,
+    transaction: true,
 };
 
 class Canvas extends Component {
@@ -140,6 +142,7 @@ class Canvas extends Component {
         this.gridHandlers.init();
         const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
         if (editable) {
+            this.transactionHandlers.init();
             this.interactionMode = 'selection';
             this.panning = false;
             if (guidelineOption.enabled) {
@@ -280,11 +283,11 @@ class Canvas extends Component {
                 this.canvas.centerObject(obj);
                 obj.setCoords();
             } else {
-                this.handlers.setByObject(obj, 'left', (obj.left / this.canvas.getZoom()) - (obj.width / 2) - (this.canvas.viewportTransform[4] / this.canvas.getZoom()));
-                this.handlers.setByObject(obj, 'top', (obj.top / this.canvas.getZoom()) - (obj.height / 2) - (this.canvas.viewportTransform[5] / this.canvas.getZoom()));
+                this.handlers.setByObject(obj, 'left', (obj.left / this.canvas.getZoom()) - (obj.width / 2) - (this.canvas.viewportTransform[4] / this.canvas.getZoom()), false);
+                this.handlers.setByObject(obj, 'top', (obj.top / this.canvas.getZoom()) - (obj.height / 2) - (this.canvas.viewportTransform[5] / this.canvas.getZoom()), false);
             }
         },
-        add: (obj, centered = true, loaded = false) => {
+        add: (obj, centered = true, loaded = false, transaction = true) => {
             const { editable } = this.props;
             const option = {
                 hasControls: editable,
@@ -335,11 +338,11 @@ class Canvas extends Component {
                 return createdObj;
             }
             if (obj.type === 'image') {
-                this.handlers.addImage(newOption, centered, loaded);
+                this.handlers.addImage(newOption, centered, loaded, transaction);
                 return;
             }
             if (this.handlers.isElementType(obj.type)) {
-                this.handlers.addElement(newOption, centered);
+                this.handlers.addElement(newOption, centered, loaded, transaction);
                 return;
             }
             if (obj.superType === 'link') {
@@ -365,6 +368,9 @@ class Canvas extends Component {
             if (!editable && createdObj.animation && createdObj.animation.autoplay) {
                 this.animationHandlers.play(createdObj.id);
             }
+            if (!loaded && transaction) {
+                this.transactionHandlers.save(createdObj, 'add');
+            }
             const { onAdd } = this.props;
             if (onAdd && editable && !loaded) {
                 onAdd(createdObj);
@@ -384,7 +390,7 @@ class Canvas extends Component {
                 return this.handlers.add(child, centered, loaded);
             });
         },
-        addImage: (obj, centered = true, loaded = false) => {
+        addImage: (obj, centered = true, loaded = false, transaction = true) => {
             const { editable } = this.props;
             const image = new Image();
             const { src, file, ...otherOption } = obj;
@@ -407,6 +413,9 @@ class Canvas extends Component {
                     this.animationHandlers.play(createdObj.id);
                 }
                 const { onAdd } = this.props;
+                if (!loaded && transaction) {
+                    this.transactionHandlers.save(createdObj, 'add');
+                }
                 if (onAdd && editable && !loaded) {
                     onAdd(createdObj);
                 }
@@ -427,15 +436,15 @@ class Canvas extends Component {
             };
             reader.readAsDataURL(file);
         },
-        addElement: (obj, centered = true, loaded = false) => {
+        addElement: (obj, centered = true, loaded = false, transaction = true) => {
             const { canvas } = this;
-            const { editable } = this.props;
+            const { editable, defaultOptions } = this.props;
             const { src, file, code, ...otherOption } = obj;
             const createdObj = new fabric.Rect({
                 src,
                 file,
                 code,
-                ...this.props.defaultOptions,
+                ...defaultOptions,
                 ...otherOption,
                 fill: 'rgba(255, 255, 255, 0)',
                 stroke: 'rgba(255, 255, 255, 0)',
@@ -455,6 +464,9 @@ class Canvas extends Component {
             if (editable && !loaded) {
                 this.handlers.centerObject(createdObj, centered);
             }
+            if (!loaded && transaction) {
+                this.transactionHandlers.save(createdObj, 'add');
+            }
             const { onAdd } = this.props;
             if (onAdd && editable && !loaded) {
                 onAdd(createdObj);
@@ -466,6 +478,7 @@ class Canvas extends Component {
                 return false;
             }
             if (activeObject.type !== 'activeSelection') {
+                this.transactionHandlers.save(activeObject, 'remove');
                 this.canvas.discardActiveObject();
                 if (this.handlers.isElementType(activeObject.type)) {
                     this.elementHandlers.removeById(activeObject.id);
@@ -634,6 +647,7 @@ class Canvas extends Component {
                         this.canvas.add(obj);
                         this.objects.push(obj);
                     });
+                    this.transactionHandlers.save(clonedObj, 'add');
                     if (onAdd) {
                         onAdd(clonedObj);
                     }
@@ -643,6 +657,7 @@ class Canvas extends Component {
                     clonedObj.set('name', `${clonedObj.name}_clone`);
                     this.canvas.add(clonedObj);
                     this.objects.push(clonedObj);
+                    this.transactionHandlers.save(clonedObj, 'add');
                     if (onAdd) {
                         onAdd(clonedObj);
                     }
@@ -689,7 +704,7 @@ class Canvas extends Component {
                 onModified(activeObject);
             }
         },
-        setByObject: (obj, key, value) => {
+        setByObject: (obj, key, value, transaction = true) => {
             if (!obj) {
                 return;
             }
@@ -697,13 +712,13 @@ class Canvas extends Component {
             obj.setCoords();
             this.canvas.renderAll();
             const { onModified } = this.props;
-            if (onModified) {
+            if (onModified && transaction) {
                 onModified(obj);
             }
         },
-        setById: (id, key, value) => {
+        setById: (id, key, value, transaction = true) => {
             const findObject = this.handlers.findById(id);
-            this.handlers.setByObject(findObject, key, value);
+            this.handlers.setByObject(findObject, key, value, transaction);
         },
         setShadow: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
@@ -717,7 +732,7 @@ class Canvas extends Component {
                 onModified(activeObject);
             }
         },
-        loadImage: (obj, src) => {
+        loadImage: (obj, src, transaction = true) => {
             fabric.util.loadImage(src, (source) => {
                 if (obj.type !== 'image') {
                     obj.setPatternFill({
@@ -731,23 +746,27 @@ class Canvas extends Component {
                 obj.setElement(source);
                 obj.setCoords();
                 this.canvas.renderAll();
+                const { onModified } = this.props;
+                if (onModified && transaction) {
+                    onModified(obj);
+                }
             });
         },
-        setImage: (obj, src) => {
+        setImage: (obj, src, transaction = true) => {
             if (!src) {
-                this.handlers.loadImage(obj, null);
+                this.handlers.loadImage(obj, null, transaction);
                 obj.set('file', null);
                 obj.set('src', null);
                 return;
             }
             if (typeof src === 'string') {
-                this.handlers.loadImage(obj, src);
+                this.handlers.loadImage(obj, src, transaction);
                 obj.set('file', null);
                 obj.set('src', src);
             } else {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    this.handlers.loadImage(obj, e.target.result);
+                    this.handlers.loadImage(obj, e.target.result, transaction);
                     const file = {
                         name: src.name,
                         size: src.size,
@@ -760,9 +779,9 @@ class Canvas extends Component {
                 reader.readAsDataURL(src);
             }
         },
-        setImageById: (id, source) => {
+        setImageById: (id, source, transaction = true) => {
             const findObject = this.handlers.findById(id);
-            this.handlers.setImage(findObject, source);
+            this.handlers.setImage(findObject, source, transaction);
         },
         find: obj => this.handlers.findById(obj.id),
         findById: (id) => {
@@ -829,13 +848,20 @@ class Canvas extends Component {
                 this.canvas.requestRenderAll();
             }
         },
+        selectByObject: (object) => {
+            if (object) {
+                this.canvas.discardActiveObject();
+                this.canvas.setActiveObject(object);
+                this.canvas.requestRenderAll();
+            }
+        },
         originScaleToResize: (obj, width, height) => {
             if (obj.id === 'workarea') {
-                this.handlers.setById(obj.id, 'workareaWidth', obj.width);
-                this.handlers.setById(obj.id, 'workareaHeight', obj.height);
+                this.handlers.setById(obj.id, 'workareaWidth', obj.width, false);
+                this.handlers.setById(obj.id, 'workareaHeight', obj.height, false);
             }
-            this.handlers.setById(obj.id, 'scaleX', width / obj.width);
-            this.handlers.setById(obj.id, 'scaleY', height / obj.height);
+            this.handlers.setById(obj.id, 'scaleX', width / obj.width, false);
+            this.handlers.setById(obj.id, 'scaleY', height / obj.height, false);
         },
         scaleToResize: (width, height) => {
             const activeObject = this.canvas.getActiveObject();
@@ -934,6 +960,7 @@ class Canvas extends Component {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
                 this.canvas.bringForward(activeObject);
+                this.transactionHandlers.save(activeObject, 'modified');
                 const { onModified } = this.props;
                 if (onModified) {
                     onModified(activeObject);
@@ -944,6 +971,7 @@ class Canvas extends Component {
             const activeObject = this.canvas.getActiveObject();
             if (activeObject) {
                 this.canvas.bringToFront(activeObject);
+                this.transactionHandlers.save(activeObject, 'modified');
                 const { onModified } = this.props;
                 if (onModified) {
                     onModified(activeObject);
@@ -957,6 +985,7 @@ class Canvas extends Component {
                     return;
                 }
                 this.canvas.sendBackwards(activeObject);
+                this.transactionHandlers.save(activeObject, 'modified');
                 const { onModified } = this.props;
                 if (onModified) {
                     onModified(activeObject);
@@ -968,6 +997,7 @@ class Canvas extends Component {
             if (activeObject) {
                 this.canvas.sendToBack(activeObject);
                 this.canvas.sendToBack(this.canvas.getObjects()[1]);
+                this.transactionHandlers.save(activeObject, 'modified');
                 const { onModified } = this.props;
                 if (onModified) {
                     onModified(activeObject);
@@ -3585,6 +3615,81 @@ class Canvas extends Component {
         },
     }
 
+    transactionHandlers = {
+        init: () => {
+            this.undos = [];
+            this.redos = [];
+        },
+        undo: throttle(() => {
+            const undo = this.undos.pop();
+            if (undo) {
+                this.redos.push(undo);
+                if (undo.transaction === 'add') {
+                    const target = this.handlers.findById(undo.target.id);
+                    this.canvas.remove(target);
+                    const { onRemove } = this.props;
+                    if (onRemove) {
+                        onRemove();
+                    }
+                } else if (undo.transaction === 'modified') {
+                    const target = this.handlers.findById(undo.target.id);
+                    target.set(undo.target);
+                    target.setCoords();
+                    if (undo.target.type === 'image') {
+                        this.handlers.setImage(target, undo.target.src, false);
+                    }
+                    this.handlers.selectByObject(target);
+                } else if (undo.transaction === 'remove') {
+                    this.handlers.add(undo.target, false, false, false);
+                }
+                this.canvas.renderAll();
+            }
+        }, 200),
+        redo: throttle(() => {
+            const redo = this.redos.pop();
+            if (redo) {
+                this.undos.push(redo);
+                if (redo.transaction === 'add') {
+                    this.handlers.add(redo.target, false, false, false);
+                } else if (redo.transaction === 'modified') {
+                    const target = this.handlers.findById(redo.target.id);
+                    target.set(redo.target);
+                    target.setCoords();
+                    if (redo.target.type === 'image') {
+                        this.handlers.setImage(target, redo.target.src, false);
+                    }
+                    this.handlers.selectByObject(target);
+                } else if (redo.transaction === 'remove') {
+                    const target = this.handlers.findById(redo.target.id);
+                    this.canvas.remove(target);
+                    const { onRemove } = this.props;
+                    if (onRemove) {
+                        onRemove();
+                    }
+                }
+                this.canvas.renderAll();
+            }
+        }, 200),
+        save: (target, transaction = 'add') => {
+            if (!this.keyEvent.transaction) {
+                return;
+            }
+            const newTarget = target.toObject(this.props.propertiesToInclude);
+            this.undos.push({
+                target: newTarget,
+                transaction,
+                date: new Date().valueOf(),
+            });
+            if (transaction === 'add') {
+                this.undos.push({
+                    target: newTarget,
+                    transaction: 'modified',
+                    date: new Date().valueOf(),
+                });
+            }
+        },
+    }
+
     eventHandlers = {
         object: {
             mousedown: (opt) => {
@@ -3598,17 +3703,15 @@ class Canvas extends Component {
             },
         },
         modified: (opt) => {
-            const { onModified } = this.props;
             const { target } = opt;
-            if (onModified) {
-                if (!target) {
-                    return;
-                }
-                if (target.type === 'circle' && target.parentId) {
-                    return;
-                }
-                onModified(target);
+            if (!target) {
+                return;
             }
+            if (target.type === 'circle' && target.parentId) {
+                return;
+            }
+            this.transactionHandlers.save(target, 'modified');
+            this.handlers.selectByObject(target);
         },
         moving: (opt) => {
             const { target } = opt;
@@ -3689,6 +3792,7 @@ class Canvas extends Component {
                 activeObject.setCoords();
                 this.canvas.renderAll();
             }
+            this.transactionHandlers.save(activeObject, 'modified');
             if (this.props.onModified) {
                 this.props.onModified(activeObject);
             }
@@ -4016,7 +4120,7 @@ class Canvas extends Component {
             if (!Object.keys(keyEvent).length) {
                 return false;
             }
-            const { move, all, copy, paste, esc, del } = keyEvent;
+            const { move, all, copy, paste, esc, del, transaction } = keyEvent;
             if (e.keyCode === 46 && del) {
                 this.handlers.remove();
             } else if (e.code.includes('Arrow') && move) {
@@ -4030,6 +4134,12 @@ class Canvas extends Component {
             } else if (e.ctrlKey && e.keyCode === 86 && paste) {
                 e.preventDefault();
                 this.handlers.paste();
+            } else if (e.ctrlKey && e.keyCode === 89 && transaction) {
+                e.preventDefault();
+                this.transactionHandlers.redo();
+            } else if (e.ctrlKey && e.keyCode === 90 && transaction) {
+                e.preventDefault();
+                this.transactionHandlers.undo();
             } else if (e.keyCode === 27 && esc) {
                 if (this.interactionMode === 'selection') {
                     this.canvas.discardActiveObject();

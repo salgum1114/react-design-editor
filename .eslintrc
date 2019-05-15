@@ -33,7 +33,8 @@
             {
               "ignore": [ "src/" ]
             }
-        ]
+        ],
+        "react/sort-comp": false
     },
     "env": {
         "browser": true,
