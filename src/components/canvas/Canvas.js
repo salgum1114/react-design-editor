@@ -264,6 +264,7 @@ class Canvas extends Component {
         // if add canvas wrapper element event, tabIndex = 1000;
         this.canvas.wrapperEl.tabIndex = 1000;
         document.addEventListener('keydown', this.eventHandlers.keydown, false);
+        document.addEventListener('keyup', this.eventHandlers.keyup, false);
         document.addEventListener('paste', this.eventHandlers.paste, false);
         document.addEventListener('mousedown', this.eventHandlers.onmousedown, false);
         this.canvas.wrapperEl.addEventListener('contextmenu', this.eventHandlers.contextmenu, false);
@@ -271,6 +272,7 @@ class Canvas extends Component {
 
     detachEventListener = () => {
         document.removeEventListener('keydown', this.eventHandlers.keydown);
+        document.removeEventListener('keyup', this.eventHandlers.keyup);
         document.removeEventListener('paste', this.eventHandlers.paste);
         document.removeEventListener('mousedown', this.eventHandlers.onmousedown);
         this.canvas.wrapperEl.removeEventListener('contextmenu', this.eventHandlers.contextmenu);
@@ -1344,6 +1346,9 @@ class Canvas extends Component {
 
     modeHandlers = {
         selection: (callback) => {
+            if (this.interactionMode === 'selection') {
+                return;
+            }
             this.interactionMode = 'selection';
             this.canvas.selection = this.props.canvasOption.selection;
             this.canvas.defaultCursor = 'default';
@@ -1373,6 +1378,9 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         grab: (callback) => {
+            if (this.interactionMode === 'grab') {
+                return;
+            }
             this.interactionMode = 'grab';
             this.canvas.selection = false;
             this.canvas.defaultCursor = 'grab';
@@ -3814,6 +3822,11 @@ class Canvas extends Component {
             opt.e.stopPropagation();
         },
         mousedown: (opt) => {
+            if (opt.e.ctrlKey) {
+                this.modeHandlers.grab();
+                this.panning = true;
+                return;
+            }
             if (this.interactionMode === 'grab') {
                 this.panning = true;
                 return;
@@ -4154,6 +4167,9 @@ class Canvas extends Component {
                     this.linkHandlers.finish();
                 }
             }
+        },
+        keyup: (e) => {
+            this.modeHandlers.selection();
         },
         contextmenu: (e) => {
             e.preventDefault();
