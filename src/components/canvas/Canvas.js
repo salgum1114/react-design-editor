@@ -4134,6 +4134,15 @@ class Canvas extends Component {
                 return false;
             }
             const { move, all, copy, paste, esc, del, transaction } = keyEvent;
+            if (e.keyCode === 87) {
+                this.keyCode = e.keyCode;
+            } else if (e.keyCode === 81) {
+                this.keyCode = e.keyCode;
+            }
+            if (e.ctrlKey) {
+                this.canvas.defaultCursor = 'grab';
+                this.workarea.hoverCursor = 'grab';
+            }
             if (e.keyCode === 46 && del) {
                 this.handlers.remove();
             } else if (e.code.includes('Arrow') && move) {
@@ -4169,7 +4178,11 @@ class Canvas extends Component {
             }
         },
         keyup: (e) => {
-            this.modeHandlers.selection();
+            if (this.keyCode !== 87) {
+                this.canvas.defaultCursor = 'default';
+                this.workarea.hoverCursor = 'default';
+                this.modeHandlers.selection();
+            }
         },
         contextmenu: (e) => {
             e.preventDefault();
