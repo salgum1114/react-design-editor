@@ -2617,7 +2617,7 @@ class Canvas extends Component {
     linkHandlers = {
         init: (target) => {
             if (!target.enabled) {
-                console.warn('이미 연결된 노드가 존재 합니다.');
+                console.warn('A connected node already exists.');
                 return;
             }
             this.interactionMode = 'link';
@@ -2648,8 +2648,12 @@ class Canvas extends Component {
             this.canvas.renderAll();
         },
         generate: (target) => {
+            if (!target) {
+                console.warn('Does not exist target.');
+                return;
+            }
             if (target.nodeId === this.activeLine.fromNode) {
-                console.warn('같은 노드를 선택할 수 없습니다.');
+                console.warn('Can not select the same node.');
                 return;
             }
             const link = {
@@ -2743,19 +2747,19 @@ class Canvas extends Component {
         exception: {
             alreadyConnect: (target) => {
                 if (!target.enabled) {
-                    console.warn('이미 연결된 노드가 존재 합니다.');
+                    console.warn('A connected node already exists.');
                     return;
                 }
             },
             duplicate: (target) => {
                 if (target.links.some(link => link.fromNode.id === this.activeLine.fromNode)) {
-                    console.warn('중복된 연결을 할 수 없습니다.');
+                    console.warn('Duplicate connections can not be made.');
                     return;
                 }
             },
             alreadyDrawing: () => {
                 if (this.interactionMode === 'link' && this.activeLine) {
-                    console.warn('이미 링크를 그리는 중입니다.');
+                    console.warn('Already drawing links.');
                     return;
                 }
             },
@@ -3841,7 +3845,7 @@ class Canvas extends Component {
                 }
                 if (target && target.type === 'fromPort') {
                     if (this.interactionMode === 'link' && this.activeLine) {
-                        console.warn('이미 링크를 그리는 중입니다.');
+                        console.warn('Already drawing links.');
                         return;
                     }
                     this.linkHandlers.init(target);
@@ -3854,8 +3858,8 @@ class Canvas extends Component {
                     } else {
                         toPort = target;
                     }
-                    if (toPort.links.some(link => link.fromNode.id === this.activeLine.fromNode)) {
-                        console.warn('중복된 연결을 할 수 없습니다.');
+                    if (toPort && toPort.links.some(link => link.fromNode.id === this.activeLine.fromNode)) {
+                        console.warn('Duplicate connections can not be made.');
                         return;
                     }
                     this.linkHandlers.generate(toPort);

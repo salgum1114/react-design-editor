@@ -1,5 +1,3 @@
-import i18n from 'i18next';
-
 export default {
     routes: {
         type: 'tags',
@@ -7,9 +5,6 @@ export default {
         icon: '',
         label: 'Routes',
         span: 24,
-        rules: [
-            { required: true, message: i18n.t('validation.min-count-arg', { arg: 1 }) },
-        ],
     },
     jsScript: {
         type: 'script',
@@ -17,8 +12,5 @@ export default {
         icon: '',
         label: 'JSscript',
         span: 24,
-        rules: [
-            { min: 1, required: true, message: i18n.t('validation.min-length-arg', { min: 1 }) },
-        ],
     },
 };

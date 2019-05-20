@@ -60,11 +60,12 @@ export default class NodeConfiguration extends Component {
             max,
             min,
             placeholder,
-            valuePropName
+            valuePropName,
+            required,
         } = formConfig;
         let initialValue = configuration[key] || formConfig.default;
-        let rules = formConfig.required ? [
-            { required: true, message: i18n.t('common.enter-arg', { arg: formConfig.label }) },
+        let rules = required ? [
+            { required: true, message: i18n.t('validation.enter-property', { arg: formConfig.label }) },
         ] : [];
         if (formConfig.rules) {
             rules = rules.concat(formConfig.rules);
@@ -78,7 +79,7 @@ export default class NodeConfiguration extends Component {
                 component = <Input.TextArea disabled={disabled} placeholder={placeholder} />;
                 break;
             case 'number':
-                component = <InputNumber disabled={disabled} min={min} max={max} />;
+                component = <InputNumber style={{ width: '100%' }} disabled={disabled} min={min} max={max} />;
                 initialValue = configuration[key];
                 break;
             case 'boolean':
@@ -117,10 +118,6 @@ export default class NodeConfiguration extends Component {
             case 'json':
                 component = <InputJson onValidate={this.handlers.onValidate} disabled={disabled} />;
                 rules.push({ required: true, validator: this.handlers.aceEditorValidator });
-                break;
-            case 'cron':
-                component = <InputCronExpression disabled={disabled} onValidate={this.handlers.onValidate} placeholder={placeholder} />;
-                rules.push({ required: true, validator: this.handlers.cronValidator });
                 break;
             case 'tags':
                 component = (
@@ -215,6 +212,7 @@ export default class NodeConfiguration extends Component {
 
     handlers = {
         onValidate: (errors) => {
+            console.log(errors);
             this.setState({
                 errors,
             });
@@ -223,15 +221,9 @@ export default class NodeConfiguration extends Component {
             });
         },
         aceEditorValidator: (rule, value, callback) => {
-            if (this.state.errors && this.state.errors.length) {
-                callback(this.state.errors);
-                return;
-            }
-            callback();
-        },
-        cronValidator: (rule, value, callback) => {
-            if (this.state.errors && this.state.errors.length) {
-                callback(this.state.errors);
+            const { errors } = this.state;
+            if (errors && errors.length) {
+                callback(errors);
                 return;
             }
             callback();
