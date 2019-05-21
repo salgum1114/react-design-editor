@@ -1,5 +1,5 @@
 # React Design Editor
-- React Design Editor has started to develope direct manipulation of editable design tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js
+- React Design Editor has started to develope direct manipulation of editable design tools like Powerpoint, We've developed it with reactjs, ant.design, fabricjs
 
 - Layouts and components such as property edits, item lists, toolbars were developed as react.js and the ant.design component was primarily used.
 
