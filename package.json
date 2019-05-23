@@ -42,6 +42,7 @@
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-ace": "^6.1.4",
+    "react-adsense": "0.0.6",
     "react-color": "^2.14.1",
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^16.4.1",
