@@ -65,13 +65,13 @@
 - [x] Icon Chooser - fontawesome 5.2.0 free version
 - [x] Google Fonts - 20 fonts
 - [x] Align Guidlines - moving
-- [x] Interaction Mode - grap / selection
+- [x] Interaction Mode - grap / selection / ctrl + drag grab
 - [x] Group / Ungroup
 - [x] Image Cropping
 - [x] Snap To Grid
 - [x] Multiple Layout - Fixed / Responsive / Fullscreen / Grid
 - [x] Context menu
 - [x] Save Image - Canvas, Target Object
+- [x] Undo / Redo - development
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
-- [ ] Undo / Redo - development
