@@ -722,6 +722,14 @@ class Canvas extends Component {
             const findObject = this.handlers.findById(id);
             this.handlers.setByObject(findObject, key, value, transaction);
         },
+        setByPartial: (obj, option) => {
+            if (!obj) {
+                return;
+            }
+            obj.set(option);
+            obj.setCoords();
+            this.canvas.renderAll();
+        },
         setShadow: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
             if (!activeObject) {
@@ -3722,8 +3730,12 @@ class Canvas extends Component {
             if (target.type === 'circle' && target.parentId) {
                 return;
             }
-            this.transactionHandlers.save(target, 'modified');
+            // this.transactionHandlers.save(target, 'modified');
             this.handlers.selectByObject(target);
+            const { onModified } = this.props;
+            if (onModified) {
+                onModified(target);
+            }
         },
         moving: (opt) => {
             const { target } = opt;
