@@ -28,6 +28,7 @@ const Link = fabric.util.createClass(fabric.Line, {
             lockMovementY: true,
             fromNode,
             toNode,
+            selectable: false,
         });
     },
     setPort(fromNode, fromPort, toNode, toPort) {

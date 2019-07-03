@@ -1,4 +1,5 @@
 import { fabric } from 'fabric';
+import uuid from 'uuid/v4';
 
 import LogicNode from './LogicNode';
 import { getEllipsis } from '../../configuration/NodeConfiguration';
@@ -6,6 +7,7 @@ import { getEllipsis } from '../../configuration/NodeConfiguration';
 const SwitchNode = fabric.util.createClass(LogicNode, {
     initialize(options) {
         options = options || {};
+        options.left += 20;
         this.callSuper('initialize', options);
     },
     createFromPort(x, y) {
@@ -113,6 +115,13 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
             return port.fromPort;
         });
         return this.fromPort;
+    },
+    duplicate() {
+        const options = this.toObject();
+        options.id = uuid();
+        options.name = `${options.name}_clone`;
+        const clonedObj = new SwitchNode(options);
+        return clonedObj;
     },
 });
 

@@ -354,7 +354,6 @@ class WorkflowEditor extends Component {
                         canvasOption={{
                             width: canvasRect.width,
                             height: canvasRect.height,
-                            selection: false,
                         }}
                         fabricObjects={{ ...nodes, ...Links }}
                         workareaOption={{
@@ -364,6 +363,8 @@ class WorkflowEditor extends Component {
                         gridOption={{ enabled: true, grid: 20, snapToGrid: true }}
                         activeSelection={{
                             hasControls: false,
+                            hasBorders: false,
+                            perPixelTargetFind: true,
                         }}
                         minZoom={50}
                         maxZoom={150}
@@ -372,7 +373,7 @@ class WorkflowEditor extends Component {
                         onAdd={onAdd}
                         onRemove={onRemove}
                         onModified={onModified}
-                        keyEvent={{ move: false, transaction: false }}
+                        keyEvent={{ move: false, transaction: false, clipboard: true }}
                     />
                     <div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
                         <WorkflowNodeConfigurations

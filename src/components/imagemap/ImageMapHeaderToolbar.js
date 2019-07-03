@@ -161,7 +161,7 @@ class ImageMapHeaderToolbar extends Component {
                     />
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
-                    <Button
+                    {/* <Button
                         className="rde-action-btn"
                         disabled={isCropping || (canvasRef && !canvasRef.undos.length)}
                         onClick={() => canvasRef.transactionHandlers.undo()}
@@ -176,7 +176,7 @@ class ImageMapHeaderToolbar extends Component {
                     >
                         {'Redo'}
                         <Icon name="redo-alt" style={{ marginLeft: 8 }} />
-                    </Button>
+                    </Button> */}
                 </FlexItem>
             </FlexBox>
         );

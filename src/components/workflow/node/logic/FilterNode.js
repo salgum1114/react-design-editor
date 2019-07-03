@@ -1,4 +1,5 @@
 import { fabric } from 'fabric';
+import uuid from 'uuid/v4';
 
 import LogicNode from './LogicNode';
 
@@ -22,6 +23,13 @@ const FilterNode = fabric.util.createClass(LogicNode, {
             });
         });
         return this.fromPort;
+    },
+    duplicate() {
+        const options = this.toObject();
+        options.id = uuid();
+        options.name = `${options.name}_clone`;
+        const clonedObj = new FilterNode(options);
+        return clonedObj;
     },
 });
 

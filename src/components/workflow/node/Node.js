@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import uuidv4 from 'uuid/v4';
+import uuid from 'uuid/v4';
 
 import { OUT_PORT_TYPE, NODE_COLORS } from '../constant/constants';
 import { getEllipsis } from '../configuration/NodeConfiguration';
@@ -43,7 +43,7 @@ const Node = fabric.util.createClass(fabric.Group, {
         });
         const node = [rect, icon, this.label, this.errorFlag];
         const option = Object.assign({}, options, {
-            id: options.id || uuidv4(),
+            id: options.id || uuid(),
             width: 200,
             height: 40,
             originX: 'left',
@@ -78,6 +78,11 @@ const Node = fabric.util.createClass(fabric.Group, {
             descriptor: this.get('descriptor'),
             borderColor: this.get('borderColor'),
             borderScaleFactor: this.get('borderScaleFactor'),
+            dbclick: this.get('dbclick'),
+            deleted: this.get('deleted'),
+            cloned: this.get('cloned'),
+            fromPort: this.get('fromPort'),
+            toPort: this.get('toPort'),
         });
     },
     defaultPortOption() {
@@ -135,6 +140,8 @@ const Node = fabric.util.createClass(fabric.Group, {
             this.fromPort = this.staticPort({ ...this.fromPortOption(), left, top });
         } else if (this.descriptor.outPortType === OUT_PORT_TYPE.DYNAMIC) {
             this.fromPort = this.dynamicPort({ ...this.fromPortOption(), left, top });
+        } else if (this.descriptor.outPortType === OUT_PORT_TYPE.NONE) {
+            this.fromPort = [];
         } else {
             this.fromPort = this.singlePort({ ...this.fromPortOption(), left, top });
         }
@@ -154,12 +161,17 @@ const Node = fabric.util.createClass(fabric.Group, {
                 id: outPort,
                 type: 'fromPort',
                 ...portOption,
-                left: portOption.left + (i * 20),
+                left: i === 0 ? portOption.left - 20 : portOption.left + 20,
+                top: portOption.top,
+                leftDiff: i === 0 ? -20 : 20,
+                fill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
+                originFill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
+                hoverFill: i === 0 ? 'rgba(0, 255, 0, 1)' : 'rgba(255, 0, 0, 1)',
             });
         });
     },
     dynamicPort(portOption) {
-        
+        return [];
     },
     broadcastPort(portOption) {
         const fromPort = new fabric.Rect({
@@ -179,6 +191,12 @@ const Node = fabric.util.createClass(fabric.Group, {
                 visible: false,
             });
         }
+    },
+    duplicate() {
+        const options = this.toObject();
+        options.id = uuid();
+        options.name = `${options.name}_clone`;
+        return new Node(options);
     },
     _render(ctx) {
         this.callSuper('_render', ctx);
