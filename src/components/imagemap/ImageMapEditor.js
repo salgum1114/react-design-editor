@@ -404,7 +404,7 @@ class ImageMapEditor extends Component {
                     this.preview.canvasRef.handlers.importJSON(data);
                     return;
                 }
-                this.preview.canvasRef.handlers.clear(true);
+                this.preview.canvasRef.handlers.clear();
             });
         },
         onProgress: (progress) => {

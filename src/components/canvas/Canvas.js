@@ -51,6 +51,7 @@ const defaultWorkareaOption = {
     tooltip: {
         enabled: false,
     },
+    isElement: false,
 };
 
 const defaultKeyboardEvent = {
@@ -131,15 +132,11 @@ class Canvas extends Component {
 
     componentDidMount() {
         const { id } = this.state;
-        const { editable, canvasOption, workareaOption, guidelineOption } = this.props;
+        const { editable, canvasOption, guidelineOption } = this.props;
         const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption);
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
-        const mergedWorkareaOption = Object.assign({}, defaultWorkareaOption, workareaOption);
-        this.workarea = new fabric.Image(null, mergedWorkareaOption);
-        this.canvas.add(this.workarea);
-        this.objects = this.handlers.getObjects();
-        this.canvas.centerObject(this.workarea);
+        this.workareaHandlers.init();
         this.canvas.renderAll();
         this.gridHandlers.init();
         const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
@@ -290,13 +287,21 @@ class Canvas extends Component {
 
     /* eslint-disable react/sort-comp, react/prop-types */
     handlers = {
+        /**
+         * Set the position on Object
+         *
+         * @param {fabric.Object} obj
+         * @param {boolean} centered
+         */
         centerObject: (obj, centered) => {
             if (centered) {
                 this.canvas.centerObject(obj);
                 obj.setCoords();
             } else {
-                this.handlers.setByObject(obj, 'left', (obj.left / this.canvas.getZoom()) - (obj.width / 2) - (this.canvas.viewportTransform[4] / this.canvas.getZoom()));
-                this.handlers.setByObject(obj, 'top', (obj.top / this.canvas.getZoom()) - (obj.height / 2) - (this.canvas.viewportTransform[5] / this.canvas.getZoom()));
+                this.handlers.setByPartial(obj, {
+                    left: (obj.left / this.canvas.getZoom()) - (obj.width / 2) - (this.canvas.viewportTransform[4] / this.canvas.getZoom()),
+                    top: (obj.top / this.canvas.getZoom()) - (obj.height / 2) - (this.canvas.viewportTransform[5] / this.canvas.getZoom())
+                });
             }
         },
         add: (obj, centered = true, loaded = false) => {
@@ -406,14 +411,14 @@ class Canvas extends Component {
             });
         },
         addImage: (obj, centered = true, loaded = false) => {
-            const { editable } = this.props;
+            const { editable, defaultOptions } = this.props;
             const image = new Image();
             const { src, file, ...otherOption } = obj;
             const createImage = (img) => {
                 const createdObj = new fabric.Image(img, {
                     src,
                     file,
-                    ...this.props.defaultOptions,
+                    ...defaultOptions,
                     ...otherOption,
                 });
                 if (!editable) {
@@ -926,13 +931,21 @@ class Canvas extends Component {
             const findObject = this.handlers.findById(id);
             this.handlers.setByObject(findObject, key, value);
         },
-        setByPartial: (obj, option) => {
-            if (!obj) {
+        /**
+         * Set the option by partial
+         *
+         * @param {fabric.Object} object
+         * @param {*} option
+         * @returns {fabric.Object}
+         */
+        setByPartial: (object, option) => {
+            if (!object) {
                 return;
             }
-            obj.set(option);
-            obj.setCoords();
+            object.set(option);
+            object.setCoords();
             this.canvas.renderAll();
+            return object;
         },
         setShadow: (key, value) => {
             const activeObject = this.canvas.getActiveObject();
@@ -946,6 +959,12 @@ class Canvas extends Component {
                 onModified(activeObject);
             }
         },
+        /**
+         * Load the image
+         *
+         * @param {fabric.Object} obj
+         * @param {string} src
+         */
         loadImage: (obj, src) => {
             fabric.util.loadImage(src, (source) => {
                 if (obj.type !== 'image') {
@@ -962,6 +981,13 @@ class Canvas extends Component {
                 this.canvas.renderAll();
             });
         },
+        /**
+         * Set the image
+         *
+         * @param {fabric.Object} obj
+         * @param {string | File} src
+         * @returns
+         */
         setImage: (obj, src) => {
             if (!src) {
                 this.handlers.loadImage(obj, null);
@@ -1068,11 +1094,15 @@ class Canvas extends Component {
         },
         originScaleToResize: (obj, width, height) => {
             if (obj.id === 'workarea') {
-                this.handlers.setById(obj.id, 'workareaWidth', obj.width);
-                this.handlers.setById(obj.id, 'workareaHeight', obj.height);
+                this.handlers.setByPartial(obj, {
+                    workareaWidth: obj.width,
+                    workareaHeight: obj.height,
+                });
             }
-            this.handlers.setById(obj.id, 'scaleX', width / obj.width);
-            this.handlers.setById(obj.id, 'scaleY', height / obj.height);
+            this.handlers.setByPartial(obj, {
+                scaleX: width / obj.width,
+                scaleY: height / obj.height,
+            });
         },
         scaleToResize: (width, height) => {
             const activeObject = this.canvas.getActiveObject();
@@ -1094,12 +1124,7 @@ class Canvas extends Component {
             this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor);
             const workareaExist = json.filter(obj => obj.id === 'workarea');
             if (!this.workarea) {
-                this.workarea = new fabric.Image(null, {
-                    ...defaultWorkareaOption,
-                    ...this.props.workareaOption,
-                });
-                this.canvas.add(this.workarea);
-                this.objects = this.handlers.getObjects();
+                this.workareaHandlers.init();
             }
             if (!workareaExist.length) {
                 this.canvas.centerObject(this.workarea);
@@ -2197,16 +2222,37 @@ class Canvas extends Component {
     }
 
     workareaHandlers = {
-        setLayout: (value) => {
-            this.workarea.set('layout', value);
+        /**
+         * Init workarea
+         *
+         */
+        init: () => {
+            const { workareaOption } = this.props;
+            const mergedWorkareaOption = Object.assign({}, defaultWorkareaOption, workareaOption);
+            const image = new Image();
+            image.width = mergedWorkareaOption.width;
+            image.height = mergedWorkareaOption.height;
+            this.workarea = new fabric.Image(image, mergedWorkareaOption);
+            this.canvas.add(this.workarea);
+            this.objects = this.handlers.getObjects();
+            this.canvas.centerObject(this.workarea);
+        },
+        /**
+         * Set the layout on workarea
+         *
+         * @param {'fixed' | 'responsive' | 'fullscreen'} layout
+         * @returns
+         */
+        setLayout: (layout) => {
+            this.workarea.set('layout', layout);
             const { canvas } = this;
-            const { _element } = this.workarea;
+            const { _element, isElement } = this.workarea;
             let scaleX = 1;
             let scaleY = 1;
-            const isFixed = value === 'fixed';
-            const isResponsive = value === 'responsive';
-            const isFullscreen = value === 'fullscreen';
-            if (_element) {
+            const isFixed = layout === 'fixed';
+            const isResponsive = layout === 'responsive';
+            const isFullscreen = layout === 'fullscreen';
+            if (isElement) {
                 if (isFixed) {
                     scaleX = this.workarea.workareaWidth / _element.width;
                     scaleY = this.workarea.workareaHeight / _element.height;
@@ -2241,7 +2287,7 @@ class Canvas extends Component {
                 }
             });
             if (isResponsive) {
-                if (_element) {
+                if (isElement) {
                     const center = canvas.getCenter();
                     const point = {
                         x: center.left,
@@ -2263,7 +2309,7 @@ class Canvas extends Component {
                 canvas.renderAll();
                 return;
             }
-            if (_element) {
+            if (isElement) {
                 this.workarea.set({
                     width: _element.width,
                     height: _element.height,
@@ -2276,14 +2322,15 @@ class Canvas extends Component {
                 this.workarea.set({
                     width,
                     height,
+                    backgroundColor: 'rgba(255, 255, 255, 1)',
                 });
+                this.canvas.renderAll();
                 if (isFixed) {
                     canvas.centerObject(this.workarea);
                 } else {
                     this.workarea.set({
                         left: 0,
                         top: 0,
-                        backgroundColor: 'rgba(255, 255, 255, 1)',
                     });
                 }
             }
@@ -2297,6 +2344,13 @@ class Canvas extends Component {
             this.zoomHandlers.zoomToPoint(point, 1);
             canvas.renderAll();
         },
+        /**
+         * Set the responsive image on Workarea
+         *
+         * @param {string} [src]
+         * @param {boolean} [loaded]
+         * @returns
+         */
         setResponsiveImage: (src, loaded) => {
             const { canvas, workarea, zoomHandlers } = this;
             const { editable } = this.props;
@@ -2319,17 +2373,25 @@ class Canvas extends Component {
                         originX: 'left',
                         originY: 'top',
                     });
-                    workarea.set({
-                        ...img,
-                        selectable: false,
-                    });
+                    if (!img._element) {
+                        workarea.set({
+                            isElement: false,
+                            selectable: false,
+                        });
+                    } else {
+                        workarea.set({
+                            ...img,
+                            isElement: true,
+                            selectable: false,
+                        });
+                    }
                     if (!source) {
                         scaleX = 1;
                     }
                     canvas.centerObject(workarea);
                     if (editable && !loaded) {
-                        canvas.getObjects().forEach((obj, index) => {
-                            if (index !== 0) {
+                        canvas.getObjects().forEach((obj) => {
+                            if (obj.id !== 'workarea') {
                                 const objWidth = obj.width * scaleX;
                                 const objHeight = obj.height * scaleY;
                                 const el = this.elementHandlers.findById(obj.id);
@@ -2378,6 +2440,13 @@ class Canvas extends Component {
             };
             reader.readAsDataURL(src);
         },
+        /**
+         * Set the image on Workarea
+         *
+         * @param {string} [src]
+         * @param {boolean} [loaded=false]
+         * @returns
+         */
         setImage: (src, loaded = false) => {
             const { canvas, workarea, zoomHandlers, workareaHandlers } = this;
             const { editable } = this.props;
@@ -2395,7 +2464,7 @@ class Canvas extends Component {
                     }
                     let scaleX = 1;
                     let scaleY = 1;
-                    if (source) {
+                    if (img._element) {
                         scaleX = width / img.width;
                         scaleY = height / img.height;
                         img.set({
@@ -2406,19 +2475,24 @@ class Canvas extends Component {
                         });
                         workarea.set({
                             ...img,
+                            isElement: true,
                             selectable: false,
                         });
                     } else {
                         workarea.set({
-                            _element: null,
+                            width,
+                            height,
+                            scaleX,
+                            scaleY,
+                            isElement: false,
                             selectable: false,
                         });
                     }
                     canvas.centerObject(workarea);
                     if (editable && !loaded) {
                         const { layout } = workarea;
-                        canvas.getObjects().forEach((obj, index) => {
-                            if (index !== 0) {
+                        canvas.getObjects().forEach((obj) => {
+                            if (obj.id !== 'workarea') {
                                 scaleX = layout !== 'fullscreen' ? 1 : scaleX;
                                 scaleY = layout !== 'fullscreen' ? 1 : scaleY;
                                 const objWidth = obj.width * scaleX;
@@ -2472,6 +2546,13 @@ class Canvas extends Component {
     }
 
     nodeHandlers = {
+        /**
+         * Get the node path by target object
+         *
+         * @param {fabric.Object} target
+         * @param {fabric.Object[]} [nodes=[]]
+         * @param {string} [direction='init']
+         */
         getNodePath: (target, nodes = [], direction = 'init') => {
             if (target) {
                 if (direction === 'to' || direction === 'init') {
@@ -2499,6 +2580,12 @@ class Canvas extends Component {
                 }
             }
         },
+        /**
+         * Select the node path
+         *
+         * @param {string[]} path
+         * @returns
+         */
         selectByPath: (path) => {
             if (!path || !path.length) {
                 return;
@@ -4593,7 +4680,7 @@ class Canvas extends Component {
         redo: () => {
             const redo = this.redos.pop();
             if (!redo) {
-                return false
+                return false;
             }
             const { target, type } = redo;
             if (type === 'add') {
