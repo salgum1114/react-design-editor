@@ -14,7 +14,7 @@
         "sourceMap": true,
         "strict": true,
         "target": "esnext",
-        "outDir": "./public",
+        "outDir": "./lib",
     },
     "include": [
         "./src/**/**/*"
