@@ -49,6 +49,7 @@ const propertiesToInclude = [
 const defaultOptions = {
     fill: 'rgba(0, 0, 0, 1)',
     stroke: 'rgba(255, 255, 255, 0)',
+    strokeUniform: true,
     resource: {},
     link: {
         enabled: false,

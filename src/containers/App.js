@@ -28,7 +28,7 @@ class App extends Component {
                     <link rel="shortcut icon" href="./favicon.ico" />
                     <link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/notosanskr.css" />
                     <title>React Design Editor</title>
-                    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-97485289-3"></script>
+                    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-97485289-3" />
                     <script>
                         {`
                         window.dataLayer = window.dataLayer || [];
@@ -37,7 +37,7 @@ class App extends Component {
                         gtag('config', 'UA-97485289-3');
                         `}
                     </script>
-                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
                 </Helmet>
                 <div className="rde-title">
                     <Title onChangeMenu={this.onChangeMenu} current={current} />
