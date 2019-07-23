@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 import debounce from 'lodash/debounce';
-import throttle from 'lodash/throttle';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 import interact from 'interactjs';
@@ -365,6 +364,10 @@ class Canvas extends Component {
             if (obj.superType === 'link') {
                 return this.linkHandlers.create(newOption);
             }
+            if (obj.type === 'svg') {
+                return this.svgHandlers.create(newOption, centered, loaded);
+            }
+            // Create canvas object
             createdObj = this.fabricObjects[obj.type].create(newOption);
             if (!editable && !this.handlers.isElementType(obj.type)) {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
@@ -374,9 +377,12 @@ class Canvas extends Component {
             }
             this.canvas.add(createdObj);
             this.objects = this.handlers.getObjects();
-            if (obj.superType !== 'drawing' && obj.superType !== 'link'
-            && editable
-            && !loaded) {
+            if (
+                obj.superType !== 'drawing'
+                && obj.superType !== 'link'
+                && editable
+                && !loaded
+            ) {
                 this.handlers.centerObject(createdObj, centered);
             }
             if (createdObj.superType === 'node') {
@@ -3214,7 +3220,6 @@ class Canvas extends Component {
                     type: 'polygon',
                     stroke: 'rgba(0, 0, 0, 1)',
                     strokeWidth: 3,
-                    strokeDashArray: [10, 5],
                     fill: 'rgba(0, 0, 0, 0.25)',
                     opacity: 1,
                     objectCaching: !this.props.editable,
@@ -4288,7 +4293,7 @@ class Canvas extends Component {
             }
         },
         beforeRender: (opt) => {
-            this.canvas.clearContext(this.canvas.contextTop);
+            this.canvas.clearContext(this.ctx);
         },
         afterRender: (opt) => {
             for (let i = this.verticalLines.length; i--;) {
@@ -4710,6 +4715,40 @@ class Canvas extends Component {
             }
             this.undos.push(redo);
             return redo;
+        },
+    }
+
+    svgHandlers = {
+        create: (option, centered, loaded) => {
+            if (option.loadType === 'string') {
+                option.svg = '<?xml version="1.0" standalone="no"?>' +
+                '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">' +
+              '<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg">' +
+                '<rect width="300" height="100" style="fill:rgb(0,0,255);stroke-width:1;stroke:rgb(0,0,0)"/>' +
+              '</svg>';
+                this.svgHandlers.loadSVGFromString(option, centered, loaded);
+            } else {
+                this.svgHandlers.loadSVGFromURL(option, centered, loaded);
+            }
+        },
+        loadSVGFromString: (option, centered, loaded) => {
+            fabric.loadSVGFromString(option.svg, (objects, options) => {
+                this.svgHandlers.getSVGElements(objects, options, centered, loaded);
+            });
+        },
+        loadSVGFromURL: (option, centered, loaded) => {
+            fabric.loadSVGFromURL(option.svg, (objects, options) => {
+                this.svgHandlers.getSVGElements(objects, options, centered, loaded);
+            });
+        },
+        getSVGElements: (objects, options, centered, loaded) => {
+            const obj = fabric.util.groupSVGElements(objects, options);
+            this.canvas.add(obj);
+            this.handlers.centerObject(obj, centered);
+            const { onAdd, editable } = this.props;
+            if (onAdd && !loaded && editable) {
+                onAdd(obj);
+            }
         },
     }
 

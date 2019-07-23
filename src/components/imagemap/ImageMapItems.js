@@ -143,7 +143,6 @@ class ImageMapItems extends Component {
             });
         },
         onSearchNode: (e) => {
-            const { descriptors } = this.state;
             const filteredDescriptors = this.handlers.transformList().filter(descriptor => descriptor.name.toLowerCase().includes(e.target.value.toLowerCase()));
             this.setState({
                 textSearch: e.target.value,
