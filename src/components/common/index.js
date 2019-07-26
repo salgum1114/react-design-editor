@@ -14,6 +14,10 @@ export { default as InputScript } from './InputScript';
 
 export { default as InputTemplate } from './InputTemplate';
 
+export { default as InputHtml } from './InputHtml';
+
 export { default as Scrollbar } from './Scrollbar';
 
 export { default as UrlModal } from './UrlModal';
+
+export { default as SVGModal } from './SVGModal';

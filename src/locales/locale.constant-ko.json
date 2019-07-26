@@ -44,6 +44,9 @@
             "image-load-type": "Image Load Type",
             "file-upload": "File Upload",
             "image-url": "Image URL"
+        },
+        "svg": {
+            "add-svg": "SVG 추가"
         }
     },
     "workflow": {
@@ -138,7 +141,8 @@
         "fixed": "Fixed",
         "responsive": "Responsive",
         "fullscreen": "Fullscreen",
-        "src": "Src"
+        "src": "Src",
+        "svg": "SVG"
     },
     "validation": {
         "enter-property": "{{arg}}을(를) 입력하세요.",

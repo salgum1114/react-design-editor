@@ -44,6 +44,8 @@ const propertiesToInclude = [
     'configuration',
     'superType',
     'points',
+    'svg',
+    'loadType',
 ];
 
 const defaultOptions = {

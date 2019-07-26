@@ -46,42 +46,33 @@ class CanvasList extends Component {
                 return false;
             }).map((obj) => {
                 let icon;
-                let title = '';
+                let title = obj.name || obj.type;
                 let prefix = 'fas';
                 if (obj.type === 'i-text') {
                     icon = 'map-marker-alt';
-                    title = 'Marker';
                 } else if (obj.type === 'textbox') {
                     icon = 'font';
-                    title = 'Text';
                 } else if (obj.type === 'image') {
                     icon = 'image';
-                    title = 'Image';
                 } else if (obj.type === 'triangle') {
                     icon = 'image';
-                    title = 'Triangle';
                 } else if (obj.type === 'rect') {
                     icon = 'image';
-                    title = 'Rect';
                 } else if (obj.type === 'circle') {
                     icon = 'circle';
-                    title = 'Circle';
                 } else if (obj.type === 'polygon') {
                     icon = 'draw-polygon';
-                    title = 'Polygon';
                 } else if (obj.type === 'line') {
                     icon = 'image';
-                    title = 'Line';
                 } else if (obj.type === 'element') {
                     icon = 'html5';
-                    title = 'Element';
                     prefix = 'fab';
                 } else if (obj.type === 'iframe') {
                     icon = 'window-maximize';
-                    title = 'iframe';
                 } else if (obj.type === 'video') {
                     icon = 'video';
-                    title = 'Video';
+                } else if (obj.type === 'svg') {
+                    icon = 'bezier-curve';
                 } else {
                     icon = 'image';
                     title = 'Default';

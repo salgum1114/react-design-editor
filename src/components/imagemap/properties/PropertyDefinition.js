@@ -383,4 +383,38 @@ export default {
             component: IFrameProperty,
         },
     },
+    svg: {
+        general: {
+            title: 'General',
+            component: GeneralProperty,
+        },
+        link: {
+            title: 'Link',
+            component: LinkProperty,
+        },
+        tooltip: {
+            title: 'Tooltip',
+            component: TooltipProperty,
+        },
+        style: {
+            title: 'Style',
+            component: StyleProperty,
+        },
+        shadow: {
+            title: 'Shadow',
+            component: ShadowProperty,
+        },
+        animation: {
+            title: 'Animation',
+            component: AnimationProperty,
+        },
+        trigger: {
+            title: 'Trigger',
+            component: TriggerProperty,
+        },
+        userProperty: {
+            title: 'User Property',
+            component: UserProperty,
+        },
+    },
 };
