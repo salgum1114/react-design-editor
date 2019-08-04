@@ -645,17 +645,18 @@ class Canvas extends Component {
                 if (clonedObj.type === 'activeSelection') {
                     clonedObj.canvas = this.canvas;
                     clonedObj.forEachObject((obj) => {
-                        obj.set('name', `${obj.name}_clone`);
                         obj.set('id', uuid());
                         this.canvas.add(obj);
                         this.objects = this.handlers.getObjects();
+                        if (obj.dbclick) {
+                            obj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
+                        }
                     });
                     if (onAdd) {
                         onAdd(clonedObj);
                     }
                     clonedObj.setCoords();
                 } else {
-                    clonedObj.set('name', `${clonedObj.name}_clone`);
                     if (activeObject.id === clonedObj.id) {
                         clonedObj.set('id', uuid());
                     }
@@ -685,13 +686,15 @@ class Canvas extends Component {
                         left: cloned.left + grid,
                         top: cloned.top + grid,
                         id: uuid(),
-                        name: `${cloned.name}_clone`,
                         evented: true,
                     });
                     this.canvas.add(cloned);
                     this.objects = this.handlers.getObjects();
                     if (onAdd) {
                         onAdd(cloned);
+                    }
+                    if (cloned.dbclick) {
+                        cloned.on('mousedblclick', this.eventHandlers.object.mousedblclick);
                     }
                     this.canvas.setActiveObject(cloned);
                     this.portHandlers.create(cloned);
@@ -890,7 +893,6 @@ class Canvas extends Component {
                     clonedObj.canvas = this.canvas;
                     clonedObj.forEachObject((obj) => {
                         obj.set('id', uuid());
-                        obj.set('name', `${obj.name}_clone`);
                         this.canvas.add(obj);
                         if (obj.dbclick) {
                             obj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
@@ -906,7 +908,6 @@ class Canvas extends Component {
                         clonedObj = clonedObj.duplicate();
                     } else {
                         clonedObj.set('id', uuid());
-                        clonedObj.set('name', `${clonedObj.name}_clone`);
                     }
                     this.canvas.add(clonedObj);
                     if (clonedObj.dbclick) {
@@ -4467,7 +4468,6 @@ class Canvas extends Component {
                                     if (typeof obj.cloned !== 'undefined' && !obj.cloned) {
                                         return false;
                                     }
-                                    obj.name = `${obj.name}_clone`;
                                     obj.left = obj.properties.left + grid;
                                     obj.top = obj.properties.top + grid;
                                     const createdObj = this.handlers.add(obj, false, true);
@@ -4484,7 +4484,6 @@ class Canvas extends Component {
                                             obj.fromNode = nodes[obj.fromNodeIndex].id;
                                             obj.toNode = nodes[obj.toNodeIndex].id;
                                         } else {
-                                            obj.name = `${obj.name}_clone`;
                                             obj.left = obj.properties.left + grid;
                                             obj.top = obj.properties.top + grid;
                                         }

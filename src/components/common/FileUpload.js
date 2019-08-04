@@ -26,7 +26,8 @@ class FileUpload extends Component {
     }
 
     render() {
-        const { accept, limit, fileList } = this.props;
+        const { accept, limit } = this.props;
+        const { fileList } = this.state;
         const props = {
             accept,
             name: 'file',
