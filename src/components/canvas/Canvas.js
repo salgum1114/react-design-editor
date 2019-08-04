@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 import debounce from 'lodash/debounce';
-import throttle from 'lodash/throttle';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 import interact from 'interactjs';
@@ -336,6 +335,10 @@ class Canvas extends Component {
                     this.handlers.addElement(newOption, centered);
                     return;
                 }
+                if (obj.type === 'svg') {
+                    this.handlers.addSVG(newOption, centered, loaded);
+                    return;
+                }
                 createdObj = this.fabricObjects[obj.type].create({ name: 'New Group', ...groupOption });
                 if (!editable && !this.handlers.isElementType(obj.type)) {
                     createdObj.on('mousedown', this.eventHandlers.object.mousedown);
@@ -362,9 +365,14 @@ class Canvas extends Component {
                 this.handlers.addElement(newOption, centered, loaded);
                 return;
             }
+            if (obj.type === 'svg') {
+                this.handlers.addSVG(newOption, centered, loaded);
+                return;
+            }
             if (obj.superType === 'link') {
                 return this.linkHandlers.create(newOption);
             }
+            // Create canvas object
             createdObj = this.fabricObjects[obj.type].create(newOption);
             if (!editable && !this.handlers.isElementType(obj.type)) {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
@@ -374,9 +382,12 @@ class Canvas extends Component {
             }
             this.canvas.add(createdObj);
             this.objects = this.handlers.getObjects();
-            if (obj.superType !== 'drawing' && obj.superType !== 'link'
-            && editable
-            && !loaded) {
+            if (
+                obj.superType !== 'drawing'
+                && obj.superType !== 'link'
+                && editable
+                && !loaded
+            ) {
                 this.handlers.centerObject(createdObj, centered);
             }
             if (createdObj.superType === 'node') {
@@ -484,6 +495,39 @@ class Canvas extends Component {
             const { onAdd } = this.props;
             if (onAdd && editable && !loaded) {
                 onAdd(createdObj);
+            }
+        },
+        addSVG: (obj, centered = true, loaded = false) => {
+            const getSVGElements = (object, objects, options) => {
+                const createdObj = fabric.util.groupSVGElements(objects, options);
+                createdObj.set({ ...this.props.defaultOptions, ...object });
+                this.canvas.add(createdObj);
+                this.objects = this.handlers.getObjects();
+                const { onAdd, editable } = this.props;
+                if (!editable && !this.handlers.isElementType(obj.type)) {
+                    createdObj.on('mousedown', this.eventHandlers.object.mousedown);
+                }
+                if (createdObj.dbclick) {
+                    createdObj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
+                }
+                if (editable && !loaded) {
+                    this.handlers.centerObject(createdObj, centered);
+                }
+                if (!editable && createdObj.animation && createdObj.animation.autoplay) {
+                    this.animationHandlers.play(createdObj.id);
+                }
+                if (onAdd && !loaded && editable) {
+                    onAdd(obj);
+                }
+            };
+            if (obj.loadType === 'svg') {
+                fabric.loadSVGFromString(obj.svg, (objects, options) => {
+                    getSVGElements(obj, objects, options);
+                });
+            } else {
+                fabric.loadSVGFromURL(obj.svg, (objects, options) => {
+                    getSVGElements(obj, objects, options);
+                });
             }
         },
         /**
@@ -601,17 +645,18 @@ class Canvas extends Component {
                 if (clonedObj.type === 'activeSelection') {
                     clonedObj.canvas = this.canvas;
                     clonedObj.forEachObject((obj) => {
-                        obj.set('name', `${obj.name}_clone`);
                         obj.set('id', uuid());
                         this.canvas.add(obj);
                         this.objects = this.handlers.getObjects();
+                        if (obj.dbclick) {
+                            obj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
+                        }
                     });
                     if (onAdd) {
                         onAdd(clonedObj);
                     }
                     clonedObj.setCoords();
                 } else {
-                    clonedObj.set('name', `${clonedObj.name}_clone`);
                     if (activeObject.id === clonedObj.id) {
                         clonedObj.set('id', uuid());
                     }
@@ -641,13 +686,15 @@ class Canvas extends Component {
                         left: cloned.left + grid,
                         top: cloned.top + grid,
                         id: uuid(),
-                        name: `${cloned.name}_clone`,
                         evented: true,
                     });
                     this.canvas.add(cloned);
                     this.objects = this.handlers.getObjects();
                     if (onAdd) {
                         onAdd(cloned);
+                    }
+                    if (cloned.dbclick) {
+                        cloned.on('mousedblclick', this.eventHandlers.object.mousedblclick);
                     }
                     this.canvas.setActiveObject(cloned);
                     this.portHandlers.create(cloned);
@@ -846,7 +893,6 @@ class Canvas extends Component {
                     clonedObj.canvas = this.canvas;
                     clonedObj.forEachObject((obj) => {
                         obj.set('id', uuid());
-                        obj.set('name', `${obj.name}_clone`);
                         this.canvas.add(obj);
                         if (obj.dbclick) {
                             obj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
@@ -862,7 +908,6 @@ class Canvas extends Component {
                         clonedObj = clonedObj.duplicate();
                     } else {
                         clonedObj.set('id', uuid());
-                        clonedObj.set('name', `${clonedObj.name}_clone`);
                     }
                     this.canvas.add(clonedObj);
                     if (clonedObj.dbclick) {
@@ -3214,7 +3259,6 @@ class Canvas extends Component {
                     type: 'polygon',
                     stroke: 'rgba(0, 0, 0, 1)',
                     strokeWidth: 3,
-                    strokeDashArray: [10, 5],
                     fill: 'rgba(0, 0, 0, 0.25)',
                     opacity: 1,
                     objectCaching: !this.props.editable,
@@ -4288,7 +4332,7 @@ class Canvas extends Component {
             }
         },
         beforeRender: (opt) => {
-            this.canvas.clearContext(this.canvas.contextTop);
+            this.canvas.clearContext(this.ctx);
         },
         afterRender: (opt) => {
             for (let i = this.verticalLines.length; i--;) {
@@ -4424,7 +4468,6 @@ class Canvas extends Component {
                                     if (typeof obj.cloned !== 'undefined' && !obj.cloned) {
                                         return false;
                                     }
-                                    obj.name = `${obj.name}_clone`;
                                     obj.left = obj.properties.left + grid;
                                     obj.top = obj.properties.top + grid;
                                     const createdObj = this.handlers.add(obj, false, true);
@@ -4441,7 +4484,6 @@ class Canvas extends Component {
                                             obj.fromNode = nodes[obj.fromNodeIndex].id;
                                             obj.toNode = nodes[obj.toNodeIndex].id;
                                         } else {
-                                            obj.name = `${obj.name}_clone`;
                                             obj.left = obj.properties.left + grid;
                                             obj.top = obj.properties.top + grid;
                                         }

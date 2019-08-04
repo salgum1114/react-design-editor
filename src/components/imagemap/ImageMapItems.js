@@ -9,6 +9,7 @@ import { FlexBox } from '../flex';
 import Icon from '../icon/Icon';
 import Scrollbar from '../common/Scrollbar';
 import CommonButton from '../common/CommonButton';
+import { SVGModal } from '../common';
 
 notification.config({
     top: 80,
@@ -27,6 +28,7 @@ class ImageMapItems extends Component {
         textSearch: '',
         descriptors: {},
         filteredDescriptors: [],
+        svgModalVisible: false,
     }
 
     componentDidMount() {
@@ -55,6 +57,8 @@ class ImageMapItems extends Component {
         } else if (JSON.stringify(this.state.activeKey) !== JSON.stringify(nextState.activeKey)) {
             return true;
         } else if (this.state.collapse !== nextState.collapse) {
+            return true;
+        } else if (this.state.svgModalVisible !== nextState.svgModalVisible) {
             return true;
         }
         return false;
@@ -108,7 +112,16 @@ class ImageMapItems extends Component {
             }
             const id = uuid();
             const option = Object.assign({}, item.option, { id });
+            if (item.option.type === 'svg' && item.type === 'default') {
+                this.handlers.onSVGModalVisible(item.option);
+                return;
+            }
             canvasRef.handlers.add(option, centered);
+        },
+        onAddSVG: (option, centered) => {
+            const { canvasRef } = this.props;
+            canvasRef.handlers.add({ ...option, type: 'svg', id: uuid(), name: 'New SVG' }, centered);
+            this.handlers.onSVGModalVisible();
         },
         onDrawingItem: (item) => {
             const { canvasRef } = this.props;
@@ -143,7 +156,6 @@ class ImageMapItems extends Component {
             });
         },
         onSearchNode: (e) => {
-            const { descriptors } = this.state;
             const filteredDescriptors = this.handlers.transformList().filter(descriptor => descriptor.name.toLowerCase().includes(e.target.value.toLowerCase()));
             this.setState({
                 textSearch: e.target.value,
@@ -152,6 +164,13 @@ class ImageMapItems extends Component {
         },
         transformList: () => {
             return Object.values(this.props.descriptors).reduce((prev, curr) => prev.concat(curr), []);
+        },
+        onSVGModalVisible: () => {
+            this.setState((prevState) => {
+                return {
+                    svgModalVisible: !prevState.svgModalVisible,
+                };
+            });
         },
     }
 
@@ -272,7 +291,14 @@ class ImageMapItems extends Component {
 
     render() {
         const { descriptors } = this.props;
-        const { collapse, textSearch, filteredDescriptors, activeKey } = this.state;
+        const {
+            collapse,
+            textSearch,
+            filteredDescriptors,
+            activeKey,
+            svgModalVisible,
+            svgOption,
+        } = this.state;
         const className = classnames('rde-editor-items', {
             minimize: collapse,
         });
@@ -302,9 +328,7 @@ class ImageMapItems extends Component {
                     <Scrollbar>
                         <FlexBox flex="1" style={{ overflowY: 'hidden' }}>
                             {
-                                textSearch.length ? (
-                                    this.renderItems(filteredDescriptors)
-                                ) : (
+                                (textSearch.length && this.renderItems(filteredDescriptors)) || (
                                     collapse ? (
                                         <FlexBox flexWrap="wrap" flexDirection="column" style={{ width: '100%' }} justifyContent="center">
                                             {
@@ -329,6 +353,12 @@ class ImageMapItems extends Component {
                         </FlexBox>
                     </Scrollbar>
                 </FlexBox>
+                <SVGModal
+                    visible={svgModalVisible}
+                    onOk={this.handlers.onAddSVG}
+                    onCancel={this.handlers.onSVGModalVisible}
+                    option={svgOption}
+                />
             </div>
         );
     }

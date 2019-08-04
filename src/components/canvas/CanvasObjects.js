@@ -44,12 +44,14 @@ export default (mergedObjects, defaultOptions) => {
             create: ({ imgElement, ...option }) => new fabric.Image(imgElement, {
                 ...defaultOptions,
                 ...option,
+                crossOrigin: true,
             }),
         },
         video: {
             create: ({ videoElement, ...option }) => new fabric.Image(videoElement, {
                 ...defaultOptions,
                 ...option,
+                crossOrigin: true,
             }),
         },
         polygon: {
