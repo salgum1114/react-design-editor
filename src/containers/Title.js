@@ -43,10 +43,16 @@ class Title extends Component {
                     </Menu>
                 </FlexBox>
                 <FlexBox flex="1" justifyContent="flex-end">
-                    <Adsense.Google
-                        client="ca-pub-8569372752842198"
-                        slot="5790685139"
+                    <ins
+                        className="adsbygoogle"
                         style={{ display: 'inline-block', width: 600, height: 60 }}
+                        data-ad-client="ca-pub-8569372752842198"
+                        data-ad-slot="5790685139"
+                    />
+                    <script
+                        dangerouslySetInnerHTML={{
+                            __html: '(adsbygoogle = window.adsbygoogle || []).push({});',
+                        }}
                     />
                 </FlexBox>
             </FlexBox>
