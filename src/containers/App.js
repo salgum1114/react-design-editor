@@ -37,7 +37,7 @@ class App extends Component {
                         gtag('config', 'UA-97485289-3');
                         `}
                     </script>
-                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
+                    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
                 </Helmet>
                 <div className="rde-title">
                     <Title onChangeMenu={this.onChangeMenu} current={current} />
