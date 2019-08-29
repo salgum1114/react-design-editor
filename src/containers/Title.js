@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Button, Menu } from 'antd';
 import PropTypes from 'prop-types';
 import i18n from 'i18next';
-import Adsense from 'react-adsense';
 
 import { FlexBox } from '../components/flex';
 import Icon from '../components/icon/Icon';
@@ -11,6 +10,12 @@ class Title extends Component {
     static propTypes = {
         currentMenu: PropTypes.string,
         onChangeMenu: PropTypes.func,
+    }
+
+    componentDidMount() {
+        if (window) {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+        }
     }
 
     handlers = {
@@ -48,11 +53,6 @@ class Title extends Component {
                         style={{ display: 'inline-block', width: 600, height: 60 }}
                         data-ad-client="ca-pub-8569372752842198"
                         data-ad-slot="5790685139"
-                    />
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: '(adsbygoogle = window.adsbygoogle || []).push({});',
-                        }}
                     />
                 </FlexBox>
             </FlexBox>
