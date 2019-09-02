@@ -14,7 +14,7 @@ class NodeProperties extends Component {
         selectedItem: PropTypes.object,
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (this.props.selectedItem && nextProps.selectedItem) {
             if (this.props.selectedItem.id !== nextProps.selectedItem.id) {
                 nextProps.form.resetFields();
@@ -27,7 +27,7 @@ class NodeProperties extends Component {
         const showArrow = false;
         return (
             <Scrollbar>
-                <Form layout="horizontal">
+                <Form layout="horizontal" colon={false}>
                     <Collapse bordered={false}>
                         {
                             selectedItem && PropertyDefinition[selectedItem.type] ? (

@@ -36,7 +36,7 @@ class ImageMapItems extends Component {
         this.waitForCanvasRender(canvasRef);
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (JSON.stringify(this.props.descriptors) !== JSON.stringify(nextProps.descriptors)) {
             const descriptors = Object.keys(nextProps.descriptors).reduce((prev, key) => {
                 return prev.concat(nextProps.descriptors[key]);

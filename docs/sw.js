@@ -1,4 +1,4 @@
-importScripts("./precache-manifest.cef8a02444240a46643e8276df4f07eb.js", "https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
+importScripts("./precache-manifest.ba5e5c7e54a17444f8278f99bda5888a.js", "https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 workbox.skipWaiting();
 workbox.clientsClaim();

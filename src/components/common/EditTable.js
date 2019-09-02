@@ -28,7 +28,7 @@ class EditTable extends Component {
         help: '',
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             userProperty: nextProps.userProperty || {},
         });

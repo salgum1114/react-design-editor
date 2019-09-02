@@ -24,7 +24,7 @@ class StyleModal extends Component {
         this.waitForContainerRender(this.containerRef);
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         let { style } = nextProps;
         if (!style || !Object.keys(style).length) {
             style = {

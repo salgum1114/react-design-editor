@@ -71,7 +71,7 @@ class IconChooser extends Component {
         visible: false,
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             icon: nextProps.icon || this.state.icon,
         });

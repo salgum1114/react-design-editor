@@ -45,7 +45,7 @@ class InputScript extends Component {
         }, 200);
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.value !== this.props.value) {
             this.setState({
                 text: nextProps.value,

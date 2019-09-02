@@ -13,6 +13,7 @@ import CanvasObjects from './CanvasObjects';
 import OrthogonalLink from '../workflow/link/OrthogonalLink';
 import CurvedLink from '../workflow/link/CurvedLink';
 import Arrow from './Arrow';
+import { ImageHandler } from './handlers';
 
 import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
@@ -134,6 +135,9 @@ class Canvas extends Component {
         const { editable, canvasOption, guidelineOption } = this.props;
         const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption);
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
+        this.imageHandler = new ImageHandler({
+            canvas: this.canvas,
+        });
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
         this.workareaHandlers.init();
         this.canvas.renderAll();
@@ -424,11 +428,13 @@ class Canvas extends Component {
         addImage: (obj, centered = true, loaded = false) => {
             const { editable, defaultOptions } = this.props;
             const image = new Image();
-            const { src, file, ...otherOption } = obj;
+            const { src, file, filters = [], ...otherOption } = obj;
+            console.log(obj);
             const createImage = (img) => {
                 const createdObj = new fabric.Image(img, {
                     src,
                     file,
+                    filters: this.imageHandler.createFilters(filters),
                     ...defaultOptions,
                     ...otherOption,
                 });
@@ -1011,7 +1017,11 @@ class Canvas extends Component {
          * @param {string} src
          */
         loadImage: (obj, src) => {
-            fabric.util.loadImage(src, (source) => {
+            let url = src;
+            if (!url) {
+                url = './images/sample/transparentBg.png';
+            }
+            fabric.util.loadImage(url, (source) => {
                 if (obj.type !== 'image') {
                     obj.setPatternFill({
                         source,
@@ -2304,7 +2314,7 @@ class Canvas extends Component {
                 } else if (isResponsive) {
                     scaleX = canvas.getWidth() / _element.width;
                     scaleY = canvas.getHeight() / _element.height;
-                    if (_element.height > _element.width) {
+                    if (_element.height >= _element.width) {
                         scaleX = scaleY;
                     } else {
                         scaleY = scaleX;
@@ -2419,6 +2429,7 @@ class Canvas extends Component {
                         originY: 'top',
                     });
                     if (!img._element) {
+                        workarea.setElement(new Image());
                         workarea.set({
                             isElement: false,
                             selectable: false,
@@ -2524,6 +2535,7 @@ class Canvas extends Component {
                             selectable: false,
                         });
                     } else {
+                        workarea.setElement(new Image());
                         workarea.set({
                             width,
                             height,

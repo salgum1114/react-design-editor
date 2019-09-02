@@ -17,7 +17,7 @@
         "outDir": "./lib",
     },
     "include": [
-        "./src/**/**/*"
+        "src/components/canvas/*"
     ],
     "exclude": [
         "node_modules",

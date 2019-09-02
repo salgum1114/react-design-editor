@@ -44,6 +44,24 @@
             "image-load-type": "Image Load Type",
             "file-upload": "File Upload",
             "image-url": "Image URL"
+        },
+        "svg": {
+            "add-svg": "Add SVG"
+        },
+        "filter": {
+            "grayscale": "Grayscale",
+            "invert": "Invert",
+            "sepia": "Sepia",
+            "brownie": "Brownie",
+            "vintage": "Vintage",
+            "blackwhite": "Black/White",
+            "technicolor": "Technicolor",
+            "polaroid": "Polaroid",
+            "gamma": "Gamma",
+            "gamma-color": "Gamma Color",
+            "brightness": "Brightness",
+            "contrast": "Contrast",
+            "saturation": "Saturation"
         }
     },
     "workflow": {
@@ -138,7 +156,13 @@
         "fixed": "Fixed",
         "responsive": "Responsive",
         "fullscreen": "Fullscreen",
-        "src": "Src"
+        "src": "Src",
+        "svg": "SVG"
+    },
+    "color": {
+        "red": "Red",
+        "green": "Green",
+        "blue": "Blue"
     },
     "validation": {
         "enter-property": "Please enter {{arg}}.",

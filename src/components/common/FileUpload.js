@@ -19,7 +19,7 @@ class FileUpload extends Component {
         fileList: this.props.value ? [this.props.value] : [],
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             fileList: nextProps.value ? [nextProps.value] : [],
         });

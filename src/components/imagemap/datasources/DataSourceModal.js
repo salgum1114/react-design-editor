@@ -23,7 +23,7 @@ class DataSourceModal extends Component {
         this.waitForContainerRender(this.containerRef);
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         nextProps.form.resetFields();
     }
 

@@ -51,7 +51,7 @@ class CodeModal extends Component {
         visible: false,
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             code: nextProps.value,
         });

@@ -38,7 +38,7 @@ export default class NodeConfiguration extends Component {
         errors: null,
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (this.props.selectedItem && nextProps.selectedItem) {
             if (this.props.selectedItem.id !== nextProps.selectedItem.id) {
                 this.setState({

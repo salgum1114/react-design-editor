@@ -73,5 +73,7 @@
 - [x] Context menu
 - [x] Save Image - Canvas, Target Object
 - [x] Undo / Redo - development
+- [x] Image Filter - development
+- [x] SVG Element - development
 - [ ] Wireframes - development
 - [ ] Multiple Map - development

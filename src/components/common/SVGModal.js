@@ -18,7 +18,7 @@ class SVGModal extends Component {
         visible: false,
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (nextProps.visible !== this.props.visible) {
             this.setState({
                 visible: nextProps.visible,

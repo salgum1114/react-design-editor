@@ -49,7 +49,7 @@ class UrlModal extends Component {
         visible: false,
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         this.setState({
             url: nextProps.value || '',
         });

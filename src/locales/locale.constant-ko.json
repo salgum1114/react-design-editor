@@ -47,6 +47,27 @@
         },
         "svg": {
             "add-svg": "SVG 추가"
+        },
+        "filter": {
+            "grayscale": "Grayscale",
+            "invert": "Invert",
+            "sepia": "Sepia",
+            "brownie": "Brownie",
+            "vintage": "Vintage",
+            "blackwhite": "Black/White",
+            "technicolor": "Technicolor",
+            "polaroid": "Polaroid",
+            "gamma": "Gamma",
+            "gamma-color": "Gamma Color",
+            "brightness": "Brightness",
+            "contrast": "Contrast",
+            "saturation": "Saturation",
+            "sharpen": "Sharpen",
+            "emboss": "Emboss",
+            "hue": "Hue",
+            "noise": "Noise",
+            "pixelate": "Pixelate",
+            "blur": "Blur"
         }
     },
     "workflow": {
@@ -143,6 +164,11 @@
         "fullscreen": "Fullscreen",
         "src": "Src",
         "svg": "SVG"
+    },
+    "color": {
+        "red": "Red",
+        "green": "Green",
+        "blue": "Blue"
     },
     "validation": {
         "enter-property": "{{arg}}을(를) 입력하세요.",

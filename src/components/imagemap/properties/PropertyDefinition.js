@@ -13,6 +13,7 @@ import AnimationProperty from './AnimationProperty';
 import ShadowProperty from './ShadowProperty';
 import UserProperty from './UserProperty';
 import TriggerProperty from './TriggerProperty';
+import ImageFilterProperty from './ImageFilterProperty';
 
 export default {
     map: {
@@ -119,6 +120,10 @@ export default {
         image: {
             title: 'Image',
             component: ImageProperty,
+        },
+        filter: {
+            title: 'Filter',
+            component: ImageFilterProperty,
         },
         link: {
             title: 'Link',

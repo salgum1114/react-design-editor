@@ -18,7 +18,7 @@ class WorkflowNodeConfigurations extends Component {
         onChange: PropTypes.func,
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
         if (this.props.selectedItem && nextProps.selectedItem) {
             if (this.props.selectedItem.id !== nextProps.selectedItem.id) {
                 nextProps.form.resetFields();

@@ -1,6 +1,11 @@
 {
     "extends": ["tslint:recommended", "tslint-react"],
-    "rules": {},
+    "rules": {
+      "quotemark": [true, "single"],
+      "interface-name": false,
+      "no-empty-interface": false,
+      "max-line-length": [true, 180]
+    },
     "linterOptions": {
 		"exclude": ["**/node_modules/**"]
 	}

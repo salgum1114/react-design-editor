@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import { ResizeSensor } from 'css-element-queries';
-import { Badge, Button, Spin, Popconfirm, Menu, Modal } from 'antd';
+import { Badge, Button, Popconfirm, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
-import storage from 'store/storages/localStorage';
 
-import Wireframe from '../wireframe/Wireframe';
 import Canvas from '../canvas/Canvas';
 import ImageMapFooterToolbar from './ImageMapFooterToolbar';
 import ImageMapItems from './ImageMapItems';
@@ -128,7 +126,8 @@ class ImageMapEditor extends Component {
 
     canvasHandlers = {
         onAdd: (target) => {
-            if (!this.state.editing) {
+            const { editing } = this.state;
+            if (!editing) {
                 this.changeEditing(true);
             }
             if (target.type === 'activeSelection') {
@@ -138,11 +137,12 @@ class ImageMapEditor extends Component {
             this.canvasRef.handlers.select(target);
         },
         onSelect: (target) => {
+            const { selectedItem } = this.state;
             if (target
             && target.id
             && target.id !== 'workarea'
             && target.type !== 'activeSelection') {
-                if (this.state.selectedItem && target.id === this.state.selectedItem.id) {
+                if (selectedItem && target.id === selectedItem.id) {
                     return;
                 }
                 this.canvasRef.handlers.getObjects().forEach((obj) => {
@@ -150,6 +150,7 @@ class ImageMapEditor extends Component {
                         this.canvasRef.animationHandlers.initAnimation(obj, true);
                     }
                 });
+                console.log(target);
                 this.setState({
                     selectedItem: target,
                 });
@@ -164,29 +165,18 @@ class ImageMapEditor extends Component {
                 selectedItem: null,
             });
         },
-        onRemove: (target) => {
-            if (!this.state.editing) {
+        onRemove: () => {
+            const { editing } = this.state;
+            if (!editing) {
                 this.changeEditing(true);
             }
             this.canvasHandlers.onSelect(null);
         },
-        onModified: debounce((target) => {
-            if (!this.state.editing) {
+        onModified: debounce(() => {
+            const { editing } = this.state;
+            if (!editing) {
                 this.changeEditing(true);
             }
-            if (target
-            && target.id
-            && target.id !== 'workarea'
-            && target.type !== 'activeSelection') {
-                this.canvasRef.transactionHandlers.save(target, 'modified');
-                this.setState({
-                    selectedItem: target,
-                });
-                return;
-            }
-            this.setState({
-                selectedItem: null,
-            });
         }, 300),
         onZoom: (zoom) => {
             this.setState({
@@ -194,7 +184,8 @@ class ImageMapEditor extends Component {
             });
         },
         onChange: (selectedItem, changedValues, allValues) => {
-            if (!this.state.editing) {
+            const { editing } = this.state;
+            if (!editing) {
                 this.changeEditing(true);
             }
             const changedKey = Object.keys(changedValues)[0];
@@ -279,6 +270,46 @@ class ImageMapEditor extends Component {
             if (changedKey === 'trigger') {
                 const trigger = Object.assign({}, defaultOptions.trigger, allValues.trigger);
                 this.canvasRef.handlers.set(changedKey, trigger);
+                return;
+            }
+            if (changedKey === 'filters') {
+                const filterKey = Object.keys(changedValue)[0];
+                const filterValue = allValues.filters[filterKey];
+                console.log(filterKey, allValues, changedValue[filterKey]);
+                if (filterKey === 'gamma') {
+                    const rgb = [filterValue.r, filterValue.g, filterValue.b];
+                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { gamma: rgb });
+                    return;
+                }
+                if (filterKey === 'brightness') {
+                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { brightness: filterValue.brightness });
+                    return;
+                }
+                if (filterKey === 'contrast') {
+                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { contrast: filterValue.contrast });
+                    return;
+                }
+                if (filterKey === 'saturation') {
+                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { saturation: filterValue.saturation });
+                    return;
+                }
+                if (filterKey === 'hue') {
+                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { rotation: filterValue.rotation });
+                    return;
+                }
+                if (filterKey === 'noise') {
+                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { noise: filterValue.noise });
+                    return;
+                }
+                if (filterKey === 'pixelate') {
+                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { blocksize: filterValue.blocksize });
+                    return;
+                }
+                if (filterKey === 'blur') {
+                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { value: filterValue.value });
+                    return;
+                }
+                this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey]);
                 return;
             }
             this.canvasRef.handlers.set(changedKey, changedValue);
@@ -405,6 +436,7 @@ class ImageMapEditor extends Component {
                         return true;
                     });
                     this.preview.canvasRef.handlers.importJSON(data);
+                    this.shortcutHandlers.esc();
                     return;
                 }
                 this.preview.canvasRef.handlers.clear();
@@ -515,6 +547,18 @@ class ImageMapEditor extends Component {
         },
         onSaveImage: () => {
             this.canvasRef.handlers.saveCanvasImage();
+        },
+    }
+
+    shortcutHandlers = {
+        esc: () => {
+            document.addEventListener('keydown', (e) => {
+                if (e.keyCode === 27) {
+                    this.handlers.onChangePreview(false);
+                }
+            }, {
+                once: true,
+            });
         },
     }
 
