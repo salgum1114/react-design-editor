@@ -175,7 +175,7 @@ export default {
                                 getFieldDecorator('filters.gamma.r', {
                                     initialValue: filters[17] ? filters[17].gamma[0] : 1,
                                 })(
-                                    <Slider step={0.01} min={0.01} max={2.2} />,
+                                    <Slider disabled={!filters[17]} step={0.01} min={0.01} max={2.2} />,
                                 )
                             }
                         </Form.Item>
@@ -186,7 +186,7 @@ export default {
                                 getFieldDecorator('filters.gamma.g', {
                                     initialValue: filters[17] ? filters[17].gamma[1] : 1,
                                 })(
-                                    <Slider step={0.01} min={0.01} max={2.2} />,
+                                    <Slider disabled={!filters[17]} step={0.01} min={0.01} max={2.2} />,
                                 )
                             }
                         </Form.Item>
@@ -197,7 +197,7 @@ export default {
                                 getFieldDecorator('filters.gamma.b', {
                                     initialValue: filters[17] ? filters[17].gamma[2] : 1,
                                 })(
-                                    <Slider step={0.01} min={0.01} max={2.2} />,
+                                    <Slider disabled={!filters[17]} step={0.01} min={0.01} max={2.2} />,
                                 )
                             }
                         </Form.Item>
@@ -224,7 +224,7 @@ export default {
                                 getFieldDecorator('filters.brightness.brightness', {
                                     initialValue: filters[5] ? filters[5].brightness : 0.1,
                                 })(
-                                    <Slider step={0.01} min={-1} max={1} />,
+                                    <Slider disabled={!filters[5]} step={0.01} min={-1} max={1} />,
                                 )
                             }
                         </Form.Item>
@@ -251,7 +251,7 @@ export default {
                                 getFieldDecorator('filters.contrast.contrast', {
                                     initialValue: filters[6] ? filters[6].contrast : 0,
                                 })(
-                                    <Slider step={0.01} min={-1} max={1} />,
+                                    <Slider disabled={!filters[6]} step={0.01} min={-1} max={1} />,
                                 )
                             }
                         </Form.Item>
@@ -278,7 +278,7 @@ export default {
                                 getFieldDecorator('filters.saturation.saturation', {
                                     initialValue: filters[7] ? filters[7].saturation : 0,
                                 })(
-                                    <Slider step={0.01} min={-1} max={1} />,
+                                    <Slider disabled={!filters[7]} step={0.01} min={-1} max={1} />,
                                 )
                             }
                         </Form.Item>
@@ -305,7 +305,7 @@ export default {
                                 getFieldDecorator('filters.hue.rotation', {
                                     initialValue: filters[21] ? filters[21].rotation : 0,
                                 })(
-                                    <Slider step={0.002} min={-2} max={2} />,
+                                    <Slider disabled={!filters[21]} step={0.002} min={-2} max={2} />,
                                 )
                             }
                         </Form.Item>
@@ -332,7 +332,7 @@ export default {
                                 getFieldDecorator('filters.noise.noise', {
                                     initialValue: filters[8] ? filters[8].noise : 100,
                                 })(
-                                    <Slider step={1} min={0} max={1000} />,
+                                    <Slider disabled={!filters[18]} step={1} min={0} max={1000} />,
                                 )
                             }
                         </Form.Item>
@@ -359,7 +359,7 @@ export default {
                                 getFieldDecorator('filters.pixelate.blocksize', {
                                     initialValue: filters[10] ? filters[10].blocksize : 4,
                                 })(
-                                    <Slider step={1} min={2} max={20} />,
+                                    <Slider disabled={!filters[10]} step={1} min={2} max={20} />,
                                 )
                             }
                         </Form.Item>
@@ -386,7 +386,7 @@ export default {
                                 getFieldDecorator('filters.blur.value', {
                                     initialValue: filters[11] ? filters[11].value : 0.1,
                                 })(
-                                    <Slider step={0.01} min={0} max={1} />,
+                                    <Slider disabled={!filters[11]} step={0.01} min={0} max={1} />,
                                 )
                             }
                         </Form.Item>
