@@ -997,12 +997,12 @@ class Canvas extends Component {
             this.canvas.renderAll();
             return object;
         },
-        setShadow: (key, value) => {
+        setShadow: (option) => {
             const activeObject = this.canvas.getActiveObject();
             if (!activeObject) {
                 return false;
             }
-            activeObject.setShadow(value);
+            activeObject.setShadow(option);
             this.canvas.requestRenderAll();
             const { onModified } = this.props;
             if (onModified) {

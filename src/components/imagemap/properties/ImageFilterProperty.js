@@ -332,7 +332,7 @@ export default {
                                 getFieldDecorator('filters.noise.noise', {
                                     initialValue: filters[8] ? filters[8].noise : 100,
                                 })(
-                                    <Slider disabled={!filters[18]} step={1} min={0} max={1000} />,
+                                    <Slider disabled={!filters[8]} step={1} min={0} max={1000} />,
                                 )
                             }
                         </Form.Item>

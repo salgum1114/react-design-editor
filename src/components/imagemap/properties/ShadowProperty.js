@@ -40,7 +40,7 @@ export default {
                                             min: 0,
                                             max: 100,
                                         }],
-                                        initialValue: data.shadow.blur || 0,
+                                        initialValue: data.shadow.blur || 15,
                                     })(
                                         <Slider min={0} max={100} />,
                                     )
@@ -54,7 +54,7 @@ export default {
                                             min: 0,
                                             max: 100,
                                         }],
-                                        initialValue: data.shadow.offsetX || 0,
+                                        initialValue: data.shadow.offsetX || 10,
                                     })(
                                         <Slider min={0} max={100} />,
                                     )
@@ -68,7 +68,7 @@ export default {
                                             min: 0,
                                             max: 100,
                                         }],
-                                        initialValue: data.shadow.offsetY || 0,
+                                        initialValue: data.shadow.offsetY || 10,
                                     })(
                                         <Slider min={0} max={100} />,
                                     )
