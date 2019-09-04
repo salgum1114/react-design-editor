@@ -429,7 +429,6 @@ class Canvas extends Component {
             const { editable, defaultOptions } = this.props;
             const image = new Image();
             const { src, file, filters = [], ...otherOption } = obj;
-            console.log(obj);
             const createImage = (img) => {
                 const createdObj = new fabric.Image(img, {
                     src,
@@ -4516,7 +4515,7 @@ class Canvas extends Component {
                                 this.handlers.copy();
                             }
                         } catch (error) {
-                            console.log(error);
+                            console.error(error);
                             // const item = {
                             //     id: uuid(),
                             //     type: 'textbox',

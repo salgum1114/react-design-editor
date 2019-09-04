@@ -34,7 +34,8 @@
               "ignore": [ "src/" ]
             }
         ],
-        "react/sort-comp": false
+        "react/sort-comp": false,
+        "func-names": "off"
     },
     "env": {
         "browser": true,

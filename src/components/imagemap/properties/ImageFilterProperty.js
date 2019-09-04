@@ -6,7 +6,6 @@ export default {
     render(canvasRef, form, data) {
         const { getFieldDecorator } = form;
         const { filters } = data;
-        console.log(filters);
         return (
             <Row>
                 <Row>
@@ -127,6 +126,36 @@ export default {
                 </Row>
                 <Row>
                     <Col md={24} lg={6}>
+                        <Form.Item label={i18n.t('imagemap.filter.sharpen')}>
+                            {
+                                getFieldDecorator('filters.sharpen', {
+                                    valuePropName: 'checked',
+                                    initialValue: !!filters[12],
+                                })(
+                                    <Tag.CheckableTag className="rde-action-tag">
+                                        {'S'}
+                                    </Tag.CheckableTag>,
+                                )
+                            }
+                        </Form.Item>
+                    </Col>
+                    <Col md={24} lg={6}>
+                        <Form.Item label={i18n.t('imagemap.filter.emboss')}>
+                            {
+                                getFieldDecorator('filters.emboss', {
+                                    valuePropName: 'checked',
+                                    initialValue: !!filters[13],
+                                })(
+                                    <Tag.CheckableTag className="rde-action-tag">
+                                        {'E'}
+                                    </Tag.CheckableTag>,
+                                )
+                            }
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={24} lg={6}>
                         <Form.Item label={i18n.t('imagemap.filter.gamma')}>
                             {
                                 getFieldDecorator('filters.gamma.enabled', {
@@ -169,36 +198,6 @@ export default {
                                     initialValue: filters[17] ? filters[17].gamma[2] : 1,
                                 })(
                                     <Slider step={0.01} min={0.01} max={2.2} />,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md={24} lg={6}>
-                        <Form.Item label={i18n.t('imagemap.filter.sharpen')}>
-                            {
-                                getFieldDecorator('filters.sharpen', {
-                                    valuePropName: 'checked',
-                                    initialValue: !!filters[12],
-                                })(
-                                    <Tag.CheckableTag className="rde-action-tag">
-                                        {'S'}
-                                    </Tag.CheckableTag>,
-                                )
-                            }
-                        </Form.Item>
-                    </Col>
-                    <Col md={24} lg={6}>
-                        <Form.Item label={i18n.t('imagemap.filter.emboss')}>
-                            {
-                                getFieldDecorator('filters.emboss', {
-                                    valuePropName: 'checked',
-                                    initialValue: !!filters[13],
-                                })(
-                                    <Tag.CheckableTag className="rde-action-tag">
-                                        {'E'}
-                                    </Tag.CheckableTag>,
                                 )
                             }
                         </Form.Item>

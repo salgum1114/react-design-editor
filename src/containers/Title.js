@@ -54,12 +54,6 @@ class Title extends Component {
                         data-ad-client="ca-pub-8569372752842198"
                         data-ad-slot="5790685139"
                     />
-                    {/* <Adsense.Google
-                        className="adsbygoogle"
-                        client="ca-pub-8569372752842198"
-                        slot="4302606316"
-                        style={{ display: 'inline-block', width: '600px', height: '60px' }}
-                    /> */}
                 </FlexBox>
             </FlexBox>
         );

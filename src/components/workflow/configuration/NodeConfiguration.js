@@ -212,7 +212,6 @@ export default class NodeConfiguration extends Component {
 
     handlers = {
         onValidate: (errors) => {
-            console.log(errors);
             this.setState({
                 errors,
             });

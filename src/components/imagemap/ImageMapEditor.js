@@ -275,7 +275,6 @@ class ImageMapEditor extends Component {
             if (changedKey === 'filters') {
                 const filterKey = Object.keys(changedValue)[0];
                 const filterValue = allValues.filters[filterKey];
-                console.log(filterKey, allValues, changedValue[filterKey]);
                 if (filterKey === 'gamma') {
                     const rgb = [filterValue.r, filterValue.g, filterValue.b];
                     this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { gamma: rgb });

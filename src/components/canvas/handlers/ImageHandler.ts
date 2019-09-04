@@ -1,4 +1,5 @@
 import { fabric } from 'fabric';
+import isEqual from 'lodash/isEqual';
 
 import Handler, { HandlerOptions } from './Handler';
 
@@ -229,9 +230,9 @@ class ImageHandler extends Handler {
     public createFilters = (filters: IFilter[]) => {
         const createdFilters = filters.reduce((prev, filter) => {
             let type = filter.type;
-            if (type.toLowerCase() === 'convolute' && filter.matrix === SHARPEN_MATRIX) {
+            if (type.toLowerCase() === 'convolute' && isEqual(filter.matrix, SHARPEN_MATRIX)) {
                 type = 'sharpen';
-            } else if (type.toLowerCase() === 'convolute' && filter.matrix === EMBOSS_MATRIX) {
+            } else if (type.toLowerCase() === 'convolute' && isEqual(filter.matrix, EMBOSS_MATRIX)) {
                 type = 'emboss';
             }
             const findIndex = FILTER_TYPES.findIndex((filterType) => type.toLowerCase() === filterType);
