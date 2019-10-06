@@ -41,14 +41,14 @@ export default (mergedObjects, defaultOptions) => {
             }),
         },
         image: {
-            create: ({ imgElement, ...option }) => new fabric.Image(imgElement, {
+            create: ({ element = new Image(), ...option }) => new fabric.Image(element, {
                 ...defaultOptions,
                 ...option,
                 crossOrigin: true,
             }),
         },
         video: {
-            create: ({ videoElement, ...option }) => new fabric.Image(videoElement, {
+            create: ({ element, ...option }) => new fabric.Image(element, {
                 ...defaultOptions,
                 ...option,
                 crossOrigin: true,
