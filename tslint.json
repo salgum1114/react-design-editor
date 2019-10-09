@@ -1,12 +1,26 @@
 {
-    "extends": ["tslint:recommended", "tslint-react"],
-    "rules": {
-      "quotemark": [true, "single"],
-      "interface-name": false,
-      "no-empty-interface": false,
-      "max-line-length": [true, 180]
-    },
-    "linterOptions": {
-		"exclude": ["**/node_modules/**"]
-	}
+  "extends": ["tslint:recommended", "tslint-react"],
+  "rules": {
+    "interface-name": false,
+    "quotemark": [true, "single", "jsx-double"],
+    "import-sources-order": false,
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "max-line-length": false,
+    "indent": false,
+    "prefer-for-of": false,
+    "no-console": false,
+    "member-access": false,
+    "member-ordering": false,
+    "jsx-no-multiline-js": false,
+    "semicolon": false,
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "no-shadowed-variable": false,
+    "jsx-no-lambda": false,
+    "jsx-wrap-multiline": false,
+    "array-type": false
+  },
+  "linterOptions": {
+    "exclude": ["**/node_modules/**"]
+  }
 }

@@ -51,10 +51,26 @@
             },
             "option": {
                 "type": "image",
-                "width": 160,
-                "height": 160,
+                "width": 120,
+                "height": 120,
                 "name": "New image",
                 "src": "./images/sample/transparentBg.png"
+            }
+		},
+		{
+			"name": "GIF",
+			"description": "",
+			"type": "gif",
+			"icon": {
+                "prefix": "fas",
+                "name": "image"
+            },
+            "option": {
+                "type": "gif",
+                "width": 400,
+                "height": 400,
+                "name": "New gif",
+                "src": ""
             }
 		}
 	],
@@ -147,7 +163,24 @@
                 "name": "New arrow"
             }
         }
-	],
+    ],
+    "CHART": [
+        {
+            "name": "Chart",
+            "description": "",
+            "type": "chart",
+            "icon": {
+                "prefix": "fas",
+                "name": "chart-line"
+            },
+            "option": {
+                "type": "chart",
+                "name": "New chart",
+                "width": 256,
+                "height": 256
+            }
+        }
+    ],
 	"ELEMENT": [
 		{
 			"name": "Element",

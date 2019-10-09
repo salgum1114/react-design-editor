@@ -422,4 +422,10 @@ export default {
             component: UserProperty,
         },
     },
+    chart: {
+        general: {
+            title: 'General',
+            component: GeneralProperty,
+        },
+    },
 };

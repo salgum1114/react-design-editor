@@ -12,7 +12,7 @@ import anime from 'animejs';
 import CanvasObjects from './CanvasObjects';
 import OrthogonalLink from '../workflow/link/OrthogonalLink';
 import CurvedLink from '../workflow/link/CurvedLink';
-import Arrow from './Arrow';
+import { Arrow } from './objects';
 import { ImageHandler } from './handlers';
 
 import '../../styles/core/tooltip.less';
@@ -102,7 +102,7 @@ class Canvas extends Component {
         },
         tooltip: null,
         zoomEnabled: true,
-        minZoom: 0,
+        minZoom: 30,
         maxZoom: 300,
         propertiesToInclude: [],
         workareaOption: {},
@@ -123,6 +123,7 @@ class Canvas extends Component {
         this.container = React.createRef();
         this.objects = [];
         this.keyEvent = Object.assign({}, defaultKeyboardEvent, props.keyEvent);
+        this.request = null;
     }
 
     state = {
@@ -355,6 +356,11 @@ class Canvas extends Component {
             }
             this.canvas.add(createdObj);
             this.objects = this.handlers.getObjects();
+            if (this.objects.some(object => object.type === 'chart' || object.type === 'video' || object.type === 'gif')) {
+                this.handlers.startRequestAnimFrame();
+            } else {
+                this.handlers.stopRequestAnimFrame();
+            }
             if (
                 obj.superType !== 'drawing'
                 && obj.superType !== 'link'
@@ -1388,6 +1394,27 @@ class Canvas extends Component {
                 anchorEl.remove();
             }
         },
+        startRequestAnimFrame: () => {
+            if (!this.isRequsetAnimFrame) {
+                this.isRequsetAnimFrame = true;
+                const render = () => {
+                    this.canvas.renderAll();
+                    this.request = fabric.util.requestAnimFrame(render);
+                };
+                fabric.util.requestAnimFrame(render);
+            }
+        },
+        stopRequestAnimFrame: () => {
+            this.isRequsetAnimFrame = false;
+            const cancelRequestAnimFrame = (() => window.cancelAnimationFrame ||
+                window.webkitCancelRequestAnimationFrame ||
+                window.mozCancelRequestAnimationFrame ||
+                window.oCancelRequestAnimationFrame ||
+                window.msCancelRequestAnimationFrame ||
+                clearTimeout
+            )();
+            cancelRequestAnimFrame(this.request);
+        },
     }
 
     cropHandlers = {
@@ -1985,17 +2012,12 @@ class Canvas extends Component {
             obj.set('player', player);
         },
         load: (obj, src) => {
-            const { canvas } = this;
             const { editable } = this.props;
             if (editable) {
                 this.elementHandlers.removeById(obj.id);
             }
             this.videoHandlers.create(obj, src);
-            this.canvas.renderAll();
-            fabric.util.requestAnimFrame(function render() {
-                canvas.renderAll();
-                fabric.util.requestAnimFrame(render);
-            });
+            this.handlers.startRequestAnimFrame();
         },
         set: (obj, src) => {
             let newSrc;

@@ -1,26 +1,35 @@
 {
     "compilerOptions": {
-        "allowJs": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noImplicitReturns": true,
+        "noImplicitAny": true,
+        "declaration": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "strictNullChecks": false,
         "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "allowJs": true,
         "jsx": "react",
         "module": "esnext",
         "moduleResolution": "node",
-        "noEmit": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "preserveConstEnums": true,
-        "removeComments": false,
-        "skipLibCheck": true,
-        "sourceMap": true,
-        "strict": true,
         "target": "esnext",
-        "outDir": "./lib",
+        "outDir": "lib",
+        "lib": [
+            "dom",
+            "esnext"
+        ]
     },
     "include": [
-        "src/components/canvas/*"
+        "src/components/canvas/*", "src/components/canvas/objects/Arrow.js"
     ],
     "exclude": [
         "node_modules",
-        "**/node_modules/*"
+        "dist",
+        "lib"
     ]
 }
