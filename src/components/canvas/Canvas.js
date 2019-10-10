@@ -304,7 +304,7 @@ class Canvas extends Component {
             } else {
                 this.handlers.setByPartial(obj, {
                     left: (obj.left / this.canvas.getZoom()) - (obj.width / 2) - (this.canvas.viewportTransform[4] / this.canvas.getZoom()),
-                    top: (obj.top / this.canvas.getZoom()) - (obj.height / 2) - (this.canvas.viewportTransform[5] / this.canvas.getZoom())
+                    top: (obj.top / this.canvas.getZoom()) - (obj.height / 2) - (this.canvas.viewportTransform[5] / this.canvas.getZoom()),
                 });
             }
         },
@@ -348,14 +348,24 @@ class Canvas extends Component {
             } else {
                 createdObj = this.fabricObjects[obj.type].create(newOption);
             }
+            this.canvas.add(createdObj);
+            this.objects = this.handlers.getObjects();
             if (!editable && !this.handlers.isElementType(obj.type)) {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }
             if (createdObj.dbclick) {
                 createdObj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
             }
-            this.canvas.add(createdObj);
-            this.objects = this.handlers.getObjects();
+            if (this.handlers.isElementType(obj.type)) {
+                const { src, file, code } = createdObj;
+                if (src || file || code) {
+                    if (obj.type === 'video') {
+                        this.videoHandlers.set(createdObj, src || file);
+                    } else {
+                        this.elementHandlers.set(createdObj, src || code);
+                    }
+                }
+            }
             if (this.objects.some(object => object.type === 'chart' || object.type === 'video' || object.type === 'gif')) {
                 this.handlers.startRequestAnimFrame();
             } else {
@@ -464,13 +474,6 @@ class Canvas extends Component {
                 fill: 'rgba(255, 255, 255, 0)',
                 stroke: 'rgba(255, 255, 255, 0)',
             });
-            if (src || file || code) {
-                if (obj.type === 'video') {
-                    this.videoHandlers.set(createdObj, src || file);
-                } else {
-                    this.elementHandlers.set(createdObj, src || code);
-                }
-            }
             return createdObj;
         },
         addSVG: (obj, centered = true, loaded = false) => {
@@ -1966,7 +1969,6 @@ class Canvas extends Component {
         create: (obj, src) => {
             const { editable } = this.props;
             const { id, autoplay, muted, loop } = obj;
-            const { left, top } = obj.getBoundingRect();
             const videoElement = fabric.util.makeElement('video', {
                 id,
                 autoplay: editable ? false : autoplay,
@@ -1975,18 +1977,22 @@ class Canvas extends Component {
                 preload: 'none',
                 controls: false,
             });
-            const { scaleX, scaleY, angle } = obj;
             const zoom = this.canvas.getZoom();
-            const width = obj.width * scaleX * zoom;
-            const height = obj.height * scaleY * zoom;
+            const left = obj.calcCoords().tl.x;
+            const top = obj.calcCoords().tl.y;
+            const { scaleX, scaleY, width, height, angle } = obj;
+            const padLeft = ((width * scaleX * zoom) - width) / 2;
+            const padTop = ((height * scaleY * zoom) - height) / 2;
             const video = fabric.util.wrapElement(videoElement, 'div', {
-                id: `${obj.id}_container`,
-                style: `transform: rotate(${angle}deg);
+                id: `${id}_container`,
+                style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
                         width: ${width}px;
                         height: ${height}px;
-                        left: ${left}px;
-                        top: ${top}px;
-                        position: absolute;`,
+                        left: ${left + padLeft}px;
+                        top: ${top + padTop}px;
+                        position: absolute;
+                        user-select: ${editable ? 'none' : 'auto'};
+                        pointer-events: ${editable ? 'none' : 'auto'};`,
             });
             this.container.current.appendChild(video);
             const player = new MediaElementPlayer(obj.id, {
@@ -2001,13 +2007,6 @@ class Canvas extends Component {
             });
             player.setPlayerSize(width, height);
             player.setSrc(src.src);
-            if (editable) {
-                this.elementHandlers.draggable(video, obj);
-                video.addEventListener('mousedown', (e) => {
-                    this.canvas.setActiveObject(obj);
-                    this.canvas.renderAll();
-                }, false);
-            }
             obj.setCoords();
             obj.set('player', player);
         },
@@ -2065,27 +2064,30 @@ class Canvas extends Component {
                 this.elementHandlers.createElement(obj, source);
             }
         },
-        createElement: (obj, code) => {
+        createElement: (obj, code = {}) => {
             obj.set('code', code);
             const { editable } = this.props;
-            const { left, top } = obj.getBoundingRect();
-            const { id, scaleX, scaleY, angle } = obj;
+            const zoom = this.canvas.getZoom();
+            const left = obj.calcCoords().tl.x;
+            const top = obj.calcCoords().tl.y;
+            const { id, scaleX, scaleY, width, height, angle } = obj;
+            const padLeft = ((width * scaleX * zoom) - width) / 2;
+            const padTop = ((height * scaleY * zoom) - height) / 2;
             if (editable) {
                 this.elementHandlers.removeById(id);
                 this.elementHandlers.removeStyleById(id);
                 this.elementHandlers.removeScriptById(id);
             }
-            const zoom = this.canvas.getZoom();
-            const width = obj.width * scaleX * zoom;
-            const height = obj.height * scaleY * zoom;
             const element = fabric.util.makeElement('div', {
                 id: `${id}_container`,
-                style: `transform: rotate(${angle}deg);
+                style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
                         width: ${width}px;
                         height: ${height}px;
-                        left: ${left}px;
-                        top: ${top}px;
-                        position: absolute;`,
+                        left: ${left + padLeft}px;
+                        top: ${top + padTop}px;
+                        position: absolute;
+                        user-select: ${editable ? 'none' : 'auto'};
+                        pointer-events: ${editable ? 'none' : 'auto'};`,
             });
             const { html, css, js } = code;
             if (code.css && code.css.length) {
@@ -2104,50 +2106,38 @@ class Canvas extends Component {
                 element.appendChild(script);
             }
             element.innerHTML = html;
-            if (editable) {
-                this.elementHandlers.draggable(element, obj);
-                element.addEventListener('mousedown', (e) => {
-                    this.canvas.setActiveObject(obj);
-                    this.canvas.renderAll();
-                }, false);
-            }
             obj.setCoords();
         },
         createIFrame: (obj, src) => {
             obj.set('src', src);
             const { editable } = this.props;
-            const { id, scaleX, scaleY, angle } = obj;
+            const zoom = this.canvas.getZoom();
+            const left = obj.calcCoords().tl.x;
+            const top = obj.calcCoords().tl.y;
+            const { id, scaleX, scaleY, width, height, angle } = obj;
+            const padLeft = ((width * scaleX * zoom) - width) / 2;
+            const padTop = ((height * scaleY * zoom) - height) / 2;
             if (editable) {
                 this.elementHandlers.removeById(id);
             }
-            const { left, top } = obj.getBoundingRect();
             const iframeElement = fabric.util.makeElement('iframe', {
                 id,
                 src,
                 width: '100%',
                 height: '100%',
             });
-            const zoom = this.canvas.getZoom();
-            const width = obj.width * scaleX * zoom;
-            const height = obj.height * scaleY * zoom;
             const iframe = fabric.util.wrapElement(iframeElement, 'div', {
                 id: `${id}_container`,
-                style: `transform: rotate(${angle}deg);
+                style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
                         width: ${width}px;
                         height: ${height}px;
-                        left: ${left}px;
-                        top: ${top}px;
+                        left: ${left + padLeft}px;
+                        top: ${top + padTop}px;
                         position: absolute;
-                        z-index: 100000;`,
+                        user-select: ${editable ? 'none' : 'auto'};
+                        pointer-events: ${editable ? 'none' : 'auto'};`,
             });
             this.container.current.appendChild(iframe);
-            if (editable) {
-                this.elementHandlers.draggable(iframe, obj);
-                iframe.addEventListener('mousedown', (e) => {
-                    this.canvas.setActiveObject(obj);
-                    this.canvas.renderAll();
-                }, false);
-            }
             obj.setCoords();
         },
         findScriptById: id => document.getElementById(`${id}_script`),
@@ -2190,9 +2180,6 @@ class Canvas extends Component {
             }
             el.style.left = `${left}px`;
             el.style.top = `${top}px`;
-            el.style.transform = null;
-            el.setAttribute('data-x', 0);
-            el.setAttribute('data-y', 0);
             return el;
         },
         setSize: (el, width, height) => {
@@ -2203,55 +2190,20 @@ class Canvas extends Component {
             el.style.height = `${height}px`;
             return el;
         },
-        setScale: (el, x, y) => {
+        setScale: (el, scaleX, scaleY, obj) => {
             if (!el) {
                 return false;
             }
-            el.style.transform = `scale(${x}, ${y})`;
+            el.style.transform = `rotate(${obj.angle}deg) scale(${scaleX}, ${scaleY})`;
             return el;
         },
-        setZoom: (el, zoom) => {
+        setAngle: (el, angle, obj) => {
             if (!el) {
                 return false;
             }
-            el.style.zoom = zoom;
+            const zoom = this.canvas.getZoom();
+            el.style.transform = `rotate(${angle}deg) scale(${obj.scaleX * zoom}, ${obj.scaleY * zoom})`;
             return el;
-        },
-        draggable: (el, obj) => {
-            if (!el) {
-                return false;
-            }
-            return interact(el)
-                .draggable({
-                    restrict: {
-                        restriction: 'parent',
-                        // elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
-                    },
-                    onmove: (e) => {
-                        const { dx, dy, target } = e;
-                        // keep the dragged position in the data-x/data-y attributes
-                        const x = (parseFloat(target.getAttribute('data-x')) || 0) + dx;
-                        const y = (parseFloat(target.getAttribute('data-y')) || 0) + dy;
-                        // translate the element
-                        target.style.webkitTransform = `translate(${x}px, ${y}px)`;
-                        target.style.transform = `translate(${x}px, ${y}px)`;
-                        // update the posiion attributes
-                        target.setAttribute('data-x', x);
-                        target.setAttribute('data-y', y);
-                        // update canvas object the position
-                        obj.set({
-                            left: obj.left + dx,
-                            top: obj.top + dy,
-                        });
-                        obj.setCoords();
-                        this.canvas.renderAll();
-                    },
-                    onend: () => {
-                        if (this.props.onSelect) {
-                            this.props.onSelect(obj);
-                        }
-                    },
-                });
         },
     }
 
@@ -3534,13 +3486,16 @@ class Canvas extends Component {
             this.canvas.zoomToPoint(point, zoomRatio);
             this.canvas.getObjects().forEach((obj) => {
                 if (this.handlers.isElementType(obj.type)) {
-                    const width = obj.width * obj.scaleX * zoomRatio;
-                    const height = obj.height * obj.scaleY * zoomRatio;
                     const el = this.elementHandlers.findById(obj.id);
+                    const left = obj.calcCoords().tl.x;
+                    const top = obj.calcCoords().tl.y;
+                    const { scaleX, scaleY, width, height } = obj;
+                    const padLeft = ((width * scaleX * zoomRatio) - width) / 2;
+                    const padTop = ((height * scaleY * zoomRatio) - height) / 2;
                     // update the element
+                    this.elementHandlers.setScale(el, scaleX * zoomRatio, scaleY * zoomRatio, obj);
                     this.elementHandlers.setSize(el, width, height);
-                    const { left, top } = obj.getBoundingRect();
-                    this.elementHandlers.setPosition(el, left, top);
+                    this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
                     if (obj.type === 'video' && obj.player) {
                         obj.player.setPlayerSize(width, height);
                     }
@@ -4074,15 +4029,30 @@ class Canvas extends Component {
                         });
                     }
                 } else if (this.handlers.isElementType(target.type)) {
-                    const el = this.elementHandlers.findById(target.id);
-                    // update the element
-                    this.elementHandlers.setPosition(el, target.left, target.top);
+                    const { id, width, height, scaleX, scaleY } = target;
+                    const zoom = this.canvas.getZoom();
+                    const el = this.elementHandlers.findById(id);
+                    const left = target.calcCoords().tl.x;
+                    const top = target.calcCoords().tl.y;
+                    const padLeft = ((width * scaleX * zoom) - width) / 2;
+                    const padTop = ((height * scaleY * zoom) - height) / 2;
+                    this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
                 }
             }
         },
         moved: (opt) => {
             const { target } = opt;
             this.gridHandlers.setCoords(target);
+            if (this.handlers.isElementType(target.type)) {
+                const zoom = this.canvas.getZoom();
+                const { id, width, height, scaleX, scaleY } = target;
+                const el = this.elementHandlers.findById(id);
+                const left = target.calcCoords().tl.x;
+                const top = target.calcCoords().tl.y;
+                const padLeft = ((width * scaleX * zoom) - width) / 2;
+                const padTop = ((height * scaleY * zoom) - height) / 2;
+                this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
+            }
         },
         scaling: (opt) => {
             const { target } = opt;
@@ -4092,12 +4062,16 @@ class Canvas extends Component {
             // TODO...this.guidelineHandlers.scalingGuidelines(target);
             if (this.handlers.isElementType(target.type)) {
                 const zoom = this.canvas.getZoom();
-                const width = target.width * target.scaleX * zoom;
-                const height = target.height * target.scaleY * zoom;
                 const el = this.elementHandlers.findById(target.id);
+                const left = target.calcCoords().tl.x;
+                const top = target.calcCoords().tl.y;
+                const { scaleX, scaleY, width, height } = target;
+                const padLeft = ((width * scaleX * zoom) - width) / 2;
+                const padTop = ((height * scaleY * zoom) - height) / 2;
                 // update the element
+                this.elementHandlers.setScale(el, scaleX * zoom, scaleY * zoom, target);
                 this.elementHandlers.setSize(el, width, height);
-                this.elementHandlers.setPosition(el, target.left, target.top);
+                this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
                 if (target.type === 'video' && target.player) {
                     target.player.setPlayerSize(width, height);
                 }
@@ -4107,8 +4081,9 @@ class Canvas extends Component {
             const { target } = opt;
             if (this.handlers.isElementType(target.type)) {
                 const el = this.elementHandlers.findById(target.id);
+                const { angle } = target;
                 // update the element
-                el.style.transform = `rotate(${target.angle}deg)`;
+                this.elementHandlers.setAngle(el, angle, target);
             }
         },
         arrowmoving: (e) => {
@@ -4351,10 +4326,20 @@ class Canvas extends Component {
                 }
                 this.canvas.getObjects().forEach((obj, index) => {
                     if (index !== 0) {
-                        const left = obj.left + diffWidth;
-                        const top = obj.top + diffHeight;
-                        const el = this.elementHandlers.findById(obj.id);
-                        this.elementHandlers.setPosition(el, left, top);
+                        let left = obj.left + diffWidth;
+                        let top = obj.top + diffHeight;
+                        if (this.handlers.isElementType(obj.type)) {
+                            const zoom = this.canvas.getZoom();
+                            const el = this.elementHandlers.findById(obj.id);
+                            const { scaleX, scaleY, width, height } = obj;
+                            const padLeft = ((width * scaleX) - width) / 2;
+                            const padTop = ((height * scaleY) - height) / 2;
+                            // update the element
+                            this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
+                        } else {
+                            left = obj.left + diffWidth;
+                            top = obj.top + diffHeight;
+                        }
                         obj.set({
                             left,
                             top,
@@ -4386,19 +4371,6 @@ class Canvas extends Component {
                     y: center.top,
                 };
                 this.zoomHandlers.zoomToPoint(point, scaleX);
-                this.canvas.getObjects().forEach((obj) => {
-                    if (this.handlers.isElementType(obj.type)) {
-                        const width = obj.width * obj.scaleX * scaleX;
-                        const height = obj.height * obj.scaleY * scaleX;
-                        const { left, top } = obj.getBoundingRect();
-                        const el = this.elementHandlers.findById(obj.id);
-                        this.elementHandlers.setSize(el, width, height);
-                        this.elementHandlers.setPosition(el, left, top);
-                        if (obj.player) {
-                            obj.player.setPlayerSize(width, height);
-                        }
-                    }
-                });
                 this.canvas.renderAll();
                 return;
             }

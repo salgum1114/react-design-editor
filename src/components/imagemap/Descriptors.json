@@ -176,8 +176,8 @@
             "option": {
                 "type": "chart",
                 "name": "New chart",
-                "width": 256,
-                "height": 256
+                "width": 356,
+                "height": 356
             }
         }
     ],
