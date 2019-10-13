@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import i18n from 'i18next';
-import { Button } from 'antd';
 
 import { FlexBox, FlexItem } from '../flex';
 import CanvasList from '../canvas/CanvasList';
 import { CommonButton } from '../common';
-import Icon from '../icon/Icon';
 
 class ImageMapHeaderToolbar extends Component {
     static propTypes = {

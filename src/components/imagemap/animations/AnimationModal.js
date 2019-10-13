@@ -27,7 +27,7 @@ class AnimationModal extends Component {
     UNSAFE_componentWillReceiveProps(nextProps) {
         if (!nextProps.visible) {
             if (this.canvasRef) {
-                this.canvasRef.animationHandlers.stop('animations');
+                this.canvasRef.handler.animationHandler.stop('animations');
             }
             return;
         }

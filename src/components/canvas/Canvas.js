@@ -4,16 +4,13 @@ import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 import debounce from 'lodash/debounce';
-import 'mediaelement';
-import 'mediaelement/build/mediaelementplayer.min.css';
-import interact from 'interactjs';
 import anime from 'animejs';
 
 import CanvasObjects from './CanvasObjects';
 import OrthogonalLink from '../workflow/link/OrthogonalLink';
 import CurvedLink from '../workflow/link/CurvedLink';
 import { Arrow } from './objects';
-import { ImageHandler } from './handlers';
+import { Handler } from './handlers';
 
 import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
@@ -133,16 +130,23 @@ class Canvas extends Component {
 
     componentDidMount() {
         const { id } = this.state;
-        const { editable, canvasOption, guidelineOption } = this.props;
+        const { editable, canvasOption, guidelineOption, onContext, onTooltip } = this.props;
         const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption);
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
-        this.imageHandler = new ImageHandler({
-            canvas: this.canvas,
-        });
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
         this.workareaHandlers.init();
         this.canvas.renderAll();
         this.gridHandlers.init();
+        this.handler = new Handler({
+            id,
+            canvas: this.canvas,
+            workarea: this.workarea,
+            objects: this.objects,
+            container: this.container.current,
+            editable,
+            onContext,
+            onTooltip,
+        });
         const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
         if (editable) {
             this.transactionHandlers.init();
@@ -151,10 +155,6 @@ class Canvas extends Component {
             if (guidelineOption.enabled) {
                 this.guidelineHandlers.init();
             }
-            this.contextmenuRef = document.createElement('div');
-            this.contextmenuRef.id = `${id}_contextmenu`;
-            this.contextmenuRef.className = 'rde-contextmenu contextmenu-hidden';
-            document.body.appendChild(this.contextmenuRef);
             this.canvas.on({
                 'object:modified': modified,
                 'object:scaling': scaling,
@@ -172,10 +172,6 @@ class Canvas extends Component {
                 'after:render': guidelineOption.enabled ? afterRender : null,
             });
         } else {
-            this.tooltipRef = document.createElement('div');
-            this.tooltipRef.id = `${id}_tooltip`;
-            this.tooltipRef.className = 'rde-tooltip tooltip-hidden';
-            document.body.appendChild(this.tooltipRef);
             this.canvas.on({
                 'mouse:down': mousedown,
                 'mouse:move': mousemove,
@@ -262,8 +258,11 @@ class Canvas extends Component {
             });
         }
         this.handlers.clear(true);
-        if (this.tooltipRef) {
-            document.body.removeChild(this.tooltipRef);
+        if (this.handler.tooltipHandler.tooltipEl) {
+            document.body.removeChild(this.handler.tooltipHandler.tooltipEl);
+        }
+        if (this.handler.contextmenuHandler.contextmenuEl) {
+            document.body.removeChild(this.handler.contextmenuHandler.contextmenuEl);
         }
     }
 
@@ -341,6 +340,8 @@ class Canvas extends Component {
                 createdObj = this.handlers.addImage(newOption);
             } else if (this.handlers.isElementType(obj.type)) {
                 createdObj = this.handlers.addElement(newOption, centered, loaded);
+            } else if (obj.type === 'chart') {
+                createdObj = this.handlers.addChart(newOption, centered, loaded);
             } else if (obj.type === 'group') {
                 const objects = this.handlers.addGroup(newOption, centered, loaded);
                 const groupOption = Object.assign({}, newOption, { objects, name: 'New Group' });
@@ -360,16 +361,31 @@ class Canvas extends Component {
                 const { src, file, code } = createdObj;
                 if (src || file || code) {
                     if (obj.type === 'video') {
-                        this.videoHandlers.set(createdObj, src || file);
+                        this.handler.videoHandler.set(createdObj, src || file);
                     } else {
-                        this.elementHandlers.set(createdObj, src || code);
+                        this.handler.elementHandler.set(createdObj, src || code);
                     }
                 }
             }
+            if (createdObj.type === 'chart') {
+                this.handler.chartHandler.create(createdObj, {
+                    xAxis: {},
+                    yAxis: {},
+                    series: [
+                        {
+                            type: 'line',
+                            data: [
+                                [1, 2],
+                                [2, 3],
+                            ],
+                        }
+                    ]
+                });
+            }
             if (this.objects.some(object => object.type === 'chart' || object.type === 'video' || object.type === 'gif')) {
-                this.handlers.startRequestAnimFrame();
+                this.handler.startRequestAnimFrame();
             } else {
-                this.handlers.stopRequestAnimFrame();
+                this.handler.stopRequestAnimFrame();
             }
             if (
                 obj.superType !== 'drawing'
@@ -386,7 +402,7 @@ class Canvas extends Component {
                 }
             }
             if (!editable && createdObj.animation && createdObj.animation.autoplay) {
-                this.animationHandlers.play(createdObj.id);
+                this.handler.animationHandler.play(createdObj.id);
             }
             if (onAdd && editable && !loaded) {
                 onAdd(createdObj);
@@ -419,27 +435,10 @@ class Canvas extends Component {
                 ...defaultOptions,
                 ...otherOption,
             });
-            if (src) {
-                image.onload = () => {
-                    createdObj.set({
-                        filters: this.imageHandler.createFilters(filters),
-                    });
-                    this.handlers.setImage(createdObj, src);
-                };
-                image.src = src;
-            } else {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    image.onload = () => {
-                        createdObj.set({
-                            filters: this.imageHandler.createFilters(filters),
-                        });
-                        this.handlers.setImage(createdObj, file);
-                    };
-                    image.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
+            createdObj.set({
+                filters: this.handler.imageHandler.createFilters(filters),
+            });
+            this.handlers.setImage(createdObj, src || file);
             return createdObj;
         },
         addVideo: (obj) => {
@@ -495,7 +494,7 @@ class Canvas extends Component {
                         this.handlers.centerObject(createdObj, centered);
                     }
                     if (!editable && createdObj.animation && createdObj.animation.autoplay) {
-                        this.animationHandlers.play(createdObj.id);
+                        this.handler.animationHandler.play(createdObj.id);
                     }
                     if (onAdd && !loaded && editable) {
                         onAdd(obj);
@@ -512,6 +511,18 @@ class Canvas extends Component {
                     });
                 }
             });
+        },
+        addChart: (obj) => {
+            const { defaultOptions } = this.props;
+            const { chartOption, ...otherOption } = obj;
+            const createdObj = new fabric.Rect({
+                chartOption,
+                ...defaultOptions,
+                ...otherOption,
+                fill: 'rgba(255, 255, 255, 0)',
+                stroke: 'rgba(255, 255, 255, 0)',
+            });
+            return createdObj;
         },
         /**
          * Remove object
@@ -534,9 +545,7 @@ class Canvas extends Component {
             if (activeObject.type !== 'activeSelection') {
                 this.canvas.discardActiveObject();
                 if (this.handlers.isElementType(activeObject.type)) {
-                    this.elementHandlers.removeById(activeObject.id);
-                    this.elementHandlers.removeStyleById(activeObject.id);
-                    this.elementHandlers.removeScriptById(activeObject.id);
+                    this.handler.elementHandler.removeById(activeObject.id);
                 }
                 if (activeObject.superType === 'link') {
                     this.linkHandlers.remove(activeObject);
@@ -571,9 +580,7 @@ class Canvas extends Component {
                 this.canvas.discardActiveObject();
                 activeObjects.forEach((obj) => {
                     if (this.handlers.isElementType(obj.type)) {
-                        this.elementHandlers.removeById(obj.id);
-                        this.elementHandlers.removeStyleById(obj.id);
-                        this.elementHandlers.removeScriptById(obj.id);
+                        this.handler.elementHandler.removeById(obj.id);
                     } else if (obj.superType === 'node') {
                         if (obj.toPort) {
                             if (obj.toPort.links.length) {
@@ -1271,7 +1278,7 @@ class Canvas extends Component {
                 }
                 return prev;
             }, []);
-            this.elementHandlers.removeByIds(ids);
+            this.handler.elementHandler.removeByIds(ids);
             if (workarea) {
                 canvas.clear();
                 this.workarea = null;
@@ -1322,7 +1329,7 @@ class Canvas extends Component {
             canvas.renderAll();
         },
         isElementType: (type) => {
-            return type === 'video' || type === 'element' || type === 'iframe';
+            return type === 'video' || type === 'element' || type === 'iframe' || type === 'chart';
         },
         getOriginObjects: () => this.objects,
         findOriginById: (id) => {
@@ -1396,27 +1403,6 @@ class Canvas extends Component {
                 anchorEl.click();
                 anchorEl.remove();
             }
-        },
-        startRequestAnimFrame: () => {
-            if (!this.isRequsetAnimFrame) {
-                this.isRequsetAnimFrame = true;
-                const render = () => {
-                    this.canvas.renderAll();
-                    this.request = fabric.util.requestAnimFrame(render);
-                };
-                fabric.util.requestAnimFrame(render);
-            }
-        },
-        stopRequestAnimFrame: () => {
-            this.isRequsetAnimFrame = false;
-            const cancelRequestAnimFrame = (() => window.cancelAnimationFrame ||
-                window.webkitCancelRequestAnimationFrame ||
-                window.mozCancelRequestAnimationFrame ||
-                window.oCancelRequestAnimationFrame ||
-                window.msCancelRequestAnimationFrame ||
-                clearTimeout
-            )();
-            cancelRequestAnimFrame(this.request);
         },
     }
 
@@ -1718,495 +1704,6 @@ class Canvas extends Component {
         },
     }
 
-    animationHandlers = {
-        play: (id, hasControls) => {
-            const findObject = this.handlers.findById(id);
-            if (!findObject) {
-                return;
-            }
-            if (findObject.anime) {
-                findObject.anime.restart();
-                return;
-            }
-            if (findObject.animation.type === 'none') {
-                return;
-            }
-            const instance = this.animationHandlers.getAnimation(findObject, hasControls);
-            if (instance) {
-                findObject.set('anime', instance);
-                findObject.set({
-                    hasControls: false,
-                    lockMovementX: true,
-                    lockMovementY: true,
-                    hoverCursor: 'pointer',
-                });
-                this.canvas.requestRenderAll();
-                instance.play();
-            }
-        },
-        pause: (id) => {
-            const findObject = this.handlers.findById(id);
-            if (!findObject) {
-                return;
-            }
-            findObject.anime.pause();
-        },
-        stop: (id, hasControls = true) => {
-            const findObject = this.handlers.findById(id);
-            if (!findObject) {
-                return;
-            }
-            this.animationHandlers.initAnimation(findObject, hasControls);
-        },
-        restart: (id) => {
-            const findObject = this.handlers.findById(id);
-            if (!findObject) {
-                return;
-            }
-            if (!findObject.anime) {
-                return;
-            }
-            this.animationHandlers.stop(id);
-            this.animationHandlers.play(id);
-        },
-        initAnimation: (obj, hasControls = true) => {
-            if (!obj.anime) {
-                return;
-            }
-            let option;
-            if (this.props.editable) {
-                option = {
-                    anime: null,
-                    hasControls,
-                    lockMovementX: !hasControls,
-                    lockMovementY: !hasControls,
-                    hoverCursor: hasControls ? 'move' : 'pointer',
-                };
-            } else {
-                option = {
-                    anime: null,
-                    hasControls: false,
-                    lockMovementX: true,
-                    lockMovementY: true,
-                    hoverCursor: 'pointer',
-                };
-            }
-            anime.remove(obj);
-            const { type } = obj.animation;
-            if (type === 'fade') {
-                Object.assign(option, {
-                    opacity: obj.originOpacity,
-                    originOpacity: null,
-                });
-            } else if (type === 'bounce') {
-                if (obj.animation.bounce === 'vertical') {
-                    Object.assign(option, {
-                        top: obj.originTop,
-                        originTop: null,
-                    });
-                } else {
-                    Object.assign(option, {
-                        left: obj.originLeft,
-                        originLeft: null,
-                    });
-                }
-            } else if (type === 'shake') {
-                if (obj.animation.shake === 'vertical') {
-                    Object.assign(option, {
-                        top: obj.originTop,
-                        originTop: null,
-                    });
-                } else {
-                    Object.assign(option, {
-                        left: obj.originLeft,
-                        originLeft: null,
-                    });
-                }
-            } else if (type === 'scaling') {
-                Object.assign(option, {
-                    scaleX: obj.originScaleX,
-                    scaleY: obj.originScaleY,
-                    originScaleX: null,
-                    originScaleY: null,
-                });
-            } else if (type === 'rotation') {
-                Object.assign(option, {
-                    angle: obj.originAngle,
-                    originAngle: null,
-                });
-            } else if (type === 'flash') {
-                Object.assign(option, {
-                    fill: obj.originFill,
-                    stroke: obj.originStroke,
-                    originFill: null,
-                    origniStroke: null,
-                });
-            } else {
-                console.warn('Not supported type.');
-            }
-            obj.set(option);
-            this.canvas.renderAll();
-        },
-        getAnimation: (obj, hasControls) => {
-            const { delay = 100, duration = 100, autoplay = true, loop = true, type, ...other } = obj.animation;
-            const option = {
-                targets: obj,
-                delay,
-                loop,
-                autoplay,
-                duration,
-                direction: 'alternate',
-                begin: () => {
-                    obj.set({
-                        hasControls: false,
-                        lockMovementX: true,
-                        lockMovementY: true,
-                        hoverCursor: 'pointer',
-                    });
-                    this.canvas.requestRenderAll();
-                },
-                update: (e) => {
-                    if (type === 'flash') {
-                        // I do not know why it works. Magic code...
-                        const fill = e.animations[0].currentValue;
-                        const stroke = e.animations[1].currentValue;
-                        obj.set('fill', '');
-                        obj.set('fill', fill);
-                        obj.set('stroke', stroke);
-                    }
-                    obj.setCoords();
-                    this.canvas.requestRenderAll();
-                },
-                complete: () => {
-                    this.animationHandlers.initAnimation(obj, hasControls);
-                },
-            };
-            if (type === 'fade') {
-                const { opacity = 0 } = other;
-                obj.set('originOpacity', obj.opacity);
-                Object.assign(option, {
-                    opacity,
-                    easing: 'easeInQuad',
-                });
-            } else if (type === 'bounce') {
-                const { offset = 1 } = other;
-                if (other.bounce === 'vertical') {
-                    obj.set('originTop', obj.top);
-                    Object.assign(option, {
-                        top: obj.top + offset,
-                        easing: 'easeInQuad',
-                    });
-                } else {
-                    obj.set('originLeft', obj.left);
-                    Object.assign(option, {
-                        left: obj.left + offset,
-                        easing: 'easeInQuad',
-                    });
-                }
-            } else if (type === 'shake') {
-                const { offset = 1 } = other;
-                if (other.shake === 'vertical') {
-                    obj.set('originTop', obj.top);
-                    Object.assign(option, {
-                        top: obj.top + offset,
-                        delay: 0,
-                        elasticity: 1000,
-                        duration: 500,
-                    });
-                } else {
-                    obj.set('originLeft', obj.left);
-                    Object.assign(option, {
-                        left: obj.left + offset,
-                        delay: 0,
-                        elasticity: 1000,
-                        duration: 500,
-                    });
-                }
-            } else if (type === 'scaling') {
-                const { scale = 1 } = other;
-                obj.set('originScaleX', obj.scaleX);
-                obj.set('originScaleY', obj.scaleY);
-                const scaleX = obj.scaleX * scale;
-                const scaleY = obj.scaleY * scale;
-                Object.assign(option, {
-                    scaleX,
-                    scaleY,
-                    easing: 'easeInQuad',
-                });
-            } else if (type === 'rotation') {
-                obj.set('originAngle', obj.angle);
-                Object.assign(option, {
-                    angle: other.angle,
-                    easing: 'easeInQuad',
-                });
-            } else if (type === 'flash') {
-                const { fill = obj.fill, stroke = obj.stroke } = other;
-                obj.set('originFill', obj.fill);
-                obj.set('originStroke', obj.stroke);
-                Object.assign(option, {
-                    fill,
-                    stroke,
-                    easing: 'easeInQuad',
-                });
-            } else {
-                console.warn('Not supported type.');
-                return;
-            }
-            return anime(option);
-        },
-    }
-
-    videoHandlers = {
-        play: () => {
-
-        },
-        pause: () => {
-
-        },
-        stop: () => {
-
-        },
-        create: (obj, src) => {
-            const { editable } = this.props;
-            const { id, autoplay, muted, loop } = obj;
-            const videoElement = fabric.util.makeElement('video', {
-                id,
-                autoplay: editable ? false : autoplay,
-                muted: editable ? false : muted,
-                loop: editable ? false : loop,
-                preload: 'none',
-                controls: false,
-            });
-            const zoom = this.canvas.getZoom();
-            const left = obj.calcCoords().tl.x;
-            const top = obj.calcCoords().tl.y;
-            const { scaleX, scaleY, width, height, angle } = obj;
-            const padLeft = ((width * scaleX * zoom) - width) / 2;
-            const padTop = ((height * scaleY * zoom) - height) / 2;
-            const video = fabric.util.wrapElement(videoElement, 'div', {
-                id: `${id}_container`,
-                style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
-                        width: ${width}px;
-                        height: ${height}px;
-                        left: ${left + padLeft}px;
-                        top: ${top + padTop}px;
-                        position: absolute;
-                        user-select: ${editable ? 'none' : 'auto'};
-                        pointer-events: ${editable ? 'none' : 'auto'};`,
-            });
-            this.container.current.appendChild(video);
-            const player = new MediaElementPlayer(obj.id, {
-                pauseOtherPlayers: false,
-                videoWidth: '100%',
-                videoHeight: '100%',
-                success: (mediaeElement, originalNode, instance) => {
-                    if (editable) {
-                        instance.pause();
-                    }
-                },
-            });
-            player.setPlayerSize(width, height);
-            player.setSrc(src.src);
-            obj.setCoords();
-            obj.set('player', player);
-        },
-        load: (obj, src) => {
-            const { editable } = this.props;
-            if (editable) {
-                this.elementHandlers.removeById(obj.id);
-            }
-            this.videoHandlers.create(obj, src);
-            this.handlers.startRequestAnimFrame();
-        },
-        set: (obj, src) => {
-            let newSrc;
-            if (typeof src === 'string') {
-                obj.set('file', null);
-                obj.set('src', src);
-                newSrc = {
-                    src,
-                };
-                this.videoHandlers.load(obj, newSrc);
-            } else {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    obj.set('file', src);
-                    obj.set('src', e.target.result);
-                    newSrc = {
-                        src: e.target.result,
-                        type: src.type,
-                    };
-                    this.videoHandlers.load(obj, newSrc);
-                };
-                reader.readAsDataURL(src);
-            }
-        },
-    }
-
-    elementHandlers = {
-        setById: (id, source) => {
-            const findObject = this.handlers.findById(id);
-            if (!findObject) {
-                return;
-            }
-            if (findObject.type === 'video') {
-                this.videoHandlers.set(findObject, source);
-            } else if (findObject.type === 'element') {
-                this.elementHandlers.set(findObject, source);
-            } else if (findObject.type === 'iframe') {
-                this.elementHandlers.set(findObject, source);
-            }
-        },
-        set: (obj, source) => {
-            if (obj.type === 'iframe') {
-                this.elementHandlers.createIFrame(obj, source);
-            } else {
-                this.elementHandlers.createElement(obj, source);
-            }
-        },
-        createElement: (obj, code = {}) => {
-            obj.set('code', code);
-            const { editable } = this.props;
-            const zoom = this.canvas.getZoom();
-            const left = obj.calcCoords().tl.x;
-            const top = obj.calcCoords().tl.y;
-            const { id, scaleX, scaleY, width, height, angle } = obj;
-            const padLeft = ((width * scaleX * zoom) - width) / 2;
-            const padTop = ((height * scaleY * zoom) - height) / 2;
-            if (editable) {
-                this.elementHandlers.removeById(id);
-                this.elementHandlers.removeStyleById(id);
-                this.elementHandlers.removeScriptById(id);
-            }
-            const element = fabric.util.makeElement('div', {
-                id: `${id}_container`,
-                style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
-                        width: ${width}px;
-                        height: ${height}px;
-                        left: ${left + padLeft}px;
-                        top: ${top + padTop}px;
-                        position: absolute;
-                        user-select: ${editable ? 'none' : 'auto'};
-                        pointer-events: ${editable ? 'none' : 'auto'};`,
-            });
-            const { html, css, js } = code;
-            if (code.css && code.css.length) {
-                const styleElement = document.createElement('style');
-                styleElement.id = `${id}_style`;
-                styleElement.type = 'text/css';
-                styleElement.innerHTML = css;
-                document.head.appendChild(styleElement);
-            }
-            this.container.current.appendChild(element);
-            if (code.js && code.js.length) {
-                const script = document.createElement('script');
-                script.id = `${id}_script`;
-                script.type = 'text/javascript';
-                script.innerHTML = js;
-                element.appendChild(script);
-            }
-            element.innerHTML = html;
-            obj.setCoords();
-        },
-        createIFrame: (obj, src) => {
-            obj.set('src', src);
-            const { editable } = this.props;
-            const zoom = this.canvas.getZoom();
-            const left = obj.calcCoords().tl.x;
-            const top = obj.calcCoords().tl.y;
-            const { id, scaleX, scaleY, width, height, angle } = obj;
-            const padLeft = ((width * scaleX * zoom) - width) / 2;
-            const padTop = ((height * scaleY * zoom) - height) / 2;
-            if (editable) {
-                this.elementHandlers.removeById(id);
-            }
-            const iframeElement = fabric.util.makeElement('iframe', {
-                id,
-                src,
-                width: '100%',
-                height: '100%',
-            });
-            const iframe = fabric.util.wrapElement(iframeElement, 'div', {
-                id: `${id}_container`,
-                style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
-                        width: ${width}px;
-                        height: ${height}px;
-                        left: ${left + padLeft}px;
-                        top: ${top + padTop}px;
-                        position: absolute;
-                        user-select: ${editable ? 'none' : 'auto'};
-                        pointer-events: ${editable ? 'none' : 'auto'};`,
-            });
-            this.container.current.appendChild(iframe);
-            obj.setCoords();
-        },
-        findScriptById: id => document.getElementById(`${id}_script`),
-        findStyleById: id => document.getElementById(`${id}_style`),
-        findById: id => document.getElementById(`${id}_container`),
-        remove: (el) => {
-            if (!el) {
-                return;
-            }
-            this.container.current.removeChild(el);
-        },
-        removeStyleById: (id) => {
-            const style = this.elementHandlers.findStyleById(id);
-            if (!style) {
-                return;
-            }
-            document.head.removeChild(style);
-        },
-        removeScriptById: (id) => {
-            const style = this.elementHandlers.findScriptById(id);
-            if (!style) {
-                return;
-            }
-            document.head.removeChild(style);
-        },
-        removeById: (id) => {
-            const el = this.elementHandlers.findById(id);
-            this.elementHandlers.remove(el);
-        },
-        removeByIds: (ids) => {
-            ids.forEach((id) => {
-                this.elementHandlers.removeById(id);
-                this.elementHandlers.removeStyleById(id);
-                this.elementHandlers.removeScriptById(id);
-            });
-        },
-        setPosition: (el, left, top) => {
-            if (!el) {
-                return false;
-            }
-            el.style.left = `${left}px`;
-            el.style.top = `${top}px`;
-            return el;
-        },
-        setSize: (el, width, height) => {
-            if (!el) {
-                return false;
-            }
-            el.style.width = `${width}px`;
-            el.style.height = `${height}px`;
-            return el;
-        },
-        setScale: (el, scaleX, scaleY, obj) => {
-            if (!el) {
-                return false;
-            }
-            el.style.transform = `rotate(${obj.angle}deg) scale(${scaleX}, ${scaleY})`;
-            return el;
-        },
-        setAngle: (el, angle, obj) => {
-            if (!el) {
-                return false;
-            }
-            const zoom = this.canvas.getZoom();
-            el.style.transform = `rotate(${angle}deg) scale(${obj.scaleX * zoom}, ${obj.scaleY * zoom})`;
-            return el;
-        },
-    }
-
     workareaHandlers = {
         /**
          * Init workarea
@@ -2261,8 +1758,8 @@ class Canvas extends Component {
                     const objScaleY = !isFullscreen ? 1 : scaleY;
                     const objWidth = obj.width * objScaleX * canvas.getZoom();
                     const objHeight = obj.height * objScaleY * canvas.getZoom();
-                    const el = this.elementHandlers.findById(obj.id);
-                    this.elementHandlers.setSize(el, objWidth, objHeight);
+                    const el = this.handler.elementHandler.findById(obj.id);
+                    this.handler.elementHandler.setSize(el, objWidth, objHeight);
                     if (obj.player) {
                         obj.player.setPlayerSize(objWidth, objHeight);
                     }
@@ -2381,8 +1878,8 @@ class Canvas extends Component {
                             if (obj.id !== 'workarea') {
                                 const objWidth = obj.width * scaleX;
                                 const objHeight = obj.height * scaleY;
-                                const el = this.elementHandlers.findById(obj.id);
-                                this.elementHandlers.setSize(el, objWidth, objHeight);
+                                const el = this.handler.elementHandler.findById(obj.id);
+                                this.handler.elementHandler.setSize(el, objWidth, objHeight);
                                 if (obj.player) {
                                     obj.player.setPlayerSize(objWidth, objHeight);
                                 }
@@ -2485,8 +1982,8 @@ class Canvas extends Component {
                                 scaleY = layout !== 'fullscreen' ? 1 : scaleY;
                                 const objWidth = obj.width * scaleX;
                                 const objHeight = obj.height * scaleY;
-                                const el = this.elementHandlers.findById(obj.id);
-                                this.elementHandlers.setSize(el, width, height);
+                                const el = this.handler.elementHandler.findById(obj.id);
+                                this.handler.elementHandler.setSize(el, width, height);
                                 if (obj.player) {
                                     obj.player.setPlayerSize(objWidth, objHeight);
                                 }
@@ -2738,7 +2235,7 @@ class Canvas extends Component {
                 loop: 1,
                 delay: 0,
             };
-            this.animationHandlers.play(object.id, false);
+            this.handler.animationHandler.play(object.id, false);
         },
         highlightingNode: (object, duration = 500) => {
             const maxBlur = 50;
@@ -3486,16 +2983,16 @@ class Canvas extends Component {
             this.canvas.zoomToPoint(point, zoomRatio);
             this.canvas.getObjects().forEach((obj) => {
                 if (this.handlers.isElementType(obj.type)) {
-                    const el = this.elementHandlers.findById(obj.id);
+                    const { id, scaleX, scaleY, width, height, angle } = obj;
+                    const el = this.handler.elementHandler.findById(id);
                     const left = obj.calcCoords().tl.x;
                     const top = obj.calcCoords().tl.y;
-                    const { scaleX, scaleY, width, height } = obj;
                     const padLeft = ((width * scaleX * zoomRatio) - width) / 2;
                     const padTop = ((height * scaleY * zoomRatio) - height) / 2;
                     // update the element
-                    this.elementHandlers.setScale(el, scaleX * zoomRatio, scaleY * zoomRatio, obj);
-                    this.elementHandlers.setSize(el, width, height);
-                    this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
+                    this.handler.elementHandler.setScaleOrAngle(el, scaleX * zoomRatio, scaleY * zoomRatio, angle);
+                    this.handler.elementHandler.setSize(el, width, height);
+                    this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
                     if (obj.type === 'video' && obj.player) {
                         obj.player.setPlayerSize(width, height);
                     }
@@ -3558,80 +3055,6 @@ class Canvas extends Component {
             };
             this.zoomHandlers.zoomToPoint(point, zoomRatio);
         },
-    }
-
-    tooltipHandlers = {
-        show: debounce(async (target) => {
-            if (target.tooltip && target.tooltip.enabled) {
-                while (this.tooltipRef.hasChildNodes()) {
-                    this.tooltipRef.removeChild(this.tooltipRef.firstChild);
-                }
-                const tooltip = document.createElement('div');
-                tooltip.className = 'rde-tooltip-right';
-                let element = target.name;
-                const { onTooltip } = this.props;
-                if (onTooltip) {
-                    element = await onTooltip(this.tooltipRef, target);
-                    if (!element) {
-                        return;
-                    }
-                }
-                tooltip.innerHTML = element;
-                this.tooltipRef.appendChild(tooltip);
-                ReactDOM.render(element, tooltip);
-                this.tooltipRef.classList.remove('tooltip-hidden');
-                const zoom = this.canvas.getZoom();
-                const { clientHeight } = this.tooltipRef;
-                const { width, height, scaleX, scaleY } = target;
-                const { left, top } = target.getBoundingRect();
-                const { _offset: offset } = this.canvas.calcOffset();
-                const objWidthDiff = (width * scaleX) * zoom;
-                const objHeightDiff = (((height * scaleY) * zoom) / 2) - (clientHeight / 2);
-                const calcLeft = offset.left + left + objWidthDiff;
-                const calcTop = offset.top + top + objHeightDiff;
-                if (document.body.clientWidth <= (calcLeft + this.tooltipRef.offsetWidth)) {
-                    this.tooltipRef.style.left = `${left + offset.left - this.tooltipRef.offsetWidth}px`;
-                    tooltip.className = 'rde-tooltip-left';
-                } else {
-                    this.tooltipRef.style.left = `${calcLeft}px`;
-                }
-                this.tooltipRef.style.top = `${calcTop}px`;
-                this.target = target;
-            }
-        }, 100),
-        hide: debounce((target) => {
-            this.target = null;
-            if (this.tooltipRef) {
-                this.tooltipRef.classList.add('tooltip-hidden');
-            }
-        }, 100),
-    }
-
-    contextmenuHandlers = {
-        show: debounce(async (e, target) => {
-            const { onContext } = this.props;
-            while (this.contextmenuRef.hasChildNodes()) {
-                this.contextmenuRef.removeChild(this.contextmenuRef.firstChild);
-            }
-            const contextmenu = document.createElement('div');
-            contextmenu.className = 'rde-contextmenu-right';
-            const element = await onContext(this.contextmenuRef, e, target);
-            if (!element) {
-                return;
-            }
-            contextmenu.innerHTML = element;
-            this.contextmenuRef.appendChild(contextmenu);
-            ReactDOM.render(element, contextmenu);
-            this.contextmenuRef.classList.remove('contextmenu-hidden');
-            const { clientX: left, clientY: top } = e;
-            this.contextmenuRef.style.left = `${left}px`;
-            this.contextmenuRef.style.top = `${top}px`;
-        }),
-        hide: debounce((target) => {
-            if (this.contextmenuRef) {
-                this.contextmenuRef.classList.add('contextmenu-hidden');
-            }
-        }, 100),
     }
 
     guidelineHandlers = {
@@ -4031,12 +3454,12 @@ class Canvas extends Component {
                 } else if (this.handlers.isElementType(target.type)) {
                     const { id, width, height, scaleX, scaleY } = target;
                     const zoom = this.canvas.getZoom();
-                    const el = this.elementHandlers.findById(id);
+                    const el = this.handler.elementHandler.findById(id);
                     const left = target.calcCoords().tl.x;
                     const top = target.calcCoords().tl.y;
                     const padLeft = ((width * scaleX * zoom) - width) / 2;
                     const padTop = ((height * scaleY * zoom) - height) / 2;
-                    this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
+                    this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
                 }
             }
         },
@@ -4046,12 +3469,12 @@ class Canvas extends Component {
             if (this.handlers.isElementType(target.type)) {
                 const zoom = this.canvas.getZoom();
                 const { id, width, height, scaleX, scaleY } = target;
-                const el = this.elementHandlers.findById(id);
+                const el = this.handler.elementHandler.findById(id);
                 const left = target.calcCoords().tl.x;
                 const top = target.calcCoords().tl.y;
                 const padLeft = ((width * scaleX * zoom) - width) / 2;
                 const padTop = ((height * scaleY * zoom) - height) / 2;
-                this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
+                this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
             }
         },
         scaling: (opt) => {
@@ -4061,17 +3484,17 @@ class Canvas extends Component {
             }
             // TODO...this.guidelineHandlers.scalingGuidelines(target);
             if (this.handlers.isElementType(target.type)) {
+                const { id, scaleX, scaleY, width, height, angle } = target;
                 const zoom = this.canvas.getZoom();
-                const el = this.elementHandlers.findById(target.id);
+                const el = this.handler.elementHandler.findById(id);
                 const left = target.calcCoords().tl.x;
                 const top = target.calcCoords().tl.y;
-                const { scaleX, scaleY, width, height } = target;
                 const padLeft = ((width * scaleX * zoom) - width) / 2;
                 const padTop = ((height * scaleY * zoom) - height) / 2;
                 // update the element
-                this.elementHandlers.setScale(el, scaleX * zoom, scaleY * zoom, target);
-                this.elementHandlers.setSize(el, width, height);
-                this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
+                this.handler.elementHandler.setScaleOrAngle(el, scaleX * zoom, scaleY * zoom, angle);
+                this.handler.elementHandler.setSize(el, width, height);
+                this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
                 if (target.type === 'video' && target.player) {
                     target.player.setPlayerSize(width, height);
                 }
@@ -4080,10 +3503,11 @@ class Canvas extends Component {
         rotating: (opt) => {
             const { target } = opt;
             if (this.handlers.isElementType(target.type)) {
-                const el = this.elementHandlers.findById(target.id);
-                const { angle } = target;
+                const { id, scaleX, scaleY, angle } = target;
+                const zoom = this.canvas.getZoom();
+                const el = this.handler.elementHandler.findById(id);
                 // update the element
-                this.elementHandlers.setAngle(el, angle, target);
+                this.handler.elementHandler.setScaleOrAngle(el, scaleX * zoom, scaleY * zoom, angle);
             }
         },
         arrowmoving: (e) => {
@@ -4215,10 +3639,10 @@ class Canvas extends Component {
                 }
                 if (opt.target.id !== 'workarea') {
                     if (opt.target !== this.target) {
-                        this.tooltipHandlers.show(opt.target);
+                        this.handler.tooltipHandler.show(opt.target);
                     }
                 } else {
-                    this.tooltipHandlers.hide(opt.target);
+                    this.handler.tooltipHandler.hide(opt.target);
                 }
             }
             if (this.interactionMode === 'polygon') {
@@ -4282,7 +3706,7 @@ class Canvas extends Component {
         },
         mouseout: (opt) => {
             if (!opt.target) {
-                this.tooltipHandlers.hide();
+                this.handler.tooltipHandler.hide();
             }
         },
         selection: (opt) => {
@@ -4330,12 +3754,12 @@ class Canvas extends Component {
                         let top = obj.top + diffHeight;
                         if (this.handlers.isElementType(obj.type)) {
                             const zoom = this.canvas.getZoom();
-                            const el = this.elementHandlers.findById(obj.id);
+                            const el = this.handler.elementHandler.findById(obj.id);
                             const { scaleX, scaleY, width, height } = obj;
                             const padLeft = ((width * scaleX) - width) / 2;
                             const padTop = ((height * scaleY) - height) / 2;
                             // update the element
-                            this.elementHandlers.setPosition(el, left + padLeft, top + padTop);
+                            this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
                         } else {
                             left = obj.left + diffWidth;
                             top = obj.top + diffHeight;
@@ -4386,12 +3810,12 @@ class Canvas extends Component {
                     const top = obj.top * diffScaleY;
                     const width = obj.width * scaleX;
                     const height = obj.height * scaleY;
-                    const el = this.elementHandlers.findById(obj.id);
-                    this.elementHandlers.setSize(el, width, height);
+                    const el = this.handler.elementHandler.findById(obj.id);
+                    this.handler.elementHandler.setSize(el, width, height);
                     if (obj.player) {
                         obj.player.setPlayerSize(width, height);
                     }
-                    this.elementHandlers.setPosition(el, left, top);
+                    this.handler.elementHandler.setPosition(el, left, top);
                     const newScaleX = obj.scaleX * diffScaleX;
                     const newScaleY = obj.scaleY * diffScaleY;
                     obj.set({
@@ -4535,7 +3959,7 @@ class Canvas extends Component {
                 } else if (this.interactionMode === 'link') {
                     this.linkHandlers.finish();
                 }
-                this.tooltipHandlers.hide();
+                this.handler.tooltipHandler.hide();
             }
             if (this.canvas.wrapperEl !== document.activeElement) {
                 return false;
@@ -4581,11 +4005,11 @@ class Canvas extends Component {
                 if (target && target.type !== 'activeSelection') {
                     this.handlers.select(target);
                 }
-                this.contextmenuHandlers.show(e, target);
+                this.handler.contextmenuHandler.show(e, target);
             }
         },
         onmousedown: (e) => {
-            this.contextmenuHandlers.hide();
+            this.handler.contextmenuHandler.hide();
         },
     }
 

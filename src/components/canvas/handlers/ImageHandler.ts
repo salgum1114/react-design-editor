@@ -1,9 +1,7 @@
 import { fabric } from 'fabric';
 import isEqual from 'lodash/isEqual';
 
-import Handler, { HandlerOptions } from './Handler';
-
-export interface ImageHandlerOptions extends HandlerOptions {}
+import Handler from './Handler';
 
 export type GrayscaleModeType = 'average' | 'luminosity' | 'lightness';
 
@@ -110,43 +108,11 @@ const EMBOSS_MATRIX = [1, 1, 1, 1, 0.7, -1, -1, -1, -1];
  * @class ImageHandler
  * @extends {Handler}
  */
-class ImageHandler extends Handler {
-    constructor(options: ImageHandlerOptions) {
-        super(options);
-    }
+class ImageHandler {
+    handler?: Handler;
 
-    /**
-     * @description Init image filters
-     * @param {fabric.Image} [imageObj]
-     */
-    public initFilters = (imageObj?: fabric.Image): void => {
-        const obj = imageObj || this.canvas.getActiveObject() as fabric.Image;
-        this.applyGrayscale(true, 'average', obj);
-        this.applyInvert(false, obj);
-        this.applyRemoveColor(false, undefined, obj);
-        this.applySepia(false, obj);
-        this.applyBrownie(false, obj);
-        this.applyBrightness(false, undefined, obj);
-        this.applyContrast(false, undefined, obj);
-        this.applySaturation(false, undefined, obj);
-        this.applyNoise(false, undefined, obj);
-        this.applyVintage(false, obj);
-        this.applyPixelate(false, undefined, obj);
-        this.applyBlur(false, undefined, obj);
-        this.applySharpen(true, undefined, obj);
-        this.applyEmboss(false, undefined, obj);
-        this.applyTechnicolor(false, obj);
-        this.applyPolaroid(false, obj);
-        this.applyBlendColor(false, undefined, obj);
-        this.applyGamma(false, undefined, obj);
-        this.applyKodachrome(false, obj);
-        this.applyBlackWhite(false, obj);
-        this.applyBlendImage(false, undefined, obj);
-        this.applyHue(false, undefined, obj);
-        this.applyResize(false, undefined, obj);
-        this.applyTint(false, undefined, obj);
-        this.applyMask(false, undefined, obj);
-        this.applyMultiply(false, undefined, obj);
+    constructor(handler: Handler) {
+        this.handler = handler;
     }
 
     /**
@@ -254,7 +220,7 @@ class ImageHandler extends Handler {
      * @param {fabric.Image} [imageObj]
      */
     public applyFilterByType = (type: string, apply = true, value?: any, imageObj?: fabric.Image): void => {
-        const obj = imageObj || this.canvas.getActiveObject() as fabric.Image;
+        const obj = imageObj || this.handler.canvas.getActiveObject() as fabric.Image;
         const findIndex = FILTER_TYPES.findIndex((ft) => ft === type);
         if (obj.filters && findIndex > -1) {
             if (apply) {
@@ -267,7 +233,7 @@ class ImageHandler extends Handler {
                 obj.filters[findIndex] = false;
                 obj.applyFilters();
             }
-            this.canvas.requestRenderAll();
+            this.handler.canvas.requestRenderAll();
         }
     }
 
@@ -278,11 +244,11 @@ class ImageHandler extends Handler {
      * @param {fabric.IBaseFilter} filter
      */
     public applyFilter = (index: number, filter: fabric.IBaseFilter | boolean, imageObj?: fabric.Image): void => {
-        const obj = imageObj || this.canvas.getActiveObject() as fabric.Image;
+        const obj = imageObj || this.handler.canvas.getActiveObject() as fabric.Image;
         if (obj.filters) {
             obj.filters[index] = filter;
             obj.applyFilters();
-            this.canvas.requestRenderAll();
+            this.handler.canvas.requestRenderAll();
         }
     }
 
@@ -294,7 +260,7 @@ class ImageHandler extends Handler {
      * @param {any} value
      */
     public applyFilterValue = (index: number, prop: string, value: any, imageObj?: fabric.Image): void => {
-        const obj = imageObj || this.canvas.getActiveObject() as fabric.Image;
+        const obj = imageObj || this.handler.canvas.getActiveObject() as fabric.Image;
         if (obj.filters) {
             const filter = obj.filters[index];
             if (filter) {
@@ -302,7 +268,7 @@ class ImageHandler extends Handler {
                     [prop]: value,
                 });
                 obj.applyFilters();
-                this.canvas.requestRenderAll();
+                this.handler.canvas.requestRenderAll();
             }
         }
     }

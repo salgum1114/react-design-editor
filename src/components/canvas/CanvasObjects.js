@@ -1,6 +1,6 @@
 import { fabric } from 'fabric';
 
-import { Arrow, Chart, Gif } from './objects';
+import { Arrow, Gif } from './objects';
 
 export default (mergedObjects, defaultOptions) => {
     const fabricObjects = {
@@ -73,12 +73,6 @@ export default (mergedObjects, defaultOptions) => {
                 ...defaultOptions,
                 ...option,
                 points,
-            }),
-        },
-        chart: {
-            create: (option) => new Chart({
-                ...defaultOptions,
-                ...option,
             }),
         },
         gif: {
