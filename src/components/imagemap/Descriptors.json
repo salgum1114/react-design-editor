@@ -164,33 +164,33 @@
             }
         }
     ],
-    "CHART": [
+	"ELEMENT": [
         {
             "name": "Chart",
             "description": "",
-            "type": "chart",
+            "type": "element",
             "icon": {
                 "prefix": "fas",
                 "name": "chart-line"
             },
             "option": {
+                "superType": "element",
                 "type": "chart",
                 "name": "New chart",
                 "width": 356,
                 "height": 356
             }
-        }
-    ],
-	"ELEMENT": [
+        },
 		{
 			"name": "Element",
 			"description": "",
-			"type": "dom_element",
+			"type": "element",
 			"icon": {
                 "prefix": "fab",
                 "name": "html5"
             },
             "option": {
+                "superType": "element",
                 "type": "element",
                 "width": 480,
                 "height": 270,
@@ -200,12 +200,13 @@
         {
 			"name": "IFrame",
 			"description": "",
-			"type": "dom_element",
+			"type": "element",
 			"icon": {
                 "prefix": "fas",
                 "name": "window-maximize"
             },
             "option": {
+                "superType": "element",
                 "type": "iframe",
                 "width": 480,
                 "height": 270,
@@ -215,12 +216,13 @@
         {
 			"name": "Video",
 			"description": "",
-			"type": "dom_element",
+			"type": "element",
 			"icon": {
                 "prefix": "fab",
                 "name": "youtube"
             },
             "option": {
+                "superType": "element",
                 "type": "video",
                 "width": 480,
                 "height": 270,

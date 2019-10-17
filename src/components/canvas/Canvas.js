@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
-import debounce from 'lodash/debounce';
 import anime from 'animejs';
 
 import CanvasObjects from './CanvasObjects';
@@ -316,6 +314,8 @@ class Canvas extends Component {
                 lockMovementX: !editable,
                 lockMovementY: !editable,
                 hoverCursor: !editable ? 'pointer' : 'move',
+                editable,
+                container: this.container.current,
             };
             if (obj.type === 'i-text') {
                 option.editable = false;
@@ -338,10 +338,6 @@ class Canvas extends Component {
             // Create canvas object
             if (obj.type === 'image') {
                 createdObj = this.handlers.addImage(newOption);
-            } else if (this.handlers.isElementType(obj.type)) {
-                createdObj = this.handlers.addElement(newOption, centered, loaded);
-            } else if (obj.type === 'chart') {
-                createdObj = this.handlers.addChart(newOption, centered, loaded);
             } else if (obj.type === 'group') {
                 const objects = this.handlers.addGroup(newOption, centered, loaded);
                 const groupOption = Object.assign({}, newOption, { objects, name: 'New Group' });
@@ -351,38 +347,13 @@ class Canvas extends Component {
             }
             this.canvas.add(createdObj);
             this.objects = this.handlers.getObjects();
-            if (!editable && !this.handlers.isElementType(obj.type)) {
+            if (!editable && !this.handlers.isElementType(obj)) {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }
             if (createdObj.dbclick) {
                 createdObj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
             }
-            if (this.handlers.isElementType(obj.type)) {
-                const { src, file, code } = createdObj;
-                if (src || file || code) {
-                    if (obj.type === 'video') {
-                        this.handler.videoHandler.set(createdObj, src || file);
-                    } else {
-                        this.handler.elementHandler.set(createdObj, src || code);
-                    }
-                }
-            }
-            if (createdObj.type === 'chart') {
-                this.handler.chartHandler.create(createdObj, {
-                    xAxis: {},
-                    yAxis: {},
-                    series: [
-                        {
-                            type: 'line',
-                            data: [
-                                [1, 2],
-                                [2, 3],
-                            ],
-                        }
-                    ]
-                });
-            }
-            if (this.objects.some(object => object.type === 'chart' || object.type === 'video' || object.type === 'gif')) {
+            if (this.objects.some(object => object.type === 'gif')) {
                 this.handler.startRequestAnimFrame();
             } else {
                 this.handler.stopRequestAnimFrame();
@@ -441,40 +412,6 @@ class Canvas extends Component {
             this.handlers.setImage(createdObj, src || file);
             return createdObj;
         },
-        addVideo: (obj) => {
-            const { defaultOptions } = this.props;
-            const video = document.createElement('video');
-            const { src, file, ...other } = obj;
-            const createdObj = new fabric.Image(video, {
-                src,
-                file,
-                ...defaultOptions,
-                ...other,
-            });
-            if (src) {
-                video.src = src;
-            } else {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    video.src = e.target.result;
-                };
-            }
-            return createdObj;
-        },
-        addElement: (obj) => {
-            const { defaultOptions } = this.props;
-            const { src, file, code, ...otherOption } = obj;
-            const createdObj = new fabric.Rect({
-                src,
-                file,
-                code,
-                ...defaultOptions,
-                ...otherOption,
-                fill: 'rgba(255, 255, 255, 0)',
-                stroke: 'rgba(255, 255, 255, 0)',
-            });
-            return createdObj;
-        },
         addSVG: (obj, centered = true, loaded = false) => {
             const { defaultOptions } = this.props;
             return new Promise((resolve) => {
@@ -484,7 +421,7 @@ class Canvas extends Component {
                     this.canvas.add(createdObj);
                     this.objects = this.handlers.getObjects();
                     const { onAdd, editable } = this.props;
-                    if (!editable && !this.handlers.isElementType(obj.type)) {
+                    if (!editable && !this.handlers.isElementType(obj)) {
                         createdObj.on('mousedown', this.eventHandlers.object.mousedown);
                     }
                     if (createdObj.dbclick) {
@@ -512,18 +449,6 @@ class Canvas extends Component {
                 }
             });
         },
-        addChart: (obj) => {
-            const { defaultOptions } = this.props;
-            const { chartOption, ...otherOption } = obj;
-            const createdObj = new fabric.Rect({
-                chartOption,
-                ...defaultOptions,
-                ...otherOption,
-                fill: 'rgba(255, 255, 255, 0)',
-                stroke: 'rgba(255, 255, 255, 0)',
-            });
-            return createdObj;
-        },
         /**
          * Remove object
          *
@@ -544,7 +469,7 @@ class Canvas extends Component {
             }
             if (activeObject.type !== 'activeSelection') {
                 this.canvas.discardActiveObject();
-                if (this.handlers.isElementType(activeObject.type)) {
+                if (this.handlers.isElementType(activeObject)) {
                     this.handler.elementHandler.removeById(activeObject.id);
                 }
                 if (activeObject.superType === 'link') {
@@ -579,7 +504,7 @@ class Canvas extends Component {
                 }
                 this.canvas.discardActiveObject();
                 activeObjects.forEach((obj) => {
-                    if (this.handlers.isElementType(obj.type)) {
+                    if (this.handlers.isElementType(obj)) {
                         this.handler.elementHandler.removeById(obj.id);
                     } else if (obj.superType === 'node') {
                         if (obj.toPort) {
@@ -781,7 +706,7 @@ class Canvas extends Component {
                             this.handlers.copyToClipboard(JSON.stringify(objects, null, '\t'));
                             return;
                         }
-                        this.handlers.copyToClipboard(JSON.stringify(cloned.toObject(this.props.propertiesToInclude), null, '\t'));
+                        this.handlers.copyToClipboard(JSON.stringify(cloned.toObject(propertiesToInclude), null, '\t'));
                         return;
                     }
                     this.setState({
@@ -1086,7 +1011,7 @@ class Canvas extends Component {
                     return false;
                 } else if (obj.superType === 'port') {
                     return false;
-                } else if (this.handlers.isElementType(obj.type)) {
+                } else if (this.handlers.isElementType(obj)) {
                     return false;
                 } else if (obj.lock) {
                     return false;
@@ -1200,7 +1125,7 @@ class Canvas extends Component {
                         obj.left += diffLeft;
                         obj.top += diffTop;
                     }
-                    if (this.handlers.isElementType(obj.type)) {
+                    if (this.handlers.isElementType(obj)) {
                         obj.id = uuid();
                     }
                     this.handlers.add(obj, false, true);
@@ -1272,7 +1197,7 @@ class Canvas extends Component {
         clear: (workarea = false) => {
             const { canvas } = this;
             const ids = canvas.getObjects().reduce((prev, curr) => {
-                if (this.handlers.isElementType(curr.type)) {
+                if (this.handlers.isElementType(curr)) {
                     prev.push(curr.id);
                     return prev;
                 }
@@ -1328,9 +1253,7 @@ class Canvas extends Component {
             }
             canvas.renderAll();
         },
-        isElementType: (type) => {
-            return type === 'video' || type === 'element' || type === 'iframe' || type === 'chart';
-        },
+        isElementType: obj => obj.superType === 'element',
         getOriginObjects: () => this.objects,
         findOriginById: (id) => {
             let findObject;
@@ -2982,17 +2905,13 @@ class Canvas extends Component {
             }
             this.canvas.zoomToPoint(point, zoomRatio);
             this.canvas.getObjects().forEach((obj) => {
-                if (this.handlers.isElementType(obj.type)) {
-                    const { id, scaleX, scaleY, width, height, angle } = obj;
+                if (this.handlers.isElementType(obj)) {
+                    const { id, width, height } = obj;
                     const el = this.handler.elementHandler.findById(id);
-                    const left = obj.calcCoords().tl.x;
-                    const top = obj.calcCoords().tl.y;
-                    const padLeft = ((width * scaleX * zoomRatio) - width) / 2;
-                    const padTop = ((height * scaleY * zoomRatio) - height) / 2;
                     // update the element
-                    this.handler.elementHandler.setScaleOrAngle(el, scaleX * zoomRatio, scaleY * zoomRatio, angle);
-                    this.handler.elementHandler.setSize(el, width, height);
-                    this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
+                    this.handler.elementHandler.setScaleOrAngle(el, obj);
+                    this.handler.elementHandler.setSize(el, obj);
+                    this.handler.elementHandler.setPosition(el, obj);
                     if (obj.type === 'video' && obj.player) {
                         obj.player.setPlayerSize(width, height);
                     }
@@ -3451,30 +3370,20 @@ class Canvas extends Component {
                             top: target.top + 5,
                         });
                     }
-                } else if (this.handlers.isElementType(target.type)) {
-                    const { id, width, height, scaleX, scaleY } = target;
-                    const zoom = this.canvas.getZoom();
+                } else if (this.handlers.isElementType(target)) {
+                    const { id } = target;
                     const el = this.handler.elementHandler.findById(id);
-                    const left = target.calcCoords().tl.x;
-                    const top = target.calcCoords().tl.y;
-                    const padLeft = ((width * scaleX * zoom) - width) / 2;
-                    const padTop = ((height * scaleY * zoom) - height) / 2;
-                    this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
+                    this.handler.elementHandler.setPosition(el, target);
                 }
             }
         },
         moved: (opt) => {
             const { target } = opt;
             this.gridHandlers.setCoords(target);
-            if (this.handlers.isElementType(target.type)) {
-                const zoom = this.canvas.getZoom();
-                const { id, width, height, scaleX, scaleY } = target;
+            if (this.handlers.isElementType(target)) {
+                const { id } = target;
                 const el = this.handler.elementHandler.findById(id);
-                const left = target.calcCoords().tl.x;
-                const top = target.calcCoords().tl.y;
-                const padLeft = ((width * scaleX * zoom) - width) / 2;
-                const padTop = ((height * scaleY * zoom) - height) / 2;
-                this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
+                this.handler.elementHandler.setPosition(el, target);
             }
         },
         scaling: (opt) => {
@@ -3483,18 +3392,13 @@ class Canvas extends Component {
                 this.cropHandlers.resize(opt);
             }
             // TODO...this.guidelineHandlers.scalingGuidelines(target);
-            if (this.handlers.isElementType(target.type)) {
-                const { id, scaleX, scaleY, width, height, angle } = target;
-                const zoom = this.canvas.getZoom();
+            if (this.handlers.isElementType(target)) {
+                const { id, width, height } = target;
                 const el = this.handler.elementHandler.findById(id);
-                const left = target.calcCoords().tl.x;
-                const top = target.calcCoords().tl.y;
-                const padLeft = ((width * scaleX * zoom) - width) / 2;
-                const padTop = ((height * scaleY * zoom) - height) / 2;
                 // update the element
-                this.handler.elementHandler.setScaleOrAngle(el, scaleX * zoom, scaleY * zoom, angle);
-                this.handler.elementHandler.setSize(el, width, height);
-                this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
+                this.handler.elementHandler.setScaleOrAngle(el, target);
+                this.handler.elementHandler.setSize(el, target);
+                this.handler.elementHandler.setPosition(el, target);
                 if (target.type === 'video' && target.player) {
                     target.player.setPlayerSize(width, height);
                 }
@@ -3502,12 +3406,11 @@ class Canvas extends Component {
         },
         rotating: (opt) => {
             const { target } = opt;
-            if (this.handlers.isElementType(target.type)) {
-                const { id, scaleX, scaleY, angle } = target;
-                const zoom = this.canvas.getZoom();
+            if (this.handlers.isElementType(target)) {
+                const { id } = target;
                 const el = this.handler.elementHandler.findById(id);
                 // update the element
-                this.handler.elementHandler.setScaleOrAngle(el, scaleX * zoom, scaleY * zoom, angle);
+                this.handler.elementHandler.setScaleOrAngle(el, target);
             }
         },
         arrowmoving: (e) => {
@@ -3634,7 +3537,7 @@ class Canvas extends Component {
                 return;
             }
             if (!this.props.editable && opt.target) {
-                if (this.handlers.isElementType(opt.target.type)) {
+                if (this.handlers.isElementType(opt.target)) {
                     return false;
                 }
                 if (opt.target.id !== 'workarea') {
@@ -3750,25 +3653,19 @@ class Canvas extends Component {
                 }
                 this.canvas.getObjects().forEach((obj, index) => {
                     if (index !== 0) {
-                        let left = obj.left + diffWidth;
-                        let top = obj.top + diffHeight;
-                        if (this.handlers.isElementType(obj.type)) {
-                            const zoom = this.canvas.getZoom();
-                            const el = this.handler.elementHandler.findById(obj.id);
-                            const { scaleX, scaleY, width, height } = obj;
-                            const padLeft = ((width * scaleX) - width) / 2;
-                            const padTop = ((height * scaleY) - height) / 2;
-                            // update the element
-                            this.handler.elementHandler.setPosition(el, left + padLeft, top + padTop);
-                        } else {
-                            left = obj.left + diffWidth;
-                            top = obj.top + diffHeight;
-                        }
+                        const left = obj.left + diffWidth;
+                        const top = obj.top + diffHeight;
                         obj.set({
                             left,
                             top,
                         });
                         obj.setCoords();
+                        if (this.handlers.isElementType(obj)) {
+                            const { id } = obj;
+                            const el = this.handler.elementHandler.findById(id);
+                            // update the element
+                            this.handler.elementHandler.setPosition(el, obj);
+                        }
                     }
                 });
                 this.canvas.renderAll();
@@ -3805,17 +3702,10 @@ class Canvas extends Component {
                 scaleY,
             });
             this.canvas.getObjects().forEach((obj) => {
+                const { id } = obj;
                 if (obj.id !== 'workarea') {
                     const left = obj.left * diffScaleX;
                     const top = obj.top * diffScaleY;
-                    const width = obj.width * scaleX;
-                    const height = obj.height * scaleY;
-                    const el = this.handler.elementHandler.findById(obj.id);
-                    this.handler.elementHandler.setSize(el, width, height);
-                    if (obj.player) {
-                        obj.player.setPlayerSize(width, height);
-                    }
-                    this.handler.elementHandler.setPosition(el, left, top);
                     const newScaleX = obj.scaleX * diffScaleX;
                     const newScaleY = obj.scaleY * diffScaleY;
                     obj.set({
@@ -3825,6 +3715,15 @@ class Canvas extends Component {
                         top,
                     });
                     obj.setCoords();
+                    if (this.handlers.isElementType(obj)) {
+                        const { width, height } = obj;
+                        const el = this.handler.elementHandler.findById(id);
+                        this.handler.elementHandler.setSize(el, obj);
+                        if (obj.player) {
+                            obj.player.setPlayerSize(width, height);
+                        }
+                        this.handler.elementHandler.setPosition(el, obj);
+                    }
                 }
             });
             this.canvas.renderAll();

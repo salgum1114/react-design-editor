@@ -1,8 +1,14 @@
 import { fabric } from 'fabric';
 
 import Handler from './Handler';
+import { VideoObject } from '../objects/Video';
+import { ChartObject } from '../objects/Chart';
+import { IFrameObject } from '../objects/IFrame';
+import { ElementObject } from '../objects/Element';
 
 export type ElementType = 'container' | 'script' | 'style';
+
+export type ElementObjectType = VideoObject | ChartObject | IFrameObject | ElementObject;
 
 export interface ElementCode {
     html?: string;
@@ -24,17 +30,11 @@ class ElementHandler {
      * @returns {void}
      */
     public setById = (id: string, source: any): void => {
-        const obj = this.handler.findById(id);
+        const obj = this.handler.findById(id) as ElementObjectType;
         if (!obj) {
             return;
         }
-        if (obj.type === 'video') {
-            this.handler.videoHandler.set(obj, source);
-        } else if (obj.type === 'element') {
-            this.set(obj, source);
-        } else if (obj.type === 'iframe') {
-            this.set(obj, source);
-        }
+        this.set(obj, source);
     }
 
     /**
@@ -42,108 +42,26 @@ class ElementHandler {
      * @param {fabric.Object} obj
      * @param {*} source
      */
-    public set = (obj: fabric.Object, source: any) => {
-        if (obj.type === 'iframe') {
-            this.createIFrame(obj, source);
-        } else {
-            this.createElement(obj, source);
-        }
+    public set = (obj: ElementObjectType, source: any) => {
+        obj.setSource(source);
     }
 
     /**
-     * @description Create element
-     * @param {fabric.Object} obj
-     * @param {ElementCode} [code={}]
+     * @description Find element by id with type
+     * @param {string} id
+     * @param {ElementType} [type='container']
+     * @returns
      */
-    createElement = (obj: fabric.Object, code: ElementCode = {}) => {
-        obj.set('code', code);
-        const { editable } = this.handler;
-        const zoom = this.handler.canvas.getZoom();
-        const left = obj.calcCoords().tl.x;
-        const top = obj.calcCoords().tl.y;
-        const { id, scaleX, scaleY, width, height, angle } = obj;
-        const padLeft = ((width * scaleX * zoom) - width) / 2;
-        const padTop = ((height * scaleY * zoom) - height) / 2;
-        if (editable) {
-            this.removeById(id);
-        }
-        const element = fabric.util.makeElement('div', {
-            id: `${id}_container`,
-            style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
-                    width: ${width}px;
-                    height: ${height}px;
-                    left: ${left + padLeft}px;
-                    top: ${top + padTop}px;
-                    position: absolute;
-                    user-select: ${editable ? 'none' : 'auto'};
-                    pointer-events: ${editable ? 'none' : 'auto'};`,
-        });
-        const { html, css, js } = code;
-        if (code.css && code.css.length) {
-            const styleEl = document.createElement('style');
-            styleEl.id = `${id}_style`;
-            styleEl.type = 'text/css';
-            styleEl.innerHTML = css;
-            document.head.appendChild(styleEl);
-        }
-        this.handler.container.appendChild(element);
-        if (code.js && code.js.length) {
-            const scriptEl = document.createElement('script');
-            scriptEl.id = `${id}_script`;
-            scriptEl.type = 'text/javascript';
-            scriptEl.innerHTML = js;
-            document.head.appendChild(scriptEl);
-        }
-        element.innerHTML = html;
-        obj.setCoords();
+    public findById = (id: string, type: ElementType = 'container') => {
+        return document.getElementById(`${id}_${type}`);
     }
 
     /**
-     * @description Create IFrame
-     * @param {fabric.Object} obj
-     * @param {string} src
-     */
-    createIFrame = (obj: fabric.Object, src: string) => {
-        obj.set('src', src);
-        const { editable } = this.handler;
-        const zoom = this.handler.canvas.getZoom();
-        const left = obj.calcCoords().tl.x;
-        const top = obj.calcCoords().tl.y;
-        const { id, scaleX, scaleY, width, height, angle } = obj;
-        const padLeft = ((width * scaleX * zoom) - width) / 2;
-        const padTop = ((height * scaleY * zoom) - height) / 2;
-        if (editable) {
-            this.removeById(id);
-        }
-        const iframeElement = fabric.util.makeElement('iframe', {
-            id,
-            src,
-            width: '100%',
-            height: '100%',
-        });
-        const iframe = fabric.util.wrapElement(iframeElement, 'div', {
-            id: `${id}_container`,
-            style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
-                    width: ${width}px;
-                    height: ${height}px;
-                    left: ${left + padLeft}px;
-                    top: ${top + padTop}px;
-                    position: absolute;
-                    user-select: ${editable ? 'none' : 'auto'};
-                    pointer-events: ${editable ? 'none' : 'auto'};`,
-        });
-        this.handler.container.appendChild(iframe);
-        obj.setCoords();
-    }
-
-    findById = (id: string, type: ElementType = 'container') => document.getElementById(`${id}_${type}`);
-
-    /**
-     * @description
+     * @description Remove element
      * @param {HTMLElement} el
      * @returns
      */
-    remove = (el: HTMLElement) => {
+    public remove = (el: HTMLElement) => {
         if (!el) {
             return;
         }
@@ -151,10 +69,10 @@ class ElementHandler {
     }
 
     /**
-     * @description
+     * @description Remove element by id
      * @param {string} id
      */
-    removeById = (id: string) => {
+    public removeById = (id: string) => {
         const el = this.findById(id);
         const scriptEl = this.findById(id, 'script');
         const styleEl = this.findById(id, 'style');
@@ -182,58 +100,67 @@ class ElementHandler {
     }
 
     /**
-     * @description
+     * @description Remove element by ids
      * @param {string[]} ids
      */
-    removeByIds = (ids: string[]) => {
+    public removeByIds = (ids: string[]) => {
         ids.forEach(id => {
             this.removeById(id);
         });
     }
 
     /**
-     * @description
+     * @description Set position
      * @param {HTMLElement} el
      * @param {number} left
      * @param {number} top
      * @returns
      */
-    setPosition = (el: HTMLElement, left: number, top: number) => {
+    public setPosition = (el: HTMLElement, obj: fabric.Object) => {
         if (!el) {
             return;
         }
-        el.style.left = `${left}px`;
-        el.style.top = `${top}px`;
+        const zoom = this.handler.canvas.getZoom();
+        const { scaleX, scaleY, width, height } = obj;
+        const left = obj.calcCoords().tl.x;
+        const top = obj.calcCoords().tl.y;
+        const padLeft = ((width * scaleX * zoom) - width) / 2;
+        const padTop = ((height * scaleY * zoom) - height) / 2;
+        el.style.left = `${left + padLeft}px`;
+        el.style.top = `${top + padTop}px`;
     }
 
     /**
-     * @description
+     * @description Set size
      * @param {HTMLElement} el
      * @param {number} width
      * @param {number} height
      * @returns
      */
-    setSize = (el: HTMLElement, width: number, height: number) => {
+    public setSize = (el: HTMLElement, obj: fabric.Object) => {
         if (!el) {
             return;
         }
+        const { width, height } = obj;
         el.style.width = `${width}px`;
         el.style.height = `${height}px`;
     }
 
     /**
-     * @description
+     * @description Set scale or angle
      * @param {HTMLElement} el
      * @param {number} scaleX
      * @param {number} scaleY
      * @param {number} angle
      * @returns
      */
-    setScaleOrAngle = (el: HTMLElement, scaleX: number, scaleY: number, angle: number) => {
+    public setScaleOrAngle = (el: HTMLElement, obj: fabric.Object) => {
         if (!el) {
             return;
         }
-        el.style.transform = `rotate(${angle}deg) scale(${scaleX}, ${scaleY})`;
+        const zoom = this.handler.canvas.getZoom();
+        const { scaleX, scaleY, angle } = obj;
+        el.style.transform = `rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom})`;
     }
 }
 

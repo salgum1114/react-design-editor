@@ -1,6 +1,6 @@
 import { fabric } from 'fabric';
 
-import { Arrow, Gif } from './objects';
+import { Arrow, Gif, Chart, Element, IFrame, Video } from './objects';
 
 export default (mergedObjects, defaultOptions) => {
     const fabricObjects = {
@@ -47,13 +47,6 @@ export default (mergedObjects, defaultOptions) => {
                 crossOrigin: true,
             }),
         },
-        video: {
-            create: ({ element, ...option }) => new fabric.Image(element, {
-                ...defaultOptions,
-                ...option,
-                crossOrigin: true,
-            }),
-        },
         polygon: {
             create: ({ points, ...option }) => new fabric.Polygon(points, {
                 ...defaultOptions,
@@ -74,6 +67,32 @@ export default (mergedObjects, defaultOptions) => {
                 ...option,
                 points,
             }),
+        },
+        chart: {
+            create: ({ chartOption = {
+                xAxis: {},
+                yAxis: {},
+                series: [
+                    {
+                        type: 'line',
+                        data: [
+                            [1, 2],
+                            [2, 3],
+                        ],
+                    },
+                ],
+            }, ...option }) => {
+                return new Chart(chartOption, Object.assign({}, defaultOptions, option));
+            },
+        },
+        element: {
+            create: ({ code, ...option }) => new Element(code, Object.assign({}, defaultOptions, option)),
+        },
+        iframe: {
+            create: ({ src, ...option }) => new IFrame(src, Object.assign({}, defaultOptions, option)),
+        },
+        video: {
+            create: ({ src, file, ...option }) => new Video(src || file, Object.assign({}, defaultOptions, option)),
         },
         gif: {
             create: (option) => new Gif({
