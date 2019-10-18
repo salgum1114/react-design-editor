@@ -51,9 +51,9 @@ const defaultOptions = {
     stroke: 'rgba(255, 255, 255, 0)',
     strokeUniform: true,
     resource: {},
-    centeredRotation: true,
-    originX: 'center',
-    originY: 'center',
+    // centeredRotation: true,
+    // originX: 'center',
+    // originY: 'center',
     link: {
         enabled: false,
         type: 'resource',
@@ -320,6 +320,15 @@ class ImageMapEditor extends Component {
                     return;
                 }
                 this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey]);
+                return;
+            }
+            if (changedKey === 'chartOption') {
+                try {
+                    const chartOption = JSON.parse(changedValue);
+                    this.canvasRef.handler.elementHandler.setById(selectedItem.id, chartOption);
+                } catch (error) {
+                    console.error(error);
+                }
                 return;
             }
             this.canvasRef.handlers.set(changedKey, changedValue);

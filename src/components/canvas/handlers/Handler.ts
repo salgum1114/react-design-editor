@@ -11,6 +11,7 @@ import {
     ContextmenuHandler,
     TooltipHandler,
 } from '.';
+import { FabricObject, FabricImage } from '../utils';
 
 export interface HandlerOptions {
     id: string;
@@ -84,9 +85,9 @@ class Handler implements HandlerOptions {
 
     /**
      * @description Get primary object
-     * @returns {fabric.Object[]}
+     * @returns {FabricObject[]}
      */
-    public getObjects = (): fabric.Object[] => this.canvas.getObjects().filter(obj => {
+    public getObjects = (): FabricObject[] => this.canvas.getObjects().filter((obj: FabricObject) => {
         if (obj.id === 'workarea') {
             return false;
         } else if (obj.id === 'grid') {
@@ -97,39 +98,33 @@ class Handler implements HandlerOptions {
             return false;
         }
         return true;
-    })
+    });
 
     /**
      * @description Set the image
      * @param {fabric.Image} obj
-     * @param {*} src
+     * @param {*} source
      * @returns
      */
-    public setImage = (obj: fabric.Image, src: any) => {
-       if (!src) {
+    public setImage = (obj: FabricImage, source: any) => {
+       if (!source) {
            this.loadImage(obj, null);
            obj.set('file', null);
            obj.set('src', null);
            return;
        }
-       if (typeof src === 'string') {
-           this.loadImage(obj, src);
-           obj.set('file', null);
-           obj.set('src', src);
+       if (source instanceof File) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                this.loadImage(obj, e.target.result as string);
+                obj.set('file', source);
+                obj.set('src', null);
+            };
+            reader.readAsDataURL(source);
        } else {
-           const reader = new FileReader();
-           reader.onload = e => {
-               this.loadImage(obj, e.target.result as string);
-               const file = {
-                   name: src.name,
-                   size: src.size,
-                   uid: src.uid,
-                   type: src.type,
-               };
-               obj.set('file', file);
-               obj.set('src', null);
-           };
-           reader.readAsDataURL(src);
+            this.loadImage(obj, source);
+            obj.set('file', null);
+            obj.set('src', source);
        }
    }
 
@@ -162,9 +157,9 @@ class Handler implements HandlerOptions {
     /**
      * @description Find object by id
      * @param {string} id
-     * @returns {(fabric.Object | null)}
+     * @returns {(FabricObject | null)}
      */
-    public findById = (id: string): fabric.Object | null => {
+    public findById = (id: string): FabricObject | null => {
         let findObject;
         // const exist = this.objects.some(obj => {
         const exist = this.getObjects().some(obj => {
@@ -200,12 +195,12 @@ class Handler implements HandlerOptions {
      */
     public stopRequestAnimFrame = () => {
         this.isRequsetAnimFrame = false;
-        const cancelRequestAnimFrame = (() => window.cancelAnimationFrame ||
-            window.webkitCancelRequestAnimationFrame ||
-            window.mozCancelRequestAnimationFrame ||
-            window.oCancelRequestAnimationFrame ||
-            window.msCancelRequestAnimationFrame ||
-            clearTimeout
+        const cancelRequestAnimFrame = (() => window.cancelAnimationFrame
+        // || window.webkitCancelRequestAnimationFrame
+        // || window.mozCancelRequestAnimationFrame
+        // || window.oCancelRequestAnimationFrame
+        // || window.msCancelRequestAnimationFrame
+        || clearTimeout
         )();
         cancelRequestAnimFrame(this.requestFrame);
     }

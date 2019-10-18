@@ -855,6 +855,24 @@ class Canvas extends Component {
             activeObject.set(key, value);
             activeObject.setCoords();
             this.canvas.requestRenderAll();
+            const { id, superType, type, player, width, height } = activeObject;
+            if (superType === 'element') {
+                if (key === 'visible') {
+                    if (value) {
+                        activeObject.element.style.display = 'block';
+                    } else {
+                        activeObject.element.style.display = 'none';
+                    }
+                }
+                const el = this.handler.elementHandler.findById(id);
+                // update the element
+                this.handler.elementHandler.setScaleOrAngle(el, activeObject);
+                this.handler.elementHandler.setSize(el, activeObject);
+                this.handler.elementHandler.setPosition(el, activeObject);
+                if (type === 'video' && player) {
+                    player.setPlayerSize(width, height);
+                }
+            }
             const { onModified } = this.props;
             if (onModified) {
                 onModified(activeObject);
@@ -872,6 +890,24 @@ class Canvas extends Component {
                 }
             });
             this.canvas.requestRenderAll();
+            const { id, superType, type, player, width, height } = activeObject;
+            if (superType === 'element') {
+                if ('visible' in option) {
+                    if (option.visible) {
+                        activeObject.element.style.display = 'block';
+                    } else {
+                        activeObject.element.style.display = 'none';
+                    }
+                }
+                const el = this.handler.elementHandler.findById(id);
+                // update the element
+                this.handler.elementHandler.setScaleOrAngle(el, activeObject);
+                this.handler.elementHandler.setSize(el, activeObject);
+                this.handler.elementHandler.setPosition(el, activeObject);
+                if (type === 'video' && player) {
+                    player.setPlayerSize(width, height);
+                }
+            }
             const { onModified } = this.props;
             if (onModified) {
                 onModified(activeObject);
@@ -884,6 +920,24 @@ class Canvas extends Component {
             obj.set(key, value);
             obj.setCoords();
             this.canvas.renderAll();
+            const { id, superType, type, player, width, height } = obj;
+            if (superType === 'element') {
+                if (key === 'visible') {
+                    if (value) {
+                        obj.element.style.display = 'block';
+                    } else {
+                        obj.element.style.display = 'none';
+                    }
+                }
+                const el = this.handler.elementHandler.findById(id);
+                // update the element
+                this.handler.elementHandler.setScaleOrAngle(el, obj);
+                this.handler.elementHandler.setSize(el, obj);
+                this.handler.elementHandler.setPosition(el, obj);
+                if (type === 'video' && player) {
+                    player.setPlayerSize(width, height);
+                }
+            }
             const { onModified } = this.props;
             if (onModified) {
                 onModified(obj);
@@ -896,18 +950,34 @@ class Canvas extends Component {
         /**
          * Set the option by partial
          *
-         * @param {fabric.Object} object
+         * @param {fabric.Object} obj
          * @param {*} option
-         * @returns {fabric.Object}
          */
-        setByPartial: (object, option) => {
-            if (!object) {
+        setByPartial: (obj, option) => {
+            if (!obj) {
                 return;
             }
-            object.set(option);
-            object.setCoords();
+            obj.set(option);
+            obj.setCoords();
             this.canvas.renderAll();
-            return object;
+            const { id, superType, type, player, width, height } = obj;
+            if (superType === 'element') {
+                if ('visible' in option) {
+                    if (option.visible) {
+                        obj.element.style.display = 'block';
+                    } else {
+                        obj.element.style.display = 'none';
+                    }
+                }
+                const el = this.handler.elementHandler.findById(id);
+                // update the element
+                this.handler.elementHandler.setScaleOrAngle(el, obj);
+                this.handler.elementHandler.setSize(el, obj);
+                this.handler.elementHandler.setPosition(el, obj);
+                if (type === 'video' && player) {
+                    player.setPlayerSize(width, height);
+                }
+            }
         },
         setShadow: (option) => {
             const activeObject = this.canvas.getActiveObject();
@@ -984,6 +1054,23 @@ class Canvas extends Component {
         setImageById: (id, source) => {
             const findObject = this.handlers.findById(id);
             this.handlers.setImage(findObject, source);
+        },
+        setVisible: (visible) => {
+            const activeObject = this.canvas.getActiveObject();
+            if (!activeObject) {
+                return;
+            }
+            if (activeObject.superType === 'element') {
+                if (visible) {
+                    activeObject.element.style.display = 'block';
+                } else {
+                    activeObject.element.style.display = 'none';
+                }
+            }
+            activeObject.set({
+                visible,
+            });
+            this.canvas.renderAll();
         },
         find: obj => this.handlers.findById(obj.id),
         findById: (id) => {
@@ -1072,8 +1159,9 @@ class Canvas extends Component {
         },
         scaleToResize: (width, height) => {
             const activeObject = this.canvas.getActiveObject();
+            const { id } = activeObject;
             const obj = {
-                id: activeObject.id,
+                id,
                 scaleX: width / activeObject.width,
                 scaleY: height / activeObject.height,
             };
@@ -1766,7 +1854,7 @@ class Canvas extends Component {
                 fabric.Image.fromURL(source, (img) => {
                     let scaleX = canvas.getWidth() / img.width;
                     let scaleY = canvas.getHeight() / img.height;
-                    if (img.height > img.width) {
+                    if (img.height >= img.width) {
                         scaleX = scaleY;
                         if (canvas.getWidth() < img.width * scaleX) {
                             scaleX = scaleX * (canvas.getWidth() / (img.width * scaleX));

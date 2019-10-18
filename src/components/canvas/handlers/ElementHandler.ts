@@ -39,7 +39,7 @@ class ElementHandler {
 
     /**
      * @description Set element
-     * @param {fabric.Object} obj
+     * @param {ElementObjectType} obj
      * @param {*} source
      */
     public set = (obj: ElementObjectType, source: any) => {

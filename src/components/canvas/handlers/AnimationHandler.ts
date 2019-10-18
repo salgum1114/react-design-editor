@@ -1,6 +1,7 @@
 import anime from 'animejs';
 
 import { Handler } from '.';
+import { FabricObject } from '../utils';
 
 class AnimationHandler {
     handler: Handler;
@@ -63,7 +64,7 @@ class AnimationHandler {
         this.play(id);
     }
 
-    initAnimation = (obj, hasControls = true) => {
+    initAnimation = (obj: FabricObject, hasControls = true) => {
         if (!obj.anime) {
             return;
         }
@@ -142,7 +143,7 @@ class AnimationHandler {
         this.handler.canvas.renderAll();
     }
 
-    getAnimation = (obj: fabric.Object, hasControls?: boolean) => {
+    getAnimation = (obj: FabricObject, hasControls?: boolean) => {
         const { delay = 100, duration = 100, autoplay = true, loop = true, type, ...other } = obj.animation;
         const option = {
             targets: obj,
@@ -160,7 +161,7 @@ class AnimationHandler {
                 });
                 this.handler.canvas.requestRenderAll();
             },
-            update: (e) => {
+            update: (e: any) => {
                 if (type === 'flash') {
                     // I do not know why it works. Magic code...
                     const fill = e.animations[0].currentValue;
@@ -245,7 +246,7 @@ class AnimationHandler {
             });
         } else {
             console.warn('Not supported type.');
-            return;
+            return null;
         }
         return anime(option);
     }
