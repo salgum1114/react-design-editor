@@ -51,6 +51,9 @@ const defaultOptions = {
     stroke: 'rgba(255, 255, 255, 0)',
     strokeUniform: true,
     resource: {},
+    // centeredRotation: true,
+    // originX: 'center',
+    // originY: 'center',
     link: {
         enabled: false,
         type: 'resource',
@@ -147,7 +150,7 @@ class ImageMapEditor extends Component {
                 }
                 this.canvasRef.handlers.getObjects().forEach((obj) => {
                     if (obj) {
-                        this.canvasRef.animationHandlers.initAnimation(obj, true);
+                        this.canvasRef.handler.animationHandler.initAnimation(obj, true);
                     }
                 });
                 this.setState({
@@ -157,7 +160,7 @@ class ImageMapEditor extends Component {
             }
             this.canvasRef.handlers.getObjects().forEach((obj) => {
                 if (obj) {
-                    this.canvasRef.animationHandlers.initAnimation(obj, true);
+                    this.canvasRef.handler.animationHandler.initAnimation(obj, true);
                 }
             });
             this.setState({
@@ -212,8 +215,8 @@ class ImageMapEditor extends Component {
             if (changedKey === 'file' || changedKey === 'src' || changedKey === 'code') {
                 if (selectedItem.type === 'image') {
                     this.canvasRef.handlers.setImageById(selectedItem.id, changedValue);
-                } else if (this.canvasRef.handlers.isElementType(selectedItem.type)) {
-                    this.canvasRef.elementHandlers.setById(selectedItem.id, changedValue);
+                } else if (this.canvasRef.handlers.isElementType(selectedItem)) {
+                    this.canvasRef.handler.elementHandler.setById(selectedItem.id, changedValue);
                 }
                 return;
             }
@@ -285,38 +288,47 @@ class ImageMapEditor extends Component {
                 const filterValue = allValues.filters[filterKey];
                 if (filterKey === 'gamma') {
                     const rgb = [filterValue.r, filterValue.g, filterValue.b];
-                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { gamma: rgb });
+                    this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { gamma: rgb });
                     return;
                 }
                 if (filterKey === 'brightness') {
-                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { brightness: filterValue.brightness });
+                    this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { brightness: filterValue.brightness });
                     return;
                 }
                 if (filterKey === 'contrast') {
-                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { contrast: filterValue.contrast });
+                    this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { contrast: filterValue.contrast });
                     return;
                 }
                 if (filterKey === 'saturation') {
-                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { saturation: filterValue.saturation });
+                    this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { saturation: filterValue.saturation });
                     return;
                 }
                 if (filterKey === 'hue') {
-                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { rotation: filterValue.rotation });
+                    this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { rotation: filterValue.rotation });
                     return;
                 }
                 if (filterKey === 'noise') {
-                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { noise: filterValue.noise });
+                    this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { noise: filterValue.noise });
                     return;
                 }
                 if (filterKey === 'pixelate') {
-                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { blocksize: filterValue.blocksize });
+                    this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { blocksize: filterValue.blocksize });
                     return;
                 }
                 if (filterKey === 'blur') {
-                    this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { value: filterValue.value });
+                    this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey].enabled, { value: filterValue.value });
                     return;
                 }
-                this.canvasRef.imageHandler.applyFilterByType(filterKey, changedValue[filterKey]);
+                this.canvasRef.handler.imageHandler.applyFilterByType(filterKey, changedValue[filterKey]);
+                return;
+            }
+            if (changedKey === 'chartOption') {
+                try {
+                    const chartOption = JSON.parse(changedValue);
+                    this.canvasRef.handler.elementHandler.setById(selectedItem.id, chartOption);
+                } catch (error) {
+                    console.error(error);
+                }
                 return;
             }
             this.canvasRef.handlers.set(changedKey, changedValue);

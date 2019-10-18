@@ -14,6 +14,7 @@ import ShadowProperty from './ShadowProperty';
 import UserProperty from './UserProperty';
 import TriggerProperty from './TriggerProperty';
 import ImageFilterProperty from './ImageFilterProperty';
+import ChartProperty from './ChartProperty';
 
 export default {
     map: {
@@ -426,6 +427,10 @@ export default {
         general: {
             title: 'General',
             component: GeneralProperty,
+        },
+        chartOption: {
+            title: 'Chart Option',
+            component: ChartProperty,
         },
     },
 };

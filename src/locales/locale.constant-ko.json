@@ -68,6 +68,9 @@
             "noise": "Noise",
             "pixelate": "Pixelate",
             "blur": "Blur"
+        },
+        "element": {
+            "mouse-hover-enabled": "Hover enabled"
         }
     },
     "workflow": {

@@ -34,7 +34,6 @@ const CurvedLink = fabric.util.createClass(Link, {
         ctx.fillStyle = this.stroke;
         ctx.fill();
         ctx.restore();
-        console.log(ctx);
     },
 });
 

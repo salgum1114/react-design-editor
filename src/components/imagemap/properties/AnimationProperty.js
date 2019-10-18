@@ -108,19 +108,19 @@ export default {
                             <Form.Item label={i18n.t('imagemap.animation.playback')} colon={false}>
                                 <Row>
                                     <Col span={8}>
-                                        <Button block size="small" onClick={() => { canvasRef.animationHandlers.play(data.id); }}>
+                                        <Button block size="small" onClick={() => { canvasRef.handler.animationHandler.play(data.id); }}>
                                             <Icon name="play" style={{ marginRight: 8 }} />
                                             {i18n.t('action.start')}
                                         </Button>
                                     </Col>
                                     <Col span={8}>
-                                        <Button block size="small" onClick={() => { canvasRef.animationHandlers.pause(data.id); }}>
+                                        <Button block size="small" onClick={() => { canvasRef.handler.animationHandler.pause(data.id); }}>
                                             <Icon name="pause" style={{ marginRight: 8 }} />
                                             {i18n.t('action.pause')}
                                         </Button>
                                     </Col>
                                     <Col span={8}>
-                                        <Button block size="small" onClick={() => { canvasRef.animationHandlers.stop(data.id); }}>
+                                        <Button block size="small" onClick={() => { canvasRef.handler.animationHandler.stop(data.id); }}>
                                             <Icon name="stop" style={{ marginRight: 8 }} />
                                             {i18n.t('action.stop')}
                                         </Button>

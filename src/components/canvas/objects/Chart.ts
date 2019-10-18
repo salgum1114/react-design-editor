@@ -1,140 +1,73 @@
 import { fabric } from 'fabric';
-import ChartJS from 'chart.js';
+import * as echarts from 'echarts';
 
-const Chart = fabric.util.createClass(fabric.Object, {
+import { toObject, FabricElement } from '../utils';
+
+export interface ChartObject extends FabricElement {
+    setSource: (source: echarts.EChartOption) => void;
+    setChartOption: (chartOption: echarts.EChartOption) => void;
+    chartOption: echarts.EChartOption;
+    instance: echarts.ECharts;
+}
+
+const Chart = fabric.util.createClass(fabric.Rect, {
     type: 'chart',
-    superType: 'chart',
-    instance: null,
-    H_PADDING: 20,
-    V_PADDING: 50,
-    originX: 'left',
-    originY: 'top',
-    initialize(options: any) {
+    superType: 'element',
+    hasRotatingPoint: false,
+    initialize(chartOption: echarts.EChartOption, options: any) {
         options = options || {};
         this.callSuper('initialize', options);
-    },
-    createImage() {
-        const canvasEl = document.createElement('canvas');
-        canvasEl.width = this.width;
-        canvasEl.height = this.height;
-        const ctx = canvasEl.getContext('2d');
-        const instance = new ChartJS(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: Array.from({ length: 3 }, () => Math.random() * 20),
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                    ],
-                    borderWidth: 1,
-                }],
-            },
-            options: {
-                maintainAspectRatio: false,
-                responsive: false,
-                aspectRatio: 0.25,
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                        },
-                    }],
-                },
-                layout: {
-                    padding: {
-                        left: 30,
-                        right: 30,
-                        top: 30,
-                        bottom: 30,
-                    },
-                },
-            },
+        this.set({
+            chartOption,
+            fill: 'rgba(255, 255, 255, 0)',
+            stroke: 'rgba(255, 255, 255, 0)',
         });
-        setTimeout(() => {
-            this.image = new Image();
-            this.image.src = instance.toBase64Image();
-        }, 1000);
     },
-    createChart() {
-
+    setSource(source: any) {
+        this.setChartOption(source);
     },
-    _render(ctx: any) {
+    setChartOption(chartOption: echarts.EChartOption) {
+        this.set({
+            chartOption,
+        });
+        this.instance.setOption(chartOption);
+    },
+    toObject(propertiesToInclude: string[]) {
+        return toObject(this, propertiesToInclude, {
+            chartOption: this.get('chartOption'),
+            container: this.get('container'),
+            editable: this.get('editable'),
+        });
+    },
+    _render(ctx: CanvasRenderingContext2D) {
         this.callSuper('_render', ctx);
-        ctx.save();
-        const { editable } = this;
-        // if (editable) {
-        //     if (this.image) {
-        //         ctx.drawImage(this.image, -this.width / 2, -this.height / 2, this.width, this.height);
-        //     } else {
-        //         this.createImage();
-        //     }
-        // } else {
-        const zoom = this.canvas.getZoom() || 1;
         if (!this.instance) {
-            ctx.canvas.width = (this.width * 1.37) * this.scaleX * zoom;
-            ctx.canvas.height = (this.height * 1.37) * this.scaleY * zoom;
-            this.instance = new ChartJS(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Red', 'Blue', 'Yellow'],
-                    datasets: [{
-                        label: '# of Votes',
-                        data: Array.from({ length: 3 }, () => Math.random() * 20),
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                        ],
-                        borderWidth: 1,
-                    }],
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    responsive: false,
-                    aspectRatio: 0.25,
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true,
-                            },
-                        }],
-                    },
-                    layout: {
-                        padding: {
-                            left: 30,
-                            right: 30,
-                            top: 30,
-                            bottom: 30,
-                        },
-                    },
-                },
-            });
-            ctx.canvas.width = (this.width * 1.37) * this.scaleX * zoom;
-            ctx.canvas.height = (this.height * 1.37) * this.scaleY * zoom;
-        } else {
-            ctx.canvas.width = (this.width * 1.37) * this.scaleX * zoom;
-            ctx.canvas.height = (this.height * 1.37) * this.scaleY * zoom;
-            this.instance.width = (this.width * 1.37) * this.scaleX * zoom;
-            this.instance.height = (this.height * 1.37) * this.scaleY * zoom;
-            this.instance.data.datasets[0].data = Array.from({ length: 3 }, () => Math.random() * 20);
-            this.instance.update();
+            const { id, scaleX, scaleY, width, height, angle, editable, chartOption } = this;
+            const zoom = this.canvas.getZoom();
+            const left = this.calcCoords().tl.x;
+            const top = this.calcCoords().tl.y;
+            const padLeft = ((width * scaleX * zoom) - width) / 2;
+            const padTop = ((height * scaleY * zoom) - height) / 2;
+            this.element = fabric.util.makeElement('div', {
+                id: `${id}_container`,
+                style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
+                        width: ${width}px;
+                        height: ${height}px;
+                        left: ${left + padLeft}px;
+                        top: ${top + padTop}px;
+                        position: absolute;
+                        user-select: ${editable ? 'none' : 'auto'};
+                        pointer-events: ${editable ? 'none' : 'auto'};`,
+            }) as HTMLDivElement;
+            this.instance = echarts.init(this.element);
+            this.instance.setOption(chartOption);
+            this.container.appendChild(this.element);
         }
-        // }
     },
 });
+
+Chart.fromObject = (options: ChartObject, callback: (obj: ChartObject) => any) => {
+    return callback(new Chart(options.chartOption, options));
+};
 
 export default Chart;
