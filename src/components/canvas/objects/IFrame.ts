@@ -1,19 +1,18 @@
 import { fabric } from 'fabric';
 
-import { toObject } from '../utils';
+import { toObject, FabricElement } from '../utils';
 
-export interface IFrameObject extends fabric.Rect {
+export interface IFrameObject extends FabricElement {
     setSource: (source: string) => void;
     setSrc: (src: string) => void;
     src: string;
-    container?: HTMLDivElement;
-    element: HTMLDivElement;
     iframeElement: HTMLIFrameElement;
 }
 
 const IFrame = fabric.util.createClass(fabric.Rect, {
     type: 'iframe',
     superType: 'element',
+    hasRotatingPoint: false,
     initialize(src: string = '', options: any) {
         options = options || {};
         this.callSuper('initialize', options);
@@ -35,6 +34,8 @@ const IFrame = fabric.util.createClass(fabric.Rect, {
     toObject(propertiesToInclude: string[]) {
         return toObject(this, propertiesToInclude, {
             src: this.get('src'),
+            container: this.get('container'),
+            editable: this.get('editable'),
         });
     },
     _render(ctx: CanvasRenderingContext2D) {
@@ -67,5 +68,9 @@ const IFrame = fabric.util.createClass(fabric.Rect, {
         }
     },
 });
+
+IFrame.fromObject = (options: IFrameObject, callback: (obj: IFrameObject) => any) => {
+    return callback(new IFrame(options.src, options));
+};
 
 export default IFrame;

@@ -120,10 +120,10 @@ class ElementHandler {
         if (!el) {
             return;
         }
+        obj.setCoords();
         const zoom = this.handler.canvas.getZoom();
         const { scaleX, scaleY, width, height } = obj;
-        const left = obj.calcCoords().tl.x;
-        const top = obj.calcCoords().tl.y;
+        const { left, top } = obj.getBoundingRect(false);
         const padLeft = ((width * scaleX * zoom) - width) / 2;
         const padTop = ((height * scaleY * zoom) - height) / 2;
         el.style.left = `${left + padLeft}px`;

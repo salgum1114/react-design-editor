@@ -87,6 +87,7 @@ class Canvas extends Component {
     }
 
     static defaultProps = {
+        id: uuid(),
         editable: true,
         canvasOption: {
             selection: true,
@@ -314,8 +315,6 @@ class Canvas extends Component {
                 lockMovementX: !editable,
                 lockMovementY: !editable,
                 hoverCursor: !editable ? 'pointer' : 'move',
-                editable,
-                container: this.container.current,
             };
             if (obj.type === 'i-text') {
                 option.editable = false;
@@ -326,7 +325,10 @@ class Canvas extends Component {
                 option.scaleX = this.workarea.scaleX;
                 option.scaleY = this.workarea.scaleY;
             }
-            const newOption = Object.assign({}, option, obj);
+            const newOption = Object.assign({}, option, obj, {
+                container: this.container.current,
+                editable,
+            });
             // Individually create canvas object
             if (obj.superType === 'link') {
                 return this.linkHandlers.create(newOption);
@@ -4045,7 +4047,7 @@ class Canvas extends Component {
         return (
             <div
                 ref={this.container}
-                id="rde-canvas"
+                id={id}
                 className="rde-canvas"
                 style={{ width: '100%', height: '100%' }}
             >

@@ -51,6 +51,9 @@ const defaultOptions = {
     stroke: 'rgba(255, 255, 255, 0)',
     strokeUniform: true,
     resource: {},
+    centeredRotation: true,
+    originX: 'center',
+    originY: 'center',
     link: {
         enabled: false,
         type: 'resource',

@@ -2,16 +2,14 @@ import { fabric } from 'fabric';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 
-import { toObject } from '../utils';
+import { toObject, FabricElement } from '../utils';
 
-export interface VideoObject extends fabric.Rect {
+export interface VideoObject extends FabricElement {
     setSource: (source: string | File) => void;
     setFile: (file: File) => void;
     setSrc: (src: string) => void;
     file?: File;
     src?: string;
-    container?: HTMLDivElement;
-    element?: HTMLDivElement;
     videoElement?: HTMLVideoElement;
     player?: any;
 }
@@ -19,6 +17,7 @@ export interface VideoObject extends fabric.Rect {
 const Video = fabric.util.createClass(fabric.Rect, {
     type: 'video',
     superType: 'element',
+    hasRotatingPoint: false,
     initialize(source: string | File, options: any) {
         options = options || {};
         this.callSuper('initialize', options);
@@ -67,6 +66,8 @@ const Video = fabric.util.createClass(fabric.Rect, {
         return toObject(this, propertiesToInclude, {
             src: this.get('src'),
             file: this.get('file'),
+            container: this.get('container'),
+            editable: this.get('editable'),
         });
     },
     _render(ctx: CanvasRenderingContext2D) {
@@ -117,5 +118,9 @@ const Video = fabric.util.createClass(fabric.Rect, {
         }
     },
 });
+
+Video.fromObject = (options: VideoObject, callback: (obj: VideoObject) => any) => {
+    return callback(new Video(options.src || options.file, options));
+};
 
 export default Video;

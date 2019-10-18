@@ -1,6 +1,6 @@
 import { fabric } from 'fabric';
 
-import { toObject } from '../utils';
+import { toObject, FabricElement } from '../utils';
 
 export interface Code {
     html: string;
@@ -8,12 +8,10 @@ export interface Code {
     js: string;
 }
 
-export interface ElementObject extends fabric.Rect {
+export interface ElementObject extends FabricElement {
     setSource: (source: Code) => void;
     setCode: (code: Code) => void;
     code: Code;
-    container?: HTMLDivElement;
-    element: HTMLDivElement;
 }
 
 const initialCode: Code = {
@@ -25,6 +23,7 @@ const initialCode: Code = {
 const Element = fabric.util.createClass(fabric.Rect, {
     type: 'element',
     superType: 'element',
+    hasRotatingPoint: false,
     initialize(code = initialCode, options: any) {
         options = options || {};
         this.callSuper('initialize', options);
@@ -49,6 +48,8 @@ const Element = fabric.util.createClass(fabric.Rect, {
     toObject(propertiesToInclude: string[]) {
         return toObject(this, propertiesToInclude, {
             code: this.get('code'),
+            container: this.get('container'),
+            editable: this.get('editable'),
         });
     },
     _render(ctx: CanvasRenderingContext2D) {
@@ -89,5 +90,9 @@ const Element = fabric.util.createClass(fabric.Rect, {
         }
     },
 });
+
+Element.fromObject = (options: ElementObject, callback: (obj: ElementObject) => any) => {
+    return callback(new Element(options.code, options));
+};
 
 export default Element;

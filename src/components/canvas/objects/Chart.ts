@@ -1,20 +1,19 @@
 import { fabric } from 'fabric';
 import * as echarts from 'echarts';
 
-import { toObject } from '../utils';
+import { toObject, FabricElement } from '../utils';
 
-export interface ChartObject extends fabric.Rect {
+export interface ChartObject extends FabricElement {
     setSource: (source: echarts.EChartOption) => void;
     setChartOption: (chartOption: echarts.EChartOption) => void;
-    container?: HTMLDivElement;
     chartOption: echarts.EChartOption;
     instance: echarts.ECharts;
-    element: HTMLDivElement;
 }
 
 const Chart = fabric.util.createClass(fabric.Rect, {
     type: 'chart',
     superType: 'element',
+    hasRotatingPoint: false,
     initialize(chartOption: echarts.EChartOption, options: any) {
         options = options || {};
         this.callSuper('initialize', options);
