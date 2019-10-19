@@ -5,59 +5,73 @@ import {
     ElementHandler,
     ImageHandler,
     ChartHandler,
-    VideoHandler,
     CropHandler,
     AnimationHandler,
     ContextmenuHandler,
     TooltipHandler,
+    ZoomHandler,
+    WorkareaHandler,
 } from '.';
-import { FabricObject, FabricImage } from '../utils';
+import { FabricObject, FabricImage, WorkareaObject, WorkareaOption } from '../utils';
 
 export interface HandlerOptions {
     id: string;
     canvas: fabric.Canvas;
     container: HTMLDivElement;
-    workarea: fabric.Image;
+    workarea: WorkareaObject;
     objects: fabric.Object[];
     editable?: boolean;
     interactionMode: string;
     propertiesToInclude?: string[];
+    minZoom?: number;
+    maxZoom?: number;
+    workareaOption?: WorkareaOption;
     [key: string]: any;
 
     onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: fabric.Object) => Promise<any>;
     onTooltip?: (el: HTMLDivElement, target?: fabric.Object) => Promise<any>;
+    onZoom?: (zoomRatio: number) => void;
 
     imageHandler: ImageHandler;
     chartHandler: ChartHandler;
-    videoHandler: VideoHandler;
     elementHandler: ElementHandler;
     cropHandler: CropHandler;
     animationHandler: AnimationHandler;
     contextmenuHandler: ContextmenuHandler;
     tooltipHandler: TooltipHandler;
+    zoomHandler: ZoomHandler;
+    workareaHandler: WorkareaHandler;
 }
 
-class Handler implements HandlerOptions {
+class Handler {
     public id: string;
     public canvas: fabric.Canvas;
-    public workarea: fabric.Image;
+    public workarea: WorkareaObject;
     public objects: fabric.Object[];
     public container: HTMLDivElement;
     public editable: boolean;
     public interactionMode: string;
     public propertiesToInclude?: string[];
+    public minZoom: number;
+    public maxZoom: number;
+    public workareaOption: WorkareaOption;
 
     private isRequsetAnimFrame = false;
     private requestFrame: any;
 
+    public onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: fabric.Object) => Promise<any>;
+    public onTooltip?: (el: HTMLDivElement, target?: fabric.Object) => Promise<any>;
+    public onZoom?: (zoomRatio: number) => void;
+
     public imageHandler: ImageHandler;
     public chartHandler: ChartHandler;
-    public videoHandler: VideoHandler;
     public elementHandler: ElementHandler;
     public cropHandler: CropHandler;
     public animationHandler: AnimationHandler;
     public contextmenuHandler: ContextmenuHandler;
     public tooltipHandler: TooltipHandler;
+    public zoomHandler: ZoomHandler;
+    public workareaHandler: WorkareaHandler;
 
     constructor(options: HandlerOptions) {
         this.id = options.id;
@@ -68,10 +82,12 @@ class Handler implements HandlerOptions {
         this.editable = options.editable;
         this.interactionMode = options.interactionMode;
         this.propertiesToInclude = options.propertiesToInclude;
+        this.minZoom = options.minZoom;
+        this.maxZoom = options.maxZoom;
+        this.workareaOption = options.workareaOption;
 
         this.imageHandler = new ImageHandler(this);
         this.chartHandler = new ChartHandler(this);
-        this.videoHandler = new VideoHandler(this);
         this.elementHandler = new ElementHandler(this);
         this.cropHandler = new CropHandler(this);
         this.animationHandler = new AnimationHandler(this);
@@ -81,6 +97,10 @@ class Handler implements HandlerOptions {
         this.tooltipHandler = new TooltipHandler(this, {
             onTooltip: options.onTooltip,
         });
+        this.zoomHandler = new ZoomHandler(this, {
+            onZoom: options.onZoom,
+        });
+        this.workareaHandler = new WorkareaHandler(this);
     }
 
     /**

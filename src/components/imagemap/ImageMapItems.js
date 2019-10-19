@@ -98,8 +98,8 @@ class ImageMapItems extends Component {
     handlers = {
         onAddItem: (item, centered) => {
             const { canvasRef } = this.props;
-            if (canvasRef.workarea.layout === 'responsive') {
-                if (!canvasRef.workarea.isElement) {
+            if (canvasRef.handler.workarea.layout === 'responsive') {
+                if (!canvasRef.handler.workarea.isElement) {
                     notification.warn({
                         message: 'Please your select background image',
                     });
@@ -125,8 +125,8 @@ class ImageMapItems extends Component {
         },
         onDrawingItem: (item) => {
             const { canvasRef } = this.props;
-            if (canvasRef.workarea.layout === 'responsive') {
-                if (!canvasRef.workarea.isElement) {
+            if (canvasRef.handler.workarea.layout === 'responsive') {
+                if (!canvasRef.handler.workarea.isElement) {
                     notification.warn({
                         message: 'Please your select background image',
                     });

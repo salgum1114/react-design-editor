@@ -335,19 +335,19 @@ class ImageMapEditor extends Component {
         },
         onChangeWokarea: (changedKey, changedValue, allValues) => {
             if (changedKey === 'layout') {
-                this.canvasRef.workareaHandlers.setLayout(changedValue);
+                this.canvasRef.handler.workareaHandler.setLayout(changedValue);
                 return;
             }
             if (changedKey === 'file' || changedKey === 'src') {
-                this.canvasRef.workareaHandlers.setImage(changedValue);
+                this.canvasRef.handler.workareaHandler.setImage(changedValue);
                 return;
             }
             if (changedKey === 'width' || changedKey === 'height') {
-                this.canvasRef.handlers.originScaleToResize(this.canvasRef.workarea, allValues.width, allValues.height);
-                this.canvasRef.canvas.centerObject(this.canvasRef.workarea);
+                this.canvasRef.handlers.originScaleToResize(this.canvasRef.handler.workarea, allValues.width, allValues.height);
+                this.canvasRef.canvas.centerObject(this.canvasRef.handler.workarea);
                 return;
             }
-            this.canvasRef.workarea.set(changedKey, changedValue);
+            this.canvasRef.handler.workarea.set(changedKey, changedValue);
             this.canvasRef.canvas.requestRenderAll();
         },
         onTooltip: (ref, target) => {
@@ -534,7 +534,7 @@ class ImageMapEditor extends Component {
             };
             const anchorEl = document.createElement('a');
             anchorEl.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exportDatas, null, '\t'))}`;
-            anchorEl.download = `${this.canvasRef.workarea.name || 'sample'}.json`;
+            anchorEl.download = `${this.canvasRef.handler.workarea.name || 'sample'}.json`;
             document.body.appendChild(anchorEl); // required for firefox
             anchorEl.click();
             anchorEl.remove();

@@ -103,19 +103,19 @@ class WorkflowToolbar extends Component {
                     <Button.Group>
                         <CommonButton
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
-                            onClick={() => { canvasRef.zoomHandlers.zoomIn(); }}
+                            onClick={() => { canvasRef.handler.zoomHandler.zoomIn(); }}
                             icon="search-plus"
                             tooltipTitle={i18n.t('action.zoom-in')}
                         />
                         <CommonButton
-                            onClick={() => { canvasRef.zoomHandlers.zoomOneToOne(); }}
+                            onClick={() => { canvasRef.handler.zoomHandler.zoomOneToOne(); }}
                             tooltipTitle={i18n.t('action.one-to-one')}
                         >
                             {`${zoomValue}%`}
                         </CommonButton>
                         <CommonButton
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
-                            onClick={() => { canvasRef.zoomHandlers.zoomOut(); }}
+                            onClick={() => { canvasRef.handler.zoomHandler.zoomOut(); }}
                             icon="search-minus"
                             tooltipTitle={i18n.t('action.zoom-out')}
                         />

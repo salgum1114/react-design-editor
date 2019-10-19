@@ -18,7 +18,8 @@
     "no-shadowed-variable": false,
     "jsx-no-lambda": false,
     "jsx-wrap-multiline": false,
-    "array-type": false
+    "array-type": false,
+    "variable-name": false
   },
   "linterOptions": {
     "exclude": ["**/node_modules/**"]

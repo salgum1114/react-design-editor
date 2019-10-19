@@ -22,33 +22,6 @@ const defaultCanvasOption = {
     backgroundColor: '#fff',
 };
 
-const defaultWorkareaOption = {
-    width: 600,
-    height: 400,
-    workareaWidth: 600,
-    workareaHeight: 400,
-    lockScalingX: true,
-    lockScalingY: true,
-    scaleX: 1,
-    scaleY: 1,
-    backgroundColor: '#fff',
-    hasBorders: false,
-    hasControls: false,
-    selectable: false,
-    lockMovementX: true,
-    lockMovementY: true,
-    hoverCursor: 'default',
-    name: '',
-    id: 'workarea',
-    type: 'image',
-    layout: 'fixed', // fixed, responsive, fullscreen
-    link: {},
-    tooltip: {
-        enabled: false,
-    },
-    isElement: false,
-};
-
 const defaultKeyboardEvent = {
     move: true,
     all: true,
@@ -129,23 +102,19 @@ class Canvas extends Component {
 
     componentDidMount() {
         const { id } = this.state;
-        const { editable, canvasOption, guidelineOption, onContext, onTooltip } = this.props;
+        const { editable, canvasOption, guidelineOption } = this.props;
         const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption);
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
-        this.workareaHandlers.init();
         this.canvas.renderAll();
-        this.gridHandlers.init();
         this.handler = new Handler({
             id,
             canvas: this.canvas,
-            workarea: this.workarea,
             objects: this.objects,
             container: this.container.current,
-            editable,
-            onContext,
-            onTooltip,
+            ...this.props,
         });
+        this.gridHandlers.init();
         const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
         if (editable) {
             this.transactionHandlers.init();
@@ -321,9 +290,9 @@ class Canvas extends Component {
             } else {
                 option.editable = editable;
             }
-            if (editable && this.workarea.layout === 'fullscreen') {
-                option.scaleX = this.workarea.scaleX;
-                option.scaleY = this.workarea.scaleY;
+            if (editable && this.handler.workarea.layout === 'fullscreen') {
+                option.scaleX = this.handler.workarea.scaleX;
+                option.scaleY = this.handler.workarea.scaleY;
             }
             const newOption = Object.assign({}, option, obj, {
                 container: this.container.current,
@@ -349,7 +318,7 @@ class Canvas extends Component {
             }
             this.canvas.add(createdObj);
             this.objects = this.handlers.getObjects();
-            if (!editable && !this.handlers.isElementType(obj)) {
+            if (!editable && !obj.superType === 'element') {
                 createdObj.on('mousedown', this.eventHandlers.object.mousedown);
             }
             if (createdObj.dbclick) {
@@ -423,7 +392,7 @@ class Canvas extends Component {
                     this.canvas.add(createdObj);
                     this.objects = this.handlers.getObjects();
                     const { onAdd, editable } = this.props;
-                    if (!editable && !this.handlers.isElementType(obj)) {
+                    if (!editable && !obj.superType === 'element') {
                         createdObj.on('mousedown', this.eventHandlers.object.mousedown);
                     }
                     if (createdObj.dbclick) {
@@ -471,7 +440,7 @@ class Canvas extends Component {
             }
             if (activeObject.type !== 'activeSelection') {
                 this.canvas.discardActiveObject();
-                if (this.handlers.isElementType(activeObject)) {
+                if (activeObject.superType === 'element') {
                     this.handler.elementHandler.removeById(activeObject.id);
                 }
                 if (activeObject.superType === 'link') {
@@ -506,7 +475,7 @@ class Canvas extends Component {
                 }
                 this.canvas.discardActiveObject();
                 activeObjects.forEach((obj) => {
-                    if (this.handlers.isElementType(obj)) {
+                    if (obj.superType === 'element') {
                         this.handler.elementHandler.removeById(obj.id);
                     } else if (obj.superType === 'node') {
                         if (obj.toPort) {
@@ -1100,7 +1069,7 @@ class Canvas extends Component {
                     return false;
                 } else if (obj.superType === 'port') {
                     return false;
-                } else if (this.handlers.isElementType(obj)) {
+                } else if (obj.superType === 'element') {
                     return false;
                 } else if (obj.lock) {
                     return false;
@@ -1177,22 +1146,22 @@ class Canvas extends Component {
             let prevTop = 0;
             this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor);
             const workareaExist = json.filter(obj => obj.id === 'workarea');
-            if (!this.workarea) {
-                this.workareaHandlers.init();
+            if (!this.handler.workarea) {
+                this.handler.workareaHandler.init();
             }
             if (!workareaExist.length) {
-                this.canvas.centerObject(this.workarea);
-                this.workarea.setCoords();
-                prevLeft = this.workarea.left;
-                prevTop = this.workarea.top;
+                this.canvas.centerObject(this.handler.workarea);
+                this.handler.workarea.setCoords();
+                prevLeft = this.handler.workarea.left;
+                prevTop = this.handler.workarea.top;
             } else {
                 const workarea = workareaExist[0];
                 prevLeft = workarea.left;
                 prevTop = workarea.top;
-                this.workarea.set(workarea);
-                this.canvas.centerObject(this.workarea);
-                this.workareaHandlers.setImage(workarea.src, true);
-                this.workarea.setCoords();
+                this.handler.workarea.set(workarea);
+                this.canvas.centerObject(this.handler.workarea);
+                this.handler.workareaHandler.setImage(workarea.src, true);
+                this.handler.workarea.setCoords();
             }
             setTimeout(() => {
                 json.forEach((obj) => {
@@ -1201,7 +1170,7 @@ class Canvas extends Component {
                     }
                     const canvasWidth = this.canvas.getWidth();
                     const canvasHeight = this.canvas.getHeight();
-                    const { width, height, scaleX, scaleY, layout, left, top } = this.workarea;
+                    const { width, height, scaleX, scaleY, layout, left, top } = this.handler.workarea;
                     if (layout === 'fullscreen') {
                         const leftRatio = canvasWidth / (width * scaleX);
                         const topRatio = canvasHeight / (height * scaleY);
@@ -1215,7 +1184,7 @@ class Canvas extends Component {
                         obj.left += diffLeft;
                         obj.top += diffTop;
                     }
-                    if (this.handlers.isElementType(obj)) {
+                    if (obj.superType === 'element') {
                         obj.id = uuid();
                     }
                     this.handlers.add(obj, false, true);
@@ -1287,7 +1256,7 @@ class Canvas extends Component {
         clear: (workarea = false) => {
             const { canvas } = this;
             const ids = canvas.getObjects().reduce((prev, curr) => {
-                if (this.handlers.isElementType(curr)) {
+                if (curr.superType === 'element') {
                     prev.push(curr.id);
                     return prev;
                 }
@@ -1296,7 +1265,7 @@ class Canvas extends Component {
             this.handler.elementHandler.removeByIds(ids);
             if (workarea) {
                 canvas.clear();
-                this.workarea = null;
+                this.handler.workarea = null;
             } else {
                 canvas.getObjects().forEach((obj) => {
                     if (obj.id === 'grid') {
@@ -1343,7 +1312,6 @@ class Canvas extends Component {
             }
             canvas.renderAll();
         },
-        isElementType: obj => obj.superType === 'element',
         getOriginObjects: () => this.objects,
         findOriginById: (id) => {
             let findObject;
@@ -1635,7 +1603,7 @@ class Canvas extends Component {
                 this.canvas.selection = this.props.canvasOption.selection;
             }
             this.canvas.defaultCursor = 'default';
-            this.workarea.hoverCursor = 'default';
+            this.handler.workarea.hoverCursor = 'default';
             this.canvas.getObjects().forEach((obj) => {
                 if (obj.id !== 'workarea') {
                     if (obj.id === 'grid') {
@@ -1667,7 +1635,7 @@ class Canvas extends Component {
             this.interactionMode = 'grab';
             this.canvas.selection = false;
             this.canvas.defaultCursor = 'grab';
-            this.workarea.hoverCursor = 'grab';
+            this.handler.workarea.hoverCursor = 'grab';
             this.canvas.getObjects().forEach((obj) => {
                 if (obj.id !== 'workarea') {
                     if (callback) {
@@ -1691,7 +1659,7 @@ class Canvas extends Component {
             this.interactionMode = type;
             this.canvas.selection = false;
             this.canvas.defaultCursor = 'pointer';
-            this.workarea.hoverCursor = 'pointer';
+            this.handler.workarea.hoverCursor = 'pointer';
             this.canvas.getObjects().forEach((obj) => {
                 if (obj.id !== 'workarea') {
                     if (callback) {
@@ -1714,332 +1682,6 @@ class Canvas extends Component {
         moving: (e) => {
             const delta = new fabric.Point(e.movementX, e.movementY);
             this.canvas.relativePan(delta);
-        },
-    }
-
-    workareaHandlers = {
-        /**
-         * Init workarea
-         *
-         */
-        init: () => {
-            const { workareaOption } = this.props;
-            const mergedWorkareaOption = Object.assign({}, defaultWorkareaOption, workareaOption);
-            const image = new Image();
-            image.width = mergedWorkareaOption.width;
-            image.height = mergedWorkareaOption.height;
-            this.workarea = new fabric.Image(image, mergedWorkareaOption);
-            this.canvas.add(this.workarea);
-            this.objects = this.handlers.getObjects();
-            this.canvas.centerObject(this.workarea);
-        },
-        /**
-         * Set the layout on workarea
-         *
-         * @param {'fixed' | 'responsive' | 'fullscreen'} layout
-         * @returns
-         */
-        setLayout: (layout) => {
-            this.workarea.set('layout', layout);
-            const { canvas } = this;
-            const { _element, isElement } = this.workarea;
-            let scaleX = 1;
-            let scaleY = 1;
-            const isFixed = layout === 'fixed';
-            const isResponsive = layout === 'responsive';
-            const isFullscreen = layout === 'fullscreen';
-            if (isElement) {
-                if (isFixed) {
-                    scaleX = this.workarea.workareaWidth / _element.width;
-                    scaleY = this.workarea.workareaHeight / _element.height;
-                } else if (isResponsive) {
-                    scaleX = canvas.getWidth() / _element.width;
-                    scaleY = canvas.getHeight() / _element.height;
-                    if (_element.height >= _element.width) {
-                        scaleX = scaleY;
-                    } else {
-                        scaleY = scaleX;
-                    }
-                } else {
-                    scaleX = canvas.getWidth() / _element.width;
-                    scaleY = canvas.getHeight() / _element.height;
-                }
-            }
-            canvas.getObjects().forEach((obj) => {
-                if (obj.id !== 'workarea') {
-                    const objScaleX = !isFullscreen ? 1 : scaleX;
-                    const objScaleY = !isFullscreen ? 1 : scaleY;
-                    const objWidth = obj.width * objScaleX * canvas.getZoom();
-                    const objHeight = obj.height * objScaleY * canvas.getZoom();
-                    const el = this.handler.elementHandler.findById(obj.id);
-                    this.handler.elementHandler.setSize(el, objWidth, objHeight);
-                    if (obj.player) {
-                        obj.player.setPlayerSize(objWidth, objHeight);
-                    }
-                    obj.set({
-                        scaleX: !isFullscreen ? 1 : objScaleX,
-                        scaleY: !isFullscreen ? 1 : objScaleY,
-                    });
-                }
-            });
-            if (isResponsive) {
-                if (isElement) {
-                    const center = canvas.getCenter();
-                    const point = {
-                        x: center.left,
-                        y: center.top,
-                    };
-                    this.workarea.set({
-                        scaleX: 1,
-                        scaleY: 1,
-                    });
-                    this.zoomHandlers.zoomToPoint(point, scaleX);
-                } else {
-                    this.workarea.set({
-                        width: 0,
-                        height: 0,
-                        backgroundColor: 'rgba(255, 255, 255, 0)',
-                    });
-                }
-                canvas.centerObject(this.workarea);
-                canvas.renderAll();
-                return;
-            }
-            if (isElement) {
-                this.workarea.set({
-                    width: _element.width,
-                    height: _element.height,
-                    scaleX,
-                    scaleY,
-                });
-            } else {
-                const width = isFixed ? this.workarea.workareaWidth : this.canvas.getWidth();
-                const height = isFixed ? this.workarea.workareaHeight : this.canvas.getHeight();
-                this.workarea.set({
-                    width,
-                    height,
-                    backgroundColor: 'rgba(255, 255, 255, 1)',
-                });
-                this.canvas.renderAll();
-                if (isFixed) {
-                    canvas.centerObject(this.workarea);
-                } else {
-                    this.workarea.set({
-                        left: 0,
-                        top: 0,
-                    });
-                }
-            }
-            canvas.centerObject(this.workarea);
-            const center = canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-            this.zoomHandlers.zoomToPoint(point, 1);
-            canvas.renderAll();
-        },
-        /**
-         * Set the responsive image on Workarea
-         *
-         * @param {string} [src]
-         * @param {boolean} [loaded]
-         * @returns
-         */
-        setResponsiveImage: (src, loaded) => {
-            const { canvas, workarea, zoomHandlers } = this;
-            const { editable } = this.props;
-            const imageFromUrl = (source) => {
-                fabric.Image.fromURL(source, (img) => {
-                    let scaleX = canvas.getWidth() / img.width;
-                    let scaleY = canvas.getHeight() / img.height;
-                    if (img.height >= img.width) {
-                        scaleX = scaleY;
-                        if (canvas.getWidth() < img.width * scaleX) {
-                            scaleX = scaleX * (canvas.getWidth() / (img.width * scaleX));
-                        }
-                    } else {
-                        scaleY = scaleX;
-                        if (canvas.getHeight() < img.height * scaleX) {
-                            scaleX = scaleX * (canvas.getHeight() / (img.height * scaleX));
-                        }
-                    }
-                    img.set({
-                        originX: 'left',
-                        originY: 'top',
-                    });
-                    if (!img._element) {
-                        workarea.setElement(new Image());
-                        workarea.set({
-                            isElement: false,
-                            selectable: false,
-                        });
-                    } else {
-                        workarea.set({
-                            ...img,
-                            isElement: true,
-                            selectable: false,
-                        });
-                    }
-                    if (!source) {
-                        scaleX = 1;
-                    }
-                    canvas.centerObject(workarea);
-                    if (editable && !loaded) {
-                        canvas.getObjects().forEach((obj) => {
-                            if (obj.id !== 'workarea') {
-                                const objWidth = obj.width * scaleX;
-                                const objHeight = obj.height * scaleY;
-                                const el = this.handler.elementHandler.findById(obj.id);
-                                this.handler.elementHandler.setSize(el, objWidth, objHeight);
-                                if (obj.player) {
-                                    obj.player.setPlayerSize(objWidth, objHeight);
-                                }
-                                obj.set({
-                                    scaleX: 1,
-                                    scaleY: 1,
-                                });
-                                obj.setCoords();
-                            }
-                        });
-                    }
-                    const center = canvas.getCenter();
-                    const point = {
-                        x: center.left,
-                        y: center.top,
-                    };
-                    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                    zoomHandlers.zoomToPoint(point, scaleX);
-                    canvas.renderAll();
-                });
-            };
-            if (!src) {
-                workarea.set({
-                    src,
-                });
-                imageFromUrl(src);
-                return;
-            }
-            if (typeof src === 'string') {
-                workarea.set({
-                    src,
-                });
-                imageFromUrl(src);
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                workarea.set({
-                    file: src,
-                });
-                imageFromUrl(e.target.result);
-            };
-            reader.readAsDataURL(src);
-        },
-        /**
-         * Set the image on Workarea
-         *
-         * @param {string} [src]
-         * @param {boolean} [loaded=false]
-         * @returns
-         */
-        setImage: (src, loaded = false) => {
-            const { canvas, workarea, zoomHandlers, workareaHandlers } = this;
-            const { editable } = this.props;
-            if (workarea.layout === 'responsive') {
-                workareaHandlers.setResponsiveImage(src, loaded);
-                return;
-            }
-            const imageFromUrl = (source) => {
-                fabric.Image.fromURL(source, (img) => {
-                    let width = canvas.getWidth();
-                    let height = canvas.getHeight();
-                    if (workarea.layout === 'fixed') {
-                        width = workarea.width * workarea.scaleX;
-                        height = workarea.height * workarea.scaleY;
-                    }
-                    let scaleX = 1;
-                    let scaleY = 1;
-                    if (img._element) {
-                        scaleX = width / img.width;
-                        scaleY = height / img.height;
-                        img.set({
-                            originX: 'left',
-                            originY: 'top',
-                            scaleX,
-                            scaleY,
-                        });
-                        workarea.set({
-                            ...img,
-                            isElement: true,
-                            selectable: false,
-                        });
-                    } else {
-                        workarea.setElement(new Image());
-                        workarea.set({
-                            width,
-                            height,
-                            scaleX,
-                            scaleY,
-                            isElement: false,
-                            selectable: false,
-                        });
-                    }
-                    canvas.centerObject(workarea);
-                    if (editable && !loaded) {
-                        const { layout } = workarea;
-                        canvas.getObjects().forEach((obj) => {
-                            if (obj.id !== 'workarea') {
-                                scaleX = layout !== 'fullscreen' ? 1 : scaleX;
-                                scaleY = layout !== 'fullscreen' ? 1 : scaleY;
-                                const objWidth = obj.width * scaleX;
-                                const objHeight = obj.height * scaleY;
-                                const el = this.handler.elementHandler.findById(obj.id);
-                                this.handler.elementHandler.setSize(el, width, height);
-                                if (obj.player) {
-                                    obj.player.setPlayerSize(objWidth, objHeight);
-                                }
-                                obj.set({
-                                    scaleX,
-                                    scaleY,
-                                });
-                                obj.setCoords();
-                            }
-                        });
-                    }
-                    const center = canvas.getCenter();
-                    const point = {
-                        x: center.left,
-                        y: center.top,
-                    };
-                    canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-                    zoomHandlers.zoomToPoint(point, 1);
-                    canvas.renderAll();
-                });
-            };
-            if (!src) {
-                workarea.set({
-                    src,
-                });
-                imageFromUrl(src);
-                return;
-            }
-            if (typeof src === 'string') {
-                workarea.set({
-                    src,
-                });
-                imageFromUrl(src);
-                return;
-            }
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                workarea.set({
-                    file: src,
-                });
-                imageFromUrl(e.target.result);
-            };
-            reader.readAsDataURL(src);
         },
     }
 
@@ -2984,88 +2626,6 @@ class Canvas extends Component {
         },
     }
 
-    zoomHandlers = {
-        zoomToPoint: (point, zoom) => {
-            const { onZoom, minZoom, maxZoom } = this.props;
-            let zoomRatio = zoom;
-            if (zoom <= (minZoom / 100)) {
-                zoomRatio = minZoom / 100;
-            } else if (zoom >= (maxZoom / 100)) {
-                zoomRatio = maxZoom / 100;
-            }
-            this.canvas.zoomToPoint(point, zoomRatio);
-            this.canvas.getObjects().forEach((obj) => {
-                if (this.handlers.isElementType(obj)) {
-                    const { id, width, height } = obj;
-                    const el = this.handler.elementHandler.findById(id);
-                    // update the element
-                    this.handler.elementHandler.setScaleOrAngle(el, obj);
-                    this.handler.elementHandler.setSize(el, obj);
-                    this.handler.elementHandler.setPosition(el, obj);
-                    if (obj.type === 'video' && obj.player) {
-                        obj.player.setPlayerSize(width, height);
-                    }
-                }
-            });
-            if (onZoom) {
-                onZoom(zoomRatio);
-            }
-        },
-        zoomOneToOne: () => {
-            const center = this.canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-            this.zoomHandlers.zoomToPoint(point, 1);
-        },
-        zoomToFit: () => {
-            let scaleX;
-            let scaleY;
-            scaleX = this.canvas.getWidth() / this.workarea.width;
-            scaleY = this.canvas.getHeight() / this.workarea.height;
-            if (this.workarea.height > this.workarea.width) {
-                scaleX = scaleY;
-                if (this.canvas.getWidth() < this.workarea.width * scaleX) {
-                    scaleX = scaleX * (this.canvas.getWidth() / (this.workarea.width * scaleX));
-                }
-            } else {
-                scaleY = scaleX;
-                if (this.canvas.getHeight() < this.workarea.height * scaleX) {
-                    scaleX = scaleX * (this.canvas.getHeight() / (this.workarea.height * scaleX));
-                }
-            }
-            const center = this.canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-            this.zoomHandlers.zoomToPoint(point, scaleX);
-        },
-        zoomIn: () => {
-            let zoomRatio = this.canvas.getZoom();
-            zoomRatio += 0.05;
-            const center = this.canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            this.zoomHandlers.zoomToPoint(point, zoomRatio);
-        },
-        zoomOut: () => {
-            let zoomRatio = this.canvas.getZoom();
-            zoomRatio -= 0.05;
-            const center = this.canvas.getCenter();
-            const point = {
-                x: center.left,
-                y: center.top,
-            };
-            this.zoomHandlers.zoomToPoint(point, zoomRatio);
-        },
-    }
-
     guidelineHandlers = {
         init: () => {
             this.ctx = this.canvas.getSelectionContext();
@@ -3460,7 +3020,7 @@ class Canvas extends Component {
                             top: target.top + 5,
                         });
                     }
-                } else if (this.handlers.isElementType(target)) {
+                } else if (target.superType === 'element') {
                     const { id } = target;
                     const el = this.handler.elementHandler.findById(id);
                     this.handler.elementHandler.setPosition(el, target);
@@ -3470,7 +3030,7 @@ class Canvas extends Component {
         moved: (opt) => {
             const { target } = opt;
             this.gridHandlers.setCoords(target);
-            if (this.handlers.isElementType(target)) {
+            if (target.superType === 'element') {
                 const { id } = target;
                 const el = this.handler.elementHandler.findById(id);
                 this.handler.elementHandler.setPosition(el, target);
@@ -3482,7 +3042,7 @@ class Canvas extends Component {
                 this.cropHandlers.resize(opt);
             }
             // TODO...this.guidelineHandlers.scalingGuidelines(target);
-            if (this.handlers.isElementType(target)) {
+            if (target.superType === 'element') {
                 const { id, width, height } = target;
                 const el = this.handler.elementHandler.findById(id);
                 // update the element
@@ -3496,7 +3056,7 @@ class Canvas extends Component {
         },
         rotating: (opt) => {
             const { target } = opt;
-            if (this.handlers.isElementType(target)) {
+            if (target.superType === 'element') {
                 const { id } = target;
                 const el = this.handler.elementHandler.findById(id);
                 // update the element
@@ -3544,7 +3104,7 @@ class Canvas extends Component {
             } else {
                 zoomRatio += 0.05;
             }
-            this.zoomHandlers.zoomToPoint(new fabric.Point(this.canvas.width / 2, this.canvas.height / 2), zoomRatio);
+            this.handler.zoomHandler.zoomToPoint(new fabric.Point(this.canvas.width / 2, this.canvas.height / 2), zoomRatio);
             opt.e.preventDefault();
             opt.e.stopPropagation();
         },
@@ -3627,7 +3187,7 @@ class Canvas extends Component {
                 return;
             }
             if (!this.props.editable && opt.target) {
-                if (this.handlers.isElementType(opt.target)) {
+                if (opt.target.superType === 'element') {
                     return false;
                 }
                 if (opt.target.id !== 'workarea') {
@@ -3730,14 +3290,14 @@ class Canvas extends Component {
         resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
             this.currentWidth = currentWidth;
             this.canvas.setWidth(nextWidth).setHeight(nextHeight);
-            if (!this.workarea) {
+            if (!this.handler.workarea) {
                 return;
             }
             const diffWidth = (nextWidth / 2) - (currentWidth / 2);
             const diffHeight = (nextHeight / 2) - (currentHeight / 2);
-            if (this.workarea.layout === 'fixed') {
-                this.canvas.centerObject(this.workarea);
-                this.workarea.setCoords();
+            if (this.handler.workarea.layout === 'fixed') {
+                this.canvas.centerObject(this.handler.workarea);
+                this.handler.workarea.setCoords();
                 if (this.props.gridOption.enabled) {
                     return;
                 }
@@ -3750,7 +3310,7 @@ class Canvas extends Component {
                             top,
                         });
                         obj.setCoords();
-                        if (this.handlers.isElementType(obj)) {
+                        if (obj.superType === 'element') {
                             const { id } = obj;
                             const el = this.handler.elementHandler.findById(id);
                             // update the element
@@ -3761,33 +3321,29 @@ class Canvas extends Component {
                 this.canvas.renderAll();
                 return;
             }
-            let scaleX = nextWidth / this.workarea.width;
-            const scaleY = nextHeight / this.workarea.height;
-            if (this.workarea.layout === 'responsive') {
-                if (this.workarea.height > this.workarea.width) {
+            let scaleX = nextWidth / this.handler.workarea.width;
+            const scaleY = nextHeight / this.handler.workarea.height;
+            if (this.handler.workarea.layout === 'responsive') {
+                if (this.handler.workarea.height > this.handler.workarea.width) {
                     scaleX = scaleY;
-                    if (nextWidth < this.workarea.width * scaleX) {
-                        scaleX = scaleX * (nextWidth / (this.workarea.width * scaleX));
+                    if (nextWidth < this.handler.workarea.width * scaleX) {
+                        scaleX = scaleX * (nextWidth / (this.handler.workarea.width * scaleX));
                     }
                 } else {
-                    if (nextHeight < this.workarea.height * scaleX) {
-                        scaleX = scaleX * (nextHeight / (this.workarea.height * scaleX));
+                    if (nextHeight < this.handler.workarea.height * scaleX) {
+                        scaleX = scaleX * (nextHeight / (this.handler.workarea.height * scaleX));
                     }
                 }
                 const deltaPoint = new fabric.Point(diffWidth, diffHeight);
                 this.canvas.relativePan(deltaPoint);
                 const center = this.canvas.getCenter();
-                const point = {
-                    x: center.left,
-                    y: center.top,
-                };
-                this.zoomHandlers.zoomToPoint(point, scaleX);
+                this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
                 this.canvas.renderAll();
                 return;
             }
-            const diffScaleX = nextWidth / (this.workarea.width * this.workarea.scaleX);
-            const diffScaleY = nextHeight / (this.workarea.height * this.workarea.scaleY);
-            this.workarea.set({
+            const diffScaleX = nextWidth / (this.handler.workarea.width * this.handler.workarea.scaleX);
+            const diffScaleY = nextHeight / (this.handler.workarea.height * this.handler.workarea.scaleY);
+            this.handler.workarea.set({
                 scaleX,
                 scaleY,
             });
@@ -3805,7 +3361,7 @@ class Canvas extends Component {
                         top,
                     });
                     obj.setCoords();
-                    if (this.handlers.isElementType(obj)) {
+                    if (obj.superType === 'element') {
                         const { width, height } = obj;
                         const el = this.handler.elementHandler.findById(id);
                         this.handler.elementHandler.setSize(el, obj);
@@ -3931,8 +3487,8 @@ class Canvas extends Component {
             }
             if (e.ctrlKey) {
                 this.canvas.defaultCursor = 'grab';
-                if (this.workarea.hoverCursor) {
-                    this.workarea.hoverCursor = 'grab';
+                if (this.handler.workarea.hoverCursor) {
+                    this.handler.workarea.hoverCursor = 'grab';
                 }
             }
             if (e.keyCode === 27 && esc) {
@@ -3980,8 +3536,8 @@ class Canvas extends Component {
         keyup: (e) => {
             if (this.keyCode !== 87) {
                 this.canvas.defaultCursor = 'default';
-                if (this.workarea.hoverCursor) {
-                    this.workarea.hoverCursor = 'default';
+                if (this.handler.workarea.hoverCursor) {
+                    this.handler.workarea.hoverCursor = 'default';
                 }
                 this.modeHandlers.selection();
             }
