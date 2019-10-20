@@ -13,7 +13,7 @@ class CanvasList extends Component {
 
     renderActions = () => {
         const { canvasRef } = this.props;
-        const idCropping = canvasRef ? canvasRef.interactionMode === 'crop' : false;
+        const idCropping = canvasRef ? canvasRef.handler.interactionMode === 'crop' : false;
         return (
             <FlexItem className="rde-canvas-list-actions" flex="0 1 auto">
                 <FlexBox justifyContent="space-between" alignItems="center">
@@ -34,7 +34,7 @@ class CanvasList extends Component {
 
     renderItem = () => {
         const { canvasRef, selectedItem } = this.props;
-        const idCropping = canvasRef ? canvasRef.interactionMode === 'crop' : false;
+        const idCropping = canvasRef ? canvasRef.handler.interactionMode === 'crop' : false;
         return canvasRef ? (
             canvasRef.canvas.getObjects().filter((obj) => {
                 if (obj.id === 'workarea') {

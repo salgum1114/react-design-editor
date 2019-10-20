@@ -1,4 +1,5 @@
 import Handler from './Handler';
+import { FabricObject } from '../utils';
 
 export type TransactionType = 'add' | 'remove' | 'moved' | 'scaled' | 'rotated' | 'skewed';
 
@@ -11,23 +12,25 @@ class TransactionHandler {
         this.handler = handler;
     }
 
-    public init = () => {
+    /**
+     * @description Init transaction
+     */
+    init = () => {
         this.redos = [];
         this.undos = [];
     }
 
     /**
      * @description Save transaction
-     * @param {fabric.Object} target
+     * @param {FabricObject} target
      * @param {TransactionType} type
      * @returns
      */
-    public save = (target: fabric.Object, type: TransactionType) => {
+    save = (target: FabricObject, type: TransactionType) => {
         if (!type) {
             console.warn('Must enter the transaction type');
             return;
         }
-        const { propertiesToInclude } = this.handler;
         const undo = { type };
         if (target.superType === 'node') {
             undo.target = {
@@ -63,9 +66,9 @@ class TransactionHandler {
 
     /**
      * @description Undo transaction
-     * @returns
+     * @returns {any}
      */
-    public undo = () => {
+    undo = () => {
         const undo = this.undos.pop();
         if (!undo) {
             return false;
@@ -74,7 +77,7 @@ class TransactionHandler {
         if (type === 'add') {
             if (target.superType === 'link') {
                 const findObject = this.handler.findById(target.id);
-                this.linkHandlers.remove(findObject);
+                this.handler.linkHandler.remove(findObject);
             } else {
                 this.handler.removeById(target.id);
             }
@@ -99,9 +102,9 @@ class TransactionHandler {
 
     /**
      * @description Redo transaction
-     * @returns
+     * @returns {any}
      */
-    public redo = () => {
+    redo = () => {
         const redo = this.redos.pop();
         if (!redo) {
             return false;
@@ -109,7 +112,7 @@ class TransactionHandler {
         const { target, type } = redo;
         if (type === 'add') {
             if (target.superType === 'link') {
-                this.linkHandlers.remove(target);
+                this.handler.linkHandler.remove(target);
             } else {
                 this.handler.removeById(target.id);
             }

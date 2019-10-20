@@ -14,7 +14,7 @@ class ImageMapHeaderToolbar extends Component {
 
     render() {
         const { canvasRef, selectedItem } = this.props;
-        const isCropping = canvasRef ? canvasRef.interactionMode === 'crop' : false;
+        const isCropping = canvasRef ? canvasRef.handler.interactionMode === 'crop' : false;
         return (
             <FlexBox className="rde-editor-header-toolbar-container" flex="1">
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-list">
@@ -110,24 +110,24 @@ class ImageMapHeaderToolbar extends Component {
                     <CommonButton
                         className="rde-action-btn"
                         shape="circle"
-                        disabled={canvasRef ? canvasRef.cropHandlers.validType() : true}
-                        onClick={() => canvasRef.cropHandlers.start()}
+                        disabled={canvasRef ? !canvasRef.handler.cropHandler.validType() : true}
+                        onClick={() => canvasRef.handler.cropHandler.start()}
                         icon="crop"
                         tooltipTitle={i18n.t('action.crop')}
                     />
                     <CommonButton
                         className="rde-action-btn"
                         shape="circle"
-                        disabled={canvasRef ? !canvasRef.cropRect : true}
-                        onClick={() => canvasRef.cropHandlers.finish()}
+                        disabled={canvasRef ? !canvasRef.handler.cropHandler.cropRect : true}
+                        onClick={() => canvasRef.handler.cropHandler.finish()}
                         icon="check"
                         tooltipTitle={i18n.t('action.crop-save')}
                     />
                     <CommonButton
                         className="rde-action-btn"
                         shape="circle"
-                        disabled={canvasRef ? !canvasRef.cropRect : true}
-                        onClick={() => canvasRef.cropHandlers.cancel()}
+                        disabled={canvasRef ? !canvasRef.handler.cropHandler.cropRect : true}
+                        onClick={() => canvasRef.handler.cropHandler.cancel()}
                         icon="times"
                         tooltipTitle={i18n.t('action.crop-cancel')}
                     />
@@ -162,7 +162,7 @@ class ImageMapHeaderToolbar extends Component {
                     {/* <Button
                         className="rde-action-btn"
                         disabled={isCropping || (canvasRef && !canvasRef.undos.length)}
-                        onClick={() => canvasRef.transactionHandlers.undo()}
+                        onClick={() => canvasRef.handler.transactionHandler.undo()}
                     >
                         <Icon name="undo-alt" style={{ marginRight: 8 }} />
                         {'Undo'}
@@ -170,7 +170,7 @@ class ImageMapHeaderToolbar extends Component {
                     <Button
                         className="rde-action-btn"
                         disabled={isCropping || (canvasRef && !canvasRef.redos.length)}
-                        onClick={() => canvasRef.transactionHandlers.redo()}
+                        onClick={() => canvasRef.handler.transactionHandler.redo()}
                     >
                         {'Redo'}
                         <Icon name="redo-alt" style={{ marginLeft: 8 }} />

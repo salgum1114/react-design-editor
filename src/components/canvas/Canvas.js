@@ -117,8 +117,8 @@ class Canvas extends Component {
         this.gridHandlers.init();
         const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
         if (editable) {
-            this.transactionHandlers.init();
-            this.interactionMode = 'selection';
+            this.handler.transactionHandler.init();
+            this.handler.interactionMode = 'selection';
             this.panning = false;
             if (guidelineOption.enabled) {
                 this.guidelineHandlers.init();
@@ -1387,304 +1387,6 @@ class Canvas extends Component {
         },
     }
 
-    cropHandlers = {
-        validType: () => {
-            const activeObject = this.canvas.getActiveObject();
-            if (!activeObject) {
-                return true;
-            }
-            if (activeObject.type === 'image') {
-                return false;
-            }
-            return true;
-        },
-        start: () => {
-            if (this.cropHandlers.validType()) {
-                return;
-            }
-            this.interactionMode = 'crop';
-            this.cropObject = this.canvas.getActiveObject();
-            const { left, top } = this.cropObject;
-            this.cropRect = new fabric.Rect({
-                width: this.cropObject.width,
-                height: this.cropObject.height,
-                scaleX: this.cropObject.scaleX,
-                scaleY: this.cropObject.scaleY,
-                originX: 'left',
-                originY: 'top',
-                left,
-                top,
-                hasRotatingPoint: false,
-                fill: 'rgba(0, 0, 0, 0.2)',
-            });
-            this.canvas.add(this.cropRect);
-            this.canvas.setActiveObject(this.cropRect);
-            this.cropObject.selectable = false;
-            this.cropObject.evented = false;
-            this.canvas.renderAll();
-        },
-        finish: () => {
-            const { left, top, width, height, scaleX, scaleY } = this.cropRect;
-            const croppedImg = this.cropObject.toDataURL({
-                left: left - this.cropObject.left,
-                top: top - this.cropObject.top,
-                width: width * scaleX,
-                height: height * scaleY,
-            });
-            this.handlers.setImage(this.cropObject, croppedImg);
-            this.cropHandlers.cancel();
-        },
-        cancel: () => {
-            this.interactionMode = 'selection';
-            this.cropObject.selectable = true;
-            this.cropObject.evented = true;
-            this.canvas.setActiveObject(this.cropObject);
-            this.canvas.remove(this.cropRect);
-            this.cropRect = null;
-            // this.cropObject = null;
-            this.canvas.renderAll();
-        },
-        resize: (opt) => {
-            const { target, transform: { original, corner } } = opt;
-            const { left, top, width, height, scaleX, scaleY } = target;
-            const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight, scaleX: cropScaleX, scaleY: cropScaleY } = this.cropObject;
-            if (corner === 'tl') {
-                if (Math.round(cropLeft) > Math.round(left)) { // left
-                    const originRight = Math.round(cropLeft + cropWidth);
-                    const targetRight = Math.round(target.getBoundingRect().left + target.getBoundingRect().width);
-                    const diffRightRatio = 1 - ((originRight - targetRight) / cropWidth);
-                    target.set({
-                        left: cropLeft,
-                        scaleX: diffRightRatio > 1 ? 1 : diffRightRatio,
-                    });
-                }
-                if (Math.round(cropTop) > Math.round(top)) { // top
-                    const originBottom = Math.round(cropTop + cropHeight);
-                    const targetBottom = Math.round(target.getBoundingRect().top + target.getBoundingRect().height);
-                    const diffBottomRatio = 1 - ((originBottom - targetBottom) / cropHeight);
-                    target.set({
-                        top: cropTop,
-                        scaleY: diffBottomRatio > 1 ? 1 : diffBottomRatio,
-                    });
-                }
-            } else if (corner === 'bl') {
-                if (Math.round(cropLeft) > Math.round(left)) { // left
-                    const originRight = Math.round(cropLeft + cropWidth);
-                    const targetRight = Math.round(target.getBoundingRect().left + target.getBoundingRect().width);
-                    const diffRightRatio = 1 - ((originRight - targetRight) / cropWidth);
-                    target.set({
-                        left: cropLeft,
-                        scaleX: diffRightRatio > 1 ? 1 : diffRightRatio,
-                    });
-                }
-                if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
-                    const diffTopRatio = 1 - ((original.top - cropTop) / cropHeight);
-                    target.set({
-                        top: original.top,
-                        scaleY: diffTopRatio > 1 ? 1 : diffTopRatio,
-                    });
-                }
-            } else if (corner === 'tr') {
-                if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))) { // right
-                    const diffLeftRatio = 1 - ((original.left - cropLeft) / cropWidth);
-                    target.set({
-                        left: original.left,
-                        scaleX: diffLeftRatio > 1 ? 1 : diffLeftRatio,
-                    });
-                }
-                if (Math.round(cropTop) > Math.round(top)) { // top
-                    const originBottom = Math.round(cropTop + cropHeight);
-                    const targetBottom = Math.round(target.getBoundingRect().top + target.getBoundingRect().height);
-                    const diffBottomRatio = 1 - ((originBottom - targetBottom) / cropHeight);
-                    target.set({
-                        top: cropTop,
-                        scaleY: diffBottomRatio > 1 ? 1 : diffBottomRatio,
-                    });
-                }
-            } else if (corner === 'br') {
-                if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))) { // right
-                    const diffLeftRatio = 1 - ((original.left - cropLeft) / cropWidth);
-                    target.set({
-                        left: original.left,
-                        scaleX: diffLeftRatio > 1 ? 1 : diffLeftRatio,
-                    });
-                }
-                if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
-                    const diffTopRatio = 1 - ((original.top - cropTop) / cropHeight);
-                    target.set({
-                        top: original.top,
-                        scaleY: diffTopRatio > 1 ? 1 : diffTopRatio,
-                    });
-                }
-            } else if (corner === 'ml') {
-                if (Math.round(cropLeft) > Math.round(left)) { // left
-                    const originRight = Math.round(cropLeft + cropWidth);
-                    const targetRight = Math.round(target.getBoundingRect().left + target.getBoundingRect().width);
-                    const diffRightRatio = 1 - ((originRight - targetRight) / cropWidth);
-                    target.set({
-                        left: cropLeft,
-                        scaleX: diffRightRatio > 1 ? 1 : diffRightRatio,
-                    });
-                }
-            } else if (corner === 'mt') {
-                if (Math.round(cropTop) > Math.round(top)) { // top
-                    const originBottom = Math.round(cropTop + cropHeight);
-                    const targetBottom = Math.round(target.getBoundingRect().top + target.getBoundingRect().height);
-                    const diffBottomRatio = 1 - ((originBottom - targetBottom) / cropHeight);
-                    target.set({
-                        top: cropTop,
-                        scaleY: diffBottomRatio > 1 ? 1 : diffBottomRatio,
-                    });
-                }
-            } else if (corner === 'mb') {
-                if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
-                    const diffTopRatio = 1 - ((original.top - cropTop) / cropHeight);
-                    target.set({
-                        top: original.top,
-                        scaleY: diffTopRatio > 1 ? 1 : diffTopRatio,
-                    });
-                }
-            } else if (corner === 'mr') {
-                if (Math.round(cropLeft + (cropWidth * cropScaleX)) < Math.round(left + (width * scaleX))) { // right
-                    const diffLeftRatio = 1 - ((original.left - cropLeft) / cropWidth);
-                    target.set({
-                        left: original.left,
-                        scaleX: diffLeftRatio > 1 ? 1 : diffLeftRatio,
-                    });
-                }
-            }
-        },
-        moving: (opt) => {
-            const { target } = opt;
-            const { left, top, width, height, scaleX, scaleY } = target;
-            const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight } = this.cropObject.getBoundingRect();
-            const movedTop = () => {
-                if (Math.round(cropTop) >= Math.round(top)) {
-                    target.set({
-                        top: cropTop,
-                    });
-                } else if (Math.round(cropTop + cropHeight) <= Math.round(top + (height * scaleY))) {
-                    target.set({
-                        top: cropTop + cropHeight - (height * scaleY),
-                    });
-                }
-            };
-            if (Math.round(cropLeft) >= Math.round(left)) {
-                target.set({
-                    left: Math.max(left, cropLeft),
-                });
-                movedTop();
-            } else if (Math.round(cropLeft + cropWidth) <= Math.round(left + (width * scaleX))) {
-                target.set({
-                    left: cropLeft + cropWidth - (width * scaleX),
-                });
-                movedTop();
-            } else if (Math.round(cropTop) >= Math.round(top)) {
-                target.set({
-                    top: cropTop,
-                });
-            } else if (Math.round(cropTop + cropHeight) <= Math.round(top + (height * scaleY))) {
-                target.set({
-                    top: cropTop + cropHeight - (height * scaleY),
-                });
-            }
-        },
-    }
-
-    modeHandlers = {
-        selection: (callback) => {
-            if (this.interactionMode === 'selection') {
-                return;
-            }
-            this.interactionMode = 'selection';
-            if (typeof this.props.canvasOption.selection === 'undefined') {
-                this.canvas.selection = true;
-            } else {
-                this.canvas.selection = this.props.canvasOption.selection;
-            }
-            this.canvas.defaultCursor = 'default';
-            this.handler.workarea.hoverCursor = 'default';
-            this.canvas.getObjects().forEach((obj) => {
-                if (obj.id !== 'workarea') {
-                    if (obj.id === 'grid') {
-                        obj.selectable = false;
-                        obj.evented = false;
-                        return;
-                    }
-                    if (callback) {
-                        const ret = callback(obj);
-                        if (typeof ret === 'object') {
-                            obj.selectable = ret.selectable;
-                            obj.evented = ret.evented;
-                        } else {
-                            obj.selectable = ret;
-                            obj.evented = ret;
-                        }
-                    } else {
-                        obj.selectable = true;
-                        obj.evented = true;
-                    }
-                }
-            });
-            this.canvas.renderAll();
-        },
-        grab: (callback) => {
-            if (this.interactionMode === 'grab') {
-                return;
-            }
-            this.interactionMode = 'grab';
-            this.canvas.selection = false;
-            this.canvas.defaultCursor = 'grab';
-            this.handler.workarea.hoverCursor = 'grab';
-            this.canvas.getObjects().forEach((obj) => {
-                if (obj.id !== 'workarea') {
-                    if (callback) {
-                        const ret = callback(obj);
-                        if (typeof ret === 'object') {
-                            obj.selectable = ret.selectable;
-                            obj.evented = ret.evented;
-                        } else {
-                            obj.selectable = ret;
-                            obj.evented = ret;
-                        }
-                    } else {
-                        obj.selectable = false;
-                        obj.evented = this.props.editable ? false : true;
-                    }
-                }
-            });
-            this.canvas.renderAll();
-        },
-        drawing: (callback, type) => {
-            this.interactionMode = type;
-            this.canvas.selection = false;
-            this.canvas.defaultCursor = 'pointer';
-            this.handler.workarea.hoverCursor = 'pointer';
-            this.canvas.getObjects().forEach((obj) => {
-                if (obj.id !== 'workarea') {
-                    if (callback) {
-                        const ret = callback(obj);
-                        if (typeof ret === 'object') {
-                            obj.selectable = ret.selectable;
-                            obj.evented = ret.evented;
-                        } else {
-                            obj.selectable = ret;
-                            obj.evented = ret;
-                        }
-                    } else {
-                        obj.selectable = false;
-                        obj.evented = this.props.editable ? false : true;
-                    }
-                }
-            });
-            this.canvas.renderAll();
-        },
-        moving: (e) => {
-            const delta = new fabric.Point(e.movementX, e.movementY);
-            this.canvas.relativePan(delta);
-        },
-    }
-
     nodeHandlers = {
         /**
          * Get the node path by target object
@@ -1936,7 +1638,7 @@ class Canvas extends Component {
             const toPort = target.createToPort(target.left + (target.width / 2), target.top);
             if (toPort) {
                 toPort.on('mouseover', () => {
-                    if (this.interactionMode === 'link' && this.activeLine && this.activeLine.class === 'line') {
+                    if (this.handler.interactionMode === 'link' && this.activeLine && this.activeLine.class === 'line') {
                         if (toPort.links.some(link => link.fromNode.id ===  this.activeLine.fromNode)) {
                             toPort.set({
                                 fill: toPort.errorFill,
@@ -2083,7 +1785,7 @@ class Canvas extends Component {
                 console.warn('A connected node already exists.');
                 return;
             }
-            this.interactionMode = 'link';
+            this.handler.interactionMode = 'link';
             const { left, top } = target;
             // const points = [left, top, left, top];
             const fromPort = { left, top };
@@ -2105,7 +1807,7 @@ class Canvas extends Component {
             this.canvas.add(this.activeLine);
         },
         finish: () => {
-            this.interactionMode = 'selection';
+            this.handler.interactionMode = 'selection';
             this.canvas.remove(this.activeLine);
             this.activeLine = null;
             this.canvas.renderAll();
@@ -2222,7 +1924,7 @@ class Canvas extends Component {
                 }
             },
             alreadyDrawing: () => {
-                if (this.interactionMode === 'link' && this.activeLine) {
+                if (this.handler.interactionMode === 'link' && this.activeLine) {
                     console.warn('Already drawing links.');
                     return;
                 }
@@ -2233,7 +1935,7 @@ class Canvas extends Component {
     drawingHandlers = {
         polygon: {
             init: () => {
-                this.modeHandlers.drawing(null, 'polygon');
+                this.handler.modeHandler.drawing(null, 'polygon');
                 this.pointArray = [];
                 this.lineArray = [];
                 this.activeLine = null;
@@ -2253,7 +1955,7 @@ class Canvas extends Component {
                 this.activeLine = null;
                 this.activeShape = null;
                 this.canvas.renderAll();
-                this.modeHandlers.selection();
+                this.handler.modeHandler.selection();
             },
             addPoint: (opt) => {
                 const id = uuid();
@@ -2364,7 +2066,7 @@ class Canvas extends Component {
                 this.pointArray = [];
                 this.activeLine = null;
                 this.activeShape = null;
-                this.modeHandlers.selection();
+                this.handler.modeHandler.selection();
             },
             // TODO... polygon resize
             createResize: (target, points) => {
@@ -2415,7 +2117,7 @@ class Canvas extends Component {
         },
         line: {
             init: () => {
-                this.modeHandlers.drawing(null, 'line');
+                this.handler.modeHandler.drawing(null, 'line');
                 this.pointArray = [];
                 this.activeLine = null;
             },
@@ -2427,7 +2129,7 @@ class Canvas extends Component {
                 this.pointArray = [];
                 this.activeLine = null;
                 this.canvas.renderAll();
-                this.modeHandlers.selection();
+                this.handler.modeHandler.selection();
             },
             addPoint: (opt) => {
                 const { absolutePointer } = opt;
@@ -2492,12 +2194,12 @@ class Canvas extends Component {
                 this.handlers.add(option, false);
                 this.pointArray = [];
                 this.activeLine = null;
-                this.modeHandlers.selection();
+                this.handler.modeHandler.selection();
             },
         },
         arrow: {
             init: () => {
-                this.modeHandlers.drawing(null, 'arrow');
+                this.handler.modeHandler.drawing(null, 'arrow');
                 this.pointArray = [];
                 this.activeLine = null;
             },
@@ -2509,7 +2211,7 @@ class Canvas extends Component {
                 this.pointArray = [];
                 this.activeLine = null;
                 this.canvas.renderAll();
-                this.modeHandlers.selection();
+                this.handler.modeHandler.selection();
             },
             addPoint: (opt) => {
                 const { absolutePointer } = opt;
@@ -2574,7 +2276,7 @@ class Canvas extends Component {
                 this.handlers.add(option, false);
                 this.pointArray = [];
                 this.activeLine = null;
-                this.modeHandlers.selection();
+                this.handler.modeHandler.selection();
             },
         },
         orthogonal: {
@@ -2990,8 +2692,8 @@ class Canvas extends Component {
         },
         moving: (opt) => {
             const { target } = opt;
-            if (this.interactionMode === 'crop') {
-                this.cropHandlers.moving(opt);
+            if (this.handler.interactionMode === 'crop') {
+                this.handler.cropHandler.moving(opt);
             } else {
                 if (this.props.editable && this.props.guidelineOption.enabled) {
                     this.guidelineHandlers.movingGuidelines(target);
@@ -3038,8 +2740,8 @@ class Canvas extends Component {
         },
         scaling: (opt) => {
             const { target } = opt;
-            if (this.interactionMode === 'crop') {
-                this.cropHandlers.resize(opt);
+            if (this.handler.interactionMode === 'crop') {
+                this.handler.cropHandler.resize(opt);
             }
             // TODO...this.guidelineHandlers.scalingGuidelines(target);
             if (target.superType === 'element') {
@@ -3110,11 +2812,11 @@ class Canvas extends Component {
         },
         mousedown: (opt) => {
             if (opt.e.ctrlKey) {
-                this.modeHandlers.grab();
+                this.handler.modeHandler.grab();
                 this.panning = true;
                 return;
             }
-            if (this.interactionMode === 'grab') {
+            if (this.handler.interactionMode === 'grab') {
                 this.panning = true;
                 return;
             }
@@ -3127,14 +2829,14 @@ class Canvas extends Component {
                     });
                 }
                 if (target && target.type === 'fromPort') {
-                    if (this.interactionMode === 'link' && this.activeLine) {
+                    if (this.handler.interactionMode === 'link' && this.activeLine) {
                         console.warn('Already drawing links.');
                         return;
                     }
                     this.linkHandlers.init(target);
                     return;
                 }
-                if (target && this.interactionMode === 'link' && (target.type === 'toPort' || target.superType === 'node')) {
+                if (target && this.handler.interactionMode === 'link' && (target.type === 'toPort' || target.superType === 'node')) {
                     let toPort;
                     if (target.superType === 'node') {
                         toPort = target.toPort;
@@ -3150,7 +2852,7 @@ class Canvas extends Component {
                 }
                 this.viewportTransform = this.canvas.viewportTransform;
                 this.zoom = this.canvas.getZoom();
-                if (this.interactionMode === 'selection') {
+                if (this.handler.interactionMode === 'selection') {
                     if (target && target.superType === 'link') {
                         target.set({
                             stroke: target.selectedStroke || 'green',
@@ -3159,19 +2861,19 @@ class Canvas extends Component {
                     this.prevTarget = target;
                     return;
                 }
-                if (this.interactionMode === 'polygon') {
+                if (this.handler.interactionMode === 'polygon') {
                     if (target && this.pointArray.length && target.id === this.pointArray[0].id) {
                         this.drawingHandlers.polygon.generate(this.pointArray);
                     } else {
                         this.drawingHandlers.polygon.addPoint(opt);
                     }
-                } else if (this.interactionMode === 'line') {
+                } else if (this.handler.interactionMode === 'line') {
                     if (this.pointArray.length && this.activeLine) {
                         this.drawingHandlers.line.generate(opt);
                     } else {
                         this.drawingHandlers.line.addPoint(opt);
                     }
-                } else if (this.interactionMode === 'arrow') {
+                } else if (this.handler.interactionMode === 'arrow') {
                     if (this.pointArray.length && this.activeLine) {
                         this.drawingHandlers.arrow.generate(opt);
                     } else {
@@ -3181,8 +2883,8 @@ class Canvas extends Component {
             }
         },
         mousemove: (opt) => {
-            if (this.interactionMode === 'grab' && this.panning) {
-                this.modeHandlers.moving(opt.e);
+            if (this.handler.interactionMode === 'grab' && this.panning) {
+                this.handler.modeHandler.moving(opt.e);
                 this.canvas.requestRenderAll();
                 return;
             }
@@ -3198,7 +2900,7 @@ class Canvas extends Component {
                     this.handler.tooltipHandler.hide(opt.target);
                 }
             }
-            if (this.interactionMode === 'polygon') {
+            if (this.handler.interactionMode === 'polygon') {
                 if (this.activeLine && this.activeLine.class === 'line') {
                     const pointer = this.canvas.getPointer(opt.e);
                     this.activeLine.set({ x2: pointer.x, y2: pointer.y });
@@ -3212,19 +2914,19 @@ class Canvas extends Component {
                     });
                     this.canvas.requestRenderAll();
                 }
-            } else if (this.interactionMode === 'line') {
+            } else if (this.handler.interactionMode === 'line') {
                 if (this.activeLine && this.activeLine.class === 'line') {
                     const pointer = this.canvas.getPointer(opt.e);
                     this.activeLine.set({ x2: pointer.x, y2: pointer.y });
                 }
                 this.canvas.requestRenderAll();
-            } else if (this.interactionMode === 'arrow') {
+            } else if (this.handler.interactionMode === 'arrow') {
                 if (this.activeLine && this.activeLine.class === 'line') {
                     const pointer = this.canvas.getPointer(opt.e);
                     this.activeLine.set({ x2: pointer.x, y2: pointer.y });
                 }
                 this.canvas.requestRenderAll();
-            } else if (this.interactionMode === 'link') {
+            } else if (this.handler.interactionMode === 'link') {
                 if (this.activeLine && this.activeLine.class === 'line') {
                     const pointer = this.canvas.getPointer(opt.e);
                     this.activeLine.set({ x2: pointer.x, y2: pointer.y });
@@ -3233,12 +2935,12 @@ class Canvas extends Component {
             }
         },
         mouseup: (opt) => {
-            if (this.interactionMode === 'grab') {
+            if (this.handler.interactionMode === 'grab') {
                 this.panning = false;
                 return;
             }
             const { target, e } = opt;
-            if (this.interactionMode === 'selection') {
+            if (this.handler.interactionMode === 'selection') {
                 if (target && e.shiftKey && target.superType === 'node') {
                     this.canvas.discardActiveObject();
                     const nodes = [];
@@ -3492,16 +3194,16 @@ class Canvas extends Component {
                 }
             }
             if (e.keyCode === 27 && esc) {
-                if (this.interactionMode === 'selection') {
+                if (this.handler.interactionMode === 'selection') {
                     this.canvas.discardActiveObject();
                     this.canvas.renderAll();
-                } else if (this.interactionMode === 'polygon') {
+                } else if (this.handler.interactionMode === 'polygon') {
                     this.drawingHandlers.polygon.finish();
-                } else if (this.interactionMode === 'line') {
+                } else if (this.handler.interactionMode === 'line') {
                     this.drawingHandlers.line.finish();
-                } else if (this.interactionMode === 'arrow') {
+                } else if (this.handler.interactionMode === 'arrow') {
                     this.drawingHandlers.arrow.finish();
-                } else if (this.interactionMode === 'link') {
+                } else if (this.handler.interactionMode === 'link') {
                     this.linkHandlers.finish();
                 }
                 this.handler.tooltipHandler.hide();
@@ -3525,10 +3227,10 @@ class Canvas extends Component {
                     this.handlers.paste();
                 } else if (e.keyCode === 90 && transaction) {
                     e.preventDefault();
-                    this.transactionHandlers.undo();
+                    this.handler.transactionHandler.undo();
                 } else if (e.keyCode === 88 && transaction) {
                     e.preventDefault();
-                    this.transactionHandlers.redo();
+                    this.handler.transactionHandler.redo();
                 }
                 return false;
             }
@@ -3539,7 +3241,7 @@ class Canvas extends Component {
                 if (this.handler.workarea.hoverCursor) {
                     this.handler.workarea.hoverCursor = 'default';
                 }
-                this.modeHandlers.selection();
+                this.handler.modeHandler.selection();
             }
         },
         contextmenu: (e) => {
@@ -3555,134 +3257,6 @@ class Canvas extends Component {
         },
         onmousedown: (e) => {
             this.handler.contextmenuHandler.hide();
-        },
-    }
-
-    transactionHandlers = {
-        /**
-         * Transaction init function
-         *
-         */
-        init: () => {
-            this.redos = [];
-            this.undos = [];
-        },
-        /**
-         * Transaction save function
-         * @param {fabric.Object} target
-         * @param {'add' | 'remove' | 'moved' | 'scaled' | 'rotated' | 'skewed'} type
-         * @returns {boolean}
-         */
-        save: (target, type) => {
-            if (!type) {
-                console.warn('Must enter the transaction type');
-                return false;
-            }
-            const { propertiesToInclude } = this.props;
-            const undo = { type };
-            if (target.superType === 'node') {
-                undo.target = {
-                    id: target.id,
-                    name: target.name,
-                    description: target.description,
-                    superType: target.superType,
-                    type: target.type,
-                    nodeClazz: target.nodeClazz,
-                    configuration: target.configuration,
-                    properties: {
-                        left: target.left || 0,
-                        top: target.top || 0,
-                        iconName: target.descriptor.icon,
-                    },
-                };
-            } else if (target.superType === 'link') {
-                undo.target = {
-                    id: target.id,
-                    type: target.type,
-                    superType: target.superType,
-                    fromNode: target.fromNode.id,
-                    fromPort: target.fromPort,
-                    toNode: target.toNode.id,
-                };
-            } else if (target.type === 'activeSelection') {
-
-            } else {
-
-            }
-            this.undos.push(undo);
-        },
-        /**
-         * Transaction undo function
-         * @returns {any}
-         */
-        undo: () => {
-            const undo = this.undos.pop();
-            if (!undo) {
-                return false;
-            }
-            const { target, type } = undo;
-            if (type === 'add') {
-                if (target.superType === 'link') {
-                    const findObject = this.handlers.findById(target.id);
-                    this.linkHandlers.remove(findObject);
-                } else {
-                    this.handlers.removeById(target.id);
-                }
-            } else if (type === 'remove') {
-                if (target.superType === 'node') {
-                    target.left = target.properties.left;
-                    target.top = target.properties.top;
-                }
-                this.handlers.add({ ...target, id: null }, false, true);
-            } else if (type === 'moved') {
-                
-            } else if (type === 'scaled') {
-                
-            } else if (type === 'rotated') {
-                
-            } else if (type === 'skewed') {
-                
-            }
-            this.redos.push(undo);
-            return undo;
-        },
-        /**
-         * Transaction redo function
-         * @returns {any}
-         */
-        redo: () => {
-            const redo = this.redos.pop();
-            if (!redo) {
-                return false;
-            }
-            const { target, type } = redo;
-            if (type === 'add') {
-                if (target.superType === 'link') {
-                    this.linkHandlers.remove(target);
-                } else {
-                    this.handlers.removeById(target.id);
-                }
-                this.redos.push({
-                    target,
-                    type: 'remove',
-                });
-            } else if (type === 'remove') {
-                if (target.superType === 'link') {
-                    
-                } else {
-                    
-                }
-            } else if (type === 'moved') {
-                
-            } else if (type === 'scaled') {
-                
-            } else if (type === 'rotated') {
-                
-            } else if (type === 'skewed') {
-                
-            }
-            this.undos.push(redo);
-            return redo;
         },
     }
 

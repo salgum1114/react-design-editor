@@ -198,7 +198,7 @@ class ImageMapEditor extends Component {
             }
             if (changedKey === 'width' || changedKey === 'height') {
                 this.canvasRef.handlers.scaleToResize(allValues.width, allValues.height);
-                this.canvasRef.transactionHandlers.save(selectedItem, 'modified');
+                this.canvasRef.handler.transactionHandler.save(selectedItem, 'modified');
                 return;
             }
             if (changedKey === 'lock') {

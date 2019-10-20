@@ -9,3 +9,4 @@ export { default as TooltipHandler } from './TooltipHandler';
 export { default as TransactionHandler } from './TransactionHandler';
 export { default as ZoomHandler } from './ZoomHandler';
 export { default as WorkareaHandler } from './WorkareaHandler';
+export { default as ModeHandler } from './ModeHandler';

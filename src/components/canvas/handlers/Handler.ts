@@ -11,8 +11,10 @@ import {
     TooltipHandler,
     ZoomHandler,
     WorkareaHandler,
+    ModeHandler,
+    TransactionHandler,
 } from '.';
-import { FabricObject, FabricImage, WorkareaObject, WorkareaOption } from '../utils';
+import { FabricObject, FabricImage, WorkareaObject, WorkareaOption, InteractionMode, CanvasOption } from '../utils';
 
 export interface HandlerOptions {
     id: string;
@@ -21,11 +23,12 @@ export interface HandlerOptions {
     workarea: WorkareaObject;
     objects: fabric.Object[];
     editable?: boolean;
-    interactionMode: string;
+    interactionMode: InteractionMode;
     propertiesToInclude?: string[];
     minZoom?: number;
     maxZoom?: number;
     workareaOption?: WorkareaOption;
+    canvasOption?: CanvasOption;
     [key: string]: any;
 
     onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: fabric.Object) => Promise<any>;
@@ -41,6 +44,8 @@ export interface HandlerOptions {
     tooltipHandler: TooltipHandler;
     zoomHandler: ZoomHandler;
     workareaHandler: WorkareaHandler;
+    modeHandler: ModeHandler;
+    transactionHandler: TransactionHandler;
 }
 
 class Handler {
@@ -50,11 +55,12 @@ class Handler {
     public objects: fabric.Object[];
     public container: HTMLDivElement;
     public editable: boolean;
-    public interactionMode: string;
+    public interactionMode: InteractionMode;
     public propertiesToInclude?: string[];
     public minZoom: number;
     public maxZoom: number;
     public workareaOption: WorkareaOption;
+    public canvasOption?: CanvasOption;
 
     private isRequsetAnimFrame = false;
     private requestFrame: any;
@@ -72,6 +78,8 @@ class Handler {
     public tooltipHandler: TooltipHandler;
     public zoomHandler: ZoomHandler;
     public workareaHandler: WorkareaHandler;
+    public modeHandler: ModeHandler;
+    public transactionHandler: TransactionHandler;
 
     constructor(options: HandlerOptions) {
         this.id = options.id;
@@ -85,6 +93,7 @@ class Handler {
         this.minZoom = options.minZoom;
         this.maxZoom = options.maxZoom;
         this.workareaOption = options.workareaOption;
+        this.canvasOption = options.canvasOption;
 
         this.imageHandler = new ImageHandler(this);
         this.chartHandler = new ChartHandler(this);
@@ -101,6 +110,8 @@ class Handler {
             onZoom: options.onZoom,
         });
         this.workareaHandler = new WorkareaHandler(this);
+        this.modeHandler = new ModeHandler(this);
+        this.transactionHandler = new TransactionHandler(this);
     }
 
     /**

@@ -51,6 +51,7 @@ export type FabricObject<T extends any = fabric.Object> = T & {
     originStroke?: string;
     editable?: boolean;
     superType?: string;
+    description?: string;
     /**
      * Animation
      */
@@ -125,6 +126,19 @@ export interface CanvasOption {
     selection?: boolean;
     defaultCursor?: string;
     backgroundColor?: string;
+}
+
+export type InteractionMode = 'selection' | 'grab' | 'polygon' | 'line' | 'arrow' | 'link' | 'crop';
+
+export interface IEvent {
+	e: Event;
+	target?: FabricObject;
+    subTargets?: FabricObject[],
+	button?: number;
+	isClick?: boolean;
+	pointer?: fabric.Point;
+	absolutePointer?: fabric.Point;
+    transform?: { corner: string, original: FabricObject, originX: string, originY: string, width: number };
 }
 
 export const toObject = (obj: any, propertiesToInclude: string[], properties?: { [key: string]: any }) => fabric.util.object.extend(obj.callSuper('toObject'), propertiesToInclude.reduce((prev, property) => Object.assign(prev, {

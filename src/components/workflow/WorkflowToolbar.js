@@ -28,7 +28,7 @@ class WorkflowToolbar extends Component {
 
     handlers = {
         selection: () => {
-            this.props.canvasRef.modeHandlers.selection((obj) => {
+            this.props.canvasRef.handler.modeHandler.selection((obj) => {
                 return {
                     selectable: obj.superType !== 'port',
                     evented: true,
@@ -37,7 +37,7 @@ class WorkflowToolbar extends Component {
             this.setState({ interactionMode: 'selection' });
         },
         grab: () => {
-            this.props.canvasRef.modeHandlers.grab();
+            this.props.canvasRef.handler.modeHandler.grab();
             this.setState({ interactionMode: 'grab' });
         },
     }

@@ -106,7 +106,7 @@ class ImageMapItems extends Component {
                     return;
                 }
             }
-            if (canvasRef.interactionMode === 'polygon') {
+            if (canvasRef.handler.interactionMode === 'polygon') {
                 message.info('Already drawing');
                 return;
             }
@@ -133,7 +133,7 @@ class ImageMapItems extends Component {
                     return;
                 }
             }
-            if (canvasRef.interactionMode === 'polygon') {
+            if (canvasRef.handler.interactionMode === 'polygon') {
                 message.info('Already drawing');
                 return;
             }
