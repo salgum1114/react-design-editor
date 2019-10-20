@@ -2585,7 +2585,7 @@ class Canvas extends Component {
             }
         },
         scalingGuidelines: (target) => {
-            // TODO...
+            // TODO... object scaling guideline
         },
     }
 
@@ -2700,9 +2700,9 @@ class Canvas extends Component {
                 }
                 if (target.type === 'activeSelection') {
                     target.getObjects().forEach((obj) => {
+                        const left = target.left + obj.left + (target.width / 2);
+                        const top = target.top + obj.top + (target.height / 2);
                         if (obj.superType === 'node') {
-                            const left = target.left + obj.left + (target.width / 2);
-                            const top = target.top + obj.top + (target.height / 2);
                             this.portHandlers.setCoords({ ...obj, left, top });
                             if (obj.iconButton) {
                                 obj.iconButton.set({
@@ -2710,6 +2710,11 @@ class Canvas extends Component {
                                     top: obj.top + 5,
                                 });
                             }
+                        } else if (obj.superType === 'element') {
+                            const { id } = obj;
+                            const el = this.handler.elementHandler.findById(id);
+                            // TODO... Element object incorrect position
+                            this.handler.elementHandler.setPositionByOrigin(el, obj, left, top);
                         }
                     });
                     return;

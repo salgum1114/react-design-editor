@@ -130,6 +130,19 @@ class ElementHandler {
         el.style.top = `${top + padTop}px`;
     }
 
+    public setPositionByOrigin = (el: HTMLElement, obj: fabric.Object, left: number, top: number) => {
+        if (!el) {
+            return;
+        }
+        obj.setCoords();
+        const zoom = this.handler.canvas.getZoom();
+        const { scaleX, scaleY, width, height } = obj;
+        const padLeft = ((width * scaleX * zoom) - width) / 2;
+        const padTop = ((height * scaleY * zoom) - height) / 2;
+        el.style.left = `${left + padLeft}px`;
+        el.style.top = `${top + padTop}px`;
+    }
+
     /**
      * @description Set size
      * @param {HTMLElement} el
