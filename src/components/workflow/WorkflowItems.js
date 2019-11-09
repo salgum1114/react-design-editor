@@ -73,7 +73,7 @@ class WorkflowItems extends Component {
                 configuration: item.defaultConfiguration,
                 description: '',
             });
-            canvasRef.handlers.add(option, centered);
+            canvasRef.handler.add(option, centered);
         },
         onChangeActiveKey: (activeKey) => {
             this.setState({

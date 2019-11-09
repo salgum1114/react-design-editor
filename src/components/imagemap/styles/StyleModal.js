@@ -75,7 +75,7 @@ class StyleModal extends Component {
                         top: 50,
                         id: 'styles',
                     };
-                    this.canvasRef.handlers.add(option);
+                    this.canvasRef.handler.add(option);
                 });
                 return;
             }

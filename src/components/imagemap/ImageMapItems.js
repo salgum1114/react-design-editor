@@ -116,11 +116,11 @@ class ImageMapItems extends Component {
                 this.handlers.onSVGModalVisible(item.option);
                 return;
             }
-            canvasRef.handlers.add(option, centered);
+            canvasRef.handler.add(option, centered);
         },
         onAddSVG: (option, centered) => {
             const { canvasRef } = this.props;
-            canvasRef.handlers.add({ ...option, type: 'svg', id: uuid(), name: 'New SVG' }, centered);
+            canvasRef.handler.add({ ...option, type: 'svg', id: uuid(), name: 'New SVG' }, centered);
             this.handlers.onSVGModalVisible();
         },
         onDrawingItem: (item) => {

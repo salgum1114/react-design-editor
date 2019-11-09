@@ -74,7 +74,7 @@ class ModeHandler {
         this.handler.canvas.renderAll();
     }
 
-    drawing = (callback?: (obj: FabricObject) => any, type: InteractionMode) => {
+    drawing = (callback?: (obj: FabricObject) => any, type?: InteractionMode) => {
         this.handler.interactionMode = type;
         this.handler.canvas.selection = false;
         this.handler.canvas.defaultCursor = 'pointer';

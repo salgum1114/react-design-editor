@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
-import { Pattern } from 'fabric/fabric-impl';
+
+import { IFilter } from '../handlers/ImageHandler';
 
 export type AnimationType = 'fade' | 'bounce' | 'shake' | 'scaling' | 'rotation' | 'flash' | 'none';
 
@@ -7,7 +8,7 @@ export interface AnimationProperty {
     delay?: number;
     duration?: number;
     autoplay?: boolean;
-    loop?: boolean;
+    loop?: boolean | number;
     type: AnimationType;
     offset?: number;
     opacity?: number;
@@ -15,7 +16,7 @@ export interface AnimationProperty {
     shake?: 'vertical' | 'horizontal';
     scale?: number;
     angle?: number;
-    fill?: string | Pattern;
+    fill?: string | fabric.Pattern;
     stroke?: string;
 }
 
@@ -40,40 +41,80 @@ export interface TriggerProperty {
 }
 
 export type FabricObject<T extends any = fabric.Object> = T & {
+    /**
+     * @description Object id
+     * @type {string}
+     */
     id?: string;
+    /**
+     * @description Parent object id
+     * @type {string}
+     */
+    parentId?: string;
     originOpacity?: number;
     originTop?: number;
     originLeft?: number;
     originScaleX?: number;
     originScaleY?: number;
     originAngle?: number;
-    originFill?: string | Pattern;
+    originFill?: string | fabric.Pattern;
     originStroke?: string;
+    /**
+     * @description Object editable
+     * @type {boolean}
+     */
     editable?: boolean;
+    /**
+     * @description Object Super type
+     * @type {string}
+     */
     superType?: string;
+    /**
+     * @description
+     * @type {string}
+     */
     description?: string;
     /**
-     * Animation
+     * @description Animation property
+     * @type {AnimationProperty}
      */
     animation?: AnimationProperty;
+    /**
+     * @description Anime instance
+     * @type {anime.AnimeInstance}
+     */
     anime?: anime.AnimeInstance;
     /**
-     * Trigger
+     * @description Trigger property
+     * @type {TriggerProperty}
      */
     trigger?: TriggerProperty;
     /**
-     * Tooltip
+     * @description Tooltip property
+     * @type {TooltipProperty}
      */
     tooltip?: TooltipProperty;
     /**
-     * Link
+     * @description Link property
+     * @type {LinkProperty}
      */
     link?: LinkProperty;
+    /**
+     * @description Is running animation
+     * @type {boolean}
+     */
+    animating?: boolean;
+    // /**
+    //  * @description Object shadow
+    //  * @type {fabric.Shadow}
+    //  */
+    // shadow?: fabric.Shadow | string;
 }
 
-export interface FabricImage extends FabricObject<fabric.Image> {
+export type FabricImage = FabricObject & Omit<fabric.Image, 'filters'> & {
     src?: string;
     file?: File;
+    filters?: IFilter[];
 }
 
 export interface FabricElement extends FabricObject<fabric.Rect> {
@@ -128,9 +169,30 @@ export interface CanvasOption {
     backgroundColor?: string;
 }
 
+export interface GridOption {
+    enabled?: boolean;
+    grid?: number;
+    snapToGrid?: boolean;
+}
+
+export interface GuidelineOption {
+    enabled?: boolean;
+}
+
+export interface KeyEvent {
+    move?: boolean;
+    all?: boolean;
+    copy?: boolean;
+    paste?: boolean;
+    esc?: boolean;
+    del?: boolean;
+    clipboard?: boolean;
+    transaction?: boolean;
+}
+
 export type InteractionMode = 'selection' | 'grab' | 'polygon' | 'line' | 'arrow' | 'link' | 'crop';
 
-export interface IEvent {
+export interface FabricEvent {
 	e: Event;
 	target?: FabricObject;
     subTargets?: FabricObject[],

@@ -73,7 +73,7 @@ class AnimationModal extends Component {
                         fill: 'rgba(0, 0, 0, 1)',
                         stroke: 'rgba(255, 255, 255, 0)',
                     };
-                    this.canvasRef.handlers.add(option);
+                    this.canvasRef.handler.add(option);
                 });
                 return;
             }

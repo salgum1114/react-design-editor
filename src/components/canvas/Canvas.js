@@ -38,7 +38,7 @@ class Canvas extends Component {
         fabricObjects: PropTypes.object,
         editable: PropTypes.bool,
         canvasOption: PropTypes.object,
-        defaultOptions: PropTypes.object,
+        defaultOption: PropTypes.object,
         activeSelection: PropTypes.object,
         tooltip: PropTypes.any,
         zoomEnabled: PropTypes.bool,
@@ -65,7 +65,7 @@ class Canvas extends Component {
         canvasOption: {
             selection: true,
         },
-        defaultOptions: {},
+        defaultOption: {},
         activeSelection: {
             hasControls: true,
         },
@@ -88,7 +88,7 @@ class Canvas extends Component {
 
     constructor(props) {
         super(props);
-        this.fabricObjects = CanvasObjects(props.fabricObjects, props.defaultOptions);
+        this.fabricObjects = CanvasObjects(props.fabricObjects, props.defaultOption);
         this.container = React.createRef();
         this.objects = [];
         this.keyEvent = Object.assign({}, defaultKeyboardEvent, props.keyEvent);
@@ -102,7 +102,7 @@ class Canvas extends Component {
 
     componentDidMount() {
         const { id } = this.state;
-        const { editable, canvasOption, guidelineOption } = this.props;
+        const { editable, canvasOption, guidelineOption, fabricObjects, defaultOption } = this.props;
         const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption);
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
@@ -112,16 +112,17 @@ class Canvas extends Component {
             canvas: this.canvas,
             objects: this.objects,
             container: this.container.current,
+            fabricObjects: this.fabricObjects,
             ...this.props,
         });
-        this.gridHandlers.init();
-        const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
+        this.handler.gridHandler.init();
+        const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.handler.eventHandler;
         if (editable) {
             this.handler.transactionHandler.init();
             this.handler.interactionMode = 'selection';
             this.panning = false;
             if (guidelineOption.enabled) {
-                this.guidelineHandlers.init();
+                this.handler.guidelineHandler.init();
             }
             this.canvas.on({
                 'object:modified': modified,
@@ -156,7 +157,7 @@ class Canvas extends Component {
             const { canvasOption: { width: currentWidth, height: currentHeight } } = this.props;
             const { canvasOption: { width: prevWidth, height: prevHeight } } = prevProps;
             if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
-                this.eventHandlers.resize(prevWidth, prevHeight, currentWidth, currentHeight);
+                this.handler.eventHandler.resize(prevWidth, prevHeight, currentWidth, currentHeight);
             }
             this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
             if (typeof this.props.canvasOption.selection === 'undefined') {
@@ -169,7 +170,7 @@ class Canvas extends Component {
             this.keyEvent = Object.assign({}, defaultKeyboardEvent, this.props.keyEvent);
         }
         if (JSON.stringify(this.props.fabricObjects) !== JSON.stringify(prevProps.fabricObjects)) {
-            this.fabricObjects = CanvasObjects(this.props.fabricObjects);
+            this.handler.fabricObjects = CanvasObjects(this.props.fabricObjects);
         } else if (JSON.stringify(this.props.workareaOption) !== JSON.stringify(prevProps.workareaOption)) {
             this.workarea.set({
                 ...this.props.workareaOption,
@@ -177,13 +178,13 @@ class Canvas extends Component {
         } else if (JSON.stringify(this.props.guidelineOption) !== JSON.stringify(prevProps.guidelineOption)) {
             if (this.props.guidelineOption.enabled) {
                 this.canvas.on({
-                    'before:render': this.eventHandlers.beforeRender,
-                    'after:render': this.eventHandlers.afterRender,
+                    'before:render': this.handler.eventHandler.beforeRender,
+                    'after:render': this.handler.eventHandler.afterRender,
                 });
             } else {
                 this.canvas.off({
-                    'before:render': this.eventHandlers.beforeRender,
-                    'after:render': this.eventHandlers.afterRender,
+                    'before:render': this.handler.eventHandler.beforeRender,
+                    'after:render': this.handler.eventHandler.afterRender,
                 });
             }
         }
@@ -192,7 +193,7 @@ class Canvas extends Component {
     componentWillUnmount() {
         this.detachEventListener();
         const { editable } = this.props;
-        const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.eventHandlers;
+        const { modified, moving, moved, scaling, rotating, mousewheel, mousedown, mousemove, mouseup, mouseout, selection, beforeRender, afterRender } = this.handler.eventHandler;
         if (editable) {
             this.canvas.off({
                 'object:modified': modified,
@@ -219,7 +220,7 @@ class Canvas extends Component {
                 'mouse:wheel': mousewheel,
             });
             this.handlers.getObjects().forEach((object) => {
-                object.off('mousedown', this.eventHandlers.object.mousedown);
+                object.off('mousedown', this.handler.eventHandler.objectMousedown);
                 if (object.anime) {
                     anime.remove(object);
                 }
@@ -237,189 +238,27 @@ class Canvas extends Component {
     attachEventListener = () => {
         // if add canvas wrapper element event, tabIndex = 1000;
         this.canvas.wrapperEl.tabIndex = 1000;
-        document.addEventListener('keydown', this.eventHandlers.keydown, false);
-        document.addEventListener('keyup', this.eventHandlers.keyup, false);
-        document.addEventListener('mousedown', this.eventHandlers.onmousedown, false);
-        this.canvas.wrapperEl.addEventListener('contextmenu', this.eventHandlers.contextmenu, false);
+        document.addEventListener('keydown', this.handler.eventHandler.keydown, false);
+        document.addEventListener('keyup', this.handler.eventHandler.keyup, false);
+        document.addEventListener('mousedown', this.handler.eventHandler.onmousedown, false);
+        this.canvas.wrapperEl.addEventListener('contextmenu', this.handler.eventHandler.contextmenu, false);
         if (this.keyEvent.clipboard) {
-            document.addEventListener('paste', this.eventHandlers.paste, false);
+            document.addEventListener('paste', this.handler.eventHandler.paste, false);
         }
     }
 
     detachEventListener = () => {
-        document.removeEventListener('keydown', this.eventHandlers.keydown);
-        document.removeEventListener('keyup', this.eventHandlers.keyup);
-        document.removeEventListener('mousedown', this.eventHandlers.onmousedown);
-        this.canvas.wrapperEl.removeEventListener('contextmenu', this.eventHandlers.contextmenu);
+        document.removeEventListener('keydown', this.handler.eventHandler.keydown);
+        document.removeEventListener('keyup', this.handler.eventHandler.keyup);
+        document.removeEventListener('mousedown', this.handler.eventHandler.onmousedown);
+        this.canvas.wrapperEl.removeEventListener('contextmenu', this.handler.eventHandler.contextmenu);
         if (this.keyEvent.clipboard) {
-            document.removeEventListener('paste', this.eventHandlers.paste);
+            document.removeEventListener('paste', this.handler.eventHandler.paste);
         }
     }
 
     /* eslint-disable react/sort-comp, react/prop-types */
     handlers = {
-        /**
-         * Set the position on Object
-         *
-         * @param {fabric.Object} obj
-         * @param {boolean} centered
-         */
-        centerObject: (obj, centered) => {
-            if (centered) {
-                this.canvas.centerObject(obj);
-                obj.setCoords();
-            } else {
-                this.handlers.setByPartial(obj, {
-                    left: (obj.left / this.canvas.getZoom()) - (obj.width / 2) - (this.canvas.viewportTransform[4] / this.canvas.getZoom()),
-                    top: (obj.top / this.canvas.getZoom()) - (obj.height / 2) - (this.canvas.viewportTransform[5] / this.canvas.getZoom()),
-                });
-            }
-        },
-        add: (obj, centered = true, loaded = false) => {
-            const { editable, onAdd, gridOption } = this.props;
-            const option = {
-                hasControls: editable,
-                hasBorders: editable,
-                selectable: editable,
-                lockMovementX: !editable,
-                lockMovementY: !editable,
-                hoverCursor: !editable ? 'pointer' : 'move',
-            };
-            if (obj.type === 'i-text') {
-                option.editable = false;
-            } else {
-                option.editable = editable;
-            }
-            if (editable && this.handler.workarea.layout === 'fullscreen') {
-                option.scaleX = this.handler.workarea.scaleX;
-                option.scaleY = this.handler.workarea.scaleY;
-            }
-            const newOption = Object.assign({}, option, obj, {
-                container: this.container.current,
-                editable,
-            });
-            // Individually create canvas object
-            if (obj.superType === 'link') {
-                return this.linkHandlers.create(newOption);
-            }
-            if (obj.type === 'svg') {
-                return this.handlers.addSVG(newOption, centered, loaded);
-            }
-            let createdObj;
-            // Create canvas object
-            if (obj.type === 'image') {
-                createdObj = this.handlers.addImage(newOption);
-            } else if (obj.type === 'group') {
-                const objects = this.handlers.addGroup(newOption, centered, loaded);
-                const groupOption = Object.assign({}, newOption, { objects, name: 'New Group' });
-                createdObj = this.fabricObjects[obj.type].create(groupOption);
-            } else {
-                createdObj = this.fabricObjects[obj.type].create(newOption);
-            }
-            this.canvas.add(createdObj);
-            this.objects = this.handlers.getObjects();
-            if (!editable && !obj.superType === 'element') {
-                createdObj.on('mousedown', this.eventHandlers.object.mousedown);
-            }
-            if (createdObj.dbclick) {
-                createdObj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
-            }
-            if (this.objects.some(object => object.type === 'gif')) {
-                this.handler.startRequestAnimFrame();
-            } else {
-                this.handler.stopRequestAnimFrame();
-            }
-            if (
-                obj.superType !== 'drawing'
-                && obj.superType !== 'link'
-                && editable
-                && !loaded
-            ) {
-                this.handlers.centerObject(createdObj, centered);
-            }
-            if (createdObj.superType === 'node') {
-                this.portHandlers.create(createdObj);
-                if (createdObj.iconButton) {
-                    this.canvas.add(createdObj.iconButton);
-                }
-            }
-            if (!editable && createdObj.animation && createdObj.animation.autoplay) {
-                this.handler.animationHandler.play(createdObj.id);
-            }
-            if (onAdd && editable && !loaded) {
-                onAdd(createdObj);
-            }
-            if (!loaded) {
-                if (createdObj.superType === 'node') {
-                    createdObj.setShadow({
-                        color: createdObj.stroke,
-                    });
-                    this.nodeHandlers.highlightingNode(createdObj);
-                }
-            }
-            if (gridOption.enabled) {
-                this.gridHandlers.setCoords(createdObj);
-            }
-            return createdObj;
-        },
-        addGroup: (obj, centered = true, loaded = false) => {
-            return obj.objects.map((child) => {
-                return this.handlers.add(child, centered, loaded);
-            });
-        },
-        addImage: (obj) => {
-            const { defaultOptions } = this.props;
-            const image = new Image();
-            const { src, file, filters = [], ...otherOption } = obj;
-            const createdObj = new fabric.Image(image, {
-                src,
-                file,
-                ...defaultOptions,
-                ...otherOption,
-            });
-            createdObj.set({
-                filters: this.handler.imageHandler.createFilters(filters),
-            });
-            this.handlers.setImage(createdObj, src || file);
-            return createdObj;
-        },
-        addSVG: (obj, centered = true, loaded = false) => {
-            const { defaultOptions } = this.props;
-            return new Promise((resolve) => {
-                const getSVGElements = (object, objects, options) => {
-                    const createdObj = fabric.util.groupSVGElements(objects, options);
-                    createdObj.set({ ...defaultOptions, ...object });
-                    this.canvas.add(createdObj);
-                    this.objects = this.handlers.getObjects();
-                    const { onAdd, editable } = this.props;
-                    if (!editable && !obj.superType === 'element') {
-                        createdObj.on('mousedown', this.eventHandlers.object.mousedown);
-                    }
-                    if (createdObj.dbclick) {
-                        createdObj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
-                    }
-                    if (editable && !loaded) {
-                        this.handlers.centerObject(createdObj, centered);
-                    }
-                    if (!editable && createdObj.animation && createdObj.animation.autoplay) {
-                        this.handler.animationHandler.play(createdObj.id);
-                    }
-                    if (onAdd && !loaded && editable) {
-                        onAdd(obj);
-                    }
-                    return createdObj;
-                };
-                if (obj.loadType === 'svg') {
-                    fabric.loadSVGFromString(obj.svg, (objects, options) => {
-                        resolve(getSVGElements(obj, objects, options));
-                    });
-                } else {
-                    fabric.loadSVGFromURL(obj.svg, (objects, options) => {
-                        resolve(getSVGElements(obj, objects, options));
-                    });
-                }
-            });
-        },
         /**
          * Remove object
          *
@@ -428,8 +267,8 @@ class Canvas extends Component {
          */
         remove: (target) => {
             const activeObject = target || this.canvas.getActiveObject();
-            if (this.prevTarget && this.prevTarget.superType === 'link') {
-                this.linkHandlers.remove(this.prevTarget);
+            if (this.handler.prevTarget && this.handler.prevTarget.superType === 'link') {
+                this.handler.linkHandler.remove(this.handler.prevTarget);
                 return true;
             }
             if (!activeObject) {
@@ -444,12 +283,12 @@ class Canvas extends Component {
                     this.handler.elementHandler.removeById(activeObject.id);
                 }
                 if (activeObject.superType === 'link') {
-                    this.linkHandlers.remove(activeObject);
+                    this.handler.linkHandler.remove(activeObject);
                 } else if (activeObject.superType === 'node') {
                     if (activeObject.toPort) {
                         if (activeObject.toPort.links.length) {
                             activeObject.toPort.links.forEach((link) => {
-                                this.linkHandlers.remove(link, 'from');
+                                this.handler.linkHandler.remove(link, 'from');
                             });
                         }
                         this.canvas.remove(activeObject.toPort);
@@ -458,7 +297,7 @@ class Canvas extends Component {
                         activeObject.fromPort.forEach((port) => {
                             if (port.links.length) {
                                 port.links.forEach((link) => {
-                                    this.linkHandlers.remove(link, 'to');
+                                    this.handler.linkHandler.remove(link, 'to');
                                 });
                             }
                             this.canvas.remove(port);
@@ -481,7 +320,7 @@ class Canvas extends Component {
                         if (obj.toPort) {
                             if (obj.toPort.links.length) {
                                 obj.toPort.links.forEach((link) => {
-                                    this.linkHandlers.remove(link, 'from');
+                                    this.handler.linkHandler.remove(link, 'from');
                                 });
                             }
                             this.canvas.remove(obj.toPort);
@@ -490,7 +329,7 @@ class Canvas extends Component {
                             obj.fromPort.forEach((port) => {
                                 if (port.links.length) {
                                     port.links.forEach((link) => {
-                                        this.linkHandlers.remove(link, 'to');
+                                        this.handler.linkHandler.remove(link, 'to');
                                     });
                                 }
                                 this.canvas.remove(port);
@@ -535,7 +374,7 @@ class Canvas extends Component {
                         this.canvas.add(obj);
                         this.objects = this.handlers.getObjects();
                         if (obj.dbclick) {
-                            obj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
+                            obj.on('mousedblclick', this.handler.eventHandler.objectMousedblclick);
                         }
                     });
                     if (onAdd) {
@@ -549,14 +388,14 @@ class Canvas extends Component {
                     this.canvas.add(clonedObj);
                     this.objects = this.handlers.getObjects();
                     if (clonedObj.dbclick) {
-                        clonedObj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
+                        clonedObj.on('mousedblclick', this.handler.eventHandler.objectMousedblclick);
                     }
                     if (onAdd) {
                         onAdd(clonedObj);
                     }
                 }
                 this.canvas.setActiveObject(clonedObj);
-                this.portHandlers.create(clonedObj);
+                this.handler.portHandler.create(clonedObj);
                 this.canvas.requestRenderAll();
             }, propertiesToInclude);
         },
@@ -580,10 +419,10 @@ class Canvas extends Component {
                         onAdd(cloned);
                     }
                     if (cloned.dbclick) {
-                        cloned.on('mousedblclick', this.eventHandlers.object.mousedblclick);
+                        cloned.on('mousedblclick', this.handler.eventHandler.objectMousedblclick);
                     }
                     this.canvas.setActiveObject(cloned);
-                    this.portHandlers.create(cloned);
+                    this.handler.portHandler.create(cloned);
                     this.canvas.requestRenderAll();
                 }, propertiesToInclude);
             }
@@ -622,7 +461,7 @@ class Canvas extends Component {
                                                 const linkTarget = {
                                                     fromNodeIndex: index,
                                                     fromPort: port.id,
-                                                    type: 'CurvedLink',
+                                                    type: 'curvedLink',
                                                     superType: 'link',
                                                 };
                                                 const findIndex = activeObject.getObjects().findIndex(compObj => compObj.id === link.toNode.id);
@@ -734,11 +573,11 @@ class Canvas extends Component {
                             });
                         }
                         if (clonedObj.dbclick) {
-                            clonedObj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
+                            clonedObj.on('mousedblclick', this.handler.eventHandler.objectMousedblclick);
                         }
                         this.canvas.add(clonedObj);
                         this.objects = this.handlers.getObjects();
-                        this.portHandlers.create(clonedObj);
+                        this.handler.portHandler.create(clonedObj);
                         objects.push(clonedObj);
                     });
                     if (linkObjects.length) {
@@ -746,13 +585,13 @@ class Canvas extends Component {
                             const { fromNode, fromPort, toNodeIndex } = linkObject;
                             const toNode = objects[toNodeIndex];
                             const link = {
-                                type: 'CurvedLink',
+                                type: 'curvedLink',
                                 fromNode,
                                 fromPort,
                                 toNode: toNode.id,
                                 toPort: toNode.toPort.id,
                             };
-                            this.linkHandlers.create(link);
+                            this.handler.linkHandler.create(link);
                         });
                     }
                     const activeSelection = new fabric.ActiveSelection(objects, {
@@ -781,7 +620,7 @@ class Canvas extends Component {
                         obj.set('id', uuid());
                         this.canvas.add(obj);
                         if (obj.dbclick) {
-                            obj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
+                            obj.on('mousedblclick', this.handler.eventHandler.objectMousedblclick);
                         }
                         this.objects = this.handlers.getObjects();
                     });
@@ -797,7 +636,7 @@ class Canvas extends Component {
                     }
                     this.canvas.add(clonedObj);
                     if (clonedObj.dbclick) {
-                        clonedObj.on('mousedblclick', this.eventHandlers.object.mousedblclick);
+                        clonedObj.on('mousedblclick', this.handler.eventHandler.obj);
                     }
                     this.objects = this.handlers.getObjects();
                     if (onAdd) {
@@ -812,7 +651,7 @@ class Canvas extends Component {
                     clipboard: newClipboard,
                 });
                 this.canvas.setActiveObject(clonedObj);
-                this.portHandlers.create(clonedObj);
+                this.handler.portHandler.create(clonedObj);
                 this.canvas.requestRenderAll();
             }, propertiesToInclude);
         },
@@ -1187,7 +1026,7 @@ class Canvas extends Component {
                     if (obj.superType === 'element') {
                         obj.id = uuid();
                     }
-                    this.handlers.add(obj, false, true);
+                    this.handler.add(obj, false, true);
                     this.canvas.renderAll();
                 });
                 if (callback) {
@@ -1289,7 +1128,7 @@ class Canvas extends Component {
             group.set({
                 id: uuid(),
                 name: 'New group',
-                ...this.props.defaultOptions,
+                ...this.props.defaultOption,
             });
             const { onSelect } = this.props;
             if (onSelect) {
@@ -1384,551 +1223,6 @@ class Canvas extends Component {
                 anchorEl.click();
                 anchorEl.remove();
             }
-        },
-    }
-
-    nodeHandlers = {
-        /**
-         * Get the node path by target object
-         *
-         * @param {fabric.Object} target
-         * @param {fabric.Object[]} [nodes=[]]
-         * @param {string} [direction='init']
-         */
-        getNodePath: (target, nodes = [], direction = 'init') => {
-            if (target) {
-                if (direction === 'to' || direction === 'init') {
-                    if (target.toPort) {
-                        target.toPort.links.forEach((link) => {
-                            if (link.fromNode) {
-                                nodes.push(link.fromNode);
-                                this.nodeHandlers.getNodePath(link.fromNode, nodes, 'to');
-                            }
-                        });
-                    }
-                    if (direction === 'init') {
-                        nodes.push(target);
-                    }
-                }
-                if (direction === 'from' || direction === 'init') {
-                    target.fromPort.forEach((port) => {
-                        port.links.forEach((link) => {
-                            if (link.toNode) {
-                                nodes.push(link.toNode);
-                                this.nodeHandlers.getNodePath(link.toNode, nodes, 'from');
-                            }
-                        });
-                    });
-                }
-            }
-        },
-        /**
-         * Select the node path
-         *
-         * @param {string[]} path
-         * @returns
-         */
-        selectByPath: (path) => {
-            if (!path || !path.length) {
-                return;
-            }
-            const targetObjects = this.handlers.getOriginObjects().filter(object => path.some(id => id === object.id));
-            const nonTargetObjects = this.handlers.getOriginObjects().filter(object => path.some(id => id !== object.id));
-            nonTargetObjects.forEach((object) => {
-                if (object.superType === 'link') {
-                    const { fromNode, toNode } = object;
-                    if (fromNode && toNode) {
-                        const fromIndex = targetObjects.findIndex(obj => obj.id === fromNode.id);
-                        const toIndex = targetObjects.findIndex(obj => obj.id === toNode.id);
-                        if ((fromIndex >= 0 && targetObjects[fromIndex]) && (toIndex >= 0 && targetObjects[toIndex])) {
-                            object.set({
-                                opacity: 1,
-                            });
-                            object.setShadow({
-                                color: object.stroke,
-                            });
-                            this.nodeHandlers.highlightingNode(object, 300);
-                            this.canvas.requestRenderAll();
-                            return;
-                        }
-                    }
-                }
-                object.set({
-                    opacity: 0.2,
-                });
-                if (object.superType === 'node') {
-                    if (object.toPort) {
-                        object.toPort.set({
-                            opacity: 0.2,
-                        });
-                    }
-                    object.fromPort.forEach((port) => {
-                        port.set({
-                            opacity: 0.2,
-                        });
-                    });
-                }
-                if (!object.isAnimated) {
-                    object.setShadow({
-                        blur: 0,
-                    });
-                }
-            });
-            targetObjects.forEach((object) => {
-                object.set({
-                    opacity: 1,
-                });
-                object.setShadow({
-                    color: object.fill,
-                });
-                this.nodeHandlers.highlightingNode(object, 300);
-                if (object.toPort) {
-                    object.toPort.set({
-                        opacity: 1,
-                    });
-                }
-                if (object.fromPort) {
-                    object.fromPort.forEach((port) => {
-                        port.set({
-                            opacity: 1,
-                        });
-                    });
-                }
-            });
-            this.canvas.requestRenderAll();
-        },
-        selectById: (id) => {
-            this.handlers.getOriginObjects().forEach((object) => {
-                if (id === object.id) {
-                    object.setShadow({
-                        color: object.fill,
-                        blur: 50,
-                    });
-                    return;
-                } else if (id === object.nodeId) {
-                    return;
-                }
-                object.setShadow({
-                    blur: 0,
-                });
-            });
-            this.canvas.requestRenderAll();
-        },
-        deselect: () => {
-            this.handlers.getOriginObjects().forEach((object) => {
-                object.set({
-                    opacity: 1,
-                });
-                if (object.superType === 'node') {
-                    if (object.toPort) {
-                        object.toPort.set({
-                            opacity: 1,
-                        });
-                    }
-                    object.fromPort.forEach((port) => {
-                        port.set({
-                            opacity: 1,
-                        });
-                    });
-                }
-                if (!object.isAnimated) {
-                    object.setShadow({
-                        blur: 0,
-                    });
-                }
-            });
-            this.canvas.renderAll();
-        },
-        highlightingByPath: (path) => {
-            if (!path || !path.length) {
-                return;
-            }
-            const targetObjects = this.handlers.getOriginObjects().filter(object => path.some(id => id === object.id));
-            const nonTargetObjects = this.handlers.getOriginObjects().filter(object => path.some(id => id !== object.id));
-            const lastObject = targetObjects.filter(obj => obj.id === path[path.length - 1])[0];
-            targetObjects.forEach((object) => {
-                if (lastObject) {
-                    object.setShadow({
-                        color: lastObject.fill,
-                    });
-                } else {
-                    object.setShadow({
-                        color: object.fill,
-                    });
-                }
-                this.nodeHandlers.highlightingNode(object);
-                this.canvas.requestRenderAll();
-            });
-            nonTargetObjects.forEach((object) => {
-                if (object.superType === 'link') {
-                    const { fromNode, toNode } = object;
-                    if (fromNode && toNode) {
-                        const fromIndex = targetObjects.findIndex(obj => obj.id === fromNode.id);
-                        const toIndex = targetObjects.findIndex(obj => obj.id === toNode.id);
-                        if ((fromIndex >= 0 && targetObjects[fromIndex]) && (toIndex >= 0 && targetObjects[toIndex])) {
-                            if (lastObject) {
-                                object.setShadow({
-                                    color: lastObject.stroke,
-                                });
-                            } else {
-                                object.setShadow({
-                                    color: object.stroke,
-                                });
-                            }
-                            this.nodeHandlers.highlightingNode(object);
-                            this.nodeHandlers.highlightingLink(object, lastObject);
-                            return;
-                        }
-                    }
-                }
-            });
-            this.canvas.requestRenderAll();
-        },
-        highlightingLink: (object, targetObject, duration = 500) => {
-            object.animation = {
-                duration,
-                type: 'flash',
-                stroke: targetObject ? targetObject.stroke : object.stroke,
-                loop: 1,
-                delay: 0,
-            };
-            this.handler.animationHandler.play(object.id, false);
-        },
-        highlightingNode: (object, duration = 500) => {
-            const maxBlur = 50;
-            const minBlur = 0;
-            const onComplete = () => {
-                if (object.shadow.blur === maxBlur) {
-                    object.isAnimated = true;
-                    object.animate('shadow.blur', minBlur, {
-                        easing: fabric.util.ease.easeInOutQuad,
-                        onChange: (value) => {
-                            object.shadow.blur = value;
-                            this.canvas.requestRenderAll();
-                        },
-                        onComplete: () => {
-                            object.isAnimated = false;
-                            if (object.superType === 'link') {
-                                object.set({
-                                    stroke: object.originStroke,
-                                });
-                            }
-                        },
-                    });
-                }
-            };
-            object.isAnimated = true;
-            object.animate('shadow.blur', maxBlur, {
-                easing: fabric.util.ease.easeInOutQuad,
-                duration,
-                onChange: (value) => {
-                    object.shadow.blur = value;
-                    this.canvas.requestRenderAll();
-                },
-                onComplete,
-            });
-        },
-    }
-
-    portHandlers = {
-        create: (target) => {
-            if (!target.createToPort) {
-                return;
-            }
-            const toPort = target.createToPort(target.left + (target.width / 2), target.top);
-            if (toPort) {
-                toPort.on('mouseover', () => {
-                    if (this.handler.interactionMode === 'link' && this.activeLine && this.activeLine.class === 'line') {
-                        if (toPort.links.some(link => link.fromNode.id ===  this.activeLine.fromNode)) {
-                            toPort.set({
-                                fill: toPort.errorFill,
-                            });
-                            this.canvas.renderAll();
-                            return;
-                        }
-                        toPort.set({
-                            fill: toPort.hoverFill,
-                        });
-                        this.canvas.renderAll();
-                    }
-                });
-                toPort.on('mouseout', () => {
-                    toPort.set({
-                        fill: toPort.originFill,
-                    });
-                    this.canvas.renderAll();
-                });
-                this.canvas.add(toPort);
-                toPort.setCoords();
-                this.canvas.bringToFront(toPort);
-            }
-            const fromPort = target.createFromPort(target.left + (target.width / 2), target.top + target.height);
-            if (fromPort && fromPort.length) {
-                fromPort.forEach((port) => {
-                    if (port) {
-                        port.on('mouseover', () => {
-                            if (port.enabled) {
-                                if (this.activeLine) {
-                                    port.set({
-                                        fill: port.errorFill,
-                                    });
-                                    this.canvas.renderAll();
-                                    return;
-                                }
-                                port.set({
-                                    fill: port.hoverFill,
-                                });
-                                this.canvas.renderAll();
-                                return;
-                            }
-                            port.set({
-                                fill: port.errorFill,
-                            });
-                            this.canvas.renderAll();
-                        });
-                        port.on('mouseout', () => {
-                            port.set({
-                                fill: port.originFill,
-                            });
-                            this.canvas.renderAll();
-                        });
-                        this.canvas.add(port);
-                        port.setCoords();
-                        this.canvas.bringToFront(port);
-                    }
-                });
-            }
-        },
-        setCoords: (target) => {
-            if (target.toPort) {
-                const toCoords = {
-                    left: target.left + (target.width / 2),
-                    top: target.top,
-                };
-                target.toPort.set({
-                    ...toCoords,
-                });
-                target.toPort.setCoords();
-                if (target.toPort.links.length) {
-                    target.toPort.links.forEach((link) => {
-                        const fromPort = link.fromNode.fromPort.filter(port => port.id === link.fromPort)[0];
-                        this.linkHandlers.setCoords(fromPort.left, fromPort.top, toCoords.left, toCoords.top, link);
-                    });
-                }
-            }
-            if (target.fromPort) {
-                const fromCoords = {
-                    left: target.left + (target.width / 2),
-                    top: target.top + target.height,
-                };
-                target.fromPort.forEach((port) => {
-                    const left = port.leftDiff ? fromCoords.left + port.leftDiff : fromCoords.left;
-                    const top = port.topDiff ? fromCoords.top + port.topDiff : fromCoords.top;
-                    port.set({
-                        left,
-                        top,
-                    });
-                    port.setCoords();
-                    if (port.links.length) {
-                        port.links.forEach((link) => {
-                            this.linkHandlers.setCoords(left, top, link.toNode.toPort.left, link.toNode.toPort.top, link);
-                        });
-                    }
-                });
-            }
-        },
-        recreate: (target) => {
-            const { fromPort, toPort } = target;
-            if (target.ports) {
-                target.ports.forEach((port) => {
-                    target.removeWithUpdate(port);
-                    this.canvas.remove(port.fromPort);
-                });
-            }
-            this.canvas.remove(target.toPort);
-            if (target.toPort) {
-                target.toPort.links.forEach((link) => {
-                    this.linkHandlers.remove(link, 'from');
-                });
-            }
-            if (target.fromPort) {
-                target.fromPort.forEach((port) => {
-                    if (port.links.length) {
-                        port.links.forEach((link) => {
-                            this.linkHandlers.remove(link, 'to');
-                        });
-                    }
-                });
-            }
-            this.portHandlers.create(target);
-            toPort.links.forEach((link) => {
-                link.fromNode = link.fromNode.id;
-                link.toNode = target.toPort.nodeId;
-                this.linkHandlers.create(link);
-            });
-            fromPort.filter(op => target.fromPort.some(np => np.id === op.id)).forEach((port) => {
-                port.links.forEach((link) => {
-                    if (link.fromPort === port.id) {
-                        link.fromNode = port.nodeId;
-                        link.toNode = link.toNode.id;
-                        this.linkHandlers.create(link);
-                        this.portHandlers.setCoords(target);
-                    }
-                });
-            });
-        },
-    }
-
-    linkHandlers = {
-        init: (target) => {
-            if (!target.enabled) {
-                console.warn('A connected node already exists.');
-                return;
-            }
-            this.handler.interactionMode = 'link';
-            const { left, top } = target;
-            // const points = [left, top, left, top];
-            const fromPort = { left, top };
-            const toPort = { left, top };
-            this.activeLine = new CurvedLink(target.nodeId, fromPort, null, toPort, {
-                strokeWidth: 2,
-                fill: '#999999',
-                stroke: '#999999',
-                class: 'line',
-                originX: 'center',
-                originY: 'center',
-                selectable: false,
-                hasBorders: false,
-                hasControls: false,
-                evented: false,
-                fromNode: target.nodeId,
-                fromPort: target.id,
-            });
-            this.canvas.add(this.activeLine);
-        },
-        finish: () => {
-            this.handler.interactionMode = 'selection';
-            this.canvas.remove(this.activeLine);
-            this.activeLine = null;
-            this.canvas.renderAll();
-        },
-        generate: (target) => {
-            if (!target) {
-                console.warn('Does not exist target.');
-                return;
-            }
-            if (target.nodeId === this.activeLine.fromNode) {
-                console.warn('Can not select the same node.');
-                return;
-            }
-            const link = {
-                type: 'CurvedLink',
-                fromNode: this.activeLine.fromNode,
-                fromPort: this.activeLine.fromPort,
-                toNode: target.nodeId,
-                toPort: target.id,
-            };
-            this.linkHandlers.create(link, true);
-            this.linkHandlers.finish();
-        },
-        create: (link, init = false) => {
-            const fromNode = this.handlers.findById(link.fromNode);
-            const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPort || !port.id)[0];
-            const toNode = this.handlers.findById(link.toNode);
-            const { toPort } = toNode;
-            const createdObj = this.fabricObjects[link.type].create(fromNode, fromPort, toNode, toPort, { ...link });
-            this.canvas.add(createdObj);
-            this.objects = this.handlers.getObjects();
-            const { onAdd, editable } = this.props;
-            if (onAdd && editable && init) {
-                onAdd(createdObj);
-            }
-            this.canvas.renderAll();
-            createdObj.setPort(fromNode, fromPort, toNode, toPort);
-            this.portHandlers.setCoords(fromNode);
-            this.portHandlers.setCoords(toNode);
-            this.canvas.requestRenderAll();
-            return createdObj;
-        },
-        setCoords: (x1, y1, x2, y2, link) => {
-            link.set({
-                x1,
-                y1,
-                x2,
-                y2,
-            });
-            link.setCoords();
-        },
-        removeFrom: (link) => {
-            if (link.fromNode.fromPort.length) {
-                let index = -1;
-                link.fromNode.fromPort.forEach((port) => {
-                    if (port.links.length) {
-                        port.links.some((portLink, i) => {
-                            if (link.id === portLink.id) {
-                                index = i;
-                                return true;
-                            }
-                            return false;
-                        });
-                        if (index > -1) {
-                            port.links.splice(index, 1);
-                        }
-                    }
-                    link.setPortEnabled(link.fromNode, port, true);
-                });
-            }
-        },
-        removeTo: (link) => {
-            if (link.toNode.toPort.links.length) {
-                let index = -1;
-                link.toNode.toPort.links.some((portLink, i) => {
-                    if (link.id === portLink.id) {
-                        index = i;
-                        return true;
-                    }
-                    return false;
-                });
-                if (index > -1) {
-                    link.toNode.toPort.links.splice(index, 1);
-                }
-                link.setPortEnabled(link.toNode, link.toNode.toPort, true);
-            }
-        },
-        removeAll: (link) => {
-            this.linkHandlers.removeFrom(link);
-            this.linkHandlers.removeTo(link);
-        },
-        remove: (link, type) => {
-            if (type === 'from') {
-                this.linkHandlers.removeFrom(link);
-            } else if (type === 'to') {
-                this.linkHandlers.removeTo(link);
-            } else {
-                this.linkHandlers.removeAll(link);
-            }
-            this.canvas.remove(link);
-            this.handlers.removeOriginById(link.id);
-        },
-        exception: {
-            alreadyConnect: (target) => {
-                if (!target.enabled) {
-                    console.warn('A connected node already exists.');
-                    return;
-                }
-            },
-            duplicate: (target) => {
-                if (target.links.some(link => link.fromNode.id === this.activeLine.fromNode)) {
-                    console.warn('Duplicate connections can not be made.');
-                    return;
-                }
-            },
-            alreadyDrawing: () => {
-                if (this.handler.interactionMode === 'link' && this.activeLine) {
-                    console.warn('Already drawing links.');
-                    return;
-                }
-            },
         },
     }
 
@@ -2062,7 +1356,7 @@ class Canvas extends Component {
                     name: 'New polygon',
                     superType: 'drawing',
                 };
-                this.handlers.add(option, false);
+                this.handler.add(option, false);
                 this.pointArray = [];
                 this.activeLine = null;
                 this.activeShape = null;
@@ -2191,7 +1485,7 @@ class Canvas extends Component {
                     name: 'New line',
                     superType: 'drawing',
                 };
-                this.handlers.add(option, false);
+                this.handler.add(option, false);
                 this.pointArray = [];
                 this.activeLine = null;
                 this.handler.modeHandler.selection();
@@ -2273,7 +1567,7 @@ class Canvas extends Component {
                     name: 'New line',
                     superType: 'drawing',
                 };
-                this.handlers.add(option, false);
+                this.handler.add(option, false);
                 this.pointArray = [];
                 this.activeLine = null;
                 this.handler.modeHandler.selection();
@@ -2284,984 +1578,6 @@ class Canvas extends Component {
         },
         curve: {
 
-        },
-    }
-
-    alignmentHandlers = {
-        left: () => {
-            const activeObject = this.canvas.getActiveObject();
-            if (activeObject && activeObject.type === 'activeSelection') {
-                const activeObjectLeft = -(activeObject.width / 2);
-                activeObject.forEachObject((obj) => {
-                    obj.set({
-                        left: activeObjectLeft,
-                    });
-                    obj.setCoords();
-                    this.canvas.renderAll();
-                });
-            }
-        },
-        center: () => {
-            const activeObject = this.canvas.getActiveObject();
-            if (activeObject && activeObject.type === 'activeSelection') {
-                activeObject.forEachObject((obj) => {
-                    obj.set({
-                        left: 0 - ((obj.width * obj.scaleX) / 2),
-                    });
-                    obj.setCoords();
-                    this.canvas.renderAll();
-                });
-            }
-        },
-        right: () => {
-            const activeObject = this.canvas.getActiveObject();
-            if (activeObject && activeObject.type === 'activeSelection') {
-                const activeObjectLeft = (activeObject.width / 2);
-                activeObject.forEachObject((obj) => {
-                    obj.set({
-                        left: activeObjectLeft - (obj.width * obj.scaleX),
-                    });
-                    obj.setCoords();
-                    this.canvas.renderAll();
-                });
-            }
-        },
-    }
-
-    guidelineHandlers = {
-        init: () => {
-            this.ctx = this.canvas.getSelectionContext();
-            this.aligningLineOffset = 5;
-            this.aligningLineMargin = 4;
-            this.aligningLineWidth = 1;
-            this.aligningLineColor = 'rgb(255, 0, 0)';
-            this.viewportTransform = this.canvas.viewportTransform;
-            this.zoom = 1;
-            this.verticalLines = [];
-            this.horizontalLines = [];
-        },
-        drawVerticalLine: (coords) => {
-            this.guidelineHandlers.drawLine(
-                coords.x + 0.5,
-                coords.y1 > coords.y2 ? coords.y2 : coords.y1,
-                coords.x + 0.5,
-                coords.y2 > coords.y1 ? coords.y2 : coords.y1,
-            );
-        },
-        drawHorizontalLine: (coords) => {
-            this.guidelineHandlers.drawLine(
-                coords.x1 > coords.x2 ? coords.x2 : coords.x1,
-                coords.y + 0.5,
-                coords.x2 > coords.x1 ? coords.x2 : coords.x1,
-                coords.y + 0.5,
-            );
-        },
-        drawLine: (x1, y1, x2, y2) => {
-            const { ctx, aligningLineWidth, aligningLineColor, viewportTransform, zoom } = this;
-            ctx.save();
-            ctx.lineWidth = aligningLineWidth;
-            ctx.strokeStyle = aligningLineColor;
-            ctx.beginPath();
-            ctx.moveTo((x1 * zoom) + viewportTransform[4], (y1 * zoom) + viewportTransform[5]);
-            ctx.lineTo((x2 * zoom) + viewportTransform[4], (y2 * zoom) + viewportTransform[5]);
-            ctx.stroke();
-            ctx.restore();
-        },
-        isInRange: (v1, v2) => {
-            const { aligningLineMargin } = this;
-            v1 = Math.round(v1);
-            v2 = Math.round(v2);
-            for (let i = v1 - aligningLineMargin, len = v1 + aligningLineMargin; i <= len; i++) {
-                if (i === v2) {
-                    return true;
-                }
-            }
-            return false;
-        },
-        movingGuidelines: (target) => {
-            const canvasObjects = this.canvas.getObjects();
-            const activeObjectCenter = target.getCenterPoint();
-            const activeObjectLeft = activeObjectCenter.x;
-            const activeObjectTop = activeObjectCenter.y;
-            const activeObjectBoundingRect = target.getBoundingRect();
-            const activeObjectHeight = activeObjectBoundingRect.height / this.viewportTransform[3];
-            const activeObjectWidth = activeObjectBoundingRect.width / this.viewportTransform[0];
-            let horizontalInTheRange = false;
-            let verticalInTheRange = false;
-            const { _currentTransform: transform } = this.canvas;
-            if (!transform) return;
-
-            // It should be trivial to DRY this up by encapsulating (repeating) creation of x1, x2, y1, and y2 into functions,
-            // but we're not doing it here for perf. reasons -- as this a function that's invoked on every mouse move
-
-            for (let i = canvasObjects.length; i--;) {
-                if (canvasObjects[i] === target
-                    || canvasObjects[i].superType === 'port'
-                    || canvasObjects[i].superType === 'link'
-                    || !canvasObjects[i].evented) {
-                    continue;
-                }
-
-                const objectCenter = canvasObjects[i].getCenterPoint();
-                const objectLeft = objectCenter.x;
-                const objectTop = objectCenter.y;
-                const objectBoundingRect = canvasObjects[i].getBoundingRect();
-                const objectHeight = objectBoundingRect.height / this.viewportTransform[3];
-                const objectWidth = objectBoundingRect.width / this.viewportTransform[0];
-
-                // snap by the horizontal center line
-                if (this.guidelineHandlers.isInRange(objectLeft, activeObjectLeft)) {
-                    verticalInTheRange = true;
-                    if (canvasObjects[i].id === 'workarea') {
-                        const y1 = -5000;
-                        const y2 = 5000;
-                        this.verticalLines.push({
-                            x: objectLeft,
-                            y1,
-                            y2,
-                        });
-                    } else {
-                        this.verticalLines.push({
-                            x: objectLeft,
-                            y1: (objectTop < activeObjectTop)
-                                ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
-                                : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
-                            y2: (activeObjectTop > objectTop)
-                                ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
-                                : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
-                        });
-                    }
-                    target.setPositionByOrigin(new fabric.Point(objectLeft, activeObjectTop), 'center', 'center');
-                }
-
-                // snap by the left edge
-                if (this.guidelineHandlers.isInRange(objectLeft - (objectWidth / 2), activeObjectLeft - (activeObjectWidth / 2))) {
-                    verticalInTheRange = true;
-                    if (canvasObjects[i].id === 'workarea') {
-                        const y1 = -5000;
-                        const y2 = 5000;
-                        let x = objectLeft - (objectWidth / 2);
-                        if (canvasObjects[i].layout === 'fullscreen') {
-                            x = 0;
-                        }
-                        this.verticalLines.push({
-                            x,
-                            y1,
-                            y2,
-                        });
-                    } else {
-                        this.verticalLines.push({
-                            x: objectLeft - (objectWidth / 2),
-                            y1: (objectTop < activeObjectTop)
-                                ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
-                                : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
-                            y2: (activeObjectTop > objectTop)
-                                ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
-                                : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
-                        });
-                    }
-                    target.setPositionByOrigin(new fabric.Point(objectLeft - (objectWidth / 2) + (activeObjectWidth / 2), activeObjectTop), 'center', 'center');
-                }
-
-                // snap by the right edge
-                if (this.guidelineHandlers.isInRange(objectLeft + (objectWidth / 2), activeObjectLeft + (activeObjectWidth / 2))) {
-                    verticalInTheRange = true;
-                    if (canvasObjects[i].id === 'workarea') {
-                        const y1 = -5000;
-                        const y2 = 5000;
-                        let x = objectLeft + (objectWidth / 2);
-                        if (canvasObjects[i].layout === 'fullscreen') {
-                            x = this.canvas.getWidth();
-                        }
-                        this.verticalLines.push({
-                            x,
-                            y1,
-                            y2,
-                        });
-                    } else {
-                        this.verticalLines.push({
-                            x: objectLeft + (objectWidth / 2),
-                            y1: (objectTop < activeObjectTop)
-                                ? (objectTop - (objectHeight / 2) - this.aligningLineOffset)
-                                : (objectTop + (objectHeight / 2) + this.aligningLineOffset),
-                            y2: (activeObjectTop > objectTop)
-                                ? (activeObjectTop + (activeObjectHeight / 2) + this.aligningLineOffset)
-                                : (activeObjectTop - (activeObjectHeight / 2) - this.aligningLineOffset),
-                        });
-                    }
-                    target.setPositionByOrigin(new fabric.Point(objectLeft + (objectWidth / 2) - (activeObjectWidth / 2), activeObjectTop), 'center', 'center');
-                }
-
-                // snap by the vertical center line
-                if (this.guidelineHandlers.isInRange(objectTop, activeObjectTop)) {
-                    horizontalInTheRange = true;
-                    if (canvasObjects[i].id === 'workarea') {
-                        const x1 = -5000;
-                        const x2 = 5000;
-                        this.horizontalLines.push({
-                            y: objectTop,
-                            x1,
-                            x2,
-                        });
-                    } else {
-                        this.horizontalLines.push({
-                            y: objectTop,
-                            x1: (objectLeft < activeObjectLeft)
-                                ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
-                                : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
-                            x2: (activeObjectLeft > objectLeft)
-                                ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
-                                : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset),
-                        });
-                    }
-                    target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop), 'center', 'center');
-                }
-
-                // snap by the top edge
-                if (this.guidelineHandlers.isInRange(objectTop - (objectHeight / 2), activeObjectTop - (activeObjectHeight / 2))) {
-                    horizontalInTheRange = true;
-                    if (canvasObjects[i].id === 'workarea') {
-                        const x1 = -5000;
-                        const x2 = 5000;
-                        let y = objectTop - (objectHeight / 2);
-                        if (canvasObjects[i].layout === 'fullscreen') {
-                            y = 0;
-                        }
-                        this.horizontalLines.push({
-                            y,
-                            x1,
-                            x2,
-                        });
-                    } else {
-                        this.horizontalLines.push({
-                            y: objectTop - (objectHeight / 2),
-                            x1: (objectLeft < activeObjectLeft)
-                                ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
-                                : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
-                            x2: (activeObjectLeft > objectLeft)
-                                ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
-                                : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset),
-                        });
-                    }
-                    target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop - (objectHeight / 2) + (activeObjectHeight / 2)), 'center', 'center');
-                }
-
-                // snap by the bottom edge
-                if (this.guidelineHandlers.isInRange(objectTop + (objectHeight / 2), activeObjectTop + (activeObjectHeight / 2))) {
-                    horizontalInTheRange = true;
-                    if (canvasObjects[i].id === 'workarea') {
-                        const x1 = -5000;
-                        const x2 = 5000;
-                        let y = objectTop + (objectHeight / 2);
-                        if (canvasObjects[i].layout === 'fullscreen') {
-                            y = this.canvas.getHeight();
-                        }
-                        this.horizontalLines.push({
-                            y,
-                            x1,
-                            x2,
-                        });
-                    } else {
-                        this.horizontalLines.push({
-                            y: objectTop + (objectHeight / 2),
-                            x1: (objectLeft < activeObjectLeft)
-                                ? (objectLeft - (objectWidth / 2) - this.aligningLineOffset)
-                                : (objectLeft + (objectWidth / 2) + this.aligningLineOffset),
-                            x2: (activeObjectLeft > objectLeft)
-                                ? (activeObjectLeft + (activeObjectWidth / 2) + this.aligningLineOffset)
-                                : (activeObjectLeft - (activeObjectWidth / 2) - this.aligningLineOffset),
-                        });
-                    }
-                    target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop + (objectHeight / 2) - (activeObjectHeight / 2)), 'center', 'center');
-                }
-            }
-
-            if (!horizontalInTheRange) {
-                this.horizontalLines.length = 0;
-            }
-
-            if (!verticalInTheRange) {
-                this.verticalLines.length = 0;
-            }
-        },
-        scalingGuidelines: (target) => {
-            // TODO... object scaling guideline
-        },
-    }
-
-    gridHandlers = {
-        init: () => {
-            const { gridOption } = this.props;
-            if (gridOption.enabled && gridOption.grid) {
-                const width = 5000;
-                const gridLength = width / gridOption.grid;
-                const lineOptions = {
-                    stroke: '#ebebeb',
-                    selectable: false,
-                    evented: false,
-                    id: 'grid',
-                };
-                this.horizontalGridLines = [];
-                this.verticalGridLines = [];
-                for (let i = 0; i < gridLength; i++) {
-                    const distance = i * gridOption.grid;
-                    const fhorizontal = new fabric.Line([distance, -width, distance, width], lineOptions);
-                    const shorizontal = new fabric.Line([distance - width, -width, distance - width, width], lineOptions);
-                    this.canvas.add(fhorizontal);
-                    this.canvas.add(shorizontal);
-                    const fvertical = new fabric.Line([-width, distance - width, width, distance - width], lineOptions);
-                    const svertical = new fabric.Line([-width, distance, width, distance], lineOptions);
-                    this.canvas.add(fvertical);
-                    this.canvas.add(svertical);
-                    if (i % 5 === 0) {
-                        fhorizontal.set({ stroke: '#cccccc' });
-                        shorizontal.set({ stroke: '#cccccc' });
-                        fvertical.set({ stroke: '#cccccc' });
-                        svertical.set({ stroke: '#cccccc' });
-                    }
-                }
-            }
-        },
-        setCoords: (target) => {
-            const { gridOption: { enabled, grid, snapToGrid } } = this.props;
-            if (enabled && grid && snapToGrid) {
-                if (target.type === 'activeSelection') {
-                    target.set({
-                        left: Math.round(target.left / grid) * grid,
-                        top: Math.round(target.top / grid) * grid,
-                    });
-                    target.setCoords();
-                    target.getObjects().forEach((obj) => {
-                        if (obj.superType === 'node') {
-                            const left = target.left + obj.left + (target.width / 2);
-                            const top = target.top + obj.top + (target.height / 2);
-                            this.portHandlers.setCoords({ ...obj, left, top });
-                            if (obj.iconButton) {
-                                obj.iconButton.set({
-                                    left: obj.left + 5,
-                                    top: obj.top + 5,
-                                });
-                            }
-                        }
-                    });
-                    return;
-                }
-                target.set({
-                    left: Math.round(target.left / grid) * grid,
-                    top: Math.round(target.top / grid) * grid,
-                });
-                target.setCoords();
-                this.portHandlers.setCoords(target);
-            }
-        },
-    }
-
-    eventHandlers = {
-        object: {
-            mousedown: (opt) => {
-                const { target } = opt;
-                if (target && target.link && target.link.enabled) {
-                    const { onLink } = this.props;
-                    if (onLink) {
-                        onLink(this.canvas, target);
-                    }
-                }
-            },
-            mousedblclick: (opt) => {
-                const { target } = opt;
-                if (target) {
-                    const { onDblClick } = this.props;
-                    if (onDblClick) {
-                        onDblClick(this.canvas, target);
-                    }
-                }
-            },
-        },
-        modified: (opt) => {
-            const { target } = opt;
-            if (!target) {
-                return;
-            }
-            if (target.type === 'circle' && target.parentId) {
-                return;
-            }
-            const { onModified } = this.props;
-            if (onModified) {
-                onModified(target);
-            }
-        },
-        moving: (opt) => {
-            const { target } = opt;
-            if (this.handler.interactionMode === 'crop') {
-                this.handler.cropHandler.moving(opt);
-            } else {
-                if (this.props.editable && this.props.guidelineOption.enabled) {
-                    this.guidelineHandlers.movingGuidelines(target);
-                }
-                if (target.type === 'activeSelection') {
-                    target.getObjects().forEach((obj) => {
-                        const left = target.left + obj.left + (target.width / 2);
-                        const top = target.top + obj.top + (target.height / 2);
-                        if (obj.superType === 'node') {
-                            this.portHandlers.setCoords({ ...obj, left, top });
-                            if (obj.iconButton) {
-                                obj.iconButton.set({
-                                    left: obj.left + 5,
-                                    top: obj.top + 5,
-                                });
-                            }
-                        } else if (obj.superType === 'element') {
-                            const { id } = obj;
-                            const el = this.handler.elementHandler.findById(id);
-                            // TODO... Element object incorrect position
-                            this.handler.elementHandler.setPositionByOrigin(el, obj, left, top);
-                        }
-                    });
-                    return;
-                }
-                if (target.superType === 'node') {
-                    this.portHandlers.setCoords(target);
-                    if (target.iconButton) {
-                        target.iconButton.set({
-                            left: target.left + 5,
-                            top: target.top + 5,
-                        });
-                    }
-                } else if (target.superType === 'element') {
-                    const { id } = target;
-                    const el = this.handler.elementHandler.findById(id);
-                    this.handler.elementHandler.setPosition(el, target);
-                }
-            }
-        },
-        moved: (opt) => {
-            const { target } = opt;
-            this.gridHandlers.setCoords(target);
-            if (target.superType === 'element') {
-                const { id } = target;
-                const el = this.handler.elementHandler.findById(id);
-                this.handler.elementHandler.setPosition(el, target);
-            }
-        },
-        scaling: (opt) => {
-            const { target } = opt;
-            if (this.handler.interactionMode === 'crop') {
-                this.handler.cropHandler.resize(opt);
-            }
-            // TODO...this.guidelineHandlers.scalingGuidelines(target);
-            if (target.superType === 'element') {
-                const { id, width, height } = target;
-                const el = this.handler.elementHandler.findById(id);
-                // update the element
-                this.handler.elementHandler.setScaleOrAngle(el, target);
-                this.handler.elementHandler.setSize(el, target);
-                this.handler.elementHandler.setPosition(el, target);
-                if (target.type === 'video' && target.player) {
-                    target.player.setPlayerSize(width, height);
-                }
-            }
-        },
-        rotating: (opt) => {
-            const { target } = opt;
-            if (target.superType === 'element') {
-                const { id } = target;
-                const el = this.handler.elementHandler.findById(id);
-                // update the element
-                this.handler.elementHandler.setScaleOrAngle(el, target);
-            }
-        },
-        arrowmoving: (e) => {
-            const activeObject = this.canvas.getActiveObject();
-            if (!activeObject) {
-                return false;
-            }
-            if (activeObject.id === 'workarea') {
-                return false;
-            }
-            if (e.keyCode === 38) {
-                activeObject.set('top', activeObject.top - 2);
-                activeObject.setCoords();
-                this.canvas.renderAll();
-            } else if (e.keyCode === 40) {
-                activeObject.set('top', activeObject.top + 2);
-                activeObject.setCoords();
-                this.canvas.renderAll();
-            } else if (e.keyCode === 37) {
-                activeObject.set('left', activeObject.left - 2);
-                activeObject.setCoords();
-                this.canvas.renderAll();
-            } else if (e.keyCode === 39) {
-                activeObject.set('left', activeObject.left + 2);
-                activeObject.setCoords();
-                this.canvas.renderAll();
-            }
-            if (this.props.onModified) {
-                this.props.onModified(activeObject);
-            }
-        },
-        mousewheel: (opt) => {
-            const { zoomEnabled } = this.props;
-            if (!zoomEnabled) {
-                return;
-            }
-            const delta = opt.e.deltaY;
-            let zoomRatio = this.canvas.getZoom();
-            if (delta > 0) {
-                zoomRatio -= 0.05;
-            } else {
-                zoomRatio += 0.05;
-            }
-            this.handler.zoomHandler.zoomToPoint(new fabric.Point(this.canvas.width / 2, this.canvas.height / 2), zoomRatio);
-            opt.e.preventDefault();
-            opt.e.stopPropagation();
-        },
-        mousedown: (opt) => {
-            if (opt.e.ctrlKey) {
-                this.handler.modeHandler.grab();
-                this.panning = true;
-                return;
-            }
-            if (this.handler.interactionMode === 'grab') {
-                this.panning = true;
-                return;
-            }
-            const { editable } = this.props;
-            const { target } = opt;
-            if (editable) {
-                if (this.prevTarget && this.prevTarget.superType === 'link') {
-                    this.prevTarget.set({
-                        stroke: this.prevTarget.originStroke,
-                    });
-                }
-                if (target && target.type === 'fromPort') {
-                    if (this.handler.interactionMode === 'link' && this.activeLine) {
-                        console.warn('Already drawing links.');
-                        return;
-                    }
-                    this.linkHandlers.init(target);
-                    return;
-                }
-                if (target && this.handler.interactionMode === 'link' && (target.type === 'toPort' || target.superType === 'node')) {
-                    let toPort;
-                    if (target.superType === 'node') {
-                        toPort = target.toPort;
-                    } else {
-                        toPort = target;
-                    }
-                    if (toPort && toPort.links.some(link => link.fromNode.id === this.activeLine.fromNode)) {
-                        console.warn('Duplicate connections can not be made.');
-                        return;
-                    }
-                    this.linkHandlers.generate(toPort);
-                    return;
-                }
-                this.viewportTransform = this.canvas.viewportTransform;
-                this.zoom = this.canvas.getZoom();
-                if (this.handler.interactionMode === 'selection') {
-                    if (target && target.superType === 'link') {
-                        target.set({
-                            stroke: target.selectedStroke || 'green',
-                        });
-                    }
-                    this.prevTarget = target;
-                    return;
-                }
-                if (this.handler.interactionMode === 'polygon') {
-                    if (target && this.pointArray.length && target.id === this.pointArray[0].id) {
-                        this.drawingHandlers.polygon.generate(this.pointArray);
-                    } else {
-                        this.drawingHandlers.polygon.addPoint(opt);
-                    }
-                } else if (this.handler.interactionMode === 'line') {
-                    if (this.pointArray.length && this.activeLine) {
-                        this.drawingHandlers.line.generate(opt);
-                    } else {
-                        this.drawingHandlers.line.addPoint(opt);
-                    }
-                } else if (this.handler.interactionMode === 'arrow') {
-                    if (this.pointArray.length && this.activeLine) {
-                        this.drawingHandlers.arrow.generate(opt);
-                    } else {
-                        this.drawingHandlers.arrow.addPoint(opt);
-                    }
-                }
-            }
-        },
-        mousemove: (opt) => {
-            if (this.handler.interactionMode === 'grab' && this.panning) {
-                this.handler.modeHandler.moving(opt.e);
-                this.canvas.requestRenderAll();
-                return;
-            }
-            if (!this.props.editable && opt.target) {
-                if (opt.target.superType === 'element') {
-                    return false;
-                }
-                if (opt.target.id !== 'workarea') {
-                    if (opt.target !== this.target) {
-                        this.handler.tooltipHandler.show(opt.target);
-                    }
-                } else {
-                    this.handler.tooltipHandler.hide(opt.target);
-                }
-            }
-            if (this.handler.interactionMode === 'polygon') {
-                if (this.activeLine && this.activeLine.class === 'line') {
-                    const pointer = this.canvas.getPointer(opt.e);
-                    this.activeLine.set({ x2: pointer.x, y2: pointer.y });
-                    const points = this.activeShape.get('points');
-                    points[this.pointArray.length] = {
-                        x: pointer.x,
-                        y: pointer.y,
-                    };
-                    this.activeShape.set({
-                        points,
-                    });
-                    this.canvas.requestRenderAll();
-                }
-            } else if (this.handler.interactionMode === 'line') {
-                if (this.activeLine && this.activeLine.class === 'line') {
-                    const pointer = this.canvas.getPointer(opt.e);
-                    this.activeLine.set({ x2: pointer.x, y2: pointer.y });
-                }
-                this.canvas.requestRenderAll();
-            } else if (this.handler.interactionMode === 'arrow') {
-                if (this.activeLine && this.activeLine.class === 'line') {
-                    const pointer = this.canvas.getPointer(opt.e);
-                    this.activeLine.set({ x2: pointer.x, y2: pointer.y });
-                }
-                this.canvas.requestRenderAll();
-            } else if (this.handler.interactionMode === 'link') {
-                if (this.activeLine && this.activeLine.class === 'line') {
-                    const pointer = this.canvas.getPointer(opt.e);
-                    this.activeLine.set({ x2: pointer.x, y2: pointer.y });
-                }
-                this.canvas.requestRenderAll();
-            }
-        },
-        mouseup: (opt) => {
-            if (this.handler.interactionMode === 'grab') {
-                this.panning = false;
-                return;
-            }
-            const { target, e } = opt;
-            if (this.handler.interactionMode === 'selection') {
-                if (target && e.shiftKey && target.superType === 'node') {
-                    this.canvas.discardActiveObject();
-                    const nodes = [];
-                    this.nodeHandlers.getNodePath(target, nodes);
-                    const activeSelection = new fabric.ActiveSelection(nodes, {
-                        canvas: this.canvas,
-                        ...this.props.activeSelection,
-                    });
-                    this.canvas.setActiveObject(activeSelection);
-                    this.canvas.requestRenderAll();
-                }
-            }
-            if (this.props.editable && this.props.guidelineOption.enabled) {
-                this.verticalLines.length = 0;
-                this.horizontalLines.length = 0;
-            }
-            this.canvas.renderAll();
-        },
-        mouseout: (opt) => {
-            if (!opt.target) {
-                this.handler.tooltipHandler.hide();
-            }
-        },
-        selection: (opt) => {
-            const { onSelect, activeSelection } = this.props;
-            const { target } = opt;
-            if (target && target.type === 'activeSelection') {
-                target.set({
-                    ...activeSelection,
-                });
-            }
-            if (onSelect) {
-                onSelect(target);
-            }
-        },
-        beforeRender: (opt) => {
-            this.canvas.clearContext(this.ctx);
-        },
-        afterRender: (opt) => {
-            for (let i = this.verticalLines.length; i--;) {
-                this.guidelineHandlers.drawVerticalLine(this.verticalLines[i]);
-            }
-            for (let i = this.horizontalLines.length; i--;) {
-                this.guidelineHandlers.drawHorizontalLine(this.horizontalLines[i]);
-            }
-            this.verticalLines.length = 0;
-            this.horizontalLines.length = 0;
-        },
-        resize: (currentWidth, currentHeight, nextWidth, nextHeight) => {
-            this.currentWidth = currentWidth;
-            this.canvas.setWidth(nextWidth).setHeight(nextHeight);
-            if (!this.handler.workarea) {
-                return;
-            }
-            const diffWidth = (nextWidth / 2) - (currentWidth / 2);
-            const diffHeight = (nextHeight / 2) - (currentHeight / 2);
-            if (this.handler.workarea.layout === 'fixed') {
-                this.canvas.centerObject(this.handler.workarea);
-                this.handler.workarea.setCoords();
-                if (this.props.gridOption.enabled) {
-                    return;
-                }
-                this.canvas.getObjects().forEach((obj, index) => {
-                    if (index !== 0) {
-                        const left = obj.left + diffWidth;
-                        const top = obj.top + diffHeight;
-                        obj.set({
-                            left,
-                            top,
-                        });
-                        obj.setCoords();
-                        if (obj.superType === 'element') {
-                            const { id } = obj;
-                            const el = this.handler.elementHandler.findById(id);
-                            // update the element
-                            this.handler.elementHandler.setPosition(el, obj);
-                        }
-                    }
-                });
-                this.canvas.renderAll();
-                return;
-            }
-            let scaleX = nextWidth / this.handler.workarea.width;
-            const scaleY = nextHeight / this.handler.workarea.height;
-            if (this.handler.workarea.layout === 'responsive') {
-                if (this.handler.workarea.height > this.handler.workarea.width) {
-                    scaleX = scaleY;
-                    if (nextWidth < this.handler.workarea.width * scaleX) {
-                        scaleX = scaleX * (nextWidth / (this.handler.workarea.width * scaleX));
-                    }
-                } else {
-                    if (nextHeight < this.handler.workarea.height * scaleX) {
-                        scaleX = scaleX * (nextHeight / (this.handler.workarea.height * scaleX));
-                    }
-                }
-                const deltaPoint = new fabric.Point(diffWidth, diffHeight);
-                this.canvas.relativePan(deltaPoint);
-                const center = this.canvas.getCenter();
-                this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
-                this.canvas.renderAll();
-                return;
-            }
-            const diffScaleX = nextWidth / (this.handler.workarea.width * this.handler.workarea.scaleX);
-            const diffScaleY = nextHeight / (this.handler.workarea.height * this.handler.workarea.scaleY);
-            this.handler.workarea.set({
-                scaleX,
-                scaleY,
-            });
-            this.canvas.getObjects().forEach((obj) => {
-                const { id } = obj;
-                if (obj.id !== 'workarea') {
-                    const left = obj.left * diffScaleX;
-                    const top = obj.top * diffScaleY;
-                    const newScaleX = obj.scaleX * diffScaleX;
-                    const newScaleY = obj.scaleY * diffScaleY;
-                    obj.set({
-                        scaleX: newScaleX,
-                        scaleY: newScaleY,
-                        left,
-                        top,
-                    });
-                    obj.setCoords();
-                    if (obj.superType === 'element') {
-                        const { width, height } = obj;
-                        const el = this.handler.elementHandler.findById(id);
-                        this.handler.elementHandler.setSize(el, obj);
-                        if (obj.player) {
-                            obj.player.setPlayerSize(width, height);
-                        }
-                        this.handler.elementHandler.setPosition(el, obj);
-                    }
-                }
-            });
-            this.canvas.renderAll();
-        },
-        paste: (e) => {
-            if (this.canvas.wrapperEl !== document.activeElement) {
-                return false;
-            }
-            e = e || window.event;
-            if (e.preventDefault) {
-                e.preventDefault();
-            }
-            if (e.stopPropagation) {
-                e.stopPropagation();
-            }
-            const clipboardData = e.clipboardData || window.clipboardData;
-            if (clipboardData.types.length) {
-                clipboardData.types.forEach((clipboardType) => {
-                    if (clipboardType === 'text/plain') {
-                        const textPlain = clipboardData.getData('text/plain');
-                        try {
-                            const objects = JSON.parse(textPlain);
-                            const { gridOption: { grid = 10 } } = this.props;
-                            if (objects && Array.isArray(objects)) {
-                                const filteredObjects = objects.filter(obj => obj !== null);
-                                if (filteredObjects.length === 1) {
-                                    const obj = filteredObjects[0];
-                                    if (typeof obj.cloned !== 'undefined' && !obj.cloned) {
-                                        return false;
-                                    }
-                                    obj.left = obj.properties.left + grid;
-                                    obj.top = obj.properties.top + grid;
-                                    const createdObj = this.handlers.add(obj, false, true);
-                                    this.canvas.setActiveObject(createdObj);
-                                    this.canvas.requestRenderAll();
-                                } else {
-                                    const nodes = [];
-                                    const targets = [];
-                                    objects.forEach((obj) => {
-                                        if (!obj) {
-                                            return false;
-                                        }
-                                        if (obj.superType === 'link') {
-                                            obj.fromNode = nodes[obj.fromNodeIndex].id;
-                                            obj.toNode = nodes[obj.toNodeIndex].id;
-                                        } else {
-                                            obj.left = obj.properties.left + grid;
-                                            obj.top = obj.properties.top + grid;
-                                        }
-                                        const createdObj = this.handlers.add(obj, false, true);
-                                        if (obj.superType === 'node') {
-                                            nodes.push(createdObj);
-                                        } else {
-                                            targets.push(createdObj);
-                                        }
-                                    });
-                                    const activeSelection = new fabric.ActiveSelection(nodes.length ? nodes : targets, {
-                                        canvas: this.canvas,
-                                        ...this.props.activeSelection,
-                                    });
-                                    this.canvas.setActiveObject(activeSelection);
-                                    this.canvas.requestRenderAll();
-                                }
-                                this.handlers.copy();
-                            }
-                        } catch (error) {
-                            console.error(error);
-                            // const item = {
-                            //     id: uuid(),
-                            //     type: 'textbox',
-                            //     text: textPlain,
-                            // };
-                            // this.handlers.add(item, true);
-                        }
-                    } else if (clipboardType === 'text/html') {
-                        // Todo ...
-                        // const textHtml = clipboardData.getData('text/html');
-                        // console.log(textHtml);
-                    } else if (clipboardType === 'Files') {
-                        // Array.from(clipboardData.files).forEach((file) => {
-                        //     const { type } = file;
-                        //     if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
-                        //         const item = {
-                        //             id: uuid(),
-                        //             type: 'image',
-                        //             file,
-                        //             superType: 'image',
-                        //         };
-                        //         this.handlers.add(item, true);
-                        //     } else {
-                        //         console.error('Not supported file type');
-                        //     }
-                        // });
-                    }
-                });
-            }
-        },
-        /**
-         * Document keyboard event
-         *
-         * @param {KeyboardEvent} e
-         * @returns {any}
-         */
-        keydown: (e) => {
-            const { keyEvent } = this;
-            if (!Object.keys(keyEvent).length) {
-                return false;
-            }
-            const { editable } = this.props;
-            const { move, all, copy, paste, esc, del, clipboard, transaction } = keyEvent;
-            if (e.keyCode === 87) {
-                this.keyCode = e.keyCode;
-            } else if (e.keyCode === 81) {
-                this.keyCode = e.keyCode;
-            }
-            if (e.ctrlKey) {
-                this.canvas.defaultCursor = 'grab';
-                if (this.handler.workarea.hoverCursor) {
-                    this.handler.workarea.hoverCursor = 'grab';
-                }
-            }
-            if (e.keyCode === 27 && esc) {
-                if (this.handler.interactionMode === 'selection') {
-                    this.canvas.discardActiveObject();
-                    this.canvas.renderAll();
-                } else if (this.handler.interactionMode === 'polygon') {
-                    this.drawingHandlers.polygon.finish();
-                } else if (this.handler.interactionMode === 'line') {
-                    this.drawingHandlers.line.finish();
-                } else if (this.handler.interactionMode === 'arrow') {
-                    this.drawingHandlers.arrow.finish();
-                } else if (this.handler.interactionMode === 'link') {
-                    this.linkHandlers.finish();
-                }
-                this.handler.tooltipHandler.hide();
-            }
-            if (this.canvas.wrapperEl !== document.activeElement) {
-                return false;
-            }
-            if (editable) {
-                if (e.keyCode === 46 && del) {
-                    this.handlers.remove();
-                } else if (e.code.includes('Arrow') && move) {
-                    this.eventHandlers.arrowmoving(e);
-                } else if (e.ctrlKey && e.keyCode === 65 && all) {
-                    e.preventDefault();
-                    this.handlers.allSelect();
-                } else if (e.ctrlKey && e.keyCode === 67 && copy) {
-                    e.preventDefault();
-                    this.handlers.copy();
-                } else if (e.ctrlKey && e.keyCode === 86 && paste && !clipboard) {
-                    e.preventDefault();
-                    this.handlers.paste();
-                } else if (e.keyCode === 90 && transaction) {
-                    e.preventDefault();
-                    this.handler.transactionHandler.undo();
-                } else if (e.keyCode === 88 && transaction) {
-                    e.preventDefault();
-                    this.handler.transactionHandler.redo();
-                }
-                return false;
-            }
-        },
-        keyup: (e) => {
-            if (this.keyCode !== 87) {
-                this.canvas.defaultCursor = 'default';
-                if (this.handler.workarea.hoverCursor) {
-                    this.handler.workarea.hoverCursor = 'default';
-                }
-                this.handler.modeHandler.selection();
-            }
-        },
-        contextmenu: (e) => {
-            e.preventDefault();
-            const { editable, onContext } = this.props;
-            if (editable && onContext) {
-                const target = this.canvas.findTarget(e);
-                if (target && target.type !== 'activeSelection') {
-                    this.handlers.select(target);
-                }
-                this.handler.contextmenuHandler.show(e, target);
-            }
-        },
-        onmousedown: (e) => {
-            this.handler.contextmenuHandler.hide();
         },
     }
 

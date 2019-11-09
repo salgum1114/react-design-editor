@@ -46,7 +46,7 @@ const propertiesToInclude = [
     'loadType',
 ];
 
-const defaultOptions = {
+const defaultOption = {
     fill: 'rgba(0, 0, 0, 1)',
     stroke: 'rgba(255, 255, 255, 0)',
     strokeUniform: true,
@@ -221,17 +221,17 @@ class ImageMapEditor extends Component {
                 return;
             }
             if (changedKey === 'link') {
-                const link = Object.assign({}, defaultOptions.link, allValues.link);
+                const link = Object.assign({}, defaultOption.link, allValues.link);
                 this.canvasRef.handlers.set(changedKey, link);
                 return;
             }
             if (changedKey === 'tooltip') {
-                const tooltip = Object.assign({}, defaultOptions.tooltip, allValues.tooltip);
+                const tooltip = Object.assign({}, defaultOption.tooltip, allValues.tooltip);
                 this.canvasRef.handlers.set(changedKey, tooltip);
                 return;
             }
             if (changedKey === 'animation') {
-                const animation = Object.assign({}, defaultOptions.animation, allValues.animation);
+                const animation = Object.assign({}, defaultOption.animation, allValues.animation);
                 this.canvasRef.handlers.set(changedKey, animation);
                 return;
             }
@@ -279,7 +279,7 @@ class ImageMapEditor extends Component {
                 return;
             }
             if (changedKey === 'trigger') {
-                const trigger = Object.assign({}, defaultOptions.trigger, allValues.trigger);
+                const trigger = Object.assign({}, defaultOption.trigger, allValues.trigger);
                 this.canvasRef.handlers.set(changedKey, trigger);
                 return;
             }
@@ -711,7 +711,7 @@ class ImageMapEditor extends Component {
                                 selection: true,
                             }}
                             minZoom={30}
-                            defaultOptions={defaultOptions}
+                            defaultOption={defaultOption}
                             propertiesToInclude={propertiesToInclude}
                             onModified={onModified}
                             onAdd={onAdd}

@@ -67,7 +67,7 @@ class ImageMapHeaderToolbar extends Component {
                         className="rde-action-btn"
                         shape="circle"
                         disabled={isCropping}
-                        onClick={() => canvasRef.alignmentHandlers.left()}
+                        onClick={() => canvasRef.handler.alignmentHandler.left()}
                         icon="align-left"
                         tooltipTitle={i18n.t('action.align-left')}
                     />
@@ -75,7 +75,7 @@ class ImageMapHeaderToolbar extends Component {
                         className="rde-action-btn"
                         shape="circle"
                         disabled={isCropping}
-                        onClick={() => canvasRef.alignmentHandlers.center()}
+                        onClick={() => canvasRef.handler.alignmentHandler.center()}
                         icon="align-center"
                         tooltipTitle={i18n.t('action.align-center')}
                     />
@@ -83,7 +83,7 @@ class ImageMapHeaderToolbar extends Component {
                         className="rde-action-btn"
                         shape="circle"
                         disabled={isCropping}
-                        onClick={() => canvasRef.alignmentHandlers.right()}
+                        onClick={() => canvasRef.handler.alignmentHandler.right()}
                         icon="align-right"
                         tooltipTitle={i18n.t('action.align-right')}
                     />

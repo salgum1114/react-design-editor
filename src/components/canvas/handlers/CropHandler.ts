@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 
 import { Handler } from '.';
-import { IEvent } from '../utils';
+import { FabricEvent } from '../utils';
 
 class CropHandler {
     handler: Handler;
@@ -88,9 +88,9 @@ class CropHandler {
 
     /**
      * @description Resize crop
-     * @param {IEvent} opt
+     * @param {FabricEvent} opt
      */
-    resize = (opt: IEvent) => {
+    resize = (opt: FabricEvent) => {
         const { target, transform: { original, corner } } = opt;
         const { left, top, width, height, scaleX, scaleY } = target;
         const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight, scaleX: cropScaleX, scaleY: cropScaleY } = this.cropObject;
@@ -203,9 +203,9 @@ class CropHandler {
 
     /**
      * @description Resize crop
-     * @param {IEvent} opt
+     * @param {FabricEvent} opt
      */
-    moving = (opt: IEvent) => {
+    moving = (opt: FabricEvent) => {
         const { target } = opt;
         const { left, top, width, height, scaleX, scaleY } = target;
         const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight } = this.cropObject.getBoundingRect();

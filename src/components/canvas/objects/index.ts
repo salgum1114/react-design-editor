@@ -9,3 +9,9 @@ export { default as Element } from './Element';
 export { default as IFrame } from './IFrame';
 
 export { default as Video } from './Video';
+
+export { default as Node } from './Node';
+
+export { default as Link } from './Link';
+
+export { default as CurvedLink } from './CurvedLink';
