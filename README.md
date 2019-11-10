@@ -57,10 +57,10 @@
 - [x] Alignments
 - [x] Drawing - Polygon, Link, Line, Arrow Line
 - [x] Export / Import - JSON
-- [x] Video
-- [x] Dom Element
+- [x] Video Element
+- [x] HTML/CSS/JS Element
+- [x] iFrame Element
 - [x] Code Editor - HTML / CSS / JS / Preview
-- [x] iframe
 - [x] Animation - Fade / Bounce / Shake / Scaling / Rotation / Flash
 - [x] Icon Chooser - fontawesome 5.2.0 free version
 - [x] Google Fonts - 20 fonts
@@ -72,8 +72,11 @@
 - [x] Multiple Layout - Fixed / Responsive / Fullscreen / Grid
 - [x] Context menu
 - [x] Save Image - Canvas, Target Object
+- [x] Image Filter
 - [x] Undo / Redo - development
-- [x] Image Filter - development
 - [x] SVG Element - development
+- [x] Chart Element - development
+- [x] GIF Element - development
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
+- [ ] Ruler - development
