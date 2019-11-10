@@ -16,7 +16,7 @@ const defaultOption = {
     borderColor: 'rgba(0, 0, 0, 1)',
     borderScaleFactor: 1.5,
     deleted: true,
-    cloned: true,
+    cloneable: true,
     action: {
         enabled: false,
     },

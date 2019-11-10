@@ -3,6 +3,7 @@ import { fabric } from 'fabric';
 import Handler from './Handler';
 import { FabricObject, FabricEvent } from '../utils';
 import { VideoObject } from '../objects/Video';
+import { NodeObject } from '../objects/Node';
 
 class EventHandler {
     handler: Handler;
@@ -12,27 +13,72 @@ class EventHandler {
         this.handler = handler;
     }
 
-    objectMousedown = (opt: FabricEvent) => {
-        const { target }: { target?: FabricObject } = opt;
-        if (target && target.link && target.link.enabled) {
-            const { onLink } = this.handler;
-            if (onLink) {
-                onLink(this.handler.canvas, target);
-            }
+    /**
+     * @description Attch document event
+     */
+    public attachEventListener = () => {
+        this.handler.canvas.wrapperEl.tabIndex = 1000;
+        document.addEventListener('keydown', this.keydown, false);
+        document.addEventListener('keyup', this.keyup, false);
+        document.addEventListener('mousedown', this.onmousedown, false);
+        this.handler.canvas.wrapperEl.addEventListener('contextmenu', this.contextmenu, false);
+        if (this.handler.keyEvent.clipboard) {
+            document.addEventListener('paste', this.paste, false);
         }
     }
 
-    objectMousedblclick = (opt: FabricEvent) => {
-        const { target } = opt;
-        if (target) {
-            const { onDblClick } = this.handler;
-            if (onDblClick) {
-                onDblClick(this.handler.canvas, target);
-            }
+    /**
+     * @description Detach document event
+     */
+    public detachEventListener = () => {
+        document.removeEventListener('keydown', this.keydown);
+        document.removeEventListener('keyup', this.keyup);
+        document.removeEventListener('mousedown', this.onmousedown);
+        this.handler.canvas.wrapperEl.removeEventListener('contextmenu', this.contextmenu);
+        if (this.handler.keyEvent.clipboard) {
+            document.removeEventListener('paste', this.paste);
         }
     }
 
-    modified = (opt: FabricEvent) => {
+    /**
+     * @description Individual object event
+     * @memberof EventHandler
+     */
+    public object = {
+        /**
+         * @description Mouse down on object
+         * @param {FabricEvent} opt
+         */
+        mousedown: (opt: FabricEvent<Event>) => {
+            const { target }: { target?: FabricObject } = opt;
+            if (target && target.link && target.link.enabled) {
+                const { onLink } = this.handler;
+                if (onLink) {
+                    onLink(this.handler.canvas, target);
+                }
+            }
+        },
+        /**
+         * @description Mouse double click on object
+         * @param {FabricEvent} opt
+         */
+        mousedblclick: (opt: FabricEvent<Event>) => {
+            const { target } = opt;
+            if (target) {
+                const { onDblClick } = this.handler;
+                if (onDblClick) {
+                    onDblClick(this.handler.canvas, target);
+                }
+            }
+        },
+    }
+
+    /**
+     * @description Modified object
+     * @param {FabricEvent} opt
+     * @returns
+     */
+    public modified = (opt: FabricEvent) => {
         const { target } = opt;
         if (!target) {
             return;
@@ -46,7 +92,12 @@ class EventHandler {
         }
     }
 
-    moving = (opt: FabricEvent) => {
+    /**
+     * @description Moving object
+     * @param {FabricEvent} opt
+     * @returns
+     */
+    public moving = (opt: FabricEvent) => {
         const { target } = opt;
         if (this.handler.interactionMode === 'crop') {
             this.handler.cropHandler.moving(opt);
@@ -80,7 +131,11 @@ class EventHandler {
         }
     }
 
-    moved = (opt: FabricEvent) => {
+    /**
+     * @description Moved object
+     * @param {FabricEvent} opt
+     */
+    public moved = (opt: FabricEvent) => {
         const { target } = opt;
         this.handler.gridHandler.setCoords(target);
         if (target.superType === 'element') {
@@ -90,7 +145,11 @@ class EventHandler {
         }
     }
 
-    scaling = (opt: FabricEvent) => {
+    /**
+     * @description Scaling object
+     * @param {FabricEvent} opt
+     */
+    public scaling = (opt: FabricEvent) => {
         const { target } = opt;
         if (this.handler.interactionMode === 'crop') {
             this.handler.cropHandler.resize(opt);
@@ -110,7 +169,11 @@ class EventHandler {
         }
     }
 
-    rotating = (opt: FabricEvent) => {
+    /**
+     * @description Rotating object
+     * @param {FabricEvent} opt
+     */
+    public rotating = (opt: FabricEvent) => {
         const { target } = opt;
         if (target.superType === 'element') {
             const { id } = target;
@@ -120,7 +183,12 @@ class EventHandler {
         }
     }
 
-    arrowmoving = (e: KeyboardEvent) => {
+    /**
+     * @description Moing object at keyboard arrow key down
+     * @param {KeyboardEvent} e
+     * @returns
+     */
+    public arrowmoving = (e: KeyboardEvent) => {
         const activeObject = this.handler.canvas.getActiveObject() as FabricObject;
         if (!activeObject) {
             return false;
@@ -132,25 +200,35 @@ class EventHandler {
             activeObject.set('top', activeObject.top - 2);
             activeObject.setCoords();
             this.handler.canvas.renderAll();
+            return true;
         } else if (e.keyCode === 40) {
             activeObject.set('top', activeObject.top + 2);
             activeObject.setCoords();
             this.handler.canvas.renderAll();
+            return true;
         } else if (e.keyCode === 37) {
             activeObject.set('left', activeObject.left - 2);
             activeObject.setCoords();
             this.handler.canvas.renderAll();
+            return true;
         } else if (e.keyCode === 39) {
             activeObject.set('left', activeObject.left + 2);
             activeObject.setCoords();
             this.handler.canvas.renderAll();
+            return true;
         }
         if (this.handler.onModified) {
             this.handler.onModified(activeObject);
         }
+        return true;
     }
 
-    mousewheel = (opt: FabricEvent) => {
+    /**
+     * @description Zoom at mouse wheel
+     * @param {FabricEvent<WheelEvent>} opt
+     * @returns
+     */
+    public mousewheel = (opt: FabricEvent<WheelEvent>) => {
         const { zoomEnabled } = this.handler;
         if (!zoomEnabled) {
             return;
@@ -167,8 +245,13 @@ class EventHandler {
         opt.e.stopPropagation();
     }
 
-    mousedown = (opt: FabricEvent) => {
-        if (opt.e.ctrlKey) {
+    /**
+     * @description Object mouse down
+     * @param {FabricEvent} opt
+     * @returns
+     */
+    public mousedown = (opt: FabricEvent) => {
+        if (opt.e.altKey) {
             this.handler.modeHandler.grab();
             this.panning = true;
             return;
@@ -240,11 +323,15 @@ class EventHandler {
         }
     }
 
-    mousemove = (opt) => {
+    /**
+     * @description Mouse move on canvas
+     * @param {FabricEvent} opt
+     * @returns
+     */
+    public mousemove = (opt: FabricEvent) => {
         if (this.handler.interactionMode === 'grab' && this.panning) {
             this.handler.modeHandler.moving(opt.e);
             this.handler.canvas.requestRenderAll();
-            return;
         }
         if (!this.handler.editable && opt.target) {
             if (opt.target.superType === 'element') {
@@ -291,9 +378,15 @@ class EventHandler {
             }
             this.handler.canvas.requestRenderAll();
         }
+        return true;
     }
 
-    mouseup = (opt) => {
+    /**
+     * @description Mouse up on canvas
+     * @param {FabricEvent} opt
+     * @returns
+     */
+    public mouseup = (opt: FabricEvent) => {
         if (this.handler.interactionMode === 'grab') {
             this.panning = false;
             return;
@@ -301,31 +394,40 @@ class EventHandler {
         const { target, e } = opt;
         if (this.handler.interactionMode === 'selection') {
             if (target && e.shiftKey && target.superType === 'node') {
+                const node = target as NodeObject;
                 this.handler.canvas.discardActiveObject();
-                const nodes = [];
-                this.handler.nodeHandler.getNodePath(target, nodes);
+                const nodes = [] as NodeObject[];
+                this.handler.nodeHandler.getNodePath(node, nodes);
                 const activeSelection = new fabric.ActiveSelection(nodes, {
                     canvas: this.handler.canvas,
                     ...this.handler.activeSelection,
                 });
-                this.canvas.setActiveObject(activeSelection);
-                this.canvas.requestRenderAll();
+                this.handler.canvas.setActiveObject(activeSelection);
+                this.handler.canvas.requestRenderAll();
             }
         }
-        if (this.props.editable && this.props.guidelineOption.enabled) {
+        if (this.handler.editable && this.handler.guidelineOption.enabled) {
             this.handler.guidelineHandler.verticalLines.length = 0;
             this.handler.guidelineHandler.horizontalLines.length = 0;
         }
-        this.canvas.renderAll();
+        this.handler.canvas.renderAll();
     }
 
-    mouseout = (opt: FabricEvent) => {
+    /**
+     * @description Mouse out on canvas
+     * @param {FabricEvent} opt
+     */
+    public mouseout = (opt: FabricEvent) => {
         if (!opt.target) {
             this.handler.tooltipHandler.hide();
         }
     }
 
-    selection = (opt: FabricEvent) => {
+    /**
+     * @description Selection event on canvas
+     * @param {FabricEvent} opt
+     */
+    public selection = (opt: FabricEvent) => {
         const { onSelect, activeSelection } = this.handler;
         const { target } = opt;
         if (target && target.type === 'activeSelection') {
@@ -338,11 +440,19 @@ class EventHandler {
         }
     }
 
-    beforeRender = (opt: FabricEvent) => {
+    /**
+     * @description Before the render
+     * @param {FabricEvent} _opt
+     */
+    public beforeRender = (_opt: FabricEvent) => {
         this.handler.canvas.clearContext(this.handler.guidelineHandler.ctx);
     }
 
-    afterRender = (opt: FabricEvent) => {
+    /**
+     * @description After the render
+     * @param {FabricEvent} _opt
+     */
+    public afterRender = (_opt: FabricEvent) => {
         for (let i = this.handler.guidelineHandler.verticalLines.length; i--;) {
             this.handler.guidelineHandler.drawVerticalLine(this.handler.guidelineHandler.verticalLines[i]);
         }
@@ -353,21 +463,28 @@ class EventHandler {
         this.handler.guidelineHandler.horizontalLines.length = 0;
     }
 
-    resize = (currentWidth, currentHeight, nextWidth, nextHeight) => {
-        this.currentWidth = currentWidth;
-        this.canvas.setWidth(nextWidth).setHeight(nextHeight);
+    /**
+     * @description Called resize on canvas
+     * @param {number} nextWidth
+     * @param {number} nextHeight
+     * @returns
+     */
+    public resize = (nextWidth: number, nextHeight: number) => {
+        this.handler.canvas.setWidth(nextWidth).setHeight(nextHeight);
         if (!this.handler.workarea) {
             return;
         }
-        const diffWidth = (nextWidth / 2) - (currentWidth / 2);
-        const diffHeight = (nextHeight / 2) - (currentHeight / 2);
+        const diffWidth = (nextWidth / 2) - (this.handler.width / 2);
+        const diffHeight = (nextHeight / 2) - (this.handler.height / 2);
+        this.handler.width = nextWidth;
+        this.handler.height = nextHeight;
         if (this.handler.workarea.layout === 'fixed') {
             this.handler.canvas.centerObject(this.handler.workarea);
             this.handler.workarea.setCoords();
             if (this.handler.gridOption.enabled) {
                 return;
             }
-            this.handler.canvas.getObjects().forEach((obj, index) => {
+            this.handler.canvas.getObjects().forEach((obj: FabricObject, index) => {
                 if (index !== 0) {
                     const left = obj.left + diffWidth;
                     const top = obj.top + diffHeight;
@@ -428,11 +545,12 @@ class EventHandler {
                 });
                 obj.setCoords();
                 if (obj.superType === 'element') {
+                    const video = obj as VideoObject;
                     const { width, height } = obj;
                     const el = this.handler.elementHandler.findById(id);
                     this.handler.elementHandler.setSize(el, obj);
-                    if (obj.player) {
-                        obj.player.setPlayerSize(width, height);
+                    if (video.player) {
+                        video.player.setPlayerSize(width, height);
                     }
                     this.handler.elementHandler.setPosition(el, obj);
                 }
@@ -441,7 +559,12 @@ class EventHandler {
         this.handler.canvas.renderAll();
     }
 
-    paste = (e) => {
+    /**
+     * @description Paste event on canvas
+     * @param {ClipboardEvent} e
+     * @returns
+     */
+    public paste = (e: ClipboardEvent) => {
         if (this.handler.canvas.wrapperEl !== document.activeElement) {
             return false;
         }
@@ -464,7 +587,7 @@ class EventHandler {
                             const filteredObjects = objects.filter(obj => obj !== null);
                             if (filteredObjects.length === 1) {
                                 const obj = filteredObjects[0];
-                                if (typeof obj.cloned !== 'undefined' && !obj.cloned) {
+                                if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
                                     return false;
                                 }
                                 obj.left = obj.properties.left + grid;
@@ -533,6 +656,7 @@ class EventHandler {
                 }
             });
         }
+        return true;
     }
 
     /**
@@ -541,7 +665,7 @@ class EventHandler {
      * @param {KeyboardEvent} e
      * @returns {any}
      */
-    keydown = (e: KeyboardEvent) => {
+    public keydown = (e: KeyboardEvent) => {
         const { keyEvent } = this.handler;
         if (!Object.keys(keyEvent).length) {
             return false;
@@ -553,7 +677,7 @@ class EventHandler {
         } else if (e.keyCode === 81) {
             this.keyCode = e.keyCode;
         }
-        if (e.ctrlKey) {
+        if (e.altKey) {
             this.handler.canvas.defaultCursor = 'grab';
             if (this.handler.workarea.hoverCursor) {
                 this.handler.workarea.hoverCursor = 'grab';
@@ -584,7 +708,7 @@ class EventHandler {
                 this.arrowmoving(e);
             } else if (e.ctrlKey && e.keyCode === 65 && all) {
                 e.preventDefault();
-                this.handler.allSelect();
+                this.handler.selectAll();
             } else if (e.ctrlKey && e.keyCode === 67 && copy) {
                 e.preventDefault();
                 this.handler.copy();
@@ -600,9 +724,14 @@ class EventHandler {
             }
             return false;
         }
+        return true;
     }
 
-    keyup = (e: KeyboardEvent) => {
+    /**
+     * @description Key up on canvas
+     * @param {KeyboardEvent} _e
+     */
+    public keyup = (_e: KeyboardEvent) => {
         if (this.keyCode !== 87) {
             this.handler.canvas.defaultCursor = 'default';
             if (this.handler.workarea.hoverCursor) {
@@ -612,7 +741,11 @@ class EventHandler {
         }
     }
 
-    contextmenu = (e: MouseEvent) => {
+    /**
+     * @description Context menu on canvas
+     * @param {MouseEvent} e
+     */
+    public contextmenu = (e: MouseEvent) => {
         e.preventDefault();
         const { editable, onContext } = this.handler;
         if (editable && onContext) {
@@ -624,7 +757,11 @@ class EventHandler {
         }
     }
 
-    onmousedown = (e: MouseEvent) => {
+    /**
+     * @description Mouse down on canvas
+     * @param {MouseEvent} _e
+     */
+    public onmousedown = (_e: MouseEvent) => {
         this.handler.contextmenuHandler.hide();
     }
 }

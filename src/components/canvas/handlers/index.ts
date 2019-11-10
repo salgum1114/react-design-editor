@@ -17,3 +17,5 @@ export { default as NodeHandler } from './NodeHandler';
 export { default as AlignmentHandler } from './AlignmentHandler';
 export { default as GuidelineHandler } from './GuidelineHandler';
 export { default as EventHandler } from './EventHandler';
+export { default as DrawingHandler } from './DrawingHandler';
+

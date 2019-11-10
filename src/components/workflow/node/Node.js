@@ -78,9 +78,9 @@ const Node = fabric.util.createClass(fabric.Group, {
             descriptor: this.get('descriptor'),
             borderColor: this.get('borderColor'),
             borderScaleFactor: this.get('borderScaleFactor'),
-            dbclick: this.get('dbclick'),
+            dblclick: this.get('dblclick'),
             deleted: this.get('deleted'),
-            cloned: this.get('cloned'),
+            cloneable: this.get('cloneable'),
             fromPort: this.get('fromPort'),
             toPort: this.get('toPort'),
         });

@@ -40,7 +40,7 @@ export interface TriggerProperty {
     effect?: 'style' | 'animation';
 }
 
-export type FabricObject<T extends any = fabric.Object> = T & {
+export type FabricObjectOption = fabric.IObjectOptions & {
     /**
      * @description Object id
      * @type {string}
@@ -109,7 +109,34 @@ export type FabricObject<T extends any = fabric.Object> = T & {
     //  * @type {fabric.Shadow}
     //  */
     // shadow?: fabric.Shadow | string;
+    /**
+     * @description Object class
+     * @type {string}
+     */
+    class?: string;
+    /**
+     * @description Is possible delete
+     * @type {boolean}
+     */
+    deletable?: boolean;
+    /**
+     * @description Is enable double click
+     * @type {boolean}
+     */
+    dblclick?: boolean;
+    /**
+     * @description Is possible clone
+     * @type {boolean}
+     */
+    cloneable?: boolean;
+    /**
+     * @description Is locked object
+     * @type {boolean}
+     */
+    locked?: boolean;
 }
+
+export type FabricObject<T extends any = fabric.Object> = T & FabricObjectOption;
 
 export type FabricImage = FabricObject & Omit<fabric.Image, 'filters'> & {
     src?: string;
@@ -166,7 +193,7 @@ export interface CanvasOption {
     height?: number;
     selection?: boolean;
     defaultCursor?: string;
-    backgroundColor?: string;
+    backgroundColor?: string | fabric.Pattern;
 }
 
 export interface GridOption {
@@ -192,8 +219,8 @@ export interface KeyEvent {
 
 export type InteractionMode = 'selection' | 'grab' | 'polygon' | 'line' | 'arrow' | 'link' | 'crop';
 
-export interface FabricEvent {
-	e: Event;
+export interface FabricEvent<T extends any = KeyboardEvent> {
+	e: T;
 	target?: FabricObject;
     subTargets?: FabricObject[],
 	button?: number;

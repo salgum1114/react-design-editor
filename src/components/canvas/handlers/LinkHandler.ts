@@ -143,7 +143,7 @@ class LinkHandler {
         this.removeTo(link);
     }
 
-    remove = (link, type) => {
+    remove = (link, type?: string) => {
         if (type === 'from') {
             this.removeFrom(link);
         } else if (type === 'to') {

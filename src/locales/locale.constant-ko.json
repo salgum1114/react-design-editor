@@ -135,7 +135,7 @@
         "width": "Width",
         "height": "Height",
         "icon": "Icon",
-        "lock": "Lock",
+        "locked": "Lock",
         "visible": "Visible",
         "left": "Left",
         "top": "Top",

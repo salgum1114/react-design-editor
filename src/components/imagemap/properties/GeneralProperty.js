@@ -9,14 +9,14 @@ export default {
             <React.Fragment>
                 <Row>
                     <Col span={12}>
-                        <Form.Item label={i18n.t('common.lock')} colon={false}>
+                        <Form.Item label={i18n.t('common.locked')} colon={false}>
                             {
-                                getFieldDecorator('lock', {
+                                getFieldDecorator('locked', {
                                     rules: [{
                                         type: 'boolean',
                                     }],
                                     valuePropName: 'checked',
-                                    initialValue: data.lock,
+                                    initialValue: data.locked,
                                 })(
                                     <Switch size="small" />,
                                 )

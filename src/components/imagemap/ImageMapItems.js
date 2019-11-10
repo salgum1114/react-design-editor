@@ -138,11 +138,11 @@ class ImageMapItems extends Component {
                 return;
             }
             if (item.option.type === 'line') {
-                canvasRef.drawingHandlers.line.init();
+                canvasRef.handler.drawingHandler.line.init();
             } else if (item.option.type === 'arrow') {
-                canvasRef.drawingHandlers.arrow.init();
+                canvasRef.handler.drawingHandler.arrow.init();
             } else {
-                canvasRef.drawingHandlers.polygon.init();
+                canvasRef.handler.drawingHandler.polygon.init();
             }
         },
         onChangeActiveKey: (activeKey) => {
