@@ -166,6 +166,9 @@ export interface WorkareaOption {
     workareaHeight?: number;
     src?: string;
     file?: File;
+    width?: number;
+    height?: number;
+    backgroundColor?: string | fabric.Pattern;
 }
 
 export type WorkareaObject = FabricObject<fabric.Image> & WorkareaOption;
