@@ -35,26 +35,27 @@ import {
     KeyEvent,
     FabricObjectOption,
     FabricElement,
+    FabricCanvas,
 } from '../utils';
 import { NodeObject } from '../objects/Node';
+import CanvasObject from '../CanvasObject';
 
 export interface HandlerOptions {
-    id: string;
-    canvas: fabric.Canvas;
-    container: HTMLDivElement;
-    workarea: WorkareaObject;
+    id?: string;
+    canvas?: FabricCanvas;
+    container?: HTMLDivElement;
     editable?: boolean;
-    interactionMode: InteractionMode;
+    interactionMode?: InteractionMode;
     propertiesToInclude?: string[];
     minZoom?: number;
     maxZoom?: number;
     workareaOption?: WorkareaOption;
     canvasOption?: CanvasOption;
     gridOption?: GridOption;
-    defaultOption?: FabricObject;
+    defaultOption?: FabricObjectOption;
     guidelineOption?: GuidelineOption;
     zoomEnabled?: boolean;
-    activeSelection?: FabricObject<fabric.ActiveSelection>;
+    activeSelection?: FabricObjectOption;
     width?: number;
     height?: number;
     keyEvent?: KeyEvent;
@@ -64,8 +65,8 @@ export interface HandlerOptions {
     onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: fabric.Object) => Promise<any>;
     onTooltip?: (el: HTMLDivElement, target?: fabric.Object) => Promise<any>;
     onZoom?: (zoomRatio: number) => void;
-    onLink?: (canvas: fabric.Canvas, target: FabricObject) => void;
-    onDblClick?: (canvas: fabric.Canvas, target: FabricObject) => void;
+    onLink?: (canvas: FabricCanvas, target: FabricObject) => void;
+    onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
     onModified?: (target: FabricObject) => void;
     onSelect?: (target: FabricObject) => void;
     onRemove?: (target: FabricObject) => void;
@@ -73,7 +74,7 @@ export interface HandlerOptions {
 
 class Handler {
     public id: string;
-    public canvas: fabric.Canvas;
+    public canvas: FabricCanvas;
     public workarea: WorkareaObject;
     public container: HTMLDivElement;
     public editable: boolean;
@@ -85,23 +86,23 @@ class Handler {
     public canvasOption?: CanvasOption;
     public gridOption?: GridOption;
     public fabricObjects?: any;
-    public defaultOption?: FabricObject;
+    public defaultOption?: FabricObjectOption;
     public guidelineOption?: GuidelineOption;
     public zoomEnabled?: boolean;
-    public activeSelection?: FabricObject<fabric.ActiveSelection>;
+    public activeSelection?: FabricObjectOption;
     public width?: number;
     public height?: number;
     public keyEvent?: KeyEvent;
 
-    public onAdd?: (object: FabricObject) => void;
-    public onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: fabric.Object) => Promise<any>;
-    public onTooltip?: (el: HTMLDivElement, target?: fabric.Object) => Promise<any>;
+    public onAdd?: (object: FabricObject<any>) => void;
+    public onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject<any>) => Promise<any>;
+    public onTooltip?: (el: HTMLDivElement, target?: FabricObject<any>) => Promise<any>;
     public onZoom?: (zoomRatio: number) => void;
-    public onLink?: (canvas: fabric.Canvas, target: FabricObject) => void;
-    public onDblClick?: (canvas: fabric.Canvas, target: FabricObject) => void;
+    public onLink?: (canvas: FabricCanvas, target: FabricObject<any>) => void;
+    public onDblClick?: (canvas: FabricCanvas, target: FabricObject<any>) => void;
     public onModified?: (target: FabricObject) => void;
-    public onSelect?: (target: FabricObject) => void;
-    public onRemove?: (target: FabricObject) => void;
+    public onSelect?: (target: FabricObject<any>) => void;
+    public onRemove?: (target: FabricObject<any>) => void;
 
     public imageHandler: ImageHandler;
     public chartHandler: ChartHandler;
@@ -129,17 +130,26 @@ class Handler {
     public zoom = 1;
     public prevTarget?: FabricObject;
     public target?: FabricObject;
-    public pointArray?: FabricObject<fabric.Circle>[];
-    public lineArray?: FabricObject<fabric.Line>[];
+    public pointArray?: any[];
+    public lineArray?: any[];
 
     private isRequsetAnimFrame = false;
     private requestFrame: any;
     private clipboard: any;
 
     constructor(options: HandlerOptions) {
+        this.init(options);
+        this.initCallback(options);
+        this.initHandler(options);
+    }
+
+    /**
+     * @description Init class fields
+     * @param {HandlerOptions} options
+     */
+    public init = (options: HandlerOptions) => {
         this.id = options.id;
         this.canvas = options.canvas;
-        this.workarea = options.workarea;
         this.container = options.container;
         this.editable = options.editable;
         this.interactionMode = options.interactionMode;
@@ -150,7 +160,7 @@ class Handler {
         this.canvasOption = options.canvasOption;
         this.gridOption = options.gridOption;
         this.defaultOption = options.defaultOption;
-        this.fabricObjects = options.fabricObjects;
+        this.fabricObjects = Object.assign({}, CanvasObject, options.fabricObjects);
         this.guidelineOption = options.guidelineOption;
         this.zoomEnabled = options.zoomEnabled;
         this.activeSelection = options.activeSelection;
@@ -158,6 +168,14 @@ class Handler {
         this.height = options.number;
         this.keyEvent = options.keyEvent;
 
+        this.objects = [];
+    }
+
+    /**
+     * @description Init callback
+     * @param {HandlerOptions} options
+     */
+    public initCallback = (options: HandlerOptions) => {
         this.onAdd = options.onAdd;
         this.onTooltip = options.onTooltip;
         this.onZoom = options.onZoom;
@@ -166,7 +184,13 @@ class Handler {
         this.onDblClick = options.onDblClick;
         this.onSelect = options.onSelect;
         this.onRemove = options.onRemove;
+    }
 
+    /**
+     * @description Init handlers
+     * @param {HandlerOptions} options
+     */
+    public initHandler = (options: HandlerOptions) => {
         this.imageHandler = new ImageHandler(this);
         this.chartHandler = new ChartHandler(this);
         this.elementHandler = new ElementHandler(this);
@@ -194,15 +218,13 @@ class Handler {
         this.guidelineHandler = new GuidelineHandler(this);
         this.eventHandler = new EventHandler(this);
         this.drawingHandler = new DrawingHandler(this);
-
-        this.objects = [];
     }
 
     /**
      * @description Get primary object
      * @returns {FabricObject[]}
      */
-    public getObjects = (): FabricObject[] => this.canvas.getObjects().filter((obj: FabricObject) => {
+    public getObjects = (): any[] => this.canvas.getObjects().filter((obj: any) => {
         if (obj.id === 'workarea') {
             return false;
         } else if (obj.id === 'grid') {
@@ -222,14 +244,14 @@ class Handler {
      * @returns
      */
     public set = (key: keyof FabricObject, value: any) => {
-        const activeObject = this.canvas.getActiveObject() as FabricObject;
+        const activeObject = this.canvas.getActiveObject() as any;
         if (!activeObject) {
             return;
         }
         activeObject.set(key, value);
         activeObject.setCoords();
         this.canvas.requestRenderAll();
-        const { id, superType, type, player, width, height } = activeObject;
+        const { id, superType, type, player, width, height } = activeObject as any;
         if (superType === 'element') {
             if (key === 'visible') {
                 if (value) {
@@ -301,14 +323,14 @@ class Handler {
      * @param {*} value
      * @returns
      */
-    public setByObject = (obj: FabricObject, key: keyof FabricObject, value: any) => {
+    public setByObject = (obj: any, key: keyof FabricObject, value: any) => {
         if (!obj) {
             return;
         }
         obj.set(key, value);
         obj.setCoords();
         this.canvas.renderAll();
-        const { id, superType, type, player, width, height } = obj;
+        const { id, superType, type, player, width, height } = obj as any;
         if (superType === 'element') {
             if (key === 'visible') {
                 if (value) {
@@ -346,17 +368,17 @@ class Handler {
     /**
      * @description Set partial by object
      * @param {FabricObject} obj
-     * @param {FabricObjectOption} option
+     * @param {any} option
      * @returns
      */
-    public setByPartial = (obj: FabricObject, option: object) => {
+    public setByPartial = (obj: any, option: any) => {
         if (!obj) {
             return;
         }
         obj.set(option);
         obj.setCoords();
         this.canvas.renderAll();
-        const { id, superType, type, player, width, height } = obj;
+        const { id, superType, type, player, width, height } = obj as any;
         if (superType === 'element') {
             if ('visible' in option) {
                 if (option.visible) {
@@ -382,7 +404,7 @@ class Handler {
      * @returns
      */
     public setShadow = (option: fabric.Shadow) => {
-        const activeObject = this.canvas.getActiveObject();
+        const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (!activeObject) {
             return;
         }
@@ -409,8 +431,8 @@ class Handler {
         }
         if (source instanceof File) {
              const reader = new FileReader();
-             reader.onload = e => {
-                 this.loadImage(obj, e.target.result as string);
+             reader.onload = () => {
+                 this.loadImage(obj, reader.result as string);
                  obj.set('file', source);
                  obj.set('src', null);
              };
@@ -481,7 +503,7 @@ class Handler {
      * @returns
      */
     public add = (obj: FabricObjectOption, centered = true, loaded = false) => {
-        const { editable, onAdd, gridOption } = this;
+        const { editable, onAdd, gridOption, defaultOption } = this;
         const option: any = {
             hasControls: editable,
             hasBorders: editable,
@@ -499,7 +521,7 @@ class Handler {
             option.scaleX = this.workarea.scaleX;
             option.scaleY = this.workarea.scaleY;
         }
-        const newOption = Object.assign({}, option, obj, {
+        const newOption = Object.assign({}, defaultOption, option, obj, {
             container: this.container,
             editable,
         });
@@ -569,7 +591,7 @@ class Handler {
     }
 
     public addGroup = (obj: FabricObject<fabric.Group>, centered = true, loaded = false): any => {
-        return obj.getObjects().map((child: FabricObject) => {
+        return obj.getObjects().map((child: any) => {
             return this.add(child, centered, loaded);
         });
     }
@@ -577,25 +599,23 @@ class Handler {
     public addImage = (obj: FabricImage): FabricImage => {
         const { defaultOption } = this;
         const image = new Image();
-        const { src, file, filters = [], ...otherOption } = obj;
+        const { filters = [], ...otherOption } = obj;
         const createdObj = new fabric.Image(image, {
-            src,
-            file,
             ...defaultOption,
             ...otherOption,
-        });
+        }) as FabricImage;
         createdObj.set({
             filters: this.imageHandler.createFilters(filters),
         });
-        this.setImage(createdObj, src || file);
+        this.setImage(createdObj, obj.src || obj.file);
         return createdObj;
     }
 
-    public addSVG = (obj: FabricObject, centered = true, loaded = false) => {
+    public addSVG = (obj: any, centered = true, loaded = false) => {
         const { defaultOption } = this;
-        return new Promise((resolve) => {
-            const getSVGElements = (object, objects, options) => {
-                const createdObj = fabric.util.groupSVGElements(objects, options);
+        return new Promise((resolve: any) => {
+            const getSVGElements = (object: any, objects: any, options: any) => {
+                const createdObj = fabric.util.groupSVGElements(objects, options) as FabricObject;
                 createdObj.set({ ...defaultOption, ...object });
                 this.canvas.add(createdObj);
                 this.objects = this.getObjects();
@@ -635,7 +655,7 @@ class Handler {
      * @returns {any}
      */
     public remove = (target?: FabricObject) => {
-        const activeObject = target || this.canvas.getActiveObject() as FabricObject;
+        const activeObject = target || this.canvas.getActiveObject() as any;
         if (this.prevTarget && this.prevTarget.superType === 'link') {
             this.linkHandler.remove(this.prevTarget);
             return;
@@ -656,16 +676,16 @@ class Handler {
             } else if (activeObject.superType === 'node') {
                 if (activeObject.toPort) {
                     if (activeObject.toPort.links.length) {
-                        activeObject.toPort.links.forEach((link) => {
+                        activeObject.toPort.links.forEach((link: any) => {
                             this.linkHandler.remove(link, 'from');
                         });
                     }
                     this.canvas.remove(activeObject.toPort);
                 }
                 if (activeObject.fromPort && activeObject.fromPort.length) {
-                    activeObject.fromPort.forEach((port) => {
+                    activeObject.fromPort.forEach((port: any) => {
                         if (port.links.length) {
-                            port.links.forEach((link) => {
+                            port.links.forEach((link: any) => {
                                 this.linkHandler.remove(link, 'to');
                             });
                         }
@@ -677,27 +697,27 @@ class Handler {
             this.removeOriginById(activeObject.id);
         } else {
             const { _objects: activeObjects } = activeObject;
-            const existDeleted = activeObjects.some(obj => typeof obj.deleted !== 'undefined' && !obj.deleted);
+            const existDeleted = activeObjects.some((obj: any) => typeof obj.deleted !== 'undefined' && !obj.deleted);
             if (existDeleted) {
                 return;
             }
             this.canvas.discardActiveObject();
-            activeObjects.forEach((obj) => {
+            activeObjects.forEach((obj: any) => {
                 if (obj.superType === 'element') {
                     this.elementHandler.removeById(obj.id);
                 } else if (obj.superType === 'node') {
                     if (obj.toPort) {
                         if (obj.toPort.links.length) {
-                            obj.toPort.links.forEach((link) => {
+                            obj.toPort.links.forEach((link: any) => {
                                 this.linkHandler.remove(link, 'from');
                             });
                         }
                         this.canvas.remove(obj.toPort);
                     }
                     if (obj.fromPort && obj.fromPort.length) {
-                        obj.fromPort.forEach((port) => {
+                        obj.fromPort.forEach((port: any) => {
                             if (port.links.length) {
-                                port.links.forEach((link) => {
+                                port.links.forEach((link: any) => {
                                     this.linkHandler.remove(link, 'to');
                                 });
                             }
@@ -760,7 +780,7 @@ class Handler {
             if (clonedObj.type === 'activeSelection') {
                 const activeSelection = clonedObj as fabric.ActiveSelection;
                 activeSelection.canvas = this.canvas;
-                activeSelection.forEachObject((obj: FabricObject) => {
+                activeSelection.forEachObject((obj: any) => {
                     obj.set('id', uuid());
                     this.canvas.add(obj);
                     this.objects = this.getObjects();
@@ -856,25 +876,25 @@ class Handler {
             }
             if (activeObject.type === 'activeSelection') {
                 const activeSelection = activeObject as fabric.ActiveSelection;
-                if (activeSelection.getObjects().some((obj: FabricObject) => obj.superType === 'node')) {
+                if (activeSelection.getObjects().some((obj: any) => obj.superType === 'node')) {
                     if (this.keyEvent.clipboard) {
-                        const links = [];
+                        const links = [] as any[];
                         const objects = activeSelection.getObjects().map((obj: any, index: number) => {
                             const node = obj as NodeObject;
                             if (typeof node.cloneable !== 'undefined' && !node.cloneable) {
                                 return null;
                             }
                             if (node.fromPort.length) {
-                                node.fromPort.forEach((port) => {
+                                node.fromPort.forEach((port: any) => {
                                     if (port.links.length) {
-                                        port.links.forEach((link) => {
+                                        port.links.forEach((link: any) => {
                                             const linkTarget = {
                                                 fromNodeIndex: index,
                                                 fromPort: port.id,
                                                 type: 'curvedLink',
                                                 superType: 'link',
-                                            };
-                                            const findIndex = activeSelection.getObjects().findIndex((compObj: FabricObject) => compObj.id === link.toNode.id);
+                                            } as any;
+                                            const findIndex = activeSelection.getObjects().findIndex((compObj: any) => compObj.id === link.toNode.id);
                                             if (findIndex >= 0) {
                                                 linkTarget.toNodeIndex = findIndex;
                                                 links.push(linkTarget);
@@ -939,7 +959,6 @@ class Handler {
      */
     public paste = () => {
         const { onAdd, propertiesToInclude, gridOption: { grid = 10 }, clipboard } = this;
-        console.log(clipboard)
         if (!clipboard) {
             return false;
         }
@@ -947,13 +966,13 @@ class Handler {
             return false;
         }
         if (clipboard.type === 'activeSelection') {
-            if (clipboard.getObjects().some(obj => obj.superType === 'node')) {
+            if (clipboard.getObjects().some((obj: any) => obj.superType === 'node')) {
                 this.canvas.discardActiveObject();
-                const objects = [];
-                const linkObjects = [];
-                clipboard.getObjects().forEach((obj) => {
+                const objects = [] as any[];
+                const linkObjects = [] as any[];
+                clipboard.getObjects().forEach((obj: any) => {
                     if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
-                        return false;
+                        return;
                     }
                     const clonedObj = obj.duplicate();
                     if (clonedObj.type === 'SwitchNode') {
@@ -968,14 +987,14 @@ class Handler {
                         });
                     }
                     if (obj.fromPort.length) {
-                        obj.fromPort.forEach((port) => {
+                        obj.fromPort.forEach((port: any) => {
                             if (port.links.length) {
-                                port.links.forEach((link) => {
+                                port.links.forEach((link: any) => {
                                     const linkTarget = {
                                         fromNode: clonedObj.id,
                                         fromPort: port.id,
-                                    };
-                                    const findIndex = clipboard.getObjects().findIndex(compObj => compObj.id === link.toNode.id);
+                                    } as any;
+                                    const findIndex = clipboard.getObjects().findIndex((compObj: any) => compObj.id === link.toNode.id);
                                     if (findIndex >= 0) {
                                         linkTarget.toNodeIndex = findIndex;
                                         linkObjects.push(linkTarget);
@@ -993,7 +1012,7 @@ class Handler {
                     objects.push(clonedObj);
                 });
                 if (linkObjects.length) {
-                    linkObjects.forEach((linkObject) => {
+                    linkObjects.forEach((linkObject: any) => {
                         const { fromNode, fromPort, toNodeIndex } = linkObject;
                         const toNode = objects[toNodeIndex];
                         const link = {
@@ -1016,8 +1035,7 @@ class Handler {
                 return true;
             }
         }
-        clipboard.clone((clonedObj) => {
-            console.log(clonedObj)
+        clipboard.clone((clonedObj: any) => {
             this.canvas.discardActiveObject();
             clonedObj.set({
                 left: clonedObj.left + grid,
@@ -1027,7 +1045,7 @@ class Handler {
             });
             if (clonedObj.type === 'activeSelection') {
                 clonedObj.canvas = this.canvas;
-                clonedObj.forEachObject((obj) => {
+                clonedObj.forEachObject((obj: any) => {
                     obj.set('id', uuid());
                     this.canvas.add(obj);
                     if (obj.dblclick) {
@@ -1047,7 +1065,7 @@ class Handler {
                 }
                 this.canvas.add(clonedObj);
                 if (clonedObj.dblclick) {
-                    clonedObj.on('mousedblclick', this.eventHandler.obj);
+                    clonedObj.on('mousedblclick', this.eventHandler.object.mousedblclick);
                 }
                 this.objects = this.getObjects();
                 if (onAdd) {
@@ -1203,7 +1221,7 @@ class Handler {
      */
     public selectAll = () => {
         this.canvas.discardActiveObject();
-        const filteredObjects = this.canvas.getObjects().filter((obj: FabricObject) => {
+        const filteredObjects = this.canvas.getObjects().filter((obj: any) => {
             if (obj.id === 'workarea') {
                 return false;
             } else if (!obj.evented) {
@@ -1275,15 +1293,15 @@ class Handler {
     /**
      * @description Import json
      * @param {*} json
-     * @param {(canvas: fabric.Canvas) => void} [callback]
+     * @param {(canvas: FabricCanvas) => void} [callback]
      */
-    public importJSON = (json: any, callback?: (canvas: fabric.Canvas) => void) => {
+    public importJSON = (json: any, callback?: (canvas: FabricCanvas) => void) => {
         if (typeof json === 'string') {
             json = JSON.parse(json);
         }
         let prevLeft = 0;
         let prevTop = 0;
-        this.canvas.setBackgroundColor(this.canvasOption.backgroundColor, this.canvas.renderAll);
+        this.canvas.setBackgroundColor(this.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
         const workareaExist = json.filter((obj: FabricObjectOption) => obj.id === 'workarea');
         if (!this.workarea) {
             this.workareaHandler.init();
@@ -1353,7 +1371,7 @@ class Handler {
         if (activeObject.type !== 'activeSelection') {
             return;
         }
-        const group = activeObject.toGroup();
+        const group = activeObject.toGroup() as any;
         group.set({
             id: uuid(),
             name: 'New group',
@@ -1390,7 +1408,7 @@ class Handler {
      * @description Bring forward
      */
     public bringForward = () => {
-        const activeObject = this.canvas.getActiveObject();
+        const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (activeObject) {
             this.canvas.bringForward(activeObject);
             const { onModified } = this;
@@ -1404,7 +1422,7 @@ class Handler {
      * @description Bring to front
      */
     public bringToFront = () => {
-        const activeObject = this.canvas.getActiveObject();
+        const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (activeObject) {
             this.canvas.bringToFront(activeObject);
             const { onModified } = this;
@@ -1437,7 +1455,7 @@ class Handler {
      * @description Send to back
      */
     public sendToBack = () => {
-        const activeObject = this.canvas.getActiveObject();
+        const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (activeObject) {
             this.canvas.sendToBack(activeObject);
             this.canvas.sendToBack(this.canvas.getObjects()[1]);
@@ -1454,7 +1472,7 @@ class Handler {
      */
     public clear = (includeWorkarea = false) => {
         const { canvas } = this;
-        const ids = canvas.getObjects().reduce((prev, curr: FabricObject) => {
+        const ids = canvas.getObjects().reduce((prev, curr: any) => {
             if (curr.superType === 'element') {
                 prev.push(curr.id);
                 return prev;
@@ -1466,7 +1484,7 @@ class Handler {
             canvas.clear();
             this.workarea = null;
         } else {
-            canvas.getObjects().forEach((obj: FabricObject) => {
+            canvas.getObjects().forEach((obj: any) => {
                 if (obj.id === 'grid') {
                     return;
                 }
@@ -1517,7 +1535,7 @@ class Handler {
         if (target) {
             dataUrl = target.toDataURL(option);
         } else {
-            target = this.canvas.getActiveObject();
+            target = this.canvas.getActiveObject() as FabricObject;
             if (target) {
                 dataUrl = target.toDataURL(option);
             }

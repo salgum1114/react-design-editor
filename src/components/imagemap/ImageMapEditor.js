@@ -4,7 +4,6 @@ import { Badge, Button, Popconfirm, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
 
-import Canvas from '../canvas/Canvas';
 import ImageMapFooterToolbar from './ImageMapFooterToolbar';
 import ImageMapItems from './ImageMapItems';
 import ImageMapTitle from './ImageMapTitle';
@@ -17,6 +16,7 @@ import '../../libs/fontawesome-5.2.0/css/all.css';
 import '../../styles/index.less';
 import Container from '../common/Container';
 import CommonButton from '../common/CommonButton';
+import Canvas from '../canvas/Canvas';
 
 const propertiesToInclude = [
     'id',
@@ -215,7 +215,7 @@ class ImageMapEditor extends Component {
             if (changedKey === 'file' || changedKey === 'src' || changedKey === 'code') {
                 if (selectedItem.type === 'image') {
                     this.canvasRef.handler.setImageById(selectedItem.id, changedValue);
-                } else if (this.canvasRef.handler.isElementType(selectedItem)) {
+                } else if (selectedItem.superType === 'element') {
                     this.canvasRef.handler.elementHandler.setById(selectedItem.id, changedValue);
                 }
                 return;

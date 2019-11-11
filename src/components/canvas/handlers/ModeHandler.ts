@@ -21,7 +21,7 @@ class ModeHandler {
         }
         this.handler.canvas.defaultCursor = 'default';
         this.handler.workarea.hoverCursor = 'default';
-        this.handler.canvas.getObjects().forEach((obj: FabricObject) => {
+        this.handler.canvas.getObjects().forEach((obj: any) => {
             if (obj.id !== 'workarea') {
                 if (obj.id === 'grid') {
                     obj.selectable = false;
@@ -54,7 +54,7 @@ class ModeHandler {
         this.handler.canvas.selection = false;
         this.handler.canvas.defaultCursor = 'grab';
         this.handler.workarea.hoverCursor = 'grab';
-        this.handler.canvas.getObjects().forEach((obj: FabricObject) => {
+        this.handler.canvas.getObjects().forEach((obj: any) => {
             if (obj.id !== 'workarea') {
                 if (callback) {
                     const ret = callback(obj);
@@ -79,7 +79,7 @@ class ModeHandler {
         this.handler.canvas.selection = false;
         this.handler.canvas.defaultCursor = 'pointer';
         this.handler.workarea.hoverCursor = 'pointer';
-        this.handler.canvas.getObjects().forEach((obj: FabricObject) => {
+        this.handler.canvas.getObjects().forEach((obj: any) => {
             if (obj.id !== 'workarea') {
                 if (callback) {
                     const ret = callback(obj);

@@ -12,7 +12,7 @@ export interface LinkObject extends FabricObject<fabric.Line> {
 const Link = fabric.util.createClass(fabric.Line, {
     type: 'link',
     superType: 'link',
-    initialize(fromNode, fromPort, toNode, toPort, options) {
+    initialize(fromNode: any, fromPort: any, toNode: any, toPort: any, options: any) {
         options = options || {};
         if (fromNode.type === 'BroadcastNode') {
             fromPort = fromNode.fromPort[0];
@@ -38,7 +38,7 @@ const Link = fabric.util.createClass(fabric.Line, {
             selectable: false,
         });
     },
-    setPort(fromNode, fromPort, toNode, toPort) {
+    setPort(fromNode: any, fromPort: any, _toNode: any, toPort: any) {
         if (fromNode.type === 'BroadcastNode') {
             fromPort = fromNode.fromPort[0];
         }
@@ -46,7 +46,7 @@ const Link = fabric.util.createClass(fabric.Line, {
         toPort.links.push(this);
         this.setPortEnabled(fromNode, fromPort, false);
     },
-    setPortEnabled(node, port, enabled) {
+    setPortEnabled(node: any, port: any, enabled: any) {
         if (node.descriptor.outPortType !== OUT_PORT_TYPE.BROADCAST) {
             port.set({
                 enabled,
@@ -55,7 +55,7 @@ const Link = fabric.util.createClass(fabric.Line, {
             if (node.toPort.id === port.id) {
                 return;
             }
-            port.links.forEach((link, index) => {
+            port.links.forEach((link: any, index: any) => {
                 link.set({
                     fromPort: 'broadcastFromPort',
                     fromPortIndex: index,
@@ -80,7 +80,7 @@ const Link = fabric.util.createClass(fabric.Line, {
             toPort: this.get('toPort'),
         });
     },
-    _render(ctx) {
+    _render(ctx: CanvasRenderingContext2D) {
         this.callSuper('_render', ctx);
         ctx.save();
         const xDiff = this.x2 - this.x1;

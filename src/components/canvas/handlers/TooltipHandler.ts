@@ -36,7 +36,7 @@ class TooltipHandler {
             }
             const tooltip = document.createElement('div');
             tooltip.className = 'rde-tooltip-right';
-            let element = target.name;
+            let element = target.name as any;
             const { onTooltip } = this;
             if (onTooltip) {
                 element = await onTooltip(this.tooltipEl, target);
@@ -52,7 +52,7 @@ class TooltipHandler {
             const { clientHeight } = this.tooltipEl;
             const { width, height, scaleX, scaleY } = target;
             const { left, top } = target.getBoundingRect();
-            const { _offset: offset } = this.handler.canvas.calcOffset();
+            const { _offset: offset } = this.handler.canvas.calcOffset() as any;
             const objWidthDiff = (width * scaleX) * zoom;
             const objHeightDiff = (((height * scaleY) * zoom) / 2) - (clientHeight / 2);
             const calcLeft = offset.left + left + objWidthDiff;
@@ -68,7 +68,7 @@ class TooltipHandler {
         }
     }, 100)
 
-    hide = debounce((target?: fabric.Object) => {
+    hide = debounce((_target?: fabric.Object) => {
         this.handler.target = null;
         if (this.tooltipEl) {
             this.tooltipEl.classList.add('tooltip-hidden');

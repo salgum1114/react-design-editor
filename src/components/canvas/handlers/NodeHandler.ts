@@ -56,7 +56,7 @@ class NodeHandler {
         }
         const targetObjects = this.handler.objects.filter(object => path.some(id => id === object.id));
         const nonTargetObjects = this.handler.objects.filter(object => path.some(id => id !== object.id));
-        nonTargetObjects.forEach(object => {
+        nonTargetObjects.forEach((object: any) => {
             if (object.superType === 'link') {
                 const { fromNode, toNode } = object as LinkObject;
                 if (fromNode && toNode) {
@@ -84,7 +84,7 @@ class NodeHandler {
                         opacity: 0.2,
                     });
                 }
-                object.fromPort.forEach((port) => {
+                object.fromPort.forEach((port: any) => {
                     port.set({
                         opacity: 0.2,
                     });
@@ -96,7 +96,7 @@ class NodeHandler {
                 });
             }
         });
-        targetObjects.forEach((object) => {
+        targetObjects.forEach((object: any) => {
             object.set({
                 opacity: 1,
             });
@@ -110,7 +110,7 @@ class NodeHandler {
                 });
             }
             if (object.fromPort) {
-                object.fromPort.forEach((port) => {
+                object.fromPort.forEach((port: any) => {
                     port.set({
                         opacity: 1,
                     });
@@ -125,7 +125,7 @@ class NodeHandler {
      * @param {string} id
      */
     selectById = (id: string) => {
-        this.handler.objects.forEach((object) => {
+        this.handler.objects.forEach((object: any) => {
             if (id === object.id) {
                 object.setShadow({
                     color: object.fill,

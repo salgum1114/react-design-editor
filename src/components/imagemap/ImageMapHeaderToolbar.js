@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import i18n from 'i18next';
 
 import { FlexBox, FlexItem } from '../flex';
-import CanvasList from '../canvas/CanvasList';
+import ImageMapList from './ImageMapList';
 import { CommonButton } from '../common';
 
 class ImageMapHeaderToolbar extends Component {
@@ -25,7 +25,7 @@ class ImageMapHeaderToolbar extends Component {
                         tooltipTitle={i18n.t('action.canvas-list')}
                     />
                     <div className="rde-canvas-list">
-                        <CanvasList canvasRef={canvasRef} selectedItem={selectedItem} />
+                        <ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} />
                     </div>
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">

@@ -3,11 +3,11 @@ import { fabric } from 'fabric';
 const Arrow = fabric.util.createClass(fabric.Line, {
     type: 'arrow',
     superType: 'drawing',
-    initialize(points, options) {
+    initialize(points: any, options: any) {
         options = options || {};
         this.callSuper('initialize', points, options);
     },
-    _render(ctx) {
+    _render(ctx: CanvasRenderingContext2D) {
         this.callSuper('_render', ctx);
         ctx.save();
         const xDiff = this.x2 - this.x1;
@@ -27,7 +27,7 @@ const Arrow = fabric.util.createClass(fabric.Line, {
     },
 });
 
-Arrow.fromObject = function (options, callback) {
+Arrow.fromObject = (options: any, callback: any) => {
     return callback(new Arrow(options));
 };
 

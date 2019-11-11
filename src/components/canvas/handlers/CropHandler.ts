@@ -1,12 +1,12 @@
 import { fabric } from 'fabric';
 
 import { Handler } from '.';
-import { FabricEvent } from '../utils';
+import { FabricImage } from '../utils';
 
 class CropHandler {
     handler: Handler;
     cropRect: fabric.Rect;
-    cropObject: fabric.Image;
+    cropObject: FabricImage;
 
     constructor(handler: Handler) {
         this.handler = handler;
@@ -35,7 +35,7 @@ class CropHandler {
     public start = () => {
         if (this.validType()) {
             this.handler.interactionMode = 'crop';
-            this.cropObject = this.handler.canvas.getActiveObject() as fabric.Image;
+            this.cropObject = this.handler.canvas.getActiveObject() as FabricImage;
             const { left, top } = this.cropObject;
             this.cropRect = new fabric.Rect({
                 width: this.cropObject.width,
@@ -90,7 +90,7 @@ class CropHandler {
      * @description Resize crop
      * @param {FabricEvent} opt
      */
-    resize = (opt: FabricEvent) => {
+    resize = (opt: fabric.IEvent) => {
         const { target, transform: { original, corner } } = opt;
         const { left, top, width, height, scaleX, scaleY } = target;
         const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight, scaleX: cropScaleX, scaleY: cropScaleY } = this.cropObject;
@@ -205,7 +205,7 @@ class CropHandler {
      * @description Resize crop
      * @param {FabricEvent} opt
      */
-    moving = (opt: FabricEvent) => {
+    moving = (opt: fabric.IEvent) => {
         const { target } = opt;
         const { left, top, width, height, scaleX, scaleY } = target;
         const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight } = this.cropObject.getBoundingRect();

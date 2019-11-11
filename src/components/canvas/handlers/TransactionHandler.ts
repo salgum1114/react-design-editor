@@ -1,5 +1,4 @@
 import Handler from './Handler';
-import { FabricObject } from '../utils';
 
 export type TransactionType = 'add' | 'remove' | 'moved' | 'scaled' | 'rotated' | 'skewed';
 
@@ -26,12 +25,14 @@ class TransactionHandler {
      * @param {TransactionType} type
      * @returns
      */
-    save = (target: FabricObject, type: TransactionType) => {
+    save = (target: any, type: TransactionType) => {
         if (!type) {
             console.warn('Must enter the transaction type');
             return;
         }
-        const undo = { type };
+        const undo = {
+            type,
+        } as any;
         if (target.superType === 'node') {
             undo.target = {
                 id: target.id,
@@ -56,11 +57,12 @@ class TransactionHandler {
                 fromPort: target.fromPort,
                 toNode: target.toNode.id,
             };
-        } else if (target.type === 'activeSelection') {
-
-        } else {
-
         }
+        // else if (target.type === 'activeSelection') {
+
+        // } else {
+
+        // }
         this.undos.push(undo);
     }
 
@@ -87,15 +89,12 @@ class TransactionHandler {
                 target.top = target.properties.top;
             }
             this.handler.add({ ...target, id: null }, false, true);
-        } else if (type === 'moved') {
-            
-        } else if (type === 'scaled') {
-            
-        } else if (type === 'rotated') {
-            
-        } else if (type === 'skewed') {
-            
         }
+        // else if (type === 'moved') {
+        // } else if (type === 'scaled') {
+        // } else if (type === 'rotated') {
+        // } else if (type === 'skewed') {
+        // }
         this.redos.push(undo);
         return undo;
     }
@@ -120,21 +119,16 @@ class TransactionHandler {
                 target,
                 type: 'remove',
             });
-        } else if (type === 'remove') {
-            if (target.superType === 'link') {
-                
-            } else {
-                
-            }
-        } else if (type === 'moved') {
-            
-        } else if (type === 'scaled') {
-            
-        } else if (type === 'rotated') {
-            
-        } else if (type === 'skewed') {
-            
         }
+        // else if (type === 'remove') {
+        //     if (target.superType === 'link') {
+        //     } else {
+        //     }
+        // } else if (type === 'moved') {
+        // } else if (type === 'scaled') {
+        // } else if (type === 'rotated') {
+        // } else if (type === 'skewed') {
+        // }
         this.undos.push(redo);
         return redo;
     }

@@ -1,10 +1,10 @@
 import { fabric } from 'fabric';
 
 import { Handler } from '.';
-import { WorkareaLayout, WorkareaOption, WorkareaObject } from '../utils';
+import { WorkareaLayout, WorkareaObject } from '../utils';
 import { VideoObject } from '../objects/Video';
 
-const defaultWorkareaOption: WorkareaOption = {
+const defaultWorkareaOption: Partial<WorkareaObject> = {
     width: 600,
     height: 400,
     workareaWidth: 600,
@@ -48,7 +48,7 @@ class WorkareaHandler {
         const image = new Image();
         image.width = mergedWorkareaOption.width;
         image.height = mergedWorkareaOption.height;
-        this.handler.workarea = new fabric.Image(image, mergedWorkareaOption);
+        this.handler.workarea = new fabric.Image(image, mergedWorkareaOption) as WorkareaObject;
         this.handler.canvas.add(this.handler.workarea);
         this.handler.objects = this.handler.getObjects();
         this.handler.canvas.centerObject(this.handler.workarea);
@@ -164,7 +164,7 @@ class WorkareaHandler {
     public setResponsiveImage = (source: string | File, loaded?: boolean) => {
         const { canvas, workarea, editable } = this.handler;
         const imageFromUrl = (src: string) => {
-            fabric.Image.fromURL(src, (img: WorkareaObject) => {
+            fabric.Image.fromURL(src, (img: any) => {
                 let scaleX = canvas.getWidth() / img.width;
                 let scaleY = canvas.getHeight() / img.height;
                 if (img.height >= img.width) {
@@ -235,11 +235,11 @@ class WorkareaHandler {
         }
         if (source instanceof File) {
             const reader = new FileReader();
-            reader.onload = e => {
+            reader.onload = () => {
                 workarea.set({
                     file: source,
                 });
-                imageFromUrl(e.target.result as string);
+                imageFromUrl(reader.result as string);
             };
             reader.readAsDataURL(source);
         } else {
@@ -263,7 +263,7 @@ class WorkareaHandler {
             return;
         }
         const imageFromUrl = (src: string) => {
-            fabric.Image.fromURL(src, (img: WorkareaObject) => {
+            fabric.Image.fromURL(src, (img: any) => {
                 let width = canvas.getWidth();
                 let height = canvas.getHeight();
                 if (workarea.layout === 'fixed') {
@@ -336,11 +336,11 @@ class WorkareaHandler {
         }
         if (source instanceof File) {
             const reader = new FileReader();
-            reader.onload = e => {
+            reader.onload = () => {
                 workarea.set({
                     file: source,
                 });
-                imageFromUrl(e.target.result as string);
+                imageFromUrl(reader.result as string);
             };
             reader.readAsDataURL(source);
         } else {

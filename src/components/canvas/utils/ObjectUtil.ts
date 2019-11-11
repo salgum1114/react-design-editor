@@ -40,7 +40,13 @@ export interface TriggerProperty {
     effect?: 'style' | 'animation';
 }
 
-export type FabricObjectOption = fabric.IObjectOptions & {
+export interface FabricCanvasOption {
+    wrapperEl?: HTMLElement;
+}
+
+export type FabricCanvas<T extends any = fabric.Canvas> = T & FabricCanvasOption;
+
+export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
     /**
      * @description Object id
      * @type {string}
@@ -153,31 +159,6 @@ export interface FabricElement extends FabricObject<fabric.Rect> {
 export type WorkareaLayout = 'fixed' | 'responsive' | 'fullscreen' | string;
 
 export interface WorkareaOption {
-    width?: number;
-    height?: number;
-    workareaWidth?: number;
-    workareaHeight?: number;
-    lockScalingX?: boolean;
-    lockScalingY: boolean;
-    scaleX?: number;
-    scaleY?: number;
-    backgroundColor?: string;
-    hasBorders?: boolean;
-    hasControls?: boolean;
-    selectable?: boolean;
-    lockMovementX?: boolean;
-    lockMovementY?: boolean;
-    hoverCursor?: string;
-    name?: string;
-    id?: string;
-    type?: string;
-    layout?: WorkareaLayout;
-    link?: LinkProperty;
-    tooltip?: TooltipProperty;
-    isElement?: boolean;
-}
-
-export interface WorkareaObject extends FabricObject<fabric.Image> {
     layout?: WorkareaLayout;
     _element?: HTMLImageElement;
     isElement?: boolean;
@@ -187,7 +168,10 @@ export interface WorkareaObject extends FabricObject<fabric.Image> {
     file?: File;
 }
 
+export type WorkareaObject = FabricObject<fabric.Image> & WorkareaOption;
+
 export interface CanvasOption {
+    id?: string;
     preserveObjectStacking?: boolean;
     width?: number;
     height?: number;
@@ -219,7 +203,7 @@ export interface KeyEvent {
 
 export type InteractionMode = 'selection' | 'grab' | 'polygon' | 'line' | 'arrow' | 'link' | 'crop';
 
-export interface FabricEvent<T extends any = KeyboardEvent> {
+export interface FabricEvent<T extends any = Event> extends Omit<fabric.IEvent, 'e'> {
 	e: T;
 	target?: FabricObject;
     subTargets?: FabricObject[],

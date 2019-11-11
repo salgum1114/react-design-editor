@@ -16,7 +16,7 @@ class LinkHandler {
         this.onAdd = options.onAdd;
     }
 
-    init = (target) => {
+    init = (target: any) => {
         if (!target.enabled) {
             console.warn('A connected node already exists.');
             return;
@@ -70,11 +70,11 @@ class LinkHandler {
         this.finish();
     }
 
-    create = (link, init = false) => {
-        const fromNode = this.handler.findById(link.fromNode);
-        const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPort || !port.id)[0];
+    create = (link: any, init = false) => {
+        const fromNode = this.handler.findById(link.fromNode) as any;
+        const fromPort = fromNode.fromPort.filter((port: any) => port.id === link.fromPort || !port.id)[0];
         const toNode = this.handler.findById(link.toNode);
-        const { toPort } = toNode;
+        const { toPort } = toNode as any;
         const createdObj = this.handler.fabricObjects[link.type].create(fromNode, fromPort, toNode, toPort, { ...link });
         this.handler.canvas.add(createdObj);
         this.handler.objects = this.handler.getObjects();
@@ -90,7 +90,7 @@ class LinkHandler {
         return createdObj;
     }
 
-    setCoords = (x1, y1, x2, y2, link) => {
+    setCoords = (x1: any, y1: any, x2: any, y2: any, link: any) => {
         link.set({
             x1,
             y1,
@@ -100,12 +100,12 @@ class LinkHandler {
         link.setCoords();
     }
 
-    removeFrom = (link) => {
+    removeFrom = (link: any) => {
         if (link.fromNode.fromPort.length) {
             let index = -1;
-            link.fromNode.fromPort.forEach((port) => {
+            link.fromNode.fromPort.forEach((port: any) => {
                 if (port.links.length) {
-                    port.links.some((portLink, i) => {
+                    port.links.some((portLink: any, i: number) => {
                         if (link.id === portLink.id) {
                             index = i;
                             return true;
@@ -121,10 +121,10 @@ class LinkHandler {
         }
     }
 
-    removeTo = (link) => {
+    removeTo = (link: any) => {
         if (link.toNode.toPort.links.length) {
             let index = -1;
-            link.toNode.toPort.links.some((portLink, i) => {
+            link.toNode.toPort.links.some((portLink: any, i: number) => {
                 if (link.id === portLink.id) {
                     index = i;
                     return true;
@@ -138,12 +138,12 @@ class LinkHandler {
         }
     }
 
-    removeAll = (link) => {
+    removeAll = (link: any) => {
         this.removeFrom(link);
         this.removeTo(link);
     }
 
-    remove = (link, type?: string) => {
+    remove = (link: any, type?: string) => {
         if (type === 'from') {
             this.removeFrom(link);
         } else if (type === 'to') {
@@ -155,15 +155,15 @@ class LinkHandler {
         this.handler.removeOriginById(link.id);
     }
 
-    alreadyConnect = (target) => {
+    alreadyConnect = (target: any) => {
         if (!target.enabled) {
             console.warn('A connected node already exists.');
             return;
         }
     }
 
-    duplicate = (target) => {
-        if (target.links.some(link => link.fromNode.id === this.handler.activeLine.fromNode)) {
+    duplicate = (target: any) => {
+        if (target.links.some((link: any) => link.fromNode.id === this.handler.activeLine.fromNode)) {
             console.warn('Duplicate connections can not be made.');
             return;
         }

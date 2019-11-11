@@ -59,8 +59,8 @@ const Video = fabric.util.createClass(fabric.Rect, {
             src: null,
         });
         const reader = new FileReader();
-        reader.onload = e => {
-            this.player.setSrc(e.target.result);
+        reader.onload = () => {
+            this.player.setSrc(reader.result);
         };
         reader.readAsDataURL(file);
     },

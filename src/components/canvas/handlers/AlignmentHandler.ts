@@ -9,7 +9,7 @@ class AlignmentHandler {
     /**
      * @description Align left at selection
      */
-    left = () => {
+    public left = () => {
         const activeObject = this.handler.canvas.getActiveObject();
         if (activeObject && activeObject.type === 'activeSelection') {
             const activeSelection = activeObject as fabric.ActiveSelection;
@@ -27,7 +27,7 @@ class AlignmentHandler {
     /**
      * @description Align center at selection
      */
-    center = () => {
+    public center = () => {
         const activeObject = this.handler.canvas.getActiveObject();
         if (activeObject && activeObject.type === 'activeSelection') {
             const activeSelection = activeObject as fabric.ActiveSelection;
@@ -44,7 +44,7 @@ class AlignmentHandler {
     /**
      * @description Align right at selection
      */
-    right = () => {
+    public right = () => {
         const activeObject = this.handler.canvas.getActiveObject();
         if (activeObject && activeObject.type === 'activeSelection') {
             const activeSelection = activeObject as fabric.ActiveSelection;

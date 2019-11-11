@@ -19,7 +19,8 @@
     "jsx-no-lambda": false,
     "jsx-wrap-multiline": false,
     "array-type": false,
-    "variable-name": false
+    "variable-name": false,
+    "object-literal-key-quotes": false
   },
   "linterOptions": {
     "exclude": ["**/node_modules/**"]

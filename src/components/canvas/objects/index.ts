@@ -15,3 +15,5 @@ export { default as Node } from './Node';
 export { default as Link } from './Link';
 
 export { default as CurvedLink } from './CurvedLink';
+
+export { default as OrthogonalLink } from './OrthogonalLink';

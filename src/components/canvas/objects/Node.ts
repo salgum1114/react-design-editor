@@ -5,6 +5,8 @@ import i18next from 'i18next';
 import { FabricObject } from '../utils';
 import { LinkObject } from './Link';
 
+export type NodeType = 'TRIGGER' | 'LOGIC' | 'DATA' | 'ACTION';
+
 export const NODE_COLORS = {
     TRIGGER: {
         fill: '#48C9B0',
@@ -148,6 +150,7 @@ const Node = fabric.util.createClass(fabric.Group, {
         });
     },
     defaultPortOption() {
+        const { type }: { type: NodeType } = this.descriptor as any;
         return {
             nodeId: this.id,
             hasBorders: false,
@@ -165,10 +168,10 @@ const Node = fabric.util.createClass(fabric.Group, {
             fill: 'rgba(0, 0, 0, 0.1)',
             hoverCursor: 'pointer',
             strokeWidth: 2,
-            stroke: this.descriptor ? NODE_COLORS[this.descriptor.type].border : 'rgba(0, 0, 0, 1)',
+            stroke: this.descriptor ? NODE_COLORS[type].border : 'rgba(0, 0, 0, 1)',
             width: 10,
             height: 10,
-            links: [],
+            links: [] as any[],
             enabled: true,
         };
     },
@@ -209,7 +212,7 @@ const Node = fabric.util.createClass(fabric.Group, {
         }
         return this.fromPort;
     },
-    singlePort(portOption) {
+    singlePort(portOption: any) {
         const fromPort = new fabric.Rect({
             id: 'defaultFromPort',
             type: 'fromPort',
@@ -217,8 +220,8 @@ const Node = fabric.util.createClass(fabric.Group, {
         });
         return [fromPort];
     },
-    staticPort(portOption) {
-        return this.descriptor.outPorts.map((outPort, i) => {
+    staticPort(portOption: any) {
+        return this.descriptor.outPorts.map((outPort: any, i: number) => {
             return new fabric.Rect({
                 id: outPort,
                 type: 'fromPort',
@@ -232,10 +235,10 @@ const Node = fabric.util.createClass(fabric.Group, {
             });
         });
     },
-    dynamicPort(portOption) {
+    dynamicPort(_portOption: any): any[] {
         return [];
     },
-    broadcastPort(portOption) {
+    broadcastPort(portOption: any) {
         const fromPort = new fabric.Rect({
             id: 'broadcastFromPort',
             type: 'fromPort',
@@ -243,7 +246,7 @@ const Node = fabric.util.createClass(fabric.Group, {
         });
         return [fromPort];
     },
-    setErrors(errors) {
+    setErrors(errors: any) {
         if (errors) {
             this.errorFlag.set({
                 visible: true,

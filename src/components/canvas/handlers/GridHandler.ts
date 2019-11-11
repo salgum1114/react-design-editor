@@ -59,7 +59,7 @@ class GridHandler {
                     top: Math.round(target.top / grid) * grid,
                 });
                 activeSelection.setCoords();
-                activeSelection.getObjects().forEach((obj: FabricObject) => {
+                activeSelection.getObjects().forEach((obj: any) => {
                     if (obj.superType === 'node') {
                         const left = target.left + obj.left + (target.width / 2);
                         const top = target.top + obj.top + (target.height / 2);

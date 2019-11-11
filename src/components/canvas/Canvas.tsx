@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
-import anime from 'animejs';
 
-import CanvasObjects from './CanvasObjects';
 import { Handler } from './handlers';
+import { HandlerOptions } from './handlers/Handler';
+import { FabricCanvas } from './utils';
 
 import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
@@ -30,33 +29,13 @@ const defaultKeyboardEvent = {
     transaction: true,
 };
 
-class Canvas extends Component {
-    static propsTypes = {
-        fabricObjects: PropTypes.object,
-        editable: PropTypes.bool,
-        canvasOption: PropTypes.object,
-        defaultOption: PropTypes.object,
-        activeSelection: PropTypes.object,
-        tooltip: PropTypes.any,
-        zoomEnabled: PropTypes.bool,
-        minZoom: PropTypes.number,
-        maxZoom: PropTypes.number,
-        propertiesToInclude: PropTypes.array,
-        guidelineOption: PropTypes.obj,
-        workareaOption: PropTypes.obj,
-        gridOption: PropTypes.obj,
-        onModified: PropTypes.func,
-        onAdd: PropTypes.func,
-        onRemove: PropTypes.func,
-        onSelect: PropTypes.func,
-        onZoom: PropTypes.func,
-        onTooltip: PropTypes.func,
-        onLink: PropTypes.func,
-        onDblClick: PropTypes.func,
-        keyEvent: PropTypes.object,
-    }
+export type CanvasProps = HandlerOptions;
 
-    static defaultProps = {
+class Canvas extends Component<CanvasProps> {
+    public handler: Handler;
+    public canvas: FabricCanvas;
+    public container = React.createRef<HTMLDivElement>();
+    static defaultProps: CanvasProps = {
         id: uuid(),
         editable: true,
         canvasOption: {
@@ -89,16 +68,15 @@ class Canvas extends Component {
 
     componentDidMount() {
         const { id } = this.state;
-        const { editable, canvasOption, keyEvent, guidelineOption, fabricObjects, defaultOption, ...other } = this.props;
-        const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption);
+        const { editable, canvasOption, width, height, keyEvent, guidelineOption, defaultOption, ...other } = this.props;
+        const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption, { width, height });
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
         this.canvas.renderAll();
         this.handler = new Handler({
             id,
             canvas: this.canvas,
-            container: React.createRef().current,
-            fabricObjects: CanvasObjects(fabricObjects, defaultOption),
+            container: this.container.current,
             keyEvent: Object.assign({}, defaultKeyboardEvent, keyEvent),
             canvasOption: mergedCanvasOption,
             guidelineOption,
@@ -107,57 +85,17 @@ class Canvas extends Component {
             ...other,
         });
         this.handler.gridHandler.init();
-        const {
-            modified,
-            moving,
-            moved,
-            scaling,
-            rotating,
-            mousewheel,
-            mousedown,
-            mousemove,
-            mouseup,
-            mouseout,
-            selection,
-            beforeRender,
-            afterRender,
-        } = this.handler.eventHandler;
         if (editable) {
             this.handler.transactionHandler.init();
             this.handler.interactionMode = 'selection';
-            this.panning = false;
             if (guidelineOption.enabled) {
                 this.handler.guidelineHandler.init();
             }
-            this.canvas.on({
-                'object:modified': modified,
-                'object:scaling': scaling,
-                'object:moving': moving,
-                'object:moved': moved,
-                'object:rotating': rotating,
-                'mouse:wheel': mousewheel,
-                'mouse:down': mousedown,
-                'mouse:move': mousemove,
-                'mouse:up': mouseup,
-                'selection:cleared': selection,
-                'selection:created': selection,
-                'selection:updated': selection,
-                'before:render': guidelineOption.enabled ? beforeRender : null,
-                'after:render': guidelineOption.enabled ? afterRender : null,
-            });
-        } else {
-            this.canvas.on({
-                'mouse:down': mousedown,
-                'mouse:move': mousemove,
-                'mouse:out': mouseout,
-                'mouse:up': mouseup,
-                'mouse:wheel': mousewheel,
-            });
         }
         this.handler.eventHandler.attachEventListener();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: CanvasProps) {
         if (JSON.stringify(this.props.canvasOption) !== JSON.stringify(prevProps.canvasOption)) {
             const { canvasOption: { width: currentWidth, height: currentHeight } } = this.props;
             const { canvasOption: { width: prevWidth, height: prevHeight } } = prevProps;
@@ -171,13 +109,17 @@ class Canvas extends Component {
                 this.canvas.selection = this.props.canvasOption.selection;
             }
         }
+        if (this.props.width !== prevProps.width
+        || this.props.height !== prevProps.height) {
+            this.handler.eventHandler.resize(this.props.width, this.props.height);
+        }
         if (JSON.stringify(this.props.keyEvent) !== JSON.stringify(prevProps.keyEvent)) {
             this.handler.keyEvent = Object.assign({}, defaultKeyboardEvent, this.props.keyEvent);
         }
         if (JSON.stringify(this.props.fabricObjects) !== JSON.stringify(prevProps.fabricObjects)) {
-            this.handler.fabricObjects = CanvasObjects(this.props.fabricObjects);
+            this.handler.fabricObjects = Object.assign({}, this.handler.fabricObjects, this.props.fabricObjects);
         } else if (JSON.stringify(this.props.workareaOption) !== JSON.stringify(prevProps.workareaOption)) {
-            this.workarea.set({
+            this.handler.workarea.set({
                 ...this.props.workareaOption,
             });
         } else if (JSON.stringify(this.props.guidelineOption) !== JSON.stringify(prevProps.guidelineOption)) {
@@ -197,54 +139,6 @@ class Canvas extends Component {
 
     componentWillUnmount() {
         this.handler.eventHandler.detachEventListener();
-        const { editable } = this.props;
-        const {
-            modified,
-            moving,
-            moved,
-            scaling,
-            rotating,
-            mousewheel,
-            mousedown,
-            mousemove,
-            mouseup,
-            mouseout,
-            selection,
-            beforeRender,
-            afterRender,
-        } = this.handler.eventHandler;
-        if (editable) {
-            this.canvas.off({
-                'object:modified': modified,
-                'object:scaling': scaling,
-                'object:moving': moving,
-                'object:moved': moved,
-                'object:rotating': rotating,
-                'mouse:wheel': mousewheel,
-                'mouse:down': mousedown,
-                'mouse:move': mousemove,
-                'mouse:up': mouseup,
-                'selection:cleared': selection,
-                'selection:created': selection,
-                'selection:updated': selection,
-                'before:render': beforeRender,
-                'after:render': afterRender,
-            });
-        } else {
-            this.canvas.off({
-                'mouse:down': mousedown,
-                'mouse:move': mousemove,
-                'mouse:out': mouseout,
-                'mouse:up': mouseup,
-                'mouse:wheel': mousewheel,
-            });
-            this.handler.getObjects().forEach((object) => {
-                object.off('mousedown', this.handler.eventHandler.object.mousedown);
-                if (object.anime) {
-                    anime.remove(object);
-                }
-            });
-        }
         this.handler.clear(true);
         if (this.handler.tooltipHandler.tooltipEl) {
             document.body.removeChild(this.handler.tooltipHandler.tooltipEl);
