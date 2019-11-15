@@ -37,7 +37,6 @@ import {
     FabricElement,
     FabricCanvas,
 } from '../utils';
-import { NodeObject } from '../objects/Node';
 import CanvasObject from '../CanvasObject';
 
 export interface HandlerOptions {
@@ -521,10 +520,10 @@ class Handler {
             option.scaleX = this.workarea.scaleX;
             option.scaleY = this.workarea.scaleY;
         }
-        const newOption = Object.assign({}, defaultOption, option, obj, {
+        const newOption = Object.assign({}, defaultOption, {
             container: this.container,
             editable,
-        });
+        }, obj, option);
         // Individually create canvas object
         if (obj.superType === 'link') {
             return this.linkHandler.create(newOption);
@@ -590,8 +589,8 @@ class Handler {
         return createdObj;
     }
 
-    public addGroup = (obj: FabricObject<fabric.Group>, centered = true, loaded = false): any => {
-        return obj.getObjects().map((child: any) => {
+    public addGroup = (obj: any, centered = true, loaded = false): any => {
+        return obj.objects.map((child: any) => {
             return this.add(child, centered, loaded);
         });
     }
@@ -633,7 +632,7 @@ class Handler {
                     this.animationHandler.play(createdObj.id);
                 }
                 if (onAdd && !loaded && editable) {
-                    onAdd(obj);
+                    onAdd(createdObj);
                 }
                 return createdObj;
             };
@@ -880,12 +879,11 @@ class Handler {
                     if (this.keyEvent.clipboard) {
                         const links = [] as any[];
                         const objects = activeSelection.getObjects().map((obj: any, index: number) => {
-                            const node = obj as NodeObject;
-                            if (typeof node.cloneable !== 'undefined' && !node.cloneable) {
+                            if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
                                 return null;
                             }
-                            if (node.fromPort.length) {
-                                node.fromPort.forEach((port: any) => {
+                            if (obj.fromPort.length) {
+                                obj.fromPort.forEach((port: any) => {
                                     if (port.links.length) {
                                         port.links.forEach((link: any) => {
                                             const linkTarget = {
@@ -904,16 +902,16 @@ class Handler {
                                 });
                             }
                             return {
-                                name: node.name,
-                                description: node.description,
-                                superType: node.superType,
-                                type: node.type,
-                                nodeClazz: node.nodeClazz,
-                                configuration: node.configuration,
+                                name: obj.name,
+                                description: obj.description,
+                                superType: obj.superType,
+                                type: obj.type,
+                                nodeClazz: obj.nodeClazz,
+                                configuration: obj.configuration,
                                 properties: {
-                                    left: activeObject.left + (activeObject.width / 2) + node.left || 0,
-                                    top: activeObject.top + (activeObject.height / 2) + node.top || 0,
-                                    iconName: node.descriptor.icon,
+                                    left: activeObject.left + (activeObject.width / 2) + obj.left || 0,
+                                    top: activeObject.top + (activeObject.height / 2) + obj.top || 0,
+                                    iconName: obj.descriptor.icon,
                                 },
                             };
                         });
@@ -924,7 +922,7 @@ class Handler {
                     return true;
                 }
             }
-            activeObject.clone((cloned: NodeObject) => {
+            activeObject.clone((cloned: any) => {
                 if (this.keyEvent.clipboard) {
                     if (cloned.superType === 'node') {
                         const node = {

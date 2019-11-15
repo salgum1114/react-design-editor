@@ -16,7 +16,9 @@
         "style": {
             "fill-color": "Fill Color",
             "stroke-color": "Stroke Color",
-            "stroke-width": "Stroke Width"
+            "stroke-width": "Stroke Width",
+            "rx": "Radius x",
+            "ry": "Radius y"
         },
         "shadow": {
             "shadow-enabled": "Shadow Enabled",
@@ -91,7 +93,7 @@
     },
     "action": {
         "selection": "선택 모드(Q)",
-        "grab": "그랩 모드(W)",
+        "grab": "그랩 모드(W 혹은 Alt + 드래그)",
         "zoom-in": "확대",
         "zoom-out": "축소",
         "one-to-one": "1:1",

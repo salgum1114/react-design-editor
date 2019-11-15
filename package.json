@@ -1,6 +1,6 @@
 {
   "name": "react-design-editor",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Design Editor Tools with React.js + ant.design + fabric.js",
   "main": "dist/react-design-editor.min.js",
   "typings": "lib/index.d.ts",
@@ -14,10 +14,9 @@
     "build:lib": "webpack -p --config webpack.lib.js",
     "start": "npm install && npm run start:dev",
     "start:dev": "webpack-dev-server --config webpack.dev.js --inline",
-    "deploy": "npm install && npm run build && gh-pages -d public",
+    "deploy": "npm install && npm run tsc && npm run build:lib && npm publish",
     "lint": "npm run tsc",
-    "tsc": "tsc",
-    "prepublish": "npm run tsc && npm run build:lib"
+    "tsc": "tsc"
   },
   "repository": {
     "type": "git",

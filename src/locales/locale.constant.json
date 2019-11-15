@@ -16,7 +16,9 @@
         "style": {
             "fill-color": "Fill Color",
             "stroke-color": "Stroke Color",
-            "stroke-width": "Stroke Width"
+            "stroke-width": "Stroke Width",
+            "rx": "Radius x",
+            "ry": "Radius y"
         },
         "shadow": {
             "shadow-enabled": "Shadow Enabled",
@@ -82,7 +84,7 @@
     },
     "action": {
         "selection": "Selection mode(Q)",
-        "grab": "Grab mode(W)",
+        "grab": "Grab mode(W or Alt + Drag)",
         "zoom-in": "Zoom in",
         "zoom-out": "Zoom out",
         "one-to-one": "1:1",

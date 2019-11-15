@@ -159,19 +159,20 @@ export interface FabricElement extends FabricObject<fabric.Rect> {
 export type WorkareaLayout = 'fixed' | 'responsive' | 'fullscreen' | string;
 
 export interface WorkareaOption {
+    src?: string;
+    file?: File;
+    width?: number;
+    height?: number;
+    backgroundColor?: string;
+}
+
+export type WorkareaObject = FabricImage & {
     layout?: WorkareaLayout;
     _element?: HTMLImageElement;
     isElement?: boolean;
     workareaWidth?: number;
     workareaHeight?: number;
-    src?: string;
-    file?: File;
-    width?: number;
-    height?: number;
-    backgroundColor?: string | fabric.Pattern;
-}
-
-export type WorkareaObject = FabricObject<fabric.Image> & WorkareaOption;
+};
 
 export interface CanvasOption {
     id?: string;
