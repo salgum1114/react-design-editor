@@ -1,18 +1,18 @@
 import { fabric } from 'fabric';
 
-import Link from './Link';
+import Link, { LinkObject } from './Link';
 
 const CurvedLink = fabric.util.createClass(Link, {
     type: 'curvedLink',
     superType: 'link',
-    initialize(fromNode, fromPort, toNode, toPort, options) {
+    initialize(fromNode: any, fromPort: any, toNode: any, toPort: any, options: any) {
         options = options || {};
         this.callSuper('initialize', fromNode, fromPort, toNode, toPort, options);
     },
-    _render(ctx) {
+    _render(ctx: CanvasRenderingContext2D) {
         // Drawing curved link
         const { x1, y1, x2, y2 } = this;
-        ctx.lineStyle = this.stroke;
+        ctx.strokeStyle = this.stroke;
         const fp = { x: (x1 - x2) / 2, y: (y1 - y2) / 2 };
         const sp = { x: (x2 - x1) / 2, y: (y2 - y1) / 2 };
         ctx.beginPath();
@@ -37,7 +37,7 @@ const CurvedLink = fabric.util.createClass(Link, {
     },
 });
 
-CurvedLink.fromObject = function (options, callback)  {
+CurvedLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
     return callback(new CurvedLink(options));
 };
 

@@ -4,7 +4,6 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noImplicitAny": true,
-        "declaration": true,
         "skipLibCheck": true,
         "strict": true,
         "strictNullChecks": false,
@@ -13,9 +12,9 @@
         "resolveJsonModule": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "allowJs": true,
+        "declaration": true,
         "jsx": "react",
-        "module": "esnext",
+        "module": "commonjs",
         "moduleResolution": "node",
         "target": "esnext",
         "outDir": "lib",
@@ -25,7 +24,7 @@
         ]
     },
     "include": [
-        "src/components/canvas/*", "src/components/canvas/objects/Arrow.js"
+        "src/components/canvas/index.tsx"
     ],
     "exclude": [
         "node_modules",

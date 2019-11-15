@@ -98,15 +98,15 @@ class ImageMapItems extends Component {
     handlers = {
         onAddItem: (item, centered) => {
             const { canvasRef } = this.props;
-            if (canvasRef.workarea.layout === 'responsive') {
-                if (!canvasRef.workarea.isElement) {
+            if (canvasRef.handler.workarea.layout === 'responsive') {
+                if (!canvasRef.handler.workarea.isElement) {
                     notification.warn({
                         message: 'Please your select background image',
                     });
                     return;
                 }
             }
-            if (canvasRef.interactionMode === 'polygon') {
+            if (canvasRef.handler.interactionMode === 'polygon') {
                 message.info('Already drawing');
                 return;
             }
@@ -116,33 +116,33 @@ class ImageMapItems extends Component {
                 this.handlers.onSVGModalVisible(item.option);
                 return;
             }
-            canvasRef.handlers.add(option, centered);
+            canvasRef.handler.add(option, centered);
         },
         onAddSVG: (option, centered) => {
             const { canvasRef } = this.props;
-            canvasRef.handlers.add({ ...option, type: 'svg', id: uuid(), name: 'New SVG' }, centered);
+            canvasRef.handler.add({ ...option, type: 'svg', id: uuid(), name: 'New SVG' }, centered);
             this.handlers.onSVGModalVisible();
         },
         onDrawingItem: (item) => {
             const { canvasRef } = this.props;
-            if (canvasRef.workarea.layout === 'responsive') {
-                if (!canvasRef.workarea.isElement) {
+            if (canvasRef.handler.workarea.layout === 'responsive') {
+                if (!canvasRef.handler.workarea.isElement) {
                     notification.warn({
                         message: 'Please your select background image',
                     });
                     return;
                 }
             }
-            if (canvasRef.interactionMode === 'polygon') {
+            if (canvasRef.handler.interactionMode === 'polygon') {
                 message.info('Already drawing');
                 return;
             }
             if (item.option.type === 'line') {
-                canvasRef.drawingHandlers.line.init();
+                canvasRef.handler.drawingHandler.line.init();
             } else if (item.option.type === 'arrow') {
-                canvasRef.drawingHandlers.arrow.init();
+                canvasRef.handler.drawingHandler.arrow.init();
             } else {
-                canvasRef.drawingHandlers.polygon.init();
+                canvasRef.handler.drawingHandler.polygon.init();
             }
         },
         onChangeActiveKey: (activeKey) => {

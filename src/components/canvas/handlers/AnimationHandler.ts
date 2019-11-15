@@ -10,7 +10,13 @@ class AnimationHandler {
         this.handler = handler;
     }
 
-    play = (id: string, hasControls?: boolean) => {
+    /**
+     * @description Play the animation
+     * @param {string} id
+     * @param {boolean} [hasControls]
+     * @returns
+     */
+    public play = (id: string, hasControls?: boolean) => {
         const findObject = this.handler.findById(id);
         if (!findObject) {
             return;
@@ -36,7 +42,12 @@ class AnimationHandler {
         }
     }
 
-    pause = (id: string) => {
+    /**
+     * @description Pause the animation
+     * @param {string} id
+     * @returns
+     */
+    public pause = (id: string) => {
         const findObject = this.handler.findById(id);
         if (!findObject) {
             return;
@@ -44,7 +55,13 @@ class AnimationHandler {
         findObject.anime.pause();
     }
 
-    stop = (id: string, hasControls = true) => {
+    /**
+     * @description Stop the animation
+     * @param {string} id
+     * @param {boolean} [hasControls=true]
+     * @returns
+     */
+    public stop = (id: string, hasControls = true) => {
         const findObject = this.handler.findById(id);
         if (!findObject) {
             return;
@@ -52,7 +69,12 @@ class AnimationHandler {
         this.initAnimation(findObject, hasControls);
     }
 
-    restart = (id: string) => {
+    /**
+     * @description Restart the animation
+     * @param {string} id
+     * @returns
+     */
+    public restart = (id: string) => {
         const findObject = this.handler.findById(id);
         if (!findObject) {
             return;
@@ -64,7 +86,13 @@ class AnimationHandler {
         this.play(id);
     }
 
-    initAnimation = (obj: FabricObject, hasControls = true) => {
+    /**
+     * @description Init animation
+     * @param {FabricObject} obj
+     * @param {boolean} [hasControls=true]
+     * @returns
+     */
+    public initAnimation = (obj: FabricObject, hasControls = true) => {
         if (!obj.anime) {
             return;
         }
@@ -143,6 +171,12 @@ class AnimationHandler {
         this.handler.canvas.renderAll();
     }
 
+    /**
+     * @description Get animation option
+     * @param {FabricObject} obj
+     * @param {boolean} [hasControls]
+     * @returns
+     */
     getAnimation = (obj: FabricObject, hasControls?: boolean) => {
         const { delay = 100, duration = 100, autoplay = true, loop = true, type, ...other } = obj.animation;
         const option = {

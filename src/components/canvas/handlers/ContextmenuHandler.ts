@@ -18,14 +18,21 @@ class ContextmenuHandler {
         this.init();
     }
 
-    init = () => {
+    /**
+     * @description Init context menu
+     */
+    public init = () => {
         this.contextmenuEl = document.createElement('div');
         this.contextmenuEl.id = `${this.handler.id}_contextmenu`;
         this.contextmenuEl.className = 'rde-contextmenu contextmenu-hidden';
         document.body.appendChild(this.contextmenuEl);
     }
 
-    show = debounce(async (e, target) => {
+    /**
+     * @description Show context menu
+     * @memberof ContextmenuHandler
+     */
+    public show = debounce(async (e, target) => {
         const { onContext } = this;
         while (this.contextmenuEl.hasChildNodes()) {
             this.contextmenuEl.removeChild(this.contextmenuEl.firstChild);
@@ -45,7 +52,11 @@ class ContextmenuHandler {
         this.contextmenuEl.style.top = `${top}px`;
     }, 100)
 
-    hide = debounce(() => {
+    /**
+     * @description Hide context menu
+     * @memberof ContextmenuHandler
+     */
+    public hide = debounce(() => {
         if (this.contextmenuEl) {
             this.contextmenuEl.classList.add('contextmenu-hidden');
         }

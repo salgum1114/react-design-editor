@@ -11,24 +11,28 @@ class TransactionHandler {
         this.handler = handler;
     }
 
-    public init = () => {
+    /**
+     * @description Init transaction
+     */
+    init = () => {
         this.redos = [];
         this.undos = [];
     }
 
     /**
      * @description Save transaction
-     * @param {fabric.Object} target
+     * @param {FabricObject} target
      * @param {TransactionType} type
      * @returns
      */
-    public save = (target: fabric.Object, type: TransactionType) => {
+    save = (target: any, type: TransactionType) => {
         if (!type) {
             console.warn('Must enter the transaction type');
             return;
         }
-        const { propertiesToInclude } = this.handler;
-        const undo = { type };
+        const undo = {
+            type,
+        } as any;
         if (target.superType === 'node') {
             undo.target = {
                 id: target.id,
@@ -53,19 +57,20 @@ class TransactionHandler {
                 fromPort: target.fromPort,
                 toNode: target.toNode.id,
             };
-        } else if (target.type === 'activeSelection') {
-
-        } else {
-
         }
+        // else if (target.type === 'activeSelection') {
+
+        // } else {
+
+        // }
         this.undos.push(undo);
     }
 
     /**
      * @description Undo transaction
-     * @returns
+     * @returns {any}
      */
-    public undo = () => {
+    undo = () => {
         const undo = this.undos.pop();
         if (!undo) {
             return false;
@@ -74,7 +79,7 @@ class TransactionHandler {
         if (type === 'add') {
             if (target.superType === 'link') {
                 const findObject = this.handler.findById(target.id);
-                this.linkHandlers.remove(findObject);
+                this.handler.linkHandler.remove(findObject);
             } else {
                 this.handler.removeById(target.id);
             }
@@ -84,24 +89,21 @@ class TransactionHandler {
                 target.top = target.properties.top;
             }
             this.handler.add({ ...target, id: null }, false, true);
-        } else if (type === 'moved') {
-            
-        } else if (type === 'scaled') {
-            
-        } else if (type === 'rotated') {
-            
-        } else if (type === 'skewed') {
-            
         }
+        // else if (type === 'moved') {
+        // } else if (type === 'scaled') {
+        // } else if (type === 'rotated') {
+        // } else if (type === 'skewed') {
+        // }
         this.redos.push(undo);
         return undo;
     }
 
     /**
      * @description Redo transaction
-     * @returns
+     * @returns {any}
      */
-    public redo = () => {
+    redo = () => {
         const redo = this.redos.pop();
         if (!redo) {
             return false;
@@ -109,7 +111,7 @@ class TransactionHandler {
         const { target, type } = redo;
         if (type === 'add') {
             if (target.superType === 'link') {
-                this.linkHandlers.remove(target);
+                this.handler.linkHandler.remove(target);
             } else {
                 this.handler.removeById(target.id);
             }
@@ -117,21 +119,16 @@ class TransactionHandler {
                 target,
                 type: 'remove',
             });
-        } else if (type === 'remove') {
-            if (target.superType === 'link') {
-                
-            } else {
-                
-            }
-        } else if (type === 'moved') {
-            
-        } else if (type === 'scaled') {
-            
-        } else if (type === 'rotated') {
-            
-        } else if (type === 'skewed') {
-            
         }
+        // else if (type === 'remove') {
+        //     if (target.superType === 'link') {
+        //     } else {
+        //     }
+        // } else if (type === 'moved') {
+        // } else if (type === 'scaled') {
+        // } else if (type === 'rotated') {
+        // } else if (type === 'skewed') {
+        // }
         this.undos.push(redo);
         return redo;
     }

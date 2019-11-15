@@ -2,6 +2,15 @@ import { fabric } from 'fabric';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 
+declare class MediaElementPlayer {
+    constructor(id: string, options: {
+        pauseOtherPlayers: boolean,
+        videoWidth: string,
+        videoHeight: string,
+        success: (mediaeElement: any, originalNode: any, instance: any) => void,
+    });
+}
+
 import { toObject, FabricElement } from '../utils';
 
 export interface VideoObject extends FabricElement {
@@ -50,8 +59,8 @@ const Video = fabric.util.createClass(fabric.Rect, {
             src: null,
         });
         const reader = new FileReader();
-        reader.onload = e => {
-            this.player.setSrc(e.target.result);
+        reader.onload = () => {
+            this.player.setSrc(reader.result);
         };
         reader.readAsDataURL(file);
     },
@@ -103,7 +112,7 @@ const Video = fabric.util.createClass(fabric.Rect, {
                 pauseOtherPlayers: false,
                 videoWidth: '100%',
                 videoHeight: '100%',
-                success: (mediaeElement: any, originalNode: any, instance: any) => {
+                success: (_mediaeElement: any, _originalNode: any, instance: any) => {
                     if (editable) {
                         instance.pause();
                     }

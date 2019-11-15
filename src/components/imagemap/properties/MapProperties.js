@@ -24,7 +24,7 @@ class MapProperties extends Component {
                                 Object.keys(PropertyDefinition.map).map((key) => {
                                     return (
                                         <Panel key={key} header={PropertyDefinition.map[key].title} showArrow={showArrow}>
-                                            {PropertyDefinition.map[key].component.render(canvasRef, form, canvasRef.workarea)}
+                                            {PropertyDefinition.map[key].component.render(canvasRef, form, canvasRef.handler.workarea)}
                                         </Panel>
                                     );
                                 })

@@ -126,12 +126,12 @@ class ImageHandler {
             return new fabric.Image.filters.Grayscale(other);
         } else if (type === 'invert') {
             return new fabric.Image.filters.Invert();
-        } else if (type === 'remove-color') {
-            return new fabric.Image.filters.RemoveColor(other);
+        // } else if (type === 'remove-color') {
+        //     return new fabric.Image.filters.RemoveColor(other);
         } else if (type === 'sepia') {
             return new fabric.Image.filters.Sepia();
-        } else if (type === 'brownie') {
-            return new fabric.Image.filters.Brownie();
+        // } else if (type === 'brownie') {
+        //     return new fabric.Image.filters.Brownie();
         } else if (type === 'brightness') {
             return new fabric.Image.filters.Brightness({ brightness: other.brightness });
         } else if (type === 'contrast') {
@@ -140,12 +140,12 @@ class ImageHandler {
             return new fabric.Image.filters.Saturation(other);
         } else if (type === 'noise') {
             return new fabric.Image.filters.Noise({ noise: other.noise });
-        } else if (type === 'vintage') {
-            return new fabric.Image.filters.Vintage();
+        // } else if (type === 'vintage') {
+        //     return new fabric.Image.filters.Vintage();
         } else if (type === 'pixelate') {
             return new fabric.Image.filters.Pixelate(other);
-        } else if (type === 'blur') {
-            return new fabric.Image.filters.Blur(other);
+        // } else if (type === 'blur') {
+        //     return new fabric.Image.filters.Blur(other);
         } else if (type === 'sharpen') {
             return new fabric.Image.filters.Convolute({
                 matrix: SHARPEN_MATRIX,
@@ -154,22 +154,22 @@ class ImageHandler {
             return new fabric.Image.filters.Convolute({
                 matrix: EMBOSS_MATRIX,
             });
-        } else if (type === 'technicolor') {
-            return new fabric.Image.filters.Technicolor();
-        } else if (type === 'polaroid') {
-            return new fabric.Image.filters.Polaroid();
+        // } else if (type === 'technicolor') {
+        //     return new fabric.Image.filters.Technicolor();
+        // } else if (type === 'polaroid') {
+        //     return new fabric.Image.filters.Polaroid();
         } else if (type === 'blend-color') {
             return new fabric.Image.filters.BlendColor(other);
-        } else if (type === 'gamma') {
-            return new fabric.Image.filters.Gamma(other);
-        } else if (type === 'kodachrome') {
-            return new fabric.Image.filters.Kodachrome();
-        } else if (type === 'blackwhite') {
-            return new fabric.Image.filters.BlackWhite();
+        // } else if (type === 'gamma') {
+        //     return new fabric.Image.filters.Gamma(other);
+        // } else if (type === 'kodachrome') {
+        //     return new fabric.Image.filters.Kodachrome();
+        // } else if (type === 'blackwhite') {
+        //     return new fabric.Image.filters.BlackWhite();
         } else if (type === 'blend-image') {
             return new fabric.Image.filters.BlendImage(other);
-        } else if (type === 'hue') {
-            return new fabric.Image.filters.HueRotation(other);
+        // } else if (type === 'hue') {
+        //     return new fabric.Image.filters.HueRotation(other);
         } else if (type === 'resize') {
             return new fabric.Image.filters.Resize(other);
         } else if (type === 'tint') {
@@ -201,7 +201,7 @@ class ImageHandler {
             } else if (type.toLowerCase() === 'convolute' && isEqual(filter.matrix, EMBOSS_MATRIX)) {
                 type = 'emboss';
             }
-            const findIndex = FILTER_TYPES.findIndex((filterType) => type.toLowerCase() === filterType);
+            const findIndex = FILTER_TYPES.findIndex(filterType => type.toLowerCase() === filterType);
             if (findIndex > -1) {
                 prev[findIndex] = this.createFilter({
                     ...filter,
@@ -220,8 +220,8 @@ class ImageHandler {
      * @param {fabric.Image} [imageObj]
      */
     public applyFilterByType = (type: string, apply = true, value?: any, imageObj?: fabric.Image): void => {
-        const obj = imageObj || this.handler.canvas.getActiveObject() as fabric.Image;
-        const findIndex = FILTER_TYPES.findIndex((ft) => ft === type);
+        const obj = imageObj || this.handler.canvas.getActiveObject() as any;
+        const findIndex = FILTER_TYPES.findIndex(ft => ft === type);
         if (obj.filters && findIndex > -1) {
             if (apply) {
                 obj.filters[findIndex] = this.createFilter({
@@ -244,7 +244,7 @@ class ImageHandler {
      * @param {fabric.IBaseFilter} filter
      */
     public applyFilter = (index: number, filter: fabric.IBaseFilter | boolean, imageObj?: fabric.Image): void => {
-        const obj = imageObj || this.handler.canvas.getActiveObject() as fabric.Image;
+        const obj = imageObj || this.handler.canvas.getActiveObject() as any;
         if (obj.filters) {
             obj.filters[index] = filter;
             obj.applyFilters();
@@ -300,9 +300,9 @@ class ImageHandler {
      * @param {boolean} [removeColor=false]
      * @param {RemoveColorFilter} [value]
      */
-    public applyRemoveColor = (removeColor = false, value?: RemoveColorFilter, imageObj?: fabric.Image): void => {
-        this.applyFilter(2, removeColor && new fabric.Image.filters.RemoveColor(value), imageObj);
-    }
+    // public applyRemoveColor = (removeColor = false, value?: RemoveColorFilter, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(2, removeColor && new fabric.Image.filters.RemoveColor(value), imageObj);
+    // }
 
     /**
      * @description Apply sepia in image
@@ -318,9 +318,9 @@ class ImageHandler {
      * @param {boolean} [brownie=false]
      * @param {fabric.Image} [imageObj]
      */
-    public applyBrownie = (brownie = false, imageObj?: fabric.Image): void => {
-        this.applyFilter(4, brownie && new fabric.Image.filters.Brownie(), imageObj);
-    }
+    // public applyBrownie = (brownie = false, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(4, brownie && new fabric.Image.filters.Brownie(), imageObj);
+    // }
 
     /**
      * @description Apply brightness in image
@@ -375,9 +375,9 @@ class ImageHandler {
      * @param {boolean} [vintage=false]
      * @param {fabric.Image} [imageObj]
      */
-    public applyVintage = (vintage = false, imageObj?: fabric.Image): void => {
-        this.applyFilter(9, vintage && new fabric.Image.filters.Vintage(), imageObj);
-    }
+    // public applyVintage = (vintage = false, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(9, vintage && new fabric.Image.filters.Vintage(), imageObj);
+    // }
 
     /**
      * @description Apply pixelate in image
@@ -397,11 +397,11 @@ class ImageHandler {
      * @param {number} [value]
      * @param {fabric.Image} imageObj
      */
-    public applyBlur = (blur = false, value?: number, imageObj?: fabric.Image): void => {
-        this.applyFilter(11, blur && new fabric.Image.filters.Blur(value ? {
-            value,
-        } : undefined), imageObj);
-    }
+    // public applyBlur = (blur = false, value?: number, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(11, blur && new fabric.Image.filters.Blur(value ? {
+    //         value,
+    //     } : undefined), imageObj);
+    // }
 
     /**
      * @description Apply sharpen in image
@@ -432,18 +432,18 @@ class ImageHandler {
      * @param {boolean} [technicolor=false]
      * @param {fabric.Image} [imageObj]
      */
-    public applyTechnicolor = (technicolor = false, imageObj?: fabric.Image): void => {
-        this.applyFilter(14, technicolor && new fabric.Image.filters.Technicolor(), imageObj);
-    }
+    // public applyTechnicolor = (technicolor = false, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(14, technicolor && new fabric.Image.filters.Technicolor(), imageObj);
+    // }
 
     /**
      * @description Apply polaroid in image
      * @param {boolean} [polaroid=false]
      * @param {fabric.Image} [imageObj]
      */
-    public applyPolaroid = (polaroid = false, imageObj?: fabric.Image): void => {
-        this.applyFilter(15, polaroid && new fabric.Image.filters.Polaroid(), imageObj);
-    }
+    // public applyPolaroid = (polaroid = false, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(15, polaroid && new fabric.Image.filters.Polaroid(), imageObj);
+    // }
 
     /**
      * @description Apply blend color in image
@@ -461,27 +461,27 @@ class ImageHandler {
      * @param {GammaFilter} [value]
      * @param {fabric.Image} [imageObj]
      */
-    public applyGamma = (gamma = false, value?: GammaFilter, imageObj?: fabric.Image): void => {
-        this.applyFilter(17, gamma && new fabric.Image.filters.Gamma(value), imageObj);
-    }
+    // public applyGamma = (gamma = false, value?: GammaFilter, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(17, gamma && new fabric.Image.filters.Gamma(value), imageObj);
+    // }
 
     /**
      * @description Apply kodachrome in image
      * @param {boolean} [kodachrome=false]
      * @param {fabric.Image} [imageObj]
      */
-    public applyKodachrome = (kodachrome = false, imageObj?: fabric.Image): void => {
-        this.applyFilter(18, kodachrome && new fabric.Image.filters.Kodachrome(), imageObj);
-    }
+    // public applyKodachrome = (kodachrome = false, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(18, kodachrome && new fabric.Image.filters.Kodachrome(), imageObj);
+    // }
 
     /**
      * @description Apply black white in image
      * @param {boolean} [blackWhite=false]
      * @param {fabric.Image} [imageObj]
      */
-    public applyBlackWhite = (blackWhite = false, imageObj?: fabric.Image): void => {
-        this.applyFilter(19, blackWhite && new fabric.Image.filters.BlackWhite(), imageObj);
-    }
+    // public applyBlackWhite = (blackWhite = false, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(19, blackWhite && new fabric.Image.filters.BlackWhite(), imageObj);
+    // }
 
     /**
      * @description Apply blend image in image
@@ -499,11 +499,11 @@ class ImageHandler {
      * @param {HueRotationFilter} [value]
      * @param {fabric.Image} [imageObj]
      */
-    public applyHue = (hue = false, value?: HueRotationFilter, imageObj?: fabric.Image): void => {
-        this.applyFilter(21, hue && new fabric.Image.filters.HueRotation(value ? {
-            rotation: value,
-        } : undefined), imageObj);
-    }
+    // public applyHue = (hue = false, value?: HueRotationFilter, imageObj?: fabric.Image): void => {
+    //     this.applyFilter(21, hue && new fabric.Image.filters.HueRotation(value ? {
+    //         rotation: value,
+    //     } : undefined), imageObj);
+    // }
 
     /**
      * @description Apply resize in image

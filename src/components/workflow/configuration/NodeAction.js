@@ -18,7 +18,7 @@ class NodeAction extends Component {
                 <FlexItem alignSelf="flex-start">
                     <CommonButton
                         icon="clone"
-                        onClick={() => { canvasRef.handlers.duplicate(); }}
+                        onClick={() => { canvasRef.handler.duplicate(); }}
                     >
                         {i18n.t('action.clone')}
                     </CommonButton>
@@ -27,7 +27,7 @@ class NodeAction extends Component {
                     <CommonButton
                         icon="trash"
                         type="danger"
-                        onClick={() => { canvasRef.handlers.remove(); }}
+                        onClick={() => { canvasRef.handler.remove(); }}
                     >
                         {i18n.t('action.delete')}
                     </CommonButton>

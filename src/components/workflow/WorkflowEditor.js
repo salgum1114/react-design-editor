@@ -68,7 +68,7 @@ class WorkflowEditor extends Component {
                 this.canvasHandlers.onSelect(null);
                 return;
             }
-            this.canvasRef.handlers.select(target);
+            this.canvasRef.handler.select(target);
         },
         onSelect: (target) => {
             this.nodeConfigurationRef.props.form.validateFields((err) => {
@@ -94,7 +94,7 @@ class WorkflowEditor extends Component {
             this.setState({
                 selectedItem: null,
             }, () => {
-                this.canvasRef.nodeHandlers.deselect();
+                this.canvasRef.handler.nodeHandler.deselect();
             });
         },
         onRemove: () => {
@@ -130,7 +130,7 @@ class WorkflowEditor extends Component {
                     const links = result.links.map((link) => {
                         return {
                             ...link,
-                            type: 'CurvedLink',
+                            type: 'curvedLink',
                             superType: 'link',
                             left: link.properties ? link.properties.left : 0,
                             top: link.properties ? link.properties.top : 0,
@@ -141,7 +141,7 @@ class WorkflowEditor extends Component {
                     if (viewportTransform) {
                         this.canvasRef.canvas.setViewportTransform(viewportTransform);
                     }
-                    this.canvasRef.handlers.importJSON(objects, () => {
+                    this.canvasRef.handler.importJSON(objects, () => {
                         this.hideLoading();
                         this.canvasRef.canvas.setZoom(this.state.zoomRatio);
                     });
@@ -179,7 +179,7 @@ class WorkflowEditor extends Component {
             const nodes = [];
             const links = [];
             try {
-                this.canvasRef.handlers.getObjects().forEach((obj) => {
+                this.canvasRef.handler.getObjects().forEach((obj) => {
                     if (obj.superType === 'node') {
                         if (obj.errorFlag.visible) {
                             throw new NodeConfigurationError(i18n.t('workflow.validate-fields-error'), obj.id, obj.name);
@@ -219,7 +219,7 @@ class WorkflowEditor extends Component {
                 return workflow;
             } catch (error) {
                 console.error(`[ERROR] ${this.constructor.name} exportJsonCode()`, error);
-                this.canvasRef.handlers.selectById(error.nodeId);
+                this.canvasRef.handler.selectById(error.nodeId);
                 message.error(error.message);
                 this.hideLoading();
             }
@@ -245,7 +245,7 @@ class WorkflowEditor extends Component {
                     this.canvasRef.canvas.renderAll();
                 }, 0);
                 const configuration = Object.assign({}, selectedItem.configuration, changedValues.configuration);
-                this.canvasRef.handlers.setObject({
+                this.canvasRef.handler.setObject({
                     configuration,
                     name: allValues.name,
                     description: allValues.description,
@@ -254,7 +254,7 @@ class WorkflowEditor extends Component {
                     text: getEllipsis(allValues.name, 18),
                 });
                 if (selectedItem.descriptor.outPortType === OUT_PORT_TYPE.DYNAMIC) {
-                    this.canvasRef.portHandlers.recreatePort(selectedItem);
+                    this.canvasRef.handler.portHandler.recreatePort(selectedItem);
                 }
             }
         },

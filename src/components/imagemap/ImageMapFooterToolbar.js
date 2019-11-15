@@ -49,7 +49,7 @@ class ImageMapFooterToolbar extends Component {
     /* eslint-disable react/sort-comp, react/prop-types */
     handlers = {
         selection: () => {
-            this.props.canvasRef.modeHandlers.selection((obj) => {
+            this.props.canvasRef.handler.modeHandler.selection((obj) => {
                 return {
                     selectable: obj.superType !== 'port',
                     evented: true,
@@ -58,7 +58,7 @@ class ImageMapFooterToolbar extends Component {
             this.setState({ interactionMode: 'selection' });
         },
         grab: () => {
-            this.props.canvasRef.modeHandlers.grab();
+            this.props.canvasRef.handler.modeHandler.grab();
             this.setState({ interactionMode: 'grab' });
         },
     }
@@ -108,24 +108,24 @@ class ImageMapFooterToolbar extends Component {
                     <Button.Group>
                         <CommonButton
                             style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
-                            onClick={() => { canvasRef.zoomHandlers.zoomOut(); }}
+                            onClick={() => { canvasRef.handler.zoomHandler.zoomOut(); }}
                             icon="search-minus"
                             tooltipTitle={i18n.t('action.zoom-out')}
                         />
                         <CommonButton
-                            onClick={() => { canvasRef.zoomHandlers.zoomOneToOne(); }}
+                            onClick={() => { canvasRef.handler.zoomHandler.zoomOneToOne(); }}
                             tooltipTitle={i18n.t('action.one-to-one')}
                         >
                             {`${zoomValue}%`}
                         </CommonButton>
                         <CommonButton
-                            onClick={() => { canvasRef.zoomHandlers.zoomToFit(); }}
+                            onClick={() => { canvasRef.handler.zoomHandler.zoomToFit(); }}
                             tooltipTitle={i18n.t('action.fit')}
                             icon="expand"
                         />
                         <CommonButton
                             style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
-                            onClick={() => { canvasRef.zoomHandlers.zoomIn(); }}
+                            onClick={() => { canvasRef.handler.zoomHandler.zoomIn(); }}
                             icon="search-plus"
                             tooltipTitle={i18n.t('action.zoom-in')}
                         />

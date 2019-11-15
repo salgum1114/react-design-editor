@@ -10,13 +10,13 @@ import FilterNode from './logic/FilterNode';
 import SwitchNode from './logic/SwitchNode';
 import VirtualButtonNode from './trigger/VirtualButtonNode';
 
-const defaultOptions = {
+const defaultOption = {
     fill: 'rgba(0, 0, 0, 0.3)',
     stroke: 'rgba(255, 255, 255, 0)',
     borderColor: 'rgba(0, 0, 0, 1)',
     borderScaleFactor: 1.5,
     deleted: true,
-    cloned: true,
+    cloneable: true,
     action: {
         enabled: false,
     },
@@ -35,14 +35,14 @@ const defaultOptions = {
 const NODES = {
     ACTION: {
         create: (option, descriptor) => new ActionNode({
-            ...defaultOptions,
+            ...defaultOption,
             ...option,
             descriptor,
         }),
     },
     DATA: {
         create: (option, descriptor) => new DataNode({
-            ...defaultOptions,
+            ...defaultOption,
             ...option,
             descriptor,
         }),
@@ -50,7 +50,7 @@ const NODES = {
     LOGIC: {
         create: (option, descriptor) => {
             const node = getNode(descriptor.nodeClazz);
-            const options = Object.assign({}, defaultOptions, { descriptor }, option);
+            const options = Object.assign({}, defaultOption, { descriptor }, option);
             switch (node) {
                 case 'FilterNode':
                     return new FilterNode(options);
@@ -64,7 +64,7 @@ const NODES = {
     TRIGGER: {
         create: (option, descriptor) => {
             const node = getNode(descriptor.nodeClazz);
-            const options = Object.assign({}, defaultOptions, { descriptor }, option);
+            const options = Object.assign({}, defaultOption, { descriptor }, option);
             switch (node) {
                 case 'VirtualButtonNode':
                     return new VirtualButtonNode(options);

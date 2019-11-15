@@ -2,7 +2,7 @@ import Link from './Link';
 import CurvedLink from './CurvedLink';
 import OrthogonalLink from './OrthogonalLink';
 
-const defaultOptions = {
+const defaultOption = {
     fill: 'rgba(0, 0, 0, 0)',
     stroke: 'rgb(95, 106, 106)',
     originStroke: 'rgb(95, 106, 106)',
@@ -24,19 +24,19 @@ const defaultOptions = {
 export default {
     link: {
         create: (fromNode, fromPort, toNode, toPort, option) => new Link(fromNode, fromPort, toNode, toPort, {
-            ...defaultOptions,
+            ...defaultOption,
             ...option,
         }),
     },
-    CurvedLink: {
+    curvedLink: {
         create: (fromNode, fromPort, toNode, toPort, option) => new CurvedLink(fromNode, fromPort, toNode, toPort, {
-            ...defaultOptions,
+            ...defaultOption,
             ...option,
         }),
     },
-    OrthogonalLink: {
+    orthogonalLink: {
         create: (fromNode, fromPort, toNode, toPort, option) => new OrthogonalLink(fromNode, fromPort, toNode, toPort, {
-            ...defaultOptions,
+            ...defaultOption,
             ...option,
         }),
     },

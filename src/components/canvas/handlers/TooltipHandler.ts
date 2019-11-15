@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import debounce from 'lodash/debounce';
 
 import Handler from './Handler';
+import { FabricObject } from '../utils';
 
 export interface TooltipHandlerOptions {
     onTooltip?: (el: HTMLDivElement, target?: fabric.Object) => Promise<any>;
@@ -28,14 +29,14 @@ class TooltipHandler {
         document.body.appendChild(this.tooltipEl);
     }
 
-    show = debounce(async (target?: fabric.Object) => {
+    show = debounce(async (target?: FabricObject) => {
         if (target.tooltip && target.tooltip.enabled) {
             while (this.tooltipEl.hasChildNodes()) {
                 this.tooltipEl.removeChild(this.tooltipEl.firstChild);
             }
             const tooltip = document.createElement('div');
             tooltip.className = 'rde-tooltip-right';
-            let element = target.name;
+            let element = target.name as any;
             const { onTooltip } = this;
             if (onTooltip) {
                 element = await onTooltip(this.tooltipEl, target);
@@ -51,7 +52,7 @@ class TooltipHandler {
             const { clientHeight } = this.tooltipEl;
             const { width, height, scaleX, scaleY } = target;
             const { left, top } = target.getBoundingRect();
-            const { _offset: offset } = this.handler.canvas.calcOffset();
+            const { _offset: offset } = this.handler.canvas.calcOffset() as any;
             const objWidthDiff = (width * scaleX) * zoom;
             const objHeightDiff = (((height * scaleY) * zoom) / 2) - (clientHeight / 2);
             const calcLeft = offset.left + left + objWidthDiff;
@@ -63,12 +64,12 @@ class TooltipHandler {
                 this.tooltipEl.style.left = `${calcLeft}px`;
             }
             this.tooltipEl.style.top = `${calcTop}px`;
-            this.target = target;
+            this.handler.target = target;
         }
     }, 100)
 
-    hide = debounce((target?: fabric.Object) => {
-        this.target = null;
+    hide = debounce((_target?: fabric.Object) => {
+        this.handler.target = null;
         if (this.tooltipEl) {
             this.tooltipEl.classList.add('tooltip-hidden');
         }

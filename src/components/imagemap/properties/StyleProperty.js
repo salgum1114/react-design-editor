@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Slider, Select } from 'antd';
+import { Form, Slider, Select, InputNumber, Col, Row } from 'antd';
 import i18n from 'i18next';
 
 import ColorPicker from '../../common/ColorPicker';
@@ -57,6 +57,30 @@ export default {
                         )
                     }
                 </Form.Item>
+                {
+                    data.type === 'rect' ? (
+                        <Row gutter={8}>
+                            <Col md={24} lg={12}>
+                                <Form.Item label={i18n.t('imagemap.style.rx')} colon={false}>
+                                    {
+                                        getFieldDecorator('rx', {
+                                            initialValue: data.rx || 0,
+                                        })(<InputNumber min={0} />)
+                                    }
+                                </Form.Item>
+                            </Col>
+                            <Col md={24} lg={12}>
+                                <Form.Item label={i18n.t('imagemap.style.ry')} colon={false}>
+                                    {
+                                        getFieldDecorator('ry', {
+                                            initialValue: data.ry || 0,
+                                        })(<InputNumber min={0} />)
+                                    }
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    ) : null
+                }
             </React.Fragment>
         );
     },

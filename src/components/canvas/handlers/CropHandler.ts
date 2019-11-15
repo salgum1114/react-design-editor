@@ -1,11 +1,12 @@
 import { fabric } from 'fabric';
 
 import { Handler } from '.';
+import { FabricImage } from '../utils';
 
 class CropHandler {
     handler: Handler;
     cropRect: fabric.Rect;
-    cropObject: fabric.Image;
+    cropObject: FabricImage;
 
     constructor(handler: Handler) {
         this.handler = handler;
@@ -13,6 +14,10 @@ class CropHandler {
         this.cropObject = null;
     }
 
+    /**
+     * @description Validate crop type
+     * @returns
+     */
     public validType = () => {
         const activeObject = this.handler.canvas.getActiveObject();
         if (!activeObject) {
@@ -24,32 +29,37 @@ class CropHandler {
         return false;
     }
 
+    /**
+     * @description Start crop image
+     */
     public start = () => {
-        if (!this.validType()) {
-            return;
+        if (this.validType()) {
+            this.handler.interactionMode = 'crop';
+            this.cropObject = this.handler.canvas.getActiveObject() as FabricImage;
+            const { left, top } = this.cropObject;
+            this.cropRect = new fabric.Rect({
+                width: this.cropObject.width,
+                height: this.cropObject.height,
+                scaleX: this.cropObject.scaleX,
+                scaleY: this.cropObject.scaleY,
+                originX: 'left',
+                originY: 'top',
+                left,
+                top,
+                hasRotatingPoint: false,
+                fill: 'rgba(0, 0, 0, 0.2)',
+            });
+            this.handler.canvas.add(this.cropRect);
+            this.handler.canvas.setActiveObject(this.cropRect);
+            this.cropObject.selectable = false;
+            this.cropObject.evented = false;
+            this.handler.canvas.renderAll();
         }
-        this.handler.interactionMode = 'crop';
-        this.cropObject = this.handler.canvas.getActiveObject() as fabric.Image;
-        const { left, top } = this.cropObject;
-        this.cropRect = new fabric.Rect({
-            width: this.cropObject.width,
-            height: this.cropObject.height,
-            scaleX: this.cropObject.scaleX,
-            scaleY: this.cropObject.scaleY,
-            originX: 'left',
-            originY: 'top',
-            left,
-            top,
-            hasRotatingPoint: false,
-            fill: 'rgba(0, 0, 0, 0.2)',
-        });
-        this.handler.canvas.add(this.cropRect);
-        this.handler.canvas.setActiveObject(this.cropRect);
-        this.cropObject.selectable = false;
-        this.cropObject.evented = false;
-        this.handler.canvas.renderAll();
     }
 
+    /**
+     * @description Finish crop image
+     */
     public finish = () => {
         const { left, top, width, height, scaleX, scaleY } = this.cropRect;
         const croppedImg = this.cropObject.toDataURL({
@@ -62,7 +72,10 @@ class CropHandler {
         this.cancel();
     }
 
-    public cancel = () => {
+    /**
+     * @description Cancel crop
+     */
+    cancel = () => {
         this.handler.interactionMode = 'selection';
         this.cropObject.selectable = true;
         this.cropObject.evented = true;
@@ -73,7 +86,11 @@ class CropHandler {
         this.handler.canvas.renderAll();
     }
 
-    public resize = (opt) => {
+    /**
+     * @description Resize crop
+     * @param {FabricEvent} opt
+     */
+    resize = (opt: fabric.IEvent) => {
         const { target, transform: { original, corner } } = opt;
         const { left, top, width, height, scaleX, scaleY } = target;
         const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight, scaleX: cropScaleX, scaleY: cropScaleY } = this.cropObject;
@@ -106,7 +123,7 @@ class CropHandler {
                     scaleX: diffRightRatio > 1 ? 1 : diffRightRatio,
                 });
             }
-            if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
+            if (Math.round(cropTop + (cropHeight * cropScaleY)) < Math.round(top + (height * scaleY))) { // bottom
                 const diffTopRatio = 1 - ((original.top - cropTop) / cropHeight);
                 target.set({
                     top: original.top,
@@ -138,7 +155,7 @@ class CropHandler {
                     scaleX: diffLeftRatio > 1 ? 1 : diffLeftRatio,
                 });
             }
-            if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
+            if (Math.round(cropTop + (cropHeight * cropScaleY)) < Math.round(top + (height * scaleY))) { // bottom
                 const diffTopRatio = 1 - ((original.top - cropTop) / cropHeight);
                 target.set({
                     top: original.top,
@@ -166,7 +183,7 @@ class CropHandler {
                 });
             }
         } else if (corner === 'mb') {
-            if (Math.round(cropTop + (cropHeight * cropScaleY) < Math.round(top + (height * scaleY)))) { // bottom
+            if (Math.round(cropTop + (cropHeight * cropScaleY)) < Math.round(top + (height * scaleY))) { // bottom
                 const diffTopRatio = 1 - ((original.top - cropTop) / cropHeight);
                 target.set({
                     top: original.top,
@@ -184,7 +201,11 @@ class CropHandler {
         }
     }
 
-    public moving = (opt) => {
+    /**
+     * @description Resize crop
+     * @param {FabricEvent} opt
+     */
+    moving = (opt: fabric.IEvent) => {
         const { target } = opt;
         const { left, top, width, height, scaleX, scaleY } = target;
         const { left: cropLeft, top: cropTop, width: cropWidth, height: cropHeight } = this.cropObject.getBoundingRect();
