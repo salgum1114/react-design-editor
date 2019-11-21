@@ -535,6 +535,7 @@ class EventHandler {
      */
     public resize = (nextWidth: number, nextHeight: number) => {
         this.handler.canvas.setWidth(nextWidth).setHeight(nextHeight);
+        this.handler.canvas.setBackgroundColor(this.handler.canvasOption.backgroundColor, this.handler.canvas.renderAll.bind(this.handler.canvas));
         if (!this.handler.workarea) {
             return;
         }
