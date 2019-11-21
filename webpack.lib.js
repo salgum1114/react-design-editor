@@ -1,23 +1,14 @@
 const webpack = require('webpack');
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const pkg = require('./package.json');
 
-const pathsToClean = [
-    'dist',
-];
-const cleanOptions = {
-    root: path.resolve(__dirname, ''),
-    verbose: true,
-};
 const plugins = [
     // 로더들에게 옵션을 넣어주는 플러그인
     new webpack.LoaderOptionsPlugin({
         minimize: true,
     }),
-    new CleanWebpackPlugin(pathsToClean, cleanOptions),
 ];
 module.exports = {
     mode: 'production',
