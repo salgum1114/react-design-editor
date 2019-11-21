@@ -1,6 +1,6 @@
 {
   "name": "react-design-editor",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Design Editor Tools with React.js + ant.design + fabric.js",
   "main": "dist/react-design-editor.min.js",
   "typings": "lib/index.d.ts",
@@ -45,7 +45,6 @@
     "animejs": "^3.0.0",
     "antd": "3.15.0",
     "classnames": "^2.2.6",
-    "css-element-queries": "^1.0.2",
     "echarts": "^4.3.0",
     "fabric": "^3.4.0",
     "gifler": "^0.1.0",
@@ -63,6 +62,7 @@
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.12.12",
     "react-json-view": "^1.19.1",
+    "resize-observer-polyfill": "^1.5.1",
     "store": "^2.0.12",
     "typescript": "^3.5.3",
     "uuid": "^3.3.3",

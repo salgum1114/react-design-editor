@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
+import ResizeObserver from 'resize-observer-polyfill';
 
 import { Handler } from './handlers';
 import { HandlerOptions } from './handlers/Handler';
@@ -15,7 +16,7 @@ const defaultCanvasOption = {
     height: 150,
     selection: true,
     defaultCursor: 'default',
-    backgroundColor: '#fff',
+    backgroundColor: '#f3f3f3',
 };
 
 const defaultKeyboardEvent = {
@@ -29,12 +30,15 @@ const defaultKeyboardEvent = {
     transaction: true,
 };
 
-export type CanvasProps = HandlerOptions;
+export type CanvasProps = HandlerOptions & {
+    responsive?: boolean;
+};
 
 class Canvas extends Component<CanvasProps> {
     public handler: Handler;
     public canvas: FabricCanvas;
     public container = React.createRef<HTMLDivElement>();
+    private resizeObserver: ResizeObserver;
     static defaultProps: CanvasProps = {
         id: uuid(),
         editable: true,
@@ -60,6 +64,7 @@ class Canvas extends Component<CanvasProps> {
             enabled: true,
         },
         keyEvent: {},
+        responsive: true,
     }
 
     state = {
@@ -67,8 +72,11 @@ class Canvas extends Component<CanvasProps> {
     }
 
     componentDidMount() {
+        const { editable, canvasOption, width, height, keyEvent, guidelineOption, defaultOption, responsive, ...other } = this.props;
         const { id } = this.state;
-        const { editable, canvasOption, width, height, keyEvent, guidelineOption, defaultOption, ...other } = this.props;
+        if (responsive) {
+            this.createObserver();
+        }
         const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption, { width, height });
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
@@ -97,20 +105,20 @@ class Canvas extends Component<CanvasProps> {
 
     componentDidUpdate(prevProps: CanvasProps) {
         if (JSON.stringify(this.props.canvasOption) !== JSON.stringify(prevProps.canvasOption)) {
+            this.handler.canvasOption = this.props.canvasOption;
+            this.handler.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.handler.canvas));
             const { canvasOption: { width: currentWidth, height: currentHeight } } = this.props;
             const { canvasOption: { width: prevWidth, height: prevHeight } } = prevProps;
-            if (currentWidth !== prevWidth || currentHeight !== prevHeight) {
+            if (!this.props.responsive && (currentWidth !== prevWidth || currentHeight !== prevHeight)) {
                 this.handler.eventHandler.resize(currentWidth, currentHeight);
             }
-            this.canvas.setBackgroundColor(this.props.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
             if (typeof this.props.canvasOption.selection === 'undefined') {
                 this.canvas.selection = true;
             } else {
                 this.canvas.selection = this.props.canvasOption.selection;
             }
         }
-        if (this.props.width !== prevProps.width
-        || this.props.height !== prevProps.height) {
+        if (!this.props.responsive && (this.props.width !== prevProps.width || this.props.height !== prevProps.height)) {
             this.handler.eventHandler.resize(this.props.width, this.props.height);
         }
         if (JSON.stringify(this.props.keyEvent) !== JSON.stringify(prevProps.keyEvent)) {
@@ -139,12 +147,27 @@ class Canvas extends Component<CanvasProps> {
 
     componentWillUnmount() {
         this.handler.eventHandler.detachEventListener();
+        this.cancelObserver();
         this.handler.clear(true);
         if (this.handler.tooltipHandler.tooltipEl) {
             document.body.removeChild(this.handler.tooltipHandler.tooltipEl);
         }
         if (this.handler.contextmenuHandler.contextmenuEl) {
             document.body.removeChild(this.handler.contextmenuHandler.contextmenuEl);
+        }
+    }
+
+    createObserver = () => {
+        this.resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+            const { width = 0, height = 0 } = entries[0] && entries[0].contentRect || {};
+            this.handler.eventHandler.resize(width, height);
+        });
+        this.resizeObserver.observe(this.container.current);
+    }
+
+    cancelObserver = () => {
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
         }
     }
 

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { ResizeSensor } from 'css-element-queries';
 import { Badge, Button, Popconfirm, Menu } from 'antd';
 import debounce from 'lodash/debounce';
 import i18n from 'i18next';
@@ -82,10 +81,6 @@ class ImageMapEditor extends Component {
     state = {
         selectedItem: null,
         zoomRatio: 1,
-        canvasRect: {
-            width: 300,
-            height: 150,
-        },
         preview: false,
         loading: false,
         progress: 0,
@@ -105,21 +100,7 @@ class ImageMapEditor extends Component {
                 this.showLoading(false);
             });
         });
-        this.resizeSensor = new ResizeSensor(this.container, () => {
-            const { canvasRect: currentCanvasRect } = this.state;
-            const canvasRect = Object.assign({}, currentCanvasRect, {
-                width: this.container.clientWidth,
-                height: this.container.clientHeight,
-            });
-            this.setState({
-                canvasRect,
-            });
-        });
         this.setState({
-            canvasRect: {
-                width: this.container.clientWidth,
-                height: this.container.clientHeight,
-            },
             selectedItem: null,
         });
     }
@@ -598,7 +579,6 @@ class ImageMapEditor extends Component {
         const {
             preview,
             selectedItem,
-            canvasRect,
             zoomRatio,
             loading,
             progress,
@@ -701,12 +681,6 @@ class ImageMapEditor extends Component {
                     >
                         <Canvas
                             ref={(c) => { this.canvasRef = c; }}
-                            canvasOption={{
-                                width: canvasRect.width,
-                                height: canvasRect.height,
-                                backgroundColor: '#f3f3f3',
-                                selection: true,
-                            }}
                             minZoom={30}
                             defaultOption={defaultOption}
                             propertiesToInclude={propertiesToInclude}

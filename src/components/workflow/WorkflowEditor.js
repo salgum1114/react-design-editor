@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { ResizeSensor } from 'css-element-queries';
 import i18n from 'i18next';
 import { Popconfirm, message } from 'antd';
 
@@ -21,10 +20,6 @@ class WorkflowEditor extends Component {
     state = {
         loading: true,
         zoomRatio: 1,
-        canvasRect: {
-            width: 0,
-            height: 0,
-        },
         workflow: {},
         selectedItem: null,
         descriptors: {},
@@ -38,22 +33,6 @@ class WorkflowEditor extends Component {
             }, () => {
                 this.hideLoading();
             });
-        });
-        this.resizeSensor = new ResizeSensor(this.container, () => {
-            const { canvasRect: currentCanvasRect } = this.state;
-            const canvasRect = Object.assign({}, currentCanvasRect, {
-                width: this.container.clientWidth,
-                height: this.container.clientHeight,
-            });
-            this.setState({
-                canvasRect,
-            });
-        });
-        this.setState({
-            canvasRect: {
-                width: this.container.clientWidth,
-                height: this.container.clientHeight,
-            },
         });
     }
 
@@ -351,10 +330,6 @@ class WorkflowEditor extends Component {
                 <div ref={(c) => { this.container = c; }} className="rde-editor-canvas">
                     <Canvas
                         ref={(c) => { this.canvasRef = c; }}
-                        canvasOption={{
-                            width: canvasRect.width,
-                            height: canvasRect.height,
-                        }}
                         fabricObjects={{ ...nodes, ...Links }}
                         workareaOption={{
                             width: 0,
