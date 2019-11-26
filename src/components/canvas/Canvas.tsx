@@ -7,6 +7,7 @@ import { Handler } from './handlers';
 import { HandlerOptions } from './handlers/Handler';
 import { FabricCanvas } from './utils';
 
+import '../../styles/core/canvas.less';
 import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
 
