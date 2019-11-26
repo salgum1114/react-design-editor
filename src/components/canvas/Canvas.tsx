@@ -33,6 +33,7 @@ const defaultKeyboardEvent = {
 
 export type CanvasProps = HandlerOptions & {
     responsive?: boolean;
+    style?: React.CSSProperties;
 };
 
 class Canvas extends Component<CanvasProps> {
@@ -173,13 +174,14 @@ class Canvas extends Component<CanvasProps> {
     }
 
     render() {
+        const { style } = this.props;
         const { id } = this.state;
         return (
             <div
                 ref={this.container}
                 id={id}
                 className="rde-canvas"
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: '100%', height: '100%', ...style }}
             >
                 <canvas id={`canvas_${id}`} />
             </div>
