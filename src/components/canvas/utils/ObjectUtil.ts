@@ -156,7 +156,7 @@ export interface FabricElement extends FabricObject<fabric.Rect> {
     setSource: (source: any) => void;
 }
 
-export type WorkareaLayout = 'fixed' | 'responsive' | 'fullscreen' | string;
+export type WorkareaLayout = 'fixed' | 'responsive' | 'fullscreen';
 
 export interface WorkareaOption {
     src?: string;
@@ -164,6 +164,7 @@ export interface WorkareaOption {
     width?: number;
     height?: number;
     backgroundColor?: string;
+    layout?: WorkareaLayout;
 }
 
 export type WorkareaObject = FabricImage & {

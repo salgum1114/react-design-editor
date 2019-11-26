@@ -1,6 +1,6 @@
 {
   "name": "react-design-editor",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Design Editor Tools with React.js + ant.design + fabric.js",
   "main": "dist/react-design-editor.min.js",
   "typings": "lib/index.d.ts",
@@ -11,7 +11,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node clean && webpack -p --config webpack.prod.js",
-    "build:lib": "node clean && npm run tsc && webpack -p --config webpack.lib.js",
+    "build:lib": "npm run tsc && webpack -p --config webpack.lib.js",
     "start": "npm install && npm run start:dev",
     "start:dev": "webpack-dev-server --config webpack.dev.js --inline",
     "deploy": "npm run build:lib && npm publish",
