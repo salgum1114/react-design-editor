@@ -233,7 +233,7 @@ class WorkflowEditor extends Component {
                     text: getEllipsis(allValues.name, 18),
                 });
                 if (selectedItem.descriptor.outPortType === OUT_PORT_TYPE.DYNAMIC) {
-                    this.canvasRef.handler.portHandler.recreatePort(selectedItem);
+                    this.canvasRef.handler.portHandler.recreate(selectedItem);
                 }
             }
         },
