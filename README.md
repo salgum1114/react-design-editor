@@ -20,6 +20,9 @@
 - webpack4
 - babel
 
+# Installation
+- npm install --save react-design-editor
+
 # Getting Started
 - git clone https://github.com/salgum1114/react-design-editor.git - Clone the project
 - npm start - Run script
