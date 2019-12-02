@@ -11,6 +11,7 @@ import { FabricCanvas } from './utils';
 import '../../styles/core/canvas.less';
 import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
+import '../../styles/fabricjs/fabricjs.less'
 
 const defaultCanvasOption = {
     preserveObjectStacking: true,

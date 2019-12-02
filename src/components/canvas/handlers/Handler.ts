@@ -520,10 +520,10 @@ class Handler {
             option.scaleX = this.workarea.scaleX;
             option.scaleY = this.workarea.scaleY;
         }
-        const newOption = Object.assign({}, defaultOption, {
+        const newOption = Object.assign({}, defaultOption, obj, {
             container: this.container,
             editable,
-        }, obj, option);
+        }, option);
         // Individually create canvas object
         if (obj.superType === 'link') {
             return this.linkHandler.create(newOption);
