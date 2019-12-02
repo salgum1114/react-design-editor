@@ -28,7 +28,6 @@ class ImageMapPreview extends Component {
                         editable={false}
                         canvasOption={{
                             backgroundColor: '#f3f3f3',
-                            selection: false,
                         }}
                         onTooltip={onTooltip}
                         onLink={onLink}

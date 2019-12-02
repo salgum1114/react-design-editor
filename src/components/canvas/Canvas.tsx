@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 import ResizeObserver from 'resize-observer-polyfill';
+import union from 'lodash/union';
 
 import { Handler } from './handlers';
 import { HandlerOptions } from './handlers/Handler';
@@ -31,6 +32,10 @@ const defaultKeyboardEvent = {
     transaction: true,
 };
 
+const defaultPropertiesToInclude = [
+    'editable',
+];
+
 export type CanvasProps = HandlerOptions & {
     responsive?: boolean;
     style?: React.CSSProperties;
@@ -55,7 +60,7 @@ class Canvas extends Component<CanvasProps> {
         zoomEnabled: true,
         minZoom: 30,
         maxZoom: 300,
-        propertiesToInclude: [],
+        propertiesToInclude: defaultPropertiesToInclude,
         workareaOption: {},
         gridOption: {
             enabled: false,
@@ -74,12 +79,13 @@ class Canvas extends Component<CanvasProps> {
     }
 
     componentDidMount() {
-        const { editable, canvasOption, width, height, keyEvent, guidelineOption, defaultOption, responsive, ...other } = this.props;
+        const { editable, canvasOption, width, height, keyEvent, guidelineOption, defaultOption, responsive, propertiesToInclude, ...other } = this.props;
         const { id } = this.state;
         if (responsive) {
             this.createObserver();
         }
-        const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption, { width, height });
+        const mergedPropertiesToInclude = union(propertiesToInclude, defaultPropertiesToInclude)
+        const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption, { width, height, selection: editable });
         this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
         this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
         this.canvas.renderAll();
@@ -92,6 +98,7 @@ class Canvas extends Component<CanvasProps> {
             guidelineOption,
             editable,
             defaultOption,
+            propertiesToInclude: mergedPropertiesToInclude,
             ...other,
         });
         this.handler.gridHandler.init();
