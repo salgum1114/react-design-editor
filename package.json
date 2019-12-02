@@ -1,6 +1,6 @@
 {
   "name": "react-design-editor",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Design Editor Tools with React.js + ant.design + fabric.js",
   "main": "dist/react-design-editor.min.js",
   "typings": "lib/index.d.ts",
@@ -37,10 +37,13 @@
   },
   "homepage": "https://salgum1114.github.io/react-design-editor",
   "peerDependencies": {
+    "animejs": "^3.0.0",
     "fabric": "^3.4.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-dom-factories": "^1.0.2"
+    "react-dom-factories": "^1.0.2",
+    "@types/fabric": "^3.0.1",
+    "@types/animejs": "^3.1.0"
   },
   "dependencies": {
     "animejs": "^3.0.0",
