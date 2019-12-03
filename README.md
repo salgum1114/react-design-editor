@@ -87,3 +87,5 @@
 ## ❤️ Sponsors and Backers [![](https://opencollective.com/react-design-editor/tiers/sponsor/badge.svg?label=Sponsor&color=brightgreen)](https://opencollective.com/react-design-editor/contribute) [![](https://opencollective.com/react-design-editor/tiers/backer/badge.svg?label=Backer&color=brightgreen)](https://opencollective.com/react-design-editor/contribute)
 
 [![](https://opencollective.com/react-design-editor/tiers/sponsor.svg?avatarHeight=36)](https://opencollective.com/react-design-editor/contribute)
+
+[![](https://opencollective.com/react-design-editor/tiers/backer.svg?avatarHeight=36)](https://opencollective.com/react-design-editor/contribute)
