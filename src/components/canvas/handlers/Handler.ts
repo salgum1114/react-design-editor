@@ -223,7 +223,7 @@ class Handler {
      * @description Get primary object
      * @returns {FabricObject[]}
      */
-    public getObjects = (): any[] => this.canvas.getObjects().filter((obj: any) => {
+    public getObjects = (): FabricObject[] => this.canvas.getObjects().filter((obj: any) => {
         if (obj.id === 'workarea') {
             return false;
         } else if (obj.id === 'grid') {

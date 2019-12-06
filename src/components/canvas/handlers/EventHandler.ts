@@ -312,7 +312,8 @@ class EventHandler {
      */
     public mousedown = (opt: fabric.IEvent) => {
         const event = opt as FabricEvent<MouseEvent>;
-        if (event.e.altKey) {
+        const { editable } = this.handler;
+        if (event.e.altKey && editable) {
             this.handler.modeHandler.grab();
             this.panning = true;
             return;
@@ -321,7 +322,6 @@ class EventHandler {
             this.panning = true;
             return;
         }
-        const { editable } = this.handler;
         const target = event.target as any;
         if (editable) {
             if (this.handler.prevTarget && this.handler.prevTarget.superType === 'link') {
@@ -728,21 +728,20 @@ class EventHandler {
      * Document keyboard event
      *
      * @param {KeyboardEvent} e
-     * @returns {any}
+     * @returns
      */
     public keydown = (e: KeyboardEvent) => {
-        const { keyEvent } = this.handler;
+        const { keyEvent, editable } = this.handler;
         if (!Object.keys(keyEvent).length) {
-            return false;
+            return;
         }
-        const { editable } = this.handler;
         const { move, all, copy, paste, esc, del, clipboard, transaction } = keyEvent;
         if (e.keyCode === 87) {
             this.keyCode = e.keyCode;
         } else if (e.keyCode === 81) {
             this.keyCode = e.keyCode;
         }
-        if (e.altKey) {
+        if (e.altKey && editable) {
             this.handler.canvas.defaultCursor = 'grab';
             if (this.handler.workarea.hoverCursor) {
                 this.handler.workarea.hoverCursor = 'grab';
@@ -764,7 +763,7 @@ class EventHandler {
             this.handler.tooltipHandler.hide();
         }
         if (this.handler.canvas.wrapperEl !== document.activeElement) {
-            return false;
+            return;
         }
         if (editable) {
             if (e.keyCode === 46 && del) {
@@ -787,9 +786,9 @@ class EventHandler {
                 e.preventDefault();
                 this.handler.transactionHandler.redo();
             }
-            return false;
+            return;
         }
-        return true;
+        return;
     }
 
     /**

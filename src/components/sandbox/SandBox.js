@@ -25,20 +25,34 @@ const parameters = [
     'userProperty',
 ];
 
-const SandBox = {
-    verify: (code) => {
+class SandBox {
+    /**
+     *Creates an instance of SandBox.
+     * @param {{ excludeWords: string[], includeWords: string[] }} params
+     * @memberof SandBox
+     */
+    constructor(params = {}) {
+        this.excludeWords = params.excludeWords || excludeWords;
+        this.includeWords = params.includeWords || includeWords;
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    verify(code) {
         const newCode = code.toString();
-        if (excludeWords.some(word => code.includes(word))) {
+        if (this.excludeWords.some(word => code.includes(word))) {
             throw new UnsafetyWordException();
         }
-        if (!includeWords.some(word => code.includes(word))) {
+        if (!this.includeWords.some(word => code.includes(word))) {
             throw new NoExistWordException();
         }
-        return new Function(parameters, '"use strict"; ' + newCode);
-    },
-    compile: (code) => {
+        // eslint-disable-next-line no-new-func
+        return new Function(parameters, `"use strict"; ${newCode}`);
+    }
+
+    // eslint-disable-next-line consistent-return
+    compile(code) {
         try {
-            return SandBox.verify(code);
+            return this.verify(code);
         } catch (error) {
             if (error.toString) {
                 console.error(error.toString());
@@ -46,7 +60,7 @@ const SandBox = {
                 console.error(error.message);
             }
         }
-    },
-};
+    }
+}
 
 export default SandBox;

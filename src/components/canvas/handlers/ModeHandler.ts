@@ -101,6 +101,14 @@ class ModeHandler {
 
     moving = (e: any) => {
         const delta = new fabric.Point(e.movementX, e.movementY);
+        this.handler.getObjects().forEach(obj => {
+            if (obj.superType === 'element') {
+                const { id } = obj;
+                const el = this.handler.elementHandler.findById(id);
+                // update the element
+                this.handler.elementHandler.setPosition(el, obj);
+            }
+        });
         this.handler.canvas.relativePan(delta);
     }
 }

@@ -63,21 +63,21 @@ const CanvasObject: CanvasObjectSchema = {
         create: ({ points, ...option }: { points: any }) => new Arrow(points, option),
     },
     chart: {
-        create: ({ chartOption = {
+        create: (option: any) => new Chart(option.chartOption || {
             xAxis: {},
             yAxis: {},
             series: [
                 {
                     type: 'line',
                     data: [
+                        [0, 1],
                         [1, 2],
                         [2, 3],
+                        [3, 4],
                     ],
                 },
             ],
-        }, ...option }) => {
-            return new Chart(chartOption, option);
-        },
+        }, option),
     },
     element: {
         create: ({ code, ...option }: { code: Code }) => new Element(code, option),

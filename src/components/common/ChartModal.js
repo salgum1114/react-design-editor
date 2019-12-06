@@ -8,6 +8,23 @@ import i18n from 'i18next';
 import Icon from '../icon/Icon';
 
 class CodeModal extends Component {
+    static propTypes = {
+        value: PropTypes.any,
+        onChange: PropTypes.func,
+        form: PropTypes.any,
+    }
+
+    state = {
+        chartOption: this.props.value,
+        visible: false,
+    }
+
+    UNSAFE_componentWillReceiveProps(nextProps) {
+        this.setState({
+            chartOption: nextProps.value,
+        });
+    }
+
     handlers = {
         onOk: () => {
             const { onChange } = this.props;
@@ -39,29 +56,11 @@ class CodeModal extends Component {
         },
     }
 
-    static propTypes = {
-        value: PropTypes.any,
-        onChange: PropTypes.func,
-        form: PropTypes.any,
-    }
-
-    state = {
-        chartOption: this.props.value,
-        tempChartOption: this.props.value,
-        visible: false,
-    }
-
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        this.setState({
-            chartOption: nextProps.value,
-        });
-    }
-
     render() {
         const { onOk, onCancel, onClick } = this.handlers;
-        const { form, value } = this.props;
+        const { form } = this.props;
         const { getFieldDecorator } = form;
-        const { chartOption, visible, tempChartOption } = this.state;
+        const { visible, chartOption, tempChartOption } = this.state;
         const label = (
             <React.Fragment>
                 <span style={{ marginRight: 8 }}>{i18n.t('common.code')}</span>
@@ -78,7 +77,7 @@ class CodeModal extends Component {
                 <Form.Item label={label} colon={false}>
                     {
                         getFieldDecorator('chartOption', {
-                            initialValue: chartOption || value,
+                            initialValue: chartOption,
                         })(
                             <pre style={{ wordBreak: 'break-all', lineHeight: '1.2em' }}>
                                 {chartOption}
@@ -90,6 +89,7 @@ class CodeModal extends Component {
                     onCancel={onCancel}
                     onOk={onOk}
                     visible={visible}
+                    style={{ minWidth: 800 }}
                 >
                     <Form.Item label={codeLabel} colon={false}>
                         <ReactAce
@@ -97,7 +97,7 @@ class CodeModal extends Component {
                             mode="javascript"
                             theme="chrome"
                             width="100%"
-                            height="200px"
+                            height="600px"
                             defaultValue={chartOption}
                             value={tempChartOption}
                             editorProps={{

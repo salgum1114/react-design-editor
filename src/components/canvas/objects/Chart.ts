@@ -23,14 +23,51 @@ const Chart = fabric.util.createClass(fabric.Rect, {
             stroke: 'rgba(255, 255, 255, 0)',
         });
     },
-    setSource(source: any) {
-        this.setChartOption(source);
+    setSource(source: echarts.EChartOption | string) {
+        if (typeof source === 'string') {
+            this.setChartOptionStr(source);
+        } else {
+            this.setChartOption(source);
+        }
+    },
+    setChartOptionStr(chartOptionStr: string) {
+        this.set({
+            chartOptionStr,
+        });
     },
     setChartOption(chartOption: echarts.EChartOption) {
         this.set({
             chartOption,
         });
-        this.instance.setOption(chartOption);
+        this.distroyChart();
+        this.createChart(chartOption);
+    },
+    createChart(chartOption: echarts.EChartOption) {
+        this.instance = echarts.init(this.element);
+        if (!chartOption) {
+            this.instance.setOption({
+                xAxis: {},
+                yAxis: {},
+                series: [
+                    {
+                        type: 'line',
+                        data: [
+                            [0, 1],
+                            [1, 2],
+                            [2, 3],
+                            [3, 4],
+                        ],
+                    },
+                ],
+            });
+        } else {
+            this.instance.setOption(chartOption);
+        }
+    },
+    distroyChart() {
+        if (this.instance) {
+            this.instance.dispose();
+        }
     },
     toObject(propertiesToInclude: string[]) {
         return toObject(this, propertiesToInclude, {
@@ -59,8 +96,7 @@ const Chart = fabric.util.createClass(fabric.Rect, {
                         user-select: ${editable ? 'none' : 'auto'};
                         pointer-events: ${editable ? 'none' : 'auto'};`,
             }) as HTMLDivElement;
-            this.instance = echarts.init(this.element);
-            this.instance.setOption(chartOption);
+            this.createChart(chartOption);
             this.container.appendChild(this.element);
         }
     },

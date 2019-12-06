@@ -302,7 +302,11 @@ class ImageMapEditor extends Component {
             }
             if (changedKey === 'chartOption') {
                 try {
-                    const chartOption = JSON.parse(changedValue);
+                    const sandbox = new SandBox();
+                    const compiled = sandbox.compile(changedValue);
+                    const { animations, styles } = this.state;
+                    const chartOption = compiled(3, animations, styles, selectedItem.userProperty);
+                    selectedItem.setChartOptionStr(changedValue);
                     this.canvasRef.handler.elementHandler.setById(selectedItem.id, chartOption);
                 } catch (error) {
                     console.error(error);

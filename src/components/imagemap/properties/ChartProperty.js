@@ -17,7 +17,7 @@ export default {
                             required: true,
                             message: 'Please input code',
                         }],
-                        initialValue: JSON.stringify(data.chartOption, null, '\t'),
+                        initialValue: data.chartOptionStr,
                     })(
                         <ChartModal form={form} />,
                     )
