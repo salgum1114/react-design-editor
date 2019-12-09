@@ -206,9 +206,13 @@ class NodeHandler {
                     const toIndex = targetObjects.findIndex((obj: FabricObject) => obj.id === toNode.id);
                     if ((fromIndex >= 0 && targetObjects[fromIndex]) && (toIndex >= 0 && targetObjects[toIndex])) {
                         if (lastObject) {
-                            object.shadow.color = lastObject.stroke;
+                            object.setShadow({
+                                color: lastObject.stroke,
+                            });
                         } else {
-                            object.shadow.color = object.stroke;
+                            object.setShadow({
+                                color: object.stroke,
+                            });
                         }
                         this.highlightingNode(object);
                         this.highlightingLink(object, lastObject);
