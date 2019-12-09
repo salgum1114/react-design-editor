@@ -58,6 +58,7 @@ export interface HandlerOptions {
     width?: number;
     height?: number;
     keyEvent?: KeyEvent;
+    fabricObjects?: { [key: string]: any };
     [key: string]: any;
 
     onAdd?: (object: FabricObject) => void;
@@ -696,7 +697,7 @@ class Handler {
             this.removeOriginById(activeObject.id);
         } else {
             const { _objects: activeObjects } = activeObject;
-            const existDeleted = activeObjects.some((obj: any) => typeof obj.deleted !== 'undefined' && !obj.deleted);
+            const existDeleted = activeObjects.some((obj: any) => typeof obj.deletable !== 'undefined' && !obj.deletable);
             if (existDeleted) {
                 return;
             }

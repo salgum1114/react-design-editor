@@ -15,7 +15,7 @@ const defaultOption = {
     stroke: 'rgba(255, 255, 255, 0)',
     borderColor: 'rgba(0, 0, 0, 1)',
     borderScaleFactor: 1.5,
-    deleted: true,
+    deletable: true,
     cloneable: true,
     action: {
         enabled: false,

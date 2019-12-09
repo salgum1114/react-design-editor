@@ -187,7 +187,9 @@ class NodeHandler {
         const lastObject = targetObjects.filter((obj: FabricObject) => obj.id === path[path.length - 1])[0];
         targetObjects.forEach((object: any) => {
             if (lastObject) {
-                object.shadow.color = lastObject.fill;
+                object.setShadow({
+                    color: lastObject.fill,
+                });
             } else {
                 object.setShadow({
                     color: object.fill,

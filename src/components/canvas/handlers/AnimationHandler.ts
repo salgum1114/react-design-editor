@@ -271,7 +271,7 @@ class AnimationHandler {
             });
         } else if (type === 'flash') {
             const { fill = obj.fill, stroke = obj.stroke } = other;
-            obj.set('originFill', obj.fill);
+            obj.set('originFill', obj.fill as string);
             obj.set('originStroke', obj.stroke);
             Object.assign(option, {
                 fill,
