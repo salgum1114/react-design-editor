@@ -129,7 +129,9 @@
         "start": "시작",
         "pause": "일시 정지",
         "stop": "중지",
-        "execute": "실행"
+        "execute": "실행",
+        "go-github": "Github로 이동!!",
+        "go-docs": "Documents로 이동!!"
     },
     "common": {
         "name": "Name",
