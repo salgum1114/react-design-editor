@@ -36,43 +36,185 @@ import {
     FabricObjectOption,
     FabricElement,
     FabricCanvas,
+    FabricGroup,
 } from '../utils';
 import CanvasObject from '../CanvasObject';
+import { NodeObject } from '../objects/Node';
 
 export interface HandlerOptions {
+    /**
+     * @description Canvas id
+     * @type {string}
+     * @memberof HandlerOptions
+     */
     id?: string;
+    /**
+     * @description Canvas object
+     * @type {FabricCanvas}
+     * @memberof HandlerOptions
+     */
     canvas?: FabricCanvas;
+    /**
+     * @description Canvas parent element
+     * @type {HTMLDivElement}
+     * @memberof HandlerOptions
+     */
     container?: HTMLDivElement;
+    /**
+     * @description Canvas editable
+     * @type {boolean}
+     * @memberof HandlerOptions
+     */
     editable?: boolean;
+    /**
+     * @description Canvas interaction mode
+     * @type {InteractionMode}
+     * @memberof HandlerOptions
+     */
     interactionMode?: InteractionMode;
+    /**
+     * @description Persist properties for object
+     * @type {string[]}
+     * @memberof HandlerOptions
+     */
     propertiesToInclude?: string[];
+    /**
+     * @description Minimum zoom ratio
+     * @type {number}
+     * @memberof HandlerOptions
+     */
     minZoom?: number;
+    /**
+     * @description Maximum zoom ratio
+     * @type {number}
+     * @memberof HandlerOptions
+     */
     maxZoom?: number;
+    /**
+     * @description Workarea option
+     * @type {WorkareaOption}
+     * @memberof HandlerOptions
+     */
     workareaOption?: WorkareaOption;
+    /**
+     * @description Canvas option
+     * @type {CanvasOption}
+     * @memberof HandlerOptions
+     */
     canvasOption?: CanvasOption;
+    /**
+     * @description Grid option
+     * @type {GridOption}
+     * @memberof HandlerOptions
+     */
     gridOption?: GridOption;
+    /**
+     * @description Default option for Fabric Object
+     * @type {FabricObjectOption}
+     * @memberof HandlerOptions
+     */
     defaultOption?: FabricObjectOption;
+    /**
+     * @description Guideline option
+     * @type {GuidelineOption}
+     * @memberof HandlerOptions
+     */
     guidelineOption?: GuidelineOption;
+    /**
+     * @description Whether to use zoom
+     * @type {boolean}
+     * @memberof HandlerOptions
+     */
     zoomEnabled?: boolean;
+    /**
+     * @description ActiveSelection option
+     * @type {FabricObjectOption}
+     * @memberof HandlerOptions
+     */
     activeSelection?: FabricObjectOption;
+    /**
+     * @description Canvas width
+     * @type {number}
+     * @memberof HandlerOptions
+     */
     width?: number;
+    /**
+     * @description Canvas height
+     * @type {number}
+     * @memberof HandlerOptions
+     */
     height?: number;
+    /**
+     * @description Keyboard event in Canvas
+     * @type {KeyEvent}
+     * @memberof HandlerOptions
+     */
     keyEvent?: KeyEvent;
-    fabricObjects?: { [key: string]: any };
+    /**
+     * @description Append custom objects
+     * @type {{ [key: string]: any }}
+     * @memberof HandlerOptions
+     */
+    fabricObjects?: {
+        [key: string]: {
+            create: (...args: any) => FabricObject;
+        };
+    };
     [key: string]: any;
 
+    /**
+     * @description When has been added object in Canvas, Called function
+     * @memberof HandlerOptions
+     */
     onAdd?: (object: FabricObject) => void;
-    onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: fabric.Object) => Promise<any>;
-    onTooltip?: (el: HTMLDivElement, target?: fabric.Object) => Promise<any>;
+    /**
+     * @description Return contextmenu element
+     * @memberof HandlerOptions
+     */
+    onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject) => Promise<any> | any;
+    /**
+     * @description Return tooltip element
+     * @memberof HandlerOptions
+     */
+    onTooltip?: (el: HTMLDivElement, target?: FabricObject) => Promise<any> | any;
+    /**
+     * @description When zoom, Called function
+     * @memberof HandlerOptions
+     */
     onZoom?: (zoomRatio: number) => void;
-    onLink?: (canvas: FabricCanvas, target: FabricObject) => void;
+    /**
+     * @description When clicked object, Called function
+     * @memberof HandlerOptions
+     */
+    onClick?: (canvas: FabricCanvas, target: FabricObject) => void;
+    /**
+     * @description When double clicked object, Called function
+     * @memberof HandlerOptions
+     */
     onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
+    /**
+     * @description When modified object, Called function
+     * @memberof HandlerOptions
+     */
     onModified?: (target: FabricObject) => void;
+    /**
+     * @description When select object, Called function
+     * @memberof HandlerOptions
+     */
     onSelect?: (target: FabricObject) => void;
+    /**
+     * @description When has been removed object in Canvas, Called function
+     * @memberof HandlerOptions
+     */
     onRemove?: (target: FabricObject) => void;
 }
 
-class Handler {
+/**
+ * @description Main handler for Canvas
+ * @class Handler
+ * @implements {HandlerOptions}
+ */
+class Handler implements HandlerOptions {
     public id: string;
     public canvas: FabricCanvas;
     public workarea: WorkareaObject;
@@ -85,24 +227,28 @@ class Handler {
     public workareaOption?: WorkareaOption;
     public canvasOption?: CanvasOption;
     public gridOption?: GridOption;
-    public fabricObjects?: any;
+    public fabricObjects?: {
+        [key: string]: {
+            create: (...args: any) => FabricObject;
+        };
+    };
     public defaultOption?: FabricObjectOption;
     public guidelineOption?: GuidelineOption;
     public zoomEnabled?: boolean;
-    public activeSelection?: FabricObjectOption;
+    public activeSelection?: Partial<FabricObjectOption<fabric.ActiveSelection>>;
     public width?: number;
     public height?: number;
     public keyEvent?: KeyEvent;
 
-    public onAdd?: (object: FabricObject<any>) => void;
-    public onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject<any>) => Promise<any>;
-    public onTooltip?: (el: HTMLDivElement, target?: FabricObject<any>) => Promise<any>;
+    public onAdd?: (object: FabricObject) => void;
+    public onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject) => Promise<any>;
+    public onTooltip?: (el: HTMLDivElement, target?: FabricObject) => Promise<any>;
     public onZoom?: (zoomRatio: number) => void;
-    public onLink?: (canvas: FabricCanvas, target: FabricObject<any>) => void;
-    public onDblClick?: (canvas: FabricCanvas, target: FabricObject<any>) => void;
+    public onClick?: (canvas: FabricCanvas, target: FabricObject) => void;
+    public onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
     public onModified?: (target: FabricObject) => void;
-    public onSelect?: (target: FabricObject<any>) => void;
-    public onRemove?: (target: FabricObject<any>) => void;
+    public onSelect?: (target: FabricObject) => void;
+    public onRemove?: (target: FabricObject) => void;
 
     public imageHandler: ImageHandler;
     public chartHandler: ChartHandler;
@@ -164,8 +310,8 @@ class Handler {
         this.guidelineOption = options.guidelineOption;
         this.zoomEnabled = options.zoomEnabled;
         this.activeSelection = options.activeSelection;
-        this.width = options.number;
-        this.height = options.number;
+        this.width = options.width;
+        this.height = options.height;
         this.keyEvent = options.keyEvent;
 
         this.objects = [];
@@ -180,7 +326,8 @@ class Handler {
         this.onTooltip = options.onTooltip;
         this.onZoom = options.onZoom;
         this.onContext = options.onContext;
-        this.onLink = options.onLink;
+        this.onClick = options.onClick;
+        this.onModified = options.onModified;
         this.onDblClick = options.onDblClick;
         this.onSelect = options.onSelect;
         this.onRemove = options.onRemove;
@@ -224,7 +371,7 @@ class Handler {
      * @description Get primary object
      * @returns {FabricObject[]}
      */
-    public getObjects = (): FabricObject[] => this.canvas.getObjects().filter((obj: any) => {
+    public getObjects = (): FabricObject[] => this.canvas.getObjects().filter((obj: FabricObject) => {
         if (obj.id === 'workarea') {
             return false;
         } else if (obj.id === 'grid') {
@@ -239,7 +386,7 @@ class Handler {
 
     /**
      * @description Set key pair
-     * @param {keyof FabricObjectOption} key
+     * @param {keyof FabricObject} key
      * @param {*} value
      * @returns
      */
@@ -277,10 +424,10 @@ class Handler {
 
     /**
      * @description Set option
-     * @param {*} option
+     * @param {Partial<FabricObject>} option
      * @returns
      */
-    public setObject = (option: any) => {
+    public setObject = (option: Partial<FabricObject>) => {
         const activeObject = this.canvas.getActiveObject() as any;
         if (!activeObject) {
             return;
@@ -565,7 +712,7 @@ class Handler {
             this.centerObject(createdObj, centered);
         }
         if (createdObj.superType === 'node') {
-            this.portHandler.create(createdObj);
+            this.portHandler.create(createdObj as NodeObject);
             if (createdObj.iconButton) {
                 this.canvas.add(createdObj.iconButton);
             }
@@ -580,7 +727,7 @@ class Handler {
             if (createdObj.superType === 'node') {
                 createdObj.setShadow({
                     color: createdObj.stroke,
-                });
+                } as fabric.Shadow);
                 this.nodeHandler.highlightingNode(createdObj);
             }
         }
@@ -590,13 +737,25 @@ class Handler {
         return createdObj;
     }
 
-    public addGroup = (obj: any, centered = true, loaded = false): any => {
-        return obj.objects.map((child: any) => {
+    /**
+     * @description Add group object
+     * @param {FabricGroup} obj
+     * @param {boolean} [centered=true]
+     * @param {boolean} [loaded=false]
+     * @returns
+     */
+    public addGroup = (obj: FabricGroup, centered = true, loaded = false) => {
+        return obj.objects.map(child => {
             return this.add(child, centered, loaded);
         });
     }
 
-    public addImage = (obj: FabricImage): FabricImage => {
+    /**
+     * @description Add iamge object
+     * @param {FabricImage} obj
+     * @returns
+     */
+    public addImage = (obj: FabricImage) => {
         const { defaultOption } = this;
         const image = new Image();
         const { filters = [], ...otherOption } = obj;
@@ -611,6 +770,13 @@ class Handler {
         return createdObj;
     }
 
+    /**
+     * @description Add svg object
+     * @param {*} obj
+     * @param {boolean} [centered=true]
+     * @param {boolean} [loaded=false]
+     * @returns
+     */
     public addSVG = (obj: any, centered = true, loaded = false) => {
         const { defaultOption } = this;
         return new Promise((resolve: any) => {
@@ -651,7 +817,7 @@ class Handler {
 
     /**
      * @description Remove object
-     * @param {fabric.Object} target
+     * @param {FabricObject} target
      * @returns {any}
      */
     public remove = (target?: FabricObject) => {
@@ -806,7 +972,7 @@ class Handler {
                 }
             }
             this.canvas.setActiveObject(clonedObj);
-            this.portHandler.create(clonedObj);
+            this.portHandler.create(clonedObj as NodeObject);
             this.canvas.requestRenderAll();
         }, propertiesToInclude);
     }
@@ -839,7 +1005,7 @@ class Handler {
                     cloned.on('mousedblclick', this.eventHandler.object.mousedblclick);
                 }
                 this.canvas.setActiveObject(cloned);
-                this.portHandler.create(cloned);
+                this.portHandler.create(cloned as NodeObject);
                 this.canvas.requestRenderAll();
             }, propertiesToInclude);
         }
@@ -1123,7 +1289,6 @@ class Handler {
     public findById = (id: string): FabricObject | null => {
         let findObject;
         const exist = this.objects.some(obj => {
-        // const exist = this.getObjects().some(obj => {
             if (obj.id === id) {
                 findObject = obj;
                 return true;

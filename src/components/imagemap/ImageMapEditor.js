@@ -352,7 +352,7 @@ class ImageMapEditor extends Component {
                 </div>
             );
         },
-        onLink: (canvas, target) => {
+        onClick: (canvas, target) => {
             const { link } = target;
             if (link.state === 'current') {
                 document.location.href = link.url;
@@ -600,7 +600,7 @@ class ImageMapEditor extends Component {
             onChange,
             onZoom,
             onTooltip,
-            onLink,
+            onClick,
             onContext,
         } = this.canvasHandlers;
         const {
@@ -694,7 +694,7 @@ class ImageMapEditor extends Component {
                             onSelect={onSelect}
                             onZoom={onZoom}
                             onTooltip={onTooltip}
-                            onLink={onLink}
+                            onClick={onClick}
                             onContext={onContext}
                         />
                     </div>
@@ -713,7 +713,7 @@ class ImageMapEditor extends Component {
                     styles={styles}
                     dataSources={dataSources}
                 />
-                <ImageMapPreview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onLink={onLink} />
+                <ImageMapPreview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onClick={onClick} />
             </div>
         );
         return (

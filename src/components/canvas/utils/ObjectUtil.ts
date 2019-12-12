@@ -57,13 +57,45 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
      * @type {string}
      */
     parentId?: string;
+    /**
+     * @description Original opacity
+     * @type {number}
+     */
     originOpacity?: number;
+    /**
+     * @description Original top position
+     * @type {number}
+     */
     originTop?: number;
+    /**
+     * @description Original left position
+     * @type {number}
+     */
     originLeft?: number;
+    /**
+     * @description Original scale X
+     * @type {number}
+     */
     originScaleX?: number;
+    /**
+     * @description Original scale Y
+     * @type {number}
+     */
     originScaleY?: number;
+    /**
+     * @description Original angle
+     * @type {number}
+     */
     originAngle?: number;
+    /**
+     * @description Original fill color
+     * @type {(string | fabric.Pattern)}
+     */
     originFill?: string | fabric.Pattern;
+    /**
+     * @description Original stroke color
+     * @type {string}
+     */
     originStroke?: string;
     /**
      * @description Object editable
@@ -110,11 +142,6 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
      * @type {boolean}
      */
     animating?: boolean;
-    // /**
-    //  * @description Object shadow
-    //  * @type {fabric.Shadow}
-    //  */
-    // shadow?: fabric.Shadow | string;
     /**
      * @description Object class
      * @type {string}
@@ -140,9 +167,14 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
      * @type {boolean}
      */
     locked?: boolean;
+    [key: string]: any;
 }
 
 export type FabricObject<T extends any = fabric.Object> = T & FabricObjectOption;
+
+export type FabricGroup = FabricObject<fabric.Group> & {
+    objects?: FabricObject[];
+};
 
 export type FabricImage = FabricObject & Omit<fabric.Image, 'filters'> & {
     src?: string;

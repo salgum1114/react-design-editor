@@ -105,7 +105,7 @@ class Canvas extends Component<CanvasProps> {
         this.handler.gridHandler.init();
         if (editable) {
             this.handler.transactionHandler.init();
-            this.handler.interactionMode = 'selection';
+            this.handler.modeHandler.selection();
             if (guidelineOption.enabled) {
                 this.handler.guidelineHandler.init();
             }
@@ -136,11 +136,13 @@ class Canvas extends Component<CanvasProps> {
         }
         if (JSON.stringify(this.props.fabricObjects) !== JSON.stringify(prevProps.fabricObjects)) {
             this.handler.fabricObjects = Object.assign({}, this.handler.fabricObjects, this.props.fabricObjects);
-        } else if (JSON.stringify(this.props.workareaOption) !== JSON.stringify(prevProps.workareaOption)) {
+        }
+        if (JSON.stringify(this.props.workareaOption) !== JSON.stringify(prevProps.workareaOption)) {
             this.handler.workarea.set({
                 ...this.props.workareaOption,
             });
-        } else if (JSON.stringify(this.props.guidelineOption) !== JSON.stringify(prevProps.guidelineOption)) {
+        }
+        if (JSON.stringify(this.props.guidelineOption) !== JSON.stringify(prevProps.guidelineOption)) {
             if (this.props.guidelineOption.enabled) {
                 this.canvas.on({
                     'before:render': this.handler.eventHandler.beforeRender,

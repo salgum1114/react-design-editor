@@ -2,6 +2,7 @@ import { fabric } from 'fabric';
 
 import Handler from './Handler';
 import { FabricObject } from '../utils';
+import { NodeObject } from '../objects/Node';
 
 class GridHandler {
     handler?: Handler;
@@ -74,7 +75,7 @@ class GridHandler {
                 top: Math.round(target.top / grid) * grid,
             });
             target.setCoords();
-            this.handler.portHandler.setCoords(target);
+            this.handler.portHandler.setCoords(target as NodeObject);
         }
     }
 }

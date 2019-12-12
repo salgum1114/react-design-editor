@@ -1,4 +1,5 @@
 import Handler from './Handler';
+import { NodeObject, PortObject } from '../objects/Node';
 
 class PortHandler {
     handler?: Handler;
@@ -7,7 +8,12 @@ class PortHandler {
         this.handler = handler;
     }
 
-    create = (target: any) => {
+    /**
+     * @description Create port
+     * @param {NodeObject} target
+     * @returns
+     */
+    create = (target: NodeObject) => {
         if (!target.createToPort) {
             return;
         }
@@ -15,7 +21,7 @@ class PortHandler {
         if (toPort) {
             toPort.on('mouseover', () => {
                 if (this.handler.interactionMode === 'link' && this.handler.activeLine && this.handler.activeLine.class === 'line') {
-                    if (toPort.links.some((link: any) => link.fromNode.id ===  this.handler.activeLine.fromNode)) {
+                    if (toPort.links.some(link => link.fromNode.id ===  this.handler.activeLine.fromNode)) {
                         toPort.set({
                             fill: toPort.errorFill,
                         });
@@ -40,7 +46,7 @@ class PortHandler {
         }
         const fromPort = target.createFromPort(target.left + (target.width / 2), target.top + target.height);
         if (fromPort && fromPort.length) {
-            fromPort.forEach((port: any) => {
+            fromPort.forEach(port => {
                 if (port) {
                     port.on('mouseover', () => {
                         if (port.enabled) {
@@ -76,7 +82,11 @@ class PortHandler {
         }
     }
 
-    setCoords = (target: any) => {
+    /**
+     * @description Set coords port
+     * @param {NodeObject} target
+     */
+    setCoords = (target: NodeObject) => {
         if (target.toPort) {
             const toCoords = {
                 left: target.left + (target.width / 2),
@@ -87,8 +97,8 @@ class PortHandler {
             });
             target.toPort.setCoords();
             if (target.toPort.links.length) {
-                target.toPort.links.forEach((link: any) => {
-                    const fromPort = link.fromNode.fromPort.filter((port: any) => port.id === link.fromPort)[0];
+                target.toPort.links.forEach(link => {
+                    const fromPort = link.fromNode.fromPort.filter(port => port.id === link.fromPort)[0];
                     this.handler.linkHandler.setCoords(fromPort.left, fromPort.top, toCoords.left, toCoords.top, link);
                 });
             }
@@ -98,7 +108,7 @@ class PortHandler {
                 left: target.left + (target.width / 2),
                 top: target.top + target.height,
             };
-            target.fromPort.forEach((port: any) => {
+            target.fromPort.forEach(port => {
                 const left = port.leftDiff ? fromCoords.left + port.leftDiff : fromCoords.left;
                 const top = port.topDiff ? fromCoords.top + port.topDiff : fromCoords.top;
                 port.set({
@@ -115,17 +125,22 @@ class PortHandler {
         }
     }
 
-    recreate = (target: any) => {
+    /**
+     * @description Recreate port
+     * @param {NodeObject} target
+     */
+    recreate = (target: NodeObject) => {
         const { fromPort, toPort } = target;
-        if (target.ports) {
-            target.ports.forEach((port: any) => {
+        const ports = target.ports as PortObject[];
+        if (ports) {
+            ports.forEach(port => {
                 target.removeWithUpdate(port);
                 this.handler.canvas.remove(port.fromPort);
             });
         }
         this.handler.canvas.remove(target.toPort);
         if (target.toPort) {
-            target.toPort.links.forEach((link: any) => {
+            target.toPort.links.forEach(link => {
                 this.handler.linkHandler.remove(link, 'from');
             });
         }
@@ -144,7 +159,7 @@ class PortHandler {
             link.toNode = target.toPort.nodeId;
             this.handler.linkHandler.create(link);
         });
-        fromPort.filter((op: any) => target.fromPort.some((np: any) => np.id === op.id)).forEach((port: any) => {
+        fromPort.filter(op => target.fromPort.some(np => np.id === op.id)).forEach(port => {
             port.links.forEach((link: any) => {
                 if (link.fromPort === port.id) {
                     link.fromNode = port.nodeId;

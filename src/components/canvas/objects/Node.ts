@@ -5,8 +5,6 @@ import i18next from 'i18next';
 import { FabricObject } from '../utils';
 import { LinkObject } from './Link';
 
-export type NodeType = 'TRIGGER' | 'LOGIC' | 'DATA' | 'ACTION';
-
 export const NODE_COLORS = {
     TRIGGER: {
         fill: '#48C9B0',
@@ -50,22 +48,34 @@ export const getEllipsis = (text: string, length: number) => {
     : (text.length > length ? text.substring(0, length).concat('...') : text);
 };
 
+export type NodeType = 'TRIGGER' | 'LOGIC' | 'DATA' | 'ACTION';
+
 export interface PortObject extends FabricObject<fabric.Rect> {
     links?: LinkObject[];
     nodeId?: string;
+    enabled?: boolean;
 }
 
 export interface NodeObject extends FabricObject<fabric.Group> {
     errorFlag?: fabric.IText;
     label?: fabric.Text;
     toPort?: PortObject;
+    errors?: any;
     fromPort?: PortObject[];
-    descriptor?: {
-        type: string;
-        icon: string;
-    };
+    descriptor?: Record<string, any>;
     nodeClazz?: string;
-    configuration?: object;
+    configuration?: Record<string, any>;
+    defaultPortOption?: () => Partial<PortObject>;
+    toPortOption?: () => Partial<PortObject>;
+    fromPortOption?: () => Partial<PortObject>;
+    createToPort?: (left: number, top: number) => PortObject;
+    createFromPort?: (left: number, top: number) => PortObject[];
+    singlePort?: (portOption: Partial<PortObject>) => PortObject[];
+    staticPort?: (portOption: Partial<PortObject>) => PortObject[];
+    dynamicPort?: (portOption: Partial<PortObject>) => PortObject[];
+    broadcastPort?: (portOption: Partial<PortObject>) => PortObject[];
+    setErrors?: (errors: any) => void;
+    duplicate?: () => NodeObject;
 }
 
 const Node = fabric.util.createClass(fabric.Group, {
@@ -171,7 +181,7 @@ const Node = fabric.util.createClass(fabric.Group, {
             stroke: this.descriptor ? NODE_COLORS[type].border : 'rgba(0, 0, 0, 1)',
             width: 10,
             height: 10,
-            links: [] as any[],
+            links: [] as LinkObject[],
             enabled: true,
         };
     },

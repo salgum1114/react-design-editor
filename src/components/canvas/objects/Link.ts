@@ -2,17 +2,22 @@ import { fabric } from 'fabric';
 import uuid from 'uuid';
 
 import { FabricObject } from '../utils';
-import { OUT_PORT_TYPE, NodeObject } from './Node';
+import { OUT_PORT_TYPE, NodeObject, PortObject } from './Node';
 
 export interface LinkObject extends FabricObject<fabric.Line> {
     fromNode?: NodeObject;
     toNode?: NodeObject;
+    fromPort?: string;
+    toPort?: string;
+    fromPortIndex?: number;
+    setPort?: (fromNode: any, fromPort: string, toNode: any, toPort: string) => void;
+    setPortEnabled?: (node: any, port: any, enabled: any) => void;
 }
 
 const Link = fabric.util.createClass(fabric.Line, {
     type: 'link',
     superType: 'link',
-    initialize(fromNode: any, fromPort: any, toNode: any, toPort: any, options: any) {
+    initialize(fromNode: Partial<NodeObject>, fromPort: Partial<PortObject>, toNode: Partial<NodeObject>, toPort: Partial<PortObject>, options: Partial<LinkObject>) {
         options = options || {};
         if (fromNode.type === 'BroadcastNode') {
             fromPort = fromNode.fromPort[0];
@@ -38,7 +43,7 @@ const Link = fabric.util.createClass(fabric.Line, {
             selectable: false,
         });
     },
-    setPort(fromNode: any, fromPort: any, _toNode: any, toPort: any) {
+    setPort(fromNode: NodeObject, fromPort: PortObject, _toNode: NodeObject, toPort: PortObject) {
         if (fromNode.type === 'BroadcastNode') {
             fromPort = fromNode.fromPort[0];
         }
@@ -46,7 +51,7 @@ const Link = fabric.util.createClass(fabric.Line, {
         toPort.links.push(this);
         this.setPortEnabled(fromNode, fromPort, false);
     },
-    setPortEnabled(node: any, port: any, enabled: any) {
+    setPortEnabled(node: NodeObject, port: PortObject, enabled: boolean) {
         if (node.descriptor.outPortType !== OUT_PORT_TYPE.BROADCAST) {
             port.set({
                 enabled,
@@ -55,7 +60,7 @@ const Link = fabric.util.createClass(fabric.Line, {
             if (node.toPort.id === port.id) {
                 return;
             }
-            port.links.forEach((link: any, index: any) => {
+            port.links.forEach((link, index) => {
                 link.set({
                     fromPort: 'broadcastFromPort',
                     fromPortIndex: index,

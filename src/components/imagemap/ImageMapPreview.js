@@ -18,7 +18,7 @@ class ImageMapPreview extends Component {
     }
 
     render() {
-        const { onChangePreview, onTooltip, onLink, preview } = this.props;
+        const { onChangePreview, onTooltip, onClick, preview } = this.props;
         const previewClassName = classnames('rde-preview', { preview });
         return (
             <div className={previewClassName}>
@@ -30,7 +30,7 @@ class ImageMapPreview extends Component {
                             backgroundColor: '#f3f3f3',
                         }}
                         onTooltip={onTooltip}
-                        onLink={onLink}
+                        onClick={onClick}
                     />
                     <Button className="rde-action-btn rde-preview-close-btn" onClick={onChangePreview}>
                         <Icon name="times" size={1.5} />

@@ -5,3 +5,4 @@ public/index.html
 public/fonts
 dist/
 lib/
+.vscode/

@@ -1,7 +1,7 @@
 import Handler from './Handler';
 import { FabricObject } from '../utils';
 import { CurvedLink } from '../objects';
-import { PortObject } from '../objects/Node';
+import { PortObject, NodeObject } from '../objects/Node';
 
 export interface LinkHandlerOptions {
     onAdd?: (object: FabricObject) => void;
@@ -71,10 +71,10 @@ class LinkHandler {
     }
 
     create = (link: any, init = false) => {
-        const fromNode = this.handler.findById(link.fromNode) as any;
-        const fromPort = fromNode.fromPort.filter((port: any) => port.id === link.fromPort || !port.id)[0];
-        const toNode = this.handler.findById(link.toNode);
-        const { toPort } = toNode as any;
+        const fromNode = this.handler.findById(link.fromNode) as NodeObject;
+        const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPort || !port.id)[0];
+        const toNode = this.handler.findById(link.toNode) as NodeObject;
+        const { toPort } = toNode;
         const createdObj = this.handler.fabricObjects[link.type].create(fromNode, fromPort, toNode, toPort, { ...link });
         this.handler.canvas.add(createdObj);
         this.handler.objects = this.handler.getObjects();

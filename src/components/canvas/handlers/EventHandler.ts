@@ -108,12 +108,12 @@ class EventHandler {
          * @description Mouse down on object
          * @param {FabricEvent} opt
          */
-        mousedown: (opt: fabric.IEvent) => {
-            const { target } = opt as any;
+        mousedown: (opt: FabricEvent) => {
+            const { target } = opt;
             if (target && target.link && target.link.enabled) {
-                const { onLink } = this.handler;
-                if (onLink) {
-                    onLink(this.handler.canvas, target);
+                const { onClick } = this.handler;
+                if (onClick) {
+                    onClick(this.handler.canvas, target);
                 }
             }
         },
@@ -121,8 +121,8 @@ class EventHandler {
          * @description Mouse double click on object
          * @param {FabricEvent} opt
          */
-        mousedblclick: (opt: fabric.IEvent) => {
-            const { target } = opt as any;
+        mousedblclick: (opt: FabricEvent) => {
+            const { target } = opt;
             if (target) {
                 const { onDblClick } = this.handler;
                 if (onDblClick) {
@@ -137,7 +137,7 @@ class EventHandler {
      * @param {FabricEvent} opt
      * @returns
      */
-    public modified = (opt: fabric.IEvent) => {
+    public modified = (opt: FabricEvent) => {
         const { target } = opt as any;
         if (!target) {
             return;
@@ -156,7 +156,7 @@ class EventHandler {
      * @param {FabricEvent} opt
      * @returns
      */
-    public moving = (opt: fabric.IEvent) => {
+    public moving = (opt: FabricEvent) => {
         const { target } = opt as any;
         if (this.handler.interactionMode === 'crop') {
             this.handler.cropHandler.moving(opt);
@@ -194,7 +194,7 @@ class EventHandler {
      * @description Moved object
      * @param {FabricEvent} opt
      */
-    public moved = (opt: fabric.IEvent) => {
+    public moved = (opt: FabricEvent) => {
         const { target } = opt as any;
         this.handler.gridHandler.setCoords(target);
         if (target.superType === 'element') {
@@ -208,7 +208,7 @@ class EventHandler {
      * @description Scaling object
      * @param {FabricEvent} opt
      */
-    public scaling = (opt: fabric.IEvent) => {
+    public scaling = (opt: FabricEvent) => {
         const { target } = opt as any;
         if (this.handler.interactionMode === 'crop') {
             this.handler.cropHandler.resize(opt);
@@ -232,7 +232,7 @@ class EventHandler {
      * @description Rotating object
      * @param {FabricEvent} opt
      */
-    public rotating = (opt: fabric.IEvent) => {
+    public rotating = (opt: FabricEvent) => {
         const { target } = opt as any;
         if (target.superType === 'element') {
             const { id } = target;
@@ -287,7 +287,7 @@ class EventHandler {
      * @param {FabricEvent<WheelEvent>} opt
      * @returns
      */
-    public mousewheel = (opt: fabric.IEvent) => {
+    public mousewheel = (opt: FabricEvent) => {
         const event = opt as FabricEvent<WheelEvent>;
         const { zoomEnabled } = this.handler;
         if (!zoomEnabled) {
@@ -307,10 +307,10 @@ class EventHandler {
 
     /**
      * @description Object mouse down
-     * @param {FabricEvent} opt
+     * @param {FabricEvent<MouseEvent>} opt
      * @returns
      */
-    public mousedown = (opt: fabric.IEvent) => {
+    public mousedown = (opt: FabricEvent) => {
         const event = opt as FabricEvent<MouseEvent>;
         const { editable } = this.handler;
         if (event.e.altKey && editable) {
@@ -386,10 +386,10 @@ class EventHandler {
 
     /**
      * @description Mouse move on canvas
-     * @param {FabricEvent} opt
+     * @param {FabricEvent<MouseEvent>} opt
      * @returns
      */
-    public mousemove = (opt: fabric.IEvent) => {
+    public mousemove = (opt: FabricEvent) => {
         const event = opt as FabricEvent<MouseEvent>;
         if (this.handler.interactionMode === 'grab' && this.panning) {
             this.handler.modeHandler.moving(event.e);
@@ -445,10 +445,10 @@ class EventHandler {
 
     /**
      * @description Mouse up on canvas
-     * @param {FabricEvent} opt
+     * @param {FabricEvent<MouseEvent>} opt
      * @returns
      */
-    public mouseup = (opt: fabric.IEvent) => {
+    public mouseup = (opt: FabricEvent) => {
         const event = opt as FabricEvent<MouseEvent>;
         if (this.handler.interactionMode === 'grab') {
             this.panning = false;
@@ -478,9 +478,9 @@ class EventHandler {
 
     /**
      * @description Mouse out on canvas
-     * @param {FabricEvent} opt
+     * @param {FabricEvent<MouseEvent>} opt
      */
-    public mouseout = (opt: fabric.IEvent) => {
+    public mouseout = (opt: FabricEvent) => {
         const event = opt as FabricEvent<MouseEvent>;
         if (!event.target) {
             this.handler.tooltipHandler.hide();
@@ -491,9 +491,9 @@ class EventHandler {
      * @description Selection event on canvas
      * @param {FabricEvent} opt
      */
-    public selection = (opt: fabric.IEvent) => {
+    public selection = (opt: FabricEvent) => {
         const { onSelect, activeSelection } = this.handler;
-        const target = opt.target as any;
+        const target = opt.target as FabricObject<fabric.ActiveSelection>;
         if (target && target.type === 'activeSelection') {
             target.set({
                 ...activeSelection,
@@ -508,7 +508,7 @@ class EventHandler {
      * @description Before the render
      * @param {FabricEvent} _opt
      */
-    public beforeRender = (_opt: fabric.IEvent) => {
+    public beforeRender = (_opt: FabricEvent) => {
         this.handler.canvas.clearContext(this.handler.guidelineHandler.ctx);
     }
 
@@ -516,7 +516,7 @@ class EventHandler {
      * @description After the render
      * @param {FabricEvent} _opt
      */
-    public afterRender = (_opt: fabric.IEvent) => {
+    public afterRender = (_opt: FabricEvent) => {
         for (let i = this.handler.guidelineHandler.verticalLines.length; i--;) {
             this.handler.guidelineHandler.drawVerticalLine(this.handler.guidelineHandler.verticalLines[i]);
         }
@@ -658,7 +658,7 @@ class EventHandler {
                                 obj.left = obj.properties.left + grid;
                                 obj.top = obj.properties.top + grid;
                                 const createdObj = this.handler.add(obj, false, true);
-                                this.handler.canvas.setActiveObject(createdObj);
+                                this.handler.canvas.setActiveObject(createdObj as FabricObject);
                                 this.handler.canvas.requestRenderAll();
                             } else {
                                 const nodes = [] as any[];
