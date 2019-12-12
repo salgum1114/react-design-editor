@@ -23,7 +23,7 @@ class Title extends Component {
             window.open('https://github.com/salgum1114/react-design-editor');
         },
         goDocs: () => {
-            window.open('https://github.com/salgum1114/react-design-editor/docs');
+            window.open('https://salgum1114.github.io/react-design-editor/docs');
         },
     }
 
