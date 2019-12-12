@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Menu } from 'antd';
+import { Button, Menu, Tooltip } from 'antd';
 import PropTypes from 'prop-types';
 import i18n from 'i18next';
 
@@ -22,6 +22,9 @@ class Title extends Component {
         goGithub: () => {
             window.open('https://github.com/salgum1114/react-design-editor');
         },
+        goDocs: () => {
+            window.open('https://github.com/salgum1114/react-design-editor/docs');
+        },
     }
 
     render() {
@@ -29,17 +32,32 @@ class Title extends Component {
             <FlexBox style={{ background: 'linear-gradient(141deg,#23303e,#404040 51%,#23303e 75%)' }} flexWrap="wrap" flex="1" alignItems="center">
                 <FlexBox style={{ marginLeft: 8 }} flex="0 1 auto">
                     <span style={{ color: '#fff', fontSize: 24, fontWeight: 500 }}>React Design Editor</span>
-                    <Button
-                        className="rde-action-btn"
-                        style={{
-                            color: 'white',
-                        }}
-                        shape="circle"
-                        size="large"
-                        onClick={this.handlers.goGithub}
-                    >
-                        <Icon name="github" prefix="fab" size={1.5} />
-                    </Button>
+                    <Tooltip title={i18n.t('action.go-github')} overlayStyle={{ fontSize: 16 }}>
+                        <Button
+                            className="rde-action-btn"
+                            style={{
+                                color: 'white',
+                            }}
+                            shape="circle"
+                            size="large"
+                            onClick={this.handlers.goGithub}
+                        >
+                            <Icon name="github" prefix="fab" size={1.5} />
+                        </Button>
+                    </Tooltip>
+                    <Tooltip title={i18n.t('action.go-docs')} overlayStyle={{ fontSize: 16 }}>
+                        <Button
+                            className="rde-action-btn"
+                            style={{
+                                color: 'white',
+                            }}
+                            shape="circle"
+                            size="large"
+                            onClick={this.handlers.goDocs}
+                        >
+                            <Icon name="book" prefix="fas" size={1.5} />
+                        </Button>
+                    </Tooltip>
                 </FlexBox>
                 <FlexBox style={{ marginLeft: 88 }}>
                     <Menu mode="horizontal" theme="dark" style={{ background: 'transparent', fontSize: '16px' }} onClick={this.props.onChangeMenu} selectedKeys={[this.props.current]}>

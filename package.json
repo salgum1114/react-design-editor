@@ -10,14 +10,15 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node clean && webpack -p --config webpack.prod.js",
+    "build": "node clean && webpack -p --config webpack.prod.js && typedoc",
     "build:lib": "npm run tsc && webpack -p --config webpack.lib.js",
     "start": "npm install && npm run start:dev",
     "start:dev": "webpack-dev-server --config webpack.dev.js --inline",
     "deploy": "npm run build:lib && npm publish",
     "lint": "npm run tsc",
     "clean": "node clean",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "typedoc": "typedoc"
   },
   "repository": {
     "type": "git",
@@ -114,6 +115,7 @@
     "terser-webpack-plugin": "^1.2.3",
     "tslint": "^5.12.1",
     "tslint-react": "^3.6.0",
+    "typedoc": "^0.15.4",
     "url-loader": "^1.1.2",
     "webpack": "^4.28.4",
     "webpack-cli": "^3.2.1",
