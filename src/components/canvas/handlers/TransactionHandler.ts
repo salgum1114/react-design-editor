@@ -1,11 +1,18 @@
 import Handler from './Handler';
+import { FabricObject, FabricObjectOption } from '../utils';
 
 export type TransactionType = 'add' | 'remove' | 'moved' | 'scaled' | 'rotated' | 'skewed';
 
+export interface TransactionEvent {
+    target: FabricObject;
+    original?: FabricObjectOption;
+    type: TransactionType;
+}
+
 class TransactionHandler {
     handler: Handler;
-    redos: any[];
-    undos: any[];
+    redos: TransactionEvent[];
+    undos: TransactionEvent[];
 
     constructor(handler: Handler) {
         this.handler = handler;
@@ -23,42 +30,44 @@ class TransactionHandler {
      * @description Save transaction
      * @param {FabricObject} target
      * @param {TransactionType} type
+     * @param {FabricObjectOption} original
      * @returns
      */
-    save = (target: any, type: TransactionType) => {
+    save = (target: FabricObject, type: TransactionType, original?: FabricObjectOption) => {
         if (!type) {
             console.warn('Must enter the transaction type');
             return;
         }
         const undo = {
             type,
-        } as any;
-        if (target.superType === 'node') {
-            undo.target = {
-                id: target.id,
-                name: target.name,
-                description: target.description,
-                superType: target.superType,
-                type: target.type,
-                nodeClazz: target.nodeClazz,
-                configuration: target.configuration,
-                properties: {
-                    left: target.left || 0,
-                    top: target.top || 0,
-                    iconName: target.descriptor.icon,
-                },
-            };
-        } else if (target.superType === 'link') {
-            undo.target = {
-                id: target.id,
-                type: target.type,
-                superType: target.superType,
-                fromNode: target.fromNode.id,
-                fromPort: target.fromPort,
-                toNode: target.toNode.id,
-            };
-        }
-        // else if (target.type === 'activeSelection') {
+            target,
+            original,
+        } as TransactionEvent;
+        // if (target.superType === 'node') {
+        //     undo.target = {
+        //         id: target.id,
+        //         name: target.name,
+        //         description: target.description,
+        //         superType: target.superType,
+        //         type: target.type,
+        //         nodeClazz: target.nodeClazz,
+        //         configuration: target.configuration,
+        //         properties: {
+        //             left: target.left || 0,
+        //             top: target.top || 0,
+        //             iconName: target.descriptor.icon,
+        //         },
+        //     };
+        // } else if (target.superType === 'link') {
+        //     undo.target = {
+        //         id: target.id,
+        //         type: target.type,
+        //         superType: target.superType,
+        //         fromNode: target.fromNode.id,
+        //         fromPort: target.fromPort,
+        //         toNode: target.toNode.id,
+        //     };
+        // } else if (target.type === 'activeSelection') {
 
         // } else {
 
@@ -75,26 +84,19 @@ class TransactionHandler {
         if (!undo) {
             return false;
         }
-        const { target, type } = undo;
+        const { target, type, original } = undo;
+        console.log('undo', undo, this.undos);
         if (type === 'add') {
-            if (target.superType === 'link') {
-                const findObject = this.handler.findById(target.id);
-                this.handler.linkHandler.remove(findObject);
-            } else {
-                this.handler.removeById(target.id);
-            }
+            this.handler.removeById(target.id, false);
         } else if (type === 'remove') {
-            if (target.superType === 'node') {
-                target.left = target.properties.left;
-                target.top = target.properties.top;
-            }
-            this.handler.add({ ...target, id: null }, false, true);
+            this.handler.add(target, false, true, false);
+        } else if (type === 'moved') {
+            this.setModifiedTransform(undo, target, original);
+        } else if (type === 'scaled') {
+            this.setModifiedTransform(undo, target, original);
+        } else if (type === 'rotated') {
+            this.setModifiedTransform(undo, target, original);
         }
-        // else if (type === 'moved') {
-        // } else if (type === 'scaled') {
-        // } else if (type === 'rotated') {
-        // } else if (type === 'skewed') {
-        // }
         this.redos.push(undo);
         return undo;
     }
@@ -108,29 +110,30 @@ class TransactionHandler {
         if (!redo) {
             return false;
         }
-        const { target, type } = redo;
+        const { target, type, original } = redo;
+        console.log('redo', redo, this.redos);
         if (type === 'add') {
-            if (target.superType === 'link') {
-                this.handler.linkHandler.remove(target);
-            } else {
-                this.handler.removeById(target.id);
-            }
-            this.redos.push({
-                target,
-                type: 'remove',
-            });
+            this.handler.add(target, false, true, false);
+        } else if (type === 'remove') {
+            this.handler.removeById(target.id, false);
+        } else if (type === 'moved') {
+            this.setModifiedTransform(redo, target, original);
+        } else if (type === 'scaled') {
+            this.setModifiedTransform(redo, target, original);
+        } else if (type === 'rotated') {
+            this.setModifiedTransform(redo, target, original);
         }
-        // else if (type === 'remove') {
-        //     if (target.superType === 'link') {
-        //     } else {
-        //     }
-        // } else if (type === 'moved') {
-        // } else if (type === 'scaled') {
-        // } else if (type === 'rotated') {
-        // } else if (type === 'skewed') {
-        // }
         this.undos.push(redo);
         return redo;
+    }
+
+    setModifiedTransform = (transaction: TransactionEvent, target: FabricObjectOption, original: FabricObjectOption) => {
+        const findObj = this.handler.findOriginById(target.id);
+        if (findObj) {
+            transaction.original = findObj.toObject(this.handler.propertiesToInclude);
+            this.handler.setByPartial(findObj, original);
+            transaction.target = findObj.toObject(this.handler.propertiesToInclude);
+        }
     }
 }
 

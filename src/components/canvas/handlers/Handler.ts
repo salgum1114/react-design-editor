@@ -466,11 +466,11 @@ class Handler implements HandlerOptions {
     /**
      * @description Set key pair by object
      * @param {FabricObject} obj
-     * @param {keyof FabricObject} key
+     * @param {string} key
      * @param {*} value
      * @returns
      */
-    public setByObject = (obj: any, key: keyof FabricObject, value: any) => {
+    public setByObject = (obj: any, key: string, value: any) => {
         if (!obj) {
             return;
         }
@@ -504,10 +504,10 @@ class Handler implements HandlerOptions {
     /**
      * @description Set key pair by id
      * @param {string} id
-     * @param {keyof FabricObject} key
+     * @param {string} key
      * @param {*} value
      */
-    public setById = (id: string, key: keyof FabricObject, value: any) => {
+    public setById = (id: string, key: string, value: any) => {
         const findObject = this.findById(id);
         this.setByObject(findObject, key, value);
     }
@@ -515,10 +515,10 @@ class Handler implements HandlerOptions {
     /**
      * @description Set partial by object
      * @param {FabricObject} obj
-     * @param {any} option
+     * @param {FabricObjectOption} option
      * @returns
      */
-    public setByPartial = (obj: any, option: any) => {
+    public setByPartial = (obj: FabricObject, option: FabricObjectOption) => {
         if (!obj) {
             return;
         }
@@ -550,12 +550,12 @@ class Handler implements HandlerOptions {
      * @param {fabric.Shadow} option
      * @returns
      */
-    public setShadow = (option: fabric.Shadow) => {
+    public setShadow = (option: fabric.IShadowOptions) => {
         const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (!activeObject) {
             return;
         }
-        activeObject.setShadow(option);
+        activeObject.setShadow(option as fabric.Shadow);
         this.canvas.requestRenderAll();
         const { onModified } = this;
         if (onModified) {
@@ -649,7 +649,7 @@ class Handler implements HandlerOptions {
      * @param {boolean} [loaded=false]
      * @returns
      */
-    public add = (obj: FabricObjectOption, centered = true, loaded = false) => {
+    public add = (obj: FabricObjectOption, centered = true, loaded = false, transaction = true) => {
         const { editable, onAdd, gridOption, defaultOption } = this;
         const option: any = {
             hasControls: editable,
@@ -674,7 +674,7 @@ class Handler implements HandlerOptions {
         }, option);
         // Individually create canvas object
         if (obj.superType === 'link') {
-            return this.linkHandler.create(newOption);
+            return this.linkHandler.create(newOption, transaction);
         }
         if (obj.type === 'svg') {
             return this.addSVG(newOption, centered, loaded);
@@ -734,6 +734,9 @@ class Handler implements HandlerOptions {
         if (gridOption.enabled) {
             this.gridHandler.setCoords(createdObj);
         }
+        if (transaction) {
+            this.transactionHandler.save(createdObj.toObject(this.propertiesToInclude), 'add');
+        }
         return createdObj;
     }
 
@@ -777,7 +780,7 @@ class Handler implements HandlerOptions {
      * @param {boolean} [loaded=false]
      * @returns
      */
-    public addSVG = (obj: any, centered = true, loaded = false) => {
+    public addSVG = (obj: any, centered = true, loaded = false, transaction = true) => {
         const { defaultOption } = this;
         return new Promise((resolve: any) => {
             const getSVGElements = (object: any, objects: any, options: any) => {
@@ -801,6 +804,9 @@ class Handler implements HandlerOptions {
                 if (onAdd && !loaded && editable) {
                     onAdd(createdObj);
                 }
+                if (transaction) {
+                    this.transactionHandler.save(createdObj, 'add');
+                }
                 return createdObj;
             };
             if (obj.loadType === 'svg') {
@@ -820,7 +826,7 @@ class Handler implements HandlerOptions {
      * @param {FabricObject} target
      * @returns {any}
      */
-    public remove = (target?: FabricObject) => {
+    public remove = (target?: FabricObject, transaction = true) => {
         const activeObject = target || this.canvas.getActiveObject() as any;
         if (this.prevTarget && this.prevTarget.superType === 'link') {
             this.linkHandler.remove(this.prevTarget);
@@ -831,6 +837,9 @@ class Handler implements HandlerOptions {
         }
         if (typeof activeObject.deletable !== 'undefined' && !activeObject.deletable) {
             return;
+        }
+        if (transaction) {
+            this.transactionHandler.save(activeObject.toObject(this.propertiesToInclude), 'remove');
         }
         if (activeObject.type !== 'activeSelection') {
             this.canvas.discardActiveObject();
@@ -904,11 +913,12 @@ class Handler implements HandlerOptions {
     /**
      * @description Remove object by id
      * @param {string} id
+     * @param {boolean} [transaction=true]
      */
-    public removeById = (id: string) => {
+    public removeById = (id: string, transaction = true) => {
         const findObject = this.findById(id);
         if (findObject) {
-            this.remove(findObject);
+            this.remove(findObject, transaction);
         }
     }
 
@@ -1308,7 +1318,7 @@ class Handler implements HandlerOptions {
      * @returns
      */
     public findOriginById = (id: string) => {
-        let findObject;
+        let findObject: FabricObject;
         const exist = this.objects.some(obj => {
             if (obj.id === id) {
                 findObject = obj;
@@ -1318,7 +1328,7 @@ class Handler implements HandlerOptions {
         });
         if (!exist) {
             console.warn('Not found object by id.');
-            return exist;
+            return null;
         }
         return findObject;
     }

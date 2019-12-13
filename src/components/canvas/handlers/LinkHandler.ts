@@ -70,7 +70,7 @@ class LinkHandler {
         this.finish();
     }
 
-    create = (link: any, init = false) => {
+    create = (link: any, init = false, transaction = true) => {
         const fromNode = this.handler.findById(link.fromNode) as NodeObject;
         const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPort || !port.id)[0];
         const toNode = this.handler.findById(link.toNode) as NodeObject;
@@ -87,6 +87,9 @@ class LinkHandler {
         this.handler.portHandler.setCoords(fromNode);
         this.handler.portHandler.setCoords(toNode);
         this.handler.canvas.requestRenderAll();
+        if (transaction) {
+            this.handler.transactionHandler.save(createdObj, 'add');
+        }
         return createdObj;
     }
 

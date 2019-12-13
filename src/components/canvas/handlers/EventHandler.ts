@@ -20,11 +20,15 @@ class EventHandler {
     public attachEventListener = () => {
         if (this.handler.editable) {
             this.handler.canvas.on({
+                'object:added': this.added,
+                'object:removed': this.removed,
                 'object:modified': this.modified,
                 'object:scaling': this.scaling,
+                'object:scaled': this.scaled,
                 'object:moving': this.moving,
                 'object:moved': this.moved,
                 'object:rotating': this.rotating,
+                'object:rotated': this.rotated,
                 'mouse:wheel': this.mousewheel,
                 'mouse:down': this.mousedown,
                 'mouse:move': this.mousemove,
@@ -133,12 +137,28 @@ class EventHandler {
     }
 
     /**
+     * @description Added object
+     * @param {FabricEvent} opt
+     */
+    public added = (opt: FabricEvent) => {
+        console.log(opt);
+    }
+
+    /**
+     * @description Removed object
+     * @param {FabricEvent} opt
+     */
+    public removed = (opt: FabricEvent) => {
+        console.log(opt);
+    }
+
+    /**
      * @description Modified object
      * @param {FabricEvent} opt
      * @returns
      */
     public modified = (opt: FabricEvent) => {
-        const { target } = opt as any;
+        const { target } = opt;
         if (!target) {
             return;
         }
@@ -195,8 +215,9 @@ class EventHandler {
      * @param {FabricEvent} opt
      */
     public moved = (opt: FabricEvent) => {
-        const { target } = opt as any;
+        const { target, transform } = opt;
         this.handler.gridHandler.setCoords(target);
+        this.handler.transactionHandler.save(target.toObject(this.handler.propertiesToInclude), 'moved', transform.original);
         if (target.superType === 'element') {
             const { id } = target;
             const el = this.handler.elementHandler.findById(id);
@@ -229,6 +250,15 @@ class EventHandler {
     }
 
     /**
+     * @description Scaled object
+     * @param {FabricEvent} opt
+     */
+    public scaled = (opt: FabricEvent) => {
+        const { target, transform } = opt;
+        this.handler.transactionHandler.save(target.toObject(this.handler.propertiesToInclude), 'scaled', transform.original);
+    }
+
+    /**
      * @description Rotating object
      * @param {FabricEvent} opt
      */
@@ -240,6 +270,15 @@ class EventHandler {
             // update the element
             this.handler.elementHandler.setScaleOrAngle(el, target);
         }
+    }
+
+    /**
+     * @description Rotated object
+     * @param {FabricEvent} opt
+     */
+    public rotated = (opt: FabricEvent) => {
+        const { target, transform } = opt;
+        this.handler.transactionHandler.save(target.toObject(this.handler.propertiesToInclude), 'rotated', transform.original);
     }
 
     /**
@@ -779,10 +818,10 @@ class EventHandler {
             } else if (e.ctrlKey && e.keyCode === 86 && paste && !clipboard) {
                 e.preventDefault();
                 this.handler.paste();
-            } else if (e.keyCode === 90 && transaction) {
+            } else if (e.ctrlKey && e.keyCode === 90 && transaction) {
                 e.preventDefault();
                 this.handler.transactionHandler.undo();
-            } else if (e.keyCode === 88 && transaction) {
+            } else if (e.ctrlKey && e.keyCode === 89 && transaction) {
                 e.preventDefault();
                 this.handler.transactionHandler.redo();
             }

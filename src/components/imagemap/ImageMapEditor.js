@@ -696,6 +696,9 @@ class ImageMapEditor extends Component {
                             onTooltip={onTooltip}
                             onClick={onClick}
                             onContext={onContext}
+                            keyEvent={{
+                                transaction: true,
+                            }}
                         />
                     </div>
                     <div className="rde-editor-footer-toolbar">
