@@ -140,16 +140,16 @@ class EventHandler {
      * @description Added object
      * @param {FabricEvent} opt
      */
-    public added = (opt: FabricEvent) => {
-        console.log(opt);
+    public added = (_opt: FabricEvent) => {
+        // console.log(opt);
     }
 
     /**
      * @description Removed object
      * @param {FabricEvent} opt
      */
-    public removed = (opt: FabricEvent) => {
-        console.log(opt);
+    public removed = (_opt: FabricEvent) => {
+        // console.log(opt);
     }
 
     /**

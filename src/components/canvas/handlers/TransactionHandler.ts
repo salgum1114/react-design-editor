@@ -1,7 +1,15 @@
 import Handler from './Handler';
 import { FabricObject, FabricObjectOption } from '../utils';
 
-export type TransactionType = 'add' | 'remove' | 'moved' | 'scaled' | 'rotated' | 'skewed';
+export type TransactionType = 'add'
+| 'remove'
+| 'moved'
+| 'scaled'
+| 'rotated'
+| 'skewed'
+| 'group'
+| 'activeSelection'
+;
 
 export interface TransactionEvent {
     target: FabricObject;
@@ -43,6 +51,10 @@ class TransactionHandler {
             target,
             original,
         } as TransactionEvent;
+        console.log(target.type);
+        if (target.type === 'group') {
+        } else if (target.type === 'activeSelection') {
+        }
         // if (target.superType === 'node') {
         //     undo.target = {
         //         id: target.id,
@@ -77,53 +89,71 @@ class TransactionHandler {
 
     /**
      * @description Undo transaction
-     * @returns {any}
+     * @returns
      */
     undo = () => {
         const undo = this.undos.pop();
         if (!undo) {
-            return false;
+            return null;
         }
         const { target, type, original } = undo;
-        console.log('undo', undo, this.undos);
-        if (type === 'add') {
-            this.handler.removeById(target.id, false);
-        } else if (type === 'remove') {
-            this.handler.add(target, false, true, false);
-        } else if (type === 'moved') {
-            this.setModifiedTransform(undo, target, original);
-        } else if (type === 'scaled') {
-            this.setModifiedTransform(undo, target, original);
-        } else if (type === 'rotated') {
-            this.setModifiedTransform(undo, target, original);
+        // console.log(type, target.type);
+        switch (type) {
+            case 'add':
+                this.handler.removeById(target.id, false);
+                break;
+            case 'remove':
+                this.handler.add(target, false, true, false);
+                break;
+            case 'moved':
+            case 'scaled':
+            case 'rotated':
+                this.setModifiedTransform(undo, target, original);
+                break;
+            case 'group':
+                undo.target = this.handler.toActiveSelection(target, false);
+                break;
+            case 'activeSelection':
+                undo.target = this.handler.toGroup(target, false);
+                break;
         }
+        // console.log(undo.type, undo.target.type);
         this.redos.push(undo);
         return undo;
     }
 
     /**
      * @description Redo transaction
-     * @returns {any}
+     * @returns
      */
     redo = () => {
         const redo = this.redos.pop();
         if (!redo) {
-            return false;
+            return null;
         }
         const { target, type, original } = redo;
-        console.log('redo', redo, this.redos);
-        if (type === 'add') {
-            this.handler.add(target, false, true, false);
-        } else if (type === 'remove') {
-            this.handler.removeById(target.id, false);
-        } else if (type === 'moved') {
-            this.setModifiedTransform(redo, target, original);
-        } else if (type === 'scaled') {
-            this.setModifiedTransform(redo, target, original);
-        } else if (type === 'rotated') {
-            this.setModifiedTransform(redo, target, original);
+        // console.log(type, target.type);
+        switch (type) {
+            case 'add':
+                this.handler.add(target, false, true, false);
+                break;
+            case 'remove':
+                this.handler.removeById(target.id, false);
+                break;
+            case 'moved':
+            case 'scaled':
+            case 'rotated':
+                this.setModifiedTransform(redo, target, original);
+                break;
+            case 'group':
+                redo.target = this.handler.toGroup(target, false);
+                break;
+            case 'activeSelection':
+                redo.target = this.handler.toActiveSelection(target, false);
+                break;
         }
         this.undos.push(redo);
+        // console.log(this.undos, this.redos);
         return redo;
     }
 

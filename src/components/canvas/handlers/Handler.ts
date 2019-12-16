@@ -1535,10 +1535,11 @@ class Handler implements HandlerOptions {
 
     /**
      * @description Active selection to group
+     * @param {boolean} [transaction=true]
      * @returns
      */
-    public toGroup = () => {
-        const activeObject = this.canvas.getActiveObject() as fabric.ActiveSelection;
+    public toGroup = (target?: FabricObject, transaction = true) => {
+        const activeObject = target || this.canvas.getActiveObject() as fabric.ActiveSelection;
         if (!activeObject) {
             return;
         }
@@ -1549,21 +1550,28 @@ class Handler implements HandlerOptions {
         group.set({
             id: uuid(),
             name: 'New group',
+            type: 'group',
             ...this.defaultOption,
         });
+        this.objects = this.getObjects();
+        if (transaction) {
+            this.transactionHandler.save(group, 'group');
+        }
         const { onSelect } = this;
-        if (onSelect) {
+        if (onSelect && transaction) {
             onSelect(group);
         }
         this.canvas.renderAll();
+        return group;
     }
 
     /**
      * @description Group to active selection
+     * @param {boolean} [transaction=true]
      * @returns
      */
-    public toActiveSelection = () => {
-        const activeObject = this.canvas.getActiveObject() as fabric.Group;
+    public toActiveSelection = (target?: FabricObject, transaction = true) => {
+        const activeObject = target || this.canvas.getActiveObject() as fabric.Group;
         if (!activeObject) {
             return;
         }
@@ -1571,11 +1579,16 @@ class Handler implements HandlerOptions {
             return;
         }
         const activeSelection = activeObject.toActiveSelection();
+        this.objects = this.getObjects();
+        if (transaction) {
+            this.transactionHandler.save(activeSelection, 'activeSelection');
+        }
         const { onSelect } = this;
-        if (onSelect) {
+        if (onSelect && transaction) {
             onSelect(activeSelection);
         }
         this.canvas.renderAll();
+        return activeSelection;
     }
 
     /**
