@@ -107,7 +107,8 @@ const Video = fabric.util.createClass(fabric.Rect, {
                         user-select: ${editable ? 'none' : 'auto'};
                         pointer-events: ${editable ? 'none' : 'auto'};`,
             }) as HTMLDivElement;
-            this.container.appendChild(this.element);
+            const container = document.getElementById(this.container);
+            container.appendChild(this.element);
             this.player = new MediaElementPlayer(id, {
                 pauseOtherPlayers: false,
                 videoWidth: '100%',
@@ -131,5 +132,7 @@ const Video = fabric.util.createClass(fabric.Rect, {
 Video.fromObject = (options: VideoObject, callback: (obj: VideoObject) => any) => {
     return callback(new Video(options.src || options.file, options));
 };
+
+window.fabric.Video = Video;
 
 export default Video;

@@ -20,8 +20,6 @@ class EventHandler {
     public attachEventListener = () => {
         if (this.handler.editable) {
             this.handler.canvas.on({
-                'object:added': this.added,
-                'object:removed': this.removed,
                 'object:modified': this.modified,
                 'object:scaling': this.scaling,
                 'object:scaled': this.scaled,
@@ -137,22 +135,6 @@ class EventHandler {
     }
 
     /**
-     * @description Added object
-     * @param {FabricEvent} opt
-     */
-    public added = (_opt: FabricEvent) => {
-        // console.log(opt);
-    }
-
-    /**
-     * @description Removed object
-     * @param {FabricEvent} opt
-     */
-    public removed = (_opt: FabricEvent) => {
-        // console.log(opt);
-    }
-
-    /**
      * @description Modified object
      * @param {FabricEvent} opt
      * @returns
@@ -215,9 +197,11 @@ class EventHandler {
      * @param {FabricEvent} opt
      */
     public moved = (opt: FabricEvent) => {
-        const { target, transform } = opt;
+        const { target } = opt;
         this.handler.gridHandler.setCoords(target);
-        this.handler.transactionHandler.save(target.toObject(this.handler.propertiesToInclude), 'moved', transform.original);
+        if (!this.handler.transactionHandler.active) {
+            this.handler.transactionHandler.save('moved');
+        }
         if (target.superType === 'element') {
             const { id } = target;
             const el = this.handler.elementHandler.findById(id);
@@ -253,9 +237,10 @@ class EventHandler {
      * @description Scaled object
      * @param {FabricEvent} opt
      */
-    public scaled = (opt: FabricEvent) => {
-        const { target, transform } = opt;
-        this.handler.transactionHandler.save(target.toObject(this.handler.propertiesToInclude), 'scaled', transform.original);
+    public scaled = (_opt: FabricEvent) => {
+        if (!this.handler.transactionHandler.active) {
+            this.handler.transactionHandler.save('scaled');
+        }
     }
 
     /**
@@ -276,9 +261,10 @@ class EventHandler {
      * @description Rotated object
      * @param {FabricEvent} opt
      */
-    public rotated = (opt: FabricEvent) => {
-        const { target, transform } = opt;
-        this.handler.transactionHandler.save(target.toObject(this.handler.propertiesToInclude), 'rotated', transform.original);
+    public rotated = (_opt: FabricEvent) => {
+        if (!this.handler.transactionHandler.active) {
+            this.handler.transactionHandler.save('rotated');
+        }
     }
 
     /**

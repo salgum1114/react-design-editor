@@ -282,4 +282,6 @@ Node.fromObject = (options: NodeObject, callback: (obj: NodeObject) => any) => {
     return callback(new Node(options));
 };
 
+window.fabric.Node = Node;
+
 export default Node;

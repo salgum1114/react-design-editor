@@ -4,6 +4,7 @@ const Arrow = fabric.util.createClass(fabric.Line, {
     type: 'arrow',
     superType: 'drawing',
     initialize(points: any, options: any) {
+        console.log(points, options);
         options = options || {};
         this.callSuper('initialize', points, options);
     },
@@ -28,7 +29,10 @@ const Arrow = fabric.util.createClass(fabric.Line, {
 });
 
 Arrow.fromObject = (options: any, callback: any) => {
-    return callback(new Arrow(options));
+    const { x1, x2, y1, y2 } = options;
+    return callback(new Arrow([x1, y1, x2, y2], options));
 };
+
+window.fabric.Arrow = Arrow;
 
 export default Arrow;

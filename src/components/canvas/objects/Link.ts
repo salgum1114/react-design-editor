@@ -109,4 +109,6 @@ Link.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
     return callback(new Link(options));
 };
 
+window.fabric.Link = Link;
+
 export default Link;

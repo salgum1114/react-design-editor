@@ -44,4 +44,6 @@ OrthogonalLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) =>
     return callback(new OrthogonalLink(options));
 };
 
+window.fabric.OrthogonalLink = OrthogonalLink;
+
 export default OrthogonalLink;

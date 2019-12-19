@@ -649,7 +649,7 @@ class Handler implements HandlerOptions {
      * @param {boolean} [loaded=false]
      * @returns
      */
-    public add = (obj: FabricObjectOption, centered = true, loaded = false, transaction = true) => {
+    public add = (obj: FabricObjectOption, centered = true, loaded = false) => {
         const { editable, onAdd, gridOption, defaultOption } = this;
         const option: any = {
             hasControls: editable,
@@ -669,12 +669,12 @@ class Handler implements HandlerOptions {
             option.scaleY = this.workarea.scaleY;
         }
         const newOption = Object.assign({}, defaultOption, obj, {
-            container: this.container,
+            container: this.container.id,
             editable,
         }, option);
         // Individually create canvas object
         if (obj.superType === 'link') {
-            return this.linkHandler.create(newOption, transaction);
+            return this.linkHandler.create(newOption);
         }
         if (obj.type === 'svg') {
             return this.addSVG(newOption, centered, loaded);
@@ -734,8 +734,8 @@ class Handler implements HandlerOptions {
         if (gridOption.enabled) {
             this.gridHandler.setCoords(createdObj);
         }
-        if (transaction) {
-            this.transactionHandler.save(createdObj.toObject(this.propertiesToInclude), 'add');
+        if (!this.transactionHandler.active) {
+            this.transactionHandler.save('add');
         }
         return createdObj;
     }
@@ -760,8 +760,11 @@ class Handler implements HandlerOptions {
      */
     public addImage = (obj: FabricImage) => {
         const { defaultOption } = this;
-        const image = new Image();
         const { filters = [], ...otherOption } = obj;
+        const image = new Image();
+        if (obj.src) {
+            image.src = obj.src;
+        }
         const createdObj = new fabric.Image(image, {
             ...defaultOption,
             ...otherOption,
@@ -780,7 +783,7 @@ class Handler implements HandlerOptions {
      * @param {boolean} [loaded=false]
      * @returns
      */
-    public addSVG = (obj: any, centered = true, loaded = false, transaction = true) => {
+    public addSVG = (obj: any, centered = true, loaded = false) => {
         const { defaultOption } = this;
         return new Promise((resolve: any) => {
             const getSVGElements = (object: any, objects: any, options: any) => {
@@ -804,9 +807,6 @@ class Handler implements HandlerOptions {
                 if (onAdd && !loaded && editable) {
                     onAdd(createdObj);
                 }
-                if (transaction) {
-                    this.transactionHandler.save(createdObj, 'add');
-                }
                 return createdObj;
             };
             if (obj.loadType === 'svg') {
@@ -826,7 +826,7 @@ class Handler implements HandlerOptions {
      * @param {FabricObject} target
      * @returns {any}
      */
-    public remove = (target?: FabricObject, transaction = true) => {
+    public remove = (target?: FabricObject) => {
         const activeObject = target || this.canvas.getActiveObject() as any;
         if (this.prevTarget && this.prevTarget.superType === 'link') {
             this.linkHandler.remove(this.prevTarget);
@@ -837,9 +837,6 @@ class Handler implements HandlerOptions {
         }
         if (typeof activeObject.deletable !== 'undefined' && !activeObject.deletable) {
             return;
-        }
-        if (transaction) {
-            this.transactionHandler.save(activeObject.toObject(this.propertiesToInclude), 'remove');
         }
         if (activeObject.type !== 'activeSelection') {
             this.canvas.discardActiveObject();
@@ -869,7 +866,6 @@ class Handler implements HandlerOptions {
                 }
             }
             this.canvas.remove(activeObject);
-            this.removeOriginById(activeObject.id);
         } else {
             const { _objects: activeObjects } = activeObject;
             const existDeleted = activeObjects.some((obj: any) => typeof obj.deletable !== 'undefined' && !obj.deletable);
@@ -901,9 +897,12 @@ class Handler implements HandlerOptions {
                     }
                 }
                 this.canvas.remove(obj);
-                this.removeOriginById(obj.id);
             });
         }
+        if (!this.transactionHandler.active) {
+            this.transactionHandler.save('remove');
+        }
+        this.objects = this.getObjects();
         const { onRemove } = this;
         if (onRemove) {
             onRemove(activeObject);
@@ -913,12 +912,11 @@ class Handler implements HandlerOptions {
     /**
      * @description Remove object by id
      * @param {string} id
-     * @param {boolean} [transaction=true]
      */
-    public removeById = (id: string, transaction = true) => {
+    public removeById = (id: string) => {
         const findObject = this.findById(id);
         if (findObject) {
-            this.remove(findObject, transaction);
+            this.remove(findObject);
         }
     }
 
@@ -1255,6 +1253,9 @@ class Handler implements HandlerOptions {
             this.canvas.setActiveObject(clonedObj);
             this.portHandler.create(clonedObj);
             this.canvas.requestRenderAll();
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('paste');
+            }
         }, propertiesToInclude);
         return true;
     }
@@ -1535,10 +1536,9 @@ class Handler implements HandlerOptions {
 
     /**
      * @description Active selection to group
-     * @param {boolean} [transaction=true]
      * @returns
      */
-    public toGroup = (target?: FabricObject, transaction = true) => {
+    public toGroup = (target?: FabricObject) => {
         const activeObject = target || this.canvas.getActiveObject() as fabric.ActiveSelection;
         if (!activeObject) {
             return;
@@ -1554,12 +1554,11 @@ class Handler implements HandlerOptions {
             ...this.defaultOption,
         });
         this.objects = this.getObjects();
-        if (transaction) {
-            this.transactionHandler.save(group, 'group');
+        if (!this.transactionHandler.active) {
+            this.transactionHandler.save('group');
         }
-        const { onSelect } = this;
-        if (onSelect && transaction) {
-            onSelect(group);
+        if (this.onSelect) {
+            this.onSelect(group);
         }
         this.canvas.renderAll();
         return group;
@@ -1567,10 +1566,9 @@ class Handler implements HandlerOptions {
 
     /**
      * @description Group to active selection
-     * @param {boolean} [transaction=true]
      * @returns
      */
-    public toActiveSelection = (target?: FabricObject, transaction = true) => {
+    public toActiveSelection = (target?: FabricObject) => {
         const activeObject = target || this.canvas.getActiveObject() as fabric.Group;
         if (!activeObject) {
             return;
@@ -1580,12 +1578,11 @@ class Handler implements HandlerOptions {
         }
         const activeSelection = activeObject.toActiveSelection();
         this.objects = this.getObjects();
-        if (transaction) {
-            this.transactionHandler.save(activeSelection, 'activeSelection');
+        if (!this.transactionHandler.active) {
+            this.transactionHandler.save('ungroup');
         }
-        const { onSelect } = this;
-        if (onSelect && transaction) {
-            onSelect(activeSelection);
+        if (this.onSelect) {
+            this.onSelect(activeSelection);
         }
         this.canvas.renderAll();
         return activeSelection;
@@ -1598,6 +1595,9 @@ class Handler implements HandlerOptions {
         const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (activeObject) {
             this.canvas.bringForward(activeObject);
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('bringForward');
+            }
             const { onModified } = this;
             if (onModified) {
                 onModified(activeObject);
@@ -1612,6 +1612,9 @@ class Handler implements HandlerOptions {
         const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (activeObject) {
             this.canvas.bringToFront(activeObject);
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('bringToFront');
+            }
             const { onModified } = this;
             if (onModified) {
                 onModified(activeObject);
@@ -1630,6 +1633,9 @@ class Handler implements HandlerOptions {
             if (firstObject.id === activeObject.id) {
                 return;
             }
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('sendBackwards');
+            }
             this.canvas.sendBackwards(activeObject);
             const { onModified } = this;
             if (onModified) {
@@ -1646,6 +1652,9 @@ class Handler implements HandlerOptions {
         if (activeObject) {
             this.canvas.sendToBack(activeObject);
             this.canvas.sendToBack(this.canvas.getObjects()[1]);
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('sendToBack');
+            }
             const { onModified } = this;
             if (onModified) {
                 onModified(activeObject);
@@ -1658,8 +1667,7 @@ class Handler implements HandlerOptions {
      * @param {boolean} [includeWorkarea=false]
      */
     public clear = (includeWorkarea = false) => {
-        const { canvas } = this;
-        const ids = canvas.getObjects().reduce((prev, curr: any) => {
+        const ids = this.canvas.getObjects().reduce((prev, curr: any) => {
             if (curr.superType === 'element') {
                 prev.push(curr.id);
                 return prev;
@@ -1668,18 +1676,18 @@ class Handler implements HandlerOptions {
         }, []);
         this.elementHandler.removeByIds(ids);
         if (includeWorkarea) {
-            canvas.clear();
+            this.canvas.clear();
             this.workarea = null;
         } else {
-            canvas.getObjects().forEach((obj: any) => {
-                if (obj.id === 'grid') {
+            this.canvas.getObjects().forEach((obj: any) => {
+                if (obj.id === 'grid' || obj.id === 'workarea') {
                     return;
                 }
-                if (obj.id !== 'workarea') {
-                    canvas.remove(obj);
-                }
+                this.canvas.remove(obj);
             });
         }
+        this.objects = this.getObjects();
+        this.canvas.renderAll();
     }
 
     /**

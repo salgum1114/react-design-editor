@@ -8,12 +8,24 @@ const Node = fabric.util.createClass(fabric.Group, {
     type: 'node',
     superType: 'node',
     initialize(options) {
-        options = options || {};
+        const { objects, toPort, fromPort, ...other } = options || {};
+        let iconOption = {};
+        let labelOption = {};
+        let boxOption = {};
+        let errorFlagOption = {};
+        // if (objects && objects.length) {
+        //     boxOption = objects[0];
+        //     iconOption = objects[1];
+        //     labelOption = objects[2];
+        //     errorFlagOption = objects[3];
+        // }
+        // options = options || {};
         const icon = new fabric.IText(options.icon || '\uE174', {
             fontFamily: 'Font Awesome 5 Free',
             fontWeight: 900,
             fontSize: 20,
             fill: 'rgba(255, 255, 255, 0.8)',
+            ...iconOption,
         });
         let name = 'Default Node';
         if (options.name) {
@@ -24,8 +36,9 @@ const Node = fabric.util.createClass(fabric.Group, {
             fontFamily: 'polestar',
             fontWeight: 500,
             fill: 'rgba(255, 255, 255, 0.8)',
+            ...labelOption,
         });
-        const rect = new fabric.Rect({
+        const box = new fabric.Rect({
             rx: 10,
             ry: 10,
             width: 200,
@@ -33,6 +46,7 @@ const Node = fabric.util.createClass(fabric.Group, {
             fill: options.fill || 'rgba(0, 0, 0, 0.3)',
             stroke: options.stroke || 'rgba(0, 0, 0, 0)',
             strokeWidth: 2,
+            ...boxOption,
         });
         this.errorFlag = new fabric.IText('\uf071', {
             fontFamily: 'Font Awesome 5 Free',
@@ -40,9 +54,10 @@ const Node = fabric.util.createClass(fabric.Group, {
             fontSize: 14,
             fill: 'rgba(255, 0, 0, 0.8)',
             visible: options.errors,
+            ...errorFlagOption,
         });
-        const node = [rect, icon, this.label, this.errorFlag];
-        const option = Object.assign({}, options, {
+        const node = [box, icon, this.label, this.errorFlag];
+        const option = Object.assign({}, other, {
             id: options.id || uuid(),
             width: 200,
             height: 40,
@@ -61,8 +76,8 @@ const Node = fabric.util.createClass(fabric.Group, {
             left: this.label.left + 35,
         });
         this.errorFlag.set({
-            left: rect.left,
-            top: rect.top,
+            left: box.left,
+            top: box.top,
             visible: options.errors,
         });
     },
@@ -203,8 +218,14 @@ const Node = fabric.util.createClass(fabric.Group, {
     },
 });
 
-Node.fromObject = function (options, callback) {
+Node.fromObject = (options, callback) => {
     return callback(new Node(options));
 };
+
+window.fabric.FromPort = fabric.Rect;
+
+window.fabric.ToPort = fabric.ToPort;
+
+window.fabric.Node = Node;
 
 export default Node;

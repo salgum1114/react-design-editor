@@ -24,7 +24,8 @@
         ]
     },
     "include": [
-        "src/components/canvas/index.tsx"
+        "src/components/canvas/index.tsx",
+        "src/components/canvas/global.d.ts"
     ],
     "exclude": [
         "node_modules",

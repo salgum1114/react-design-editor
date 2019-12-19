@@ -64,7 +64,8 @@ const IFrame = fabric.util.createClass(fabric.Rect, {
                         user-select: ${editable ? 'none' : 'auto'};
                         pointer-events: ${editable ? 'none' : 'auto'};`,
             }) as HTMLDivElement;
-            this.container.appendChild(this.element);
+            const container = document.getElementById(this.container);
+            container.appendChild(this.element);
         }
     },
 });
@@ -72,5 +73,7 @@ const IFrame = fabric.util.createClass(fabric.Rect, {
 IFrame.fromObject = (options: IFrameObject, callback: (obj: IFrameObject) => any) => {
     return callback(new IFrame(options.src, options));
 };
+
+window.fabric.IFrame = IFrame;
 
 export default IFrame;

@@ -1,19 +1,40 @@
-import Handler from './Handler';
-import { FabricObject, FabricObjectOption } from '../utils';
+import { fabric } from 'fabric';
 
-export type TransactionType = 'add'
+import Handler from './Handler';
+import { FabricObject } from '../utils';
+
+export type TransactionType = 'init'
+| 'add'
 | 'remove'
 | 'moved'
 | 'scaled'
 | 'rotated'
 | 'skewed'
 | 'group'
-| 'activeSelection'
+| 'ungroup'
+| 'paste'
+| 'bringForward'
+| 'bringToFront'
+| 'sendBackwards'
+| 'sendToBack'
 ;
 
+export interface TransactionTransform {
+    scaleX?: number;
+    scaleY?: number;
+    skewX?: number;
+    skewY?: number;
+    angle?: number;
+    left?: number;
+    top?: number;
+    flipX?: number;
+    flipY?: number;
+    originX?: string;
+    originY?: string;
+}
+
 export interface TransactionEvent {
-    target: FabricObject;
-    original?: FabricObjectOption;
+    json: string;
     type: TransactionType;
 }
 
@@ -21,6 +42,8 @@ class TransactionHandler {
     handler: Handler;
     redos: TransactionEvent[];
     undos: TransactionEvent[];
+    active: boolean = false;
+    state: FabricObject[] = [];
 
     constructor(handler: Handler) {
         this.handler = handler;
@@ -32,59 +55,40 @@ class TransactionHandler {
     init = () => {
         this.redos = [];
         this.undos = [];
+        this.save('init');
     }
 
     /**
      * @description Save transaction
-     * @param {FabricObject} target
      * @param {TransactionType} type
-     * @param {FabricObjectOption} original
+     * @param {*} [canvasJSON]
+     * @param {boolean} [isWorkarea=true]
      * @returns
      */
-    save = (target: FabricObject, type: TransactionType, original?: FabricObjectOption) => {
-        if (!type) {
-            console.warn('Must enter the transaction type');
+    save = (type: TransactionType, canvasJSON?: any, isWorkarea: boolean = true) => {
+        if (!this.handler.keyEvent.transaction) {
             return;
         }
-        const undo = {
-            type,
-            target,
-            original,
-        } as TransactionEvent;
-        console.log(target.type);
-        if (target.type === 'group') {
-        } else if (target.type === 'activeSelection') {
+        try {
+            if (this.state) {
+                const json = JSON.stringify(this.state);
+                this.undos.push({
+                    type,
+                    json,
+                });
+            }
+            const { objects }: { objects: FabricObject[] } = canvasJSON || this.handler.canvas.toJSON(this.handler.propertiesToInclude);
+            this.state = objects.filter(obj => {
+                if (obj.id === 'workarea') {
+                    return false;
+                } else if (obj.id === 'grid') {
+                    return false;
+                }
+                return true;
+            });
+        } catch (error) {
+            console.error(error);
         }
-        // if (target.superType === 'node') {
-        //     undo.target = {
-        //         id: target.id,
-        //         name: target.name,
-        //         description: target.description,
-        //         superType: target.superType,
-        //         type: target.type,
-        //         nodeClazz: target.nodeClazz,
-        //         configuration: target.configuration,
-        //         properties: {
-        //             left: target.left || 0,
-        //             top: target.top || 0,
-        //             iconName: target.descriptor.icon,
-        //         },
-        //     };
-        // } else if (target.superType === 'link') {
-        //     undo.target = {
-        //         id: target.id,
-        //         type: target.type,
-        //         superType: target.superType,
-        //         fromNode: target.fromNode.id,
-        //         fromPort: target.fromPort,
-        //         toNode: target.toNode.id,
-        //     };
-        // } else if (target.type === 'activeSelection') {
-
-        // } else {
-
-        // }
-        this.undos.push(undo);
     }
 
     /**
@@ -94,32 +98,24 @@ class TransactionHandler {
     undo = () => {
         const undo = this.undos.pop();
         if (!undo) {
-            return null;
+            return;
         }
-        const { target, type, original } = undo;
-        // console.log(type, target.type);
-        switch (type) {
-            case 'add':
-                this.handler.removeById(target.id, false);
-                break;
-            case 'remove':
-                this.handler.add(target, false, true, false);
-                break;
-            case 'moved':
-            case 'scaled':
-            case 'rotated':
-                this.setModifiedTransform(undo, target, original);
-                break;
-            case 'group':
-                undo.target = this.handler.toActiveSelection(target, false);
-                break;
-            case 'activeSelection':
-                undo.target = this.handler.toGroup(target, false);
-                break;
-        }
-        // console.log(undo.type, undo.target.type);
-        this.redos.push(undo);
-        return undo;
+        const transaction = JSON.parse(undo.json) as FabricObject[];
+        this.state = transaction;
+        this.active = true;
+        this.handler.canvas.renderOnAddRemove = false;
+        this.handler.clear();
+        console.log(transaction);
+        fabric.util.enlivenObjects(transaction, (elivenObjects: FabricObject[]) => {
+            const { length } = this.handler.canvas._objects;
+            elivenObjects.forEach((obj, index) => {
+                this.handler.canvas.insertAt(obj, index + length, false);
+            });
+            this.handler.canvas.renderOnAddRemove = true;
+            this.active = false;
+            this.handler.canvas.renderAll();
+            console.log(this.handler.canvas.getObjects());
+        }, null);
     }
 
     /**
@@ -127,43 +123,34 @@ class TransactionHandler {
      * @returns
      */
     redo = () => {
-        const redo = this.redos.pop();
-        if (!redo) {
-            return null;
-        }
-        const { target, type, original } = redo;
-        // console.log(type, target.type);
-        switch (type) {
-            case 'add':
-                this.handler.add(target, false, true, false);
-                break;
-            case 'remove':
-                this.handler.removeById(target.id, false);
-                break;
-            case 'moved':
-            case 'scaled':
-            case 'rotated':
-                this.setModifiedTransform(redo, target, original);
-                break;
-            case 'group':
-                redo.target = this.handler.toGroup(target, false);
-                break;
-            case 'activeSelection':
-                redo.target = this.handler.toActiveSelection(target, false);
-                break;
-        }
-        this.undos.push(redo);
-        // console.log(this.undos, this.redos);
-        return redo;
-    }
-
-    setModifiedTransform = (transaction: TransactionEvent, target: FabricObjectOption, original: FabricObjectOption) => {
-        const findObj = this.handler.findOriginById(target.id);
-        if (findObj) {
-            transaction.original = findObj.toObject(this.handler.propertiesToInclude);
-            this.handler.setByPartial(findObj, original);
-            transaction.target = findObj.toObject(this.handler.propertiesToInclude);
-        }
+        // const redo = this.redos.pop();
+        // if (!redo) {
+        //     return null;
+        // }
+        // const { target, type, originTransform } = redo;
+        // this.active = true;
+        // switch (type) {
+        //     case 'add':
+        //         this.handler.add(target, false, true);
+        //         break;
+        //     case 'remove':
+        //         this.handler.removeById(target.id);
+        //         break;
+        //     case 'moved':
+        //     case 'scaled':
+        //     case 'rotated':
+        //         this.setModifiedTransform(redo, target, originTransform);
+        //         break;
+        //     case 'group':
+        //         redo.target = this.handler.toGroup(target);
+        //         break;
+        //     case 'activeSelection':
+        //         redo.target = this.handler.toActiveSelection(target);
+        //         break;
+        // }
+        // this.active = false;
+        // this.undos.push(redo);
+        // return redo;
     }
 }
 

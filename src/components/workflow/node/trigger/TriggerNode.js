@@ -15,8 +15,13 @@ const TriggerNode = fabric.util.createClass(Node, {
     },
 });
 
-TriggerNode.fromObject = function (options, callback) {
+TriggerNode.fromObject = (options, callback) => {
+    console.log(options);
     return callback(new TriggerNode(options));
 };
+
+window.fabric.TimerNode = TriggerNode;
+
+window.fabric.TriggerNode = TriggerNode;
 
 export default TriggerNode;

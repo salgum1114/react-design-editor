@@ -41,4 +41,6 @@ CurvedLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any
     return callback(new CurvedLink(options));
 };
 
+window.fabric.CurvedLink = CurvedLink;
+
 export default CurvedLink;

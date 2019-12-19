@@ -1,12 +1,6 @@
 import { fabric } from 'fabric';
 import 'gifler';
 
-interface TempWindow extends Window {
-    gifler?: any;
-}
-
-const global = window as TempWindow;
-
 const Gif = fabric.util.createClass(fabric.Object, {
     type: 'gif',
     superType: 'image',
@@ -28,7 +22,7 @@ const Gif = fabric.util.createClass(fabric.Object, {
         this.callSuper('_render', ctx);
         if (!this.isStarted) {
             this.isStarted = true;
-            global.gifler('./images/sample/earth.gif')
+            window.gifler('./images/sample/earth.gif')
             .frames(this.gifCanvas, (_c: CanvasRenderingContext2D, frame: any) => {
                 this.isStarted = true;
                 this.drawFrame(ctx, frame);
@@ -36,5 +30,11 @@ const Gif = fabric.util.createClass(fabric.Object, {
         }
     },
 });
+
+Gif.fromObject = (options: any, callback: (obj: any) => any) => {
+    return callback(new Gif(options));
+};
+
+window.fabric.Gif = Gif;
 
 export default Gif;
