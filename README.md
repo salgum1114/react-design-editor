@@ -76,10 +76,10 @@
 - [x] Context menu
 - [x] Save Image - Canvas, Target Object
 - [x] Image Filter
-- [x] Undo / Redo - development
-- [x] SVG Element - development
-- [x] Chart Element - development
-- [x] GIF Element - development
+- [x] Undo / Redo
+- [x] SVG Element - development (copy)
+- [x] Chart Element - development (form)
+- [x] GIF Element - development (form)
 - [ ] Wireframes - development
 - [ ] Multiple Map - development
 - [ ] Ruler - development

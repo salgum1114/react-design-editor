@@ -18,6 +18,8 @@ LogicNode.fromObject = function (options, callback) {
 
 window.fabric.LogicNode = LogicNode;
 
+window.fabric.DelayNode = LogicNode;
+
 window.fabric.FunctionNode = LogicNode;
 
 window.fabric.BroadcastNode = LogicNode;
