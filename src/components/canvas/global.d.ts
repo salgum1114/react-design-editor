@@ -7,7 +7,7 @@ declare module 'fabric/fabric-impl' {
     class Gif {}
     class Arrow {}
     // Element
-    class IFrame {}
+    class Iframe {}
     class Chart {}
     class Element {}
     class Video {}

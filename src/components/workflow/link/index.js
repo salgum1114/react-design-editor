@@ -1,6 +1,4 @@
-import Link from './Link';
-import CurvedLink from './CurvedLink';
-import OrthogonalLink from './OrthogonalLink';
+import { Link, CurvedLink, OrthogonalLink } from '../../canvas/objects';
 
 const defaultOption = {
     fill: 'rgba(0, 0, 0, 0)',

@@ -3,12 +3,12 @@ import { fabric } from 'fabric';
 import Handler from './Handler';
 import { VideoObject } from '../objects/Video';
 import { ChartObject } from '../objects/Chart';
-import { IFrameObject } from '../objects/IFrame';
+import { IframeObject } from '../objects/Iframe';
 import { ElementObject } from '../objects/Element';
 
 export type ElementType = 'container' | 'script' | 'style';
 
-export type ElementObjectType = VideoObject | ChartObject | IFrameObject | ElementObject;
+export type ElementObjectType = VideoObject | ChartObject | IframeObject | ElementObject;
 
 export interface ElementCode {
     html?: string;

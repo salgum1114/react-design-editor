@@ -4,19 +4,13 @@ import debounce from 'lodash/debounce';
 import Handler from './Handler';
 import { FabricObject } from '../utils';
 
-export interface TooltipHandlerOptions {
-    onTooltip?: (el: HTMLDivElement, target?: fabric.Object) => Promise<any>;
-}
-
 class TooltipHandler {
     handler: Handler;
     tooltipEl: HTMLDivElement;
     target?: fabric.Object;
-    onTooltip: (el: HTMLDivElement, target?: fabric.Object) => Promise<any>;
 
-    constructor(handler: Handler, options: TooltipHandlerOptions) {
+    constructor(handler: Handler) {
         this.handler = handler;
-        this.onTooltip = options.onTooltip;
         if (!handler.editable) {
             this.init();
         }
@@ -37,7 +31,7 @@ class TooltipHandler {
             const tooltip = document.createElement('div');
             tooltip.className = 'rde-tooltip-right';
             let element = target.name as any;
-            const { onTooltip } = this;
+            const { onTooltip } = this.handler;
             if (onTooltip) {
                 element = await onTooltip(this.tooltipEl, target);
                 if (!element) {

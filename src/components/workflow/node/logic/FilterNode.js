@@ -2,6 +2,7 @@ import { fabric } from 'fabric';
 import uuid from 'uuid/v4';
 
 import LogicNode from './LogicNode';
+import { Port } from '../../../canvas/objects';
 
 const FilterNode = fabric.util.createClass(LogicNode, {
     initialize(options) {
@@ -10,7 +11,7 @@ const FilterNode = fabric.util.createClass(LogicNode, {
     },
     createFromPort(left, top) {
         this.fromPort = this.descriptor.outPorts.map((outPort, i) => {
-            return new fabric.Rect({
+            return new Port({
                 id: outPort,
                 type: 'fromPort',
                 left: i === 0 ? left - 20 : left + 20,
@@ -36,5 +37,7 @@ const FilterNode = fabric.util.createClass(LogicNode, {
 FilterNode.fromObject = function (options, callback) {
     return callback(new FilterNode(options));
 };
+
+window.fabric.FilterNode = FilterNode;
 
 export default FilterNode;

@@ -179,7 +179,7 @@ class WorkflowEditor extends Component {
                     } else if (obj.superType === 'link') {
                         const link = {
                             fromNode: obj.fromNode.id,
-                            fromPort: obj.fromNode.type === 'BroadcastNode' ? obj.fromPortIndex : obj.fromPort,
+                            fromPort: obj.fromNode.type === 'BroadcastNode' ? obj.fromPortIndex : obj.fromPort.id,
                             toNode: obj.toNode.id,
                             properties: {
                                 left: obj.left || 0,

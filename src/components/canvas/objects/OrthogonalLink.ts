@@ -1,11 +1,13 @@
 import { fabric } from 'fabric';
 
 import Link, { LinkObject } from './Link';
+import { NodeObject } from './Node';
+import { PortObject } from './Port';
 
 const OrthogonalLink = fabric.util.createClass(Link, {
     type: 'OrthogonalLink',
     superType: 'link',
-    initialize(fromNode: any, fromPort: any, toNode: any, toPort: any, options: any) {
+    initialize(fromNode: Partial<NodeObject>, fromPort: Partial<PortObject>, toNode: Partial<NodeObject>, toPort: Partial<PortObject>, options: Partial<LinkObject>) {
         options = options || {};
         this.callSuper('initialize', fromNode, fromPort, toNode, toPort, options);
     },
@@ -41,7 +43,8 @@ const OrthogonalLink = fabric.util.createClass(Link, {
 });
 
 OrthogonalLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
-    return callback(new OrthogonalLink(options));
+    const { fromNode, fromPort, toNode, toPort } = options;
+    return callback(new OrthogonalLink(fromNode, fromPort, toNode, toPort, options));
 };
 
 window.fabric.OrthogonalLink = OrthogonalLink;

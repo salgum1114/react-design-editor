@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 
 import { NODE_COLORS } from '../../constant/constants';
-import Node from '../Node';
+import { Node } from '../../../canvas/objects';
 
 const DataNode = fabric.util.createClass(Node, {
     initialize(options) {
@@ -15,5 +15,11 @@ const DataNode = fabric.util.createClass(Node, {
 DataNode.fromObject = function (options, callback) {
     return callback(new DataNode(options));
 };
+
+window.fabric.DataNode = DataNode;
+
+window.fabric.CounterSetNode = DataNode;
+
+window.fabric.CounterGetNode = DataNode;
 
 export default DataNode;

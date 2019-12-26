@@ -5,7 +5,7 @@ import {
     Gif,
     Chart,
     Element,
-    IFrame,
+    Iframe,
     Video,
     Node,
     Link,
@@ -83,7 +83,7 @@ const CanvasObject: CanvasObjectSchema = {
         create: ({ code, ...option }: { code: Code }) => new Element(code, option),
     },
     iframe: {
-        create: ({ src, ...option }: { src: string }) => new IFrame(src, option),
+        create: ({ src, ...option }: { src: string }) => new Iframe(src, option),
     },
     video: {
         create: ({ src, file, ...option }: { src: string, file: File }) => new Video(src || file, option),

@@ -3,18 +3,13 @@ import debounce from 'lodash/debounce';
 
 import { Handler } from '.';
 
-export interface ContextmenuHandlerOptions {
-    onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: fabric.Object) => Promise<any>;
-}
 
 class ContextmenuHandler {
     handler: Handler;
     contextmenuEl: HTMLDivElement;
-    onContext: (el: HTMLDivElement, e: React.MouseEvent, target?: fabric.Object) => Promise<any>;
 
-    constructor(handler: Handler, options: ContextmenuHandlerOptions) {
+    constructor(handler: Handler) {
         this.handler = handler;
-        this.onContext = options.onContext;
         this.init();
     }
 
@@ -33,7 +28,7 @@ class ContextmenuHandler {
      * @memberof ContextmenuHandler
      */
     public show = debounce(async (e, target) => {
-        const { onContext } = this;
+        const { onContext } = this.handler;
         while (this.contextmenuEl.hasChildNodes()) {
             this.contextmenuEl.removeChild(this.contextmenuEl.firstChild);
         }

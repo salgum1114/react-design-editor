@@ -3,6 +3,7 @@ import uuid from 'uuid/v4';
 
 import LogicNode from './LogicNode';
 import { getEllipsis } from '../../configuration/NodeConfiguration';
+import { Port } from '../../../canvas/objects';
 
 const SwitchNode = fabric.util.createClass(LogicNode, {
     initialize(options) {
@@ -101,7 +102,7 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
             } else {
                 coords = calcOdd(port, i);
             }
-            port.fromPort = new fabric.Rect({
+            port.fromPort = new Port({
                 id: port.id,
                 type: 'fromPort',
                 left: coords.left,
@@ -128,5 +129,7 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 SwitchNode.fromObject = function (options, callback) {
     return callback(new SwitchNode(options));
 };
+
+window.fabric.SwitchNode = SwitchNode;
 
 export default SwitchNode;

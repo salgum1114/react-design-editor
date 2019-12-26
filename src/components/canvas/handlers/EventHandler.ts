@@ -369,7 +369,7 @@ class EventHandler {
                 } else {
                     toPort = target;
                 }
-                if (toPort && toPort.links.some((link: any) => link.fromNode.id === this.handler.activeLine.fromNode)) {
+                if (toPort && toPort.links.some((link: any) => link.fromNode.id === this.handler.activeLine.fromNode.id)) {
                     console.warn('Duplicate connections can not be made.');
                     return;
                 }
@@ -655,7 +655,6 @@ class EventHandler {
      * @returns
      */
     public paste = (e: ClipboardEvent) => {
-        console.log(e.clipboardData);
         if (this.handler.canvas.wrapperEl !== document.activeElement) {
             return false;
         }
@@ -682,7 +681,7 @@ class EventHandler {
                                 }
                                 obj.left = obj.properties.left + grid;
                                 obj.top = obj.properties.top + grid;
-                                const createdObj = this.handler.add(obj, false, true);
+                                const createdObj = this.handler.add(obj, false, true, false);
                                 this.handler.canvas.setActiveObject(createdObj as FabricObject);
                                 this.handler.canvas.requestRenderAll();
                             } else {
@@ -699,7 +698,7 @@ class EventHandler {
                                         obj.left = obj.properties.left + grid;
                                         obj.top = obj.properties.top + grid;
                                     }
-                                    const createdObj = this.handler.add(obj, false, true);
+                                    const createdObj = this.handler.add(obj, false, true, false);
                                     if (obj.superType === 'node') {
                                         nodes.push(createdObj);
                                     } else {
@@ -712,6 +711,9 @@ class EventHandler {
                                 });
                                 this.handler.canvas.setActiveObject(activeSelection);
                                 this.handler.canvas.requestRenderAll();
+                            }
+                            if (!this.handler.transactionHandler.active) {
+                                this.handler.transactionHandler.save('paste');
                             }
                             this.handler.copy();
                         }

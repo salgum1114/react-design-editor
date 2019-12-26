@@ -40,6 +40,7 @@ import {
 } from '../utils';
 import CanvasObject from '../CanvasObject';
 import { NodeObject } from '../objects/Node';
+import { TransactionEvent } from './TransactionHandler';
 
 export interface HandlerOptions {
     /**
@@ -207,6 +208,11 @@ export interface HandlerOptions {
      * @memberof HandlerOptions
      */
     onRemove?: (target: FabricObject) => void;
+    /**
+     * @description When has been undo or redo, Called function
+     * @memberof HandlerOptions
+     */
+    onTransaction?: (transaction: TransactionEvent) => void;
 }
 
 /**
@@ -249,6 +255,7 @@ class Handler implements HandlerOptions {
     public onModified?: (target: FabricObject) => void;
     public onSelect?: (target: FabricObject) => void;
     public onRemove?: (target: FabricObject) => void;
+    public onTransaction?: (transaction: TransactionEvent) => void;
 
     public imageHandler: ImageHandler;
     public chartHandler: ChartHandler;
@@ -270,6 +277,7 @@ class Handler implements HandlerOptions {
     public eventHandler: EventHandler;
     public drawingHandler: DrawingHandler;
 
+    public objectMap: Record<string, FabricObject> = {};
     public objects: FabricObject[];
     public activeLine?: any;
     public activeShape?: any;
@@ -331,35 +339,28 @@ class Handler implements HandlerOptions {
         this.onDblClick = options.onDblClick;
         this.onSelect = options.onSelect;
         this.onRemove = options.onRemove;
+        this.onTransaction = options.onTransaction;
     }
 
     /**
      * @description Init handlers
      * @param {HandlerOptions} options
      */
-    public initHandler = (options: HandlerOptions) => {
+    public initHandler = (_options: HandlerOptions) => {
         this.imageHandler = new ImageHandler(this);
         this.chartHandler = new ChartHandler(this);
         this.elementHandler = new ElementHandler(this);
         this.cropHandler = new CropHandler(this);
         this.animationHandler = new AnimationHandler(this);
-        this.contextmenuHandler = new ContextmenuHandler(this, {
-            onContext: options.onContext,
-        });
-        this.tooltipHandler = new TooltipHandler(this, {
-            onTooltip: options.onTooltip,
-        });
-        this.zoomHandler = new ZoomHandler(this, {
-            onZoom: options.onZoom,
-        });
+        this.contextmenuHandler = new ContextmenuHandler(this);
+        this.tooltipHandler = new TooltipHandler(this);
+        this.zoomHandler = new ZoomHandler(this);
         this.workareaHandler = new WorkareaHandler(this);
         this.modeHandler = new ModeHandler(this);
         this.transactionHandler = new TransactionHandler(this);
         this.gridHandler = new GridHandler(this);
         this.portHandler = new PortHandler(this);
-        this.linkHandler = new LinkHandler(this, {
-            onAdd: options.onAdd,
-        });
+        this.linkHandler = new LinkHandler(this);
         this.nodeHandler = new NodeHandler(this);
         this.alignmentHandler = new AlignmentHandler(this);
         this.guidelineHandler = new GuidelineHandler(this);
@@ -371,18 +372,26 @@ class Handler implements HandlerOptions {
      * @description Get primary object
      * @returns {FabricObject[]}
      */
-    public getObjects = (): FabricObject[] => this.canvas.getObjects().filter((obj: FabricObject) => {
-        if (obj.id === 'workarea') {
-            return false;
-        } else if (obj.id === 'grid') {
-            return false;
-        } else if (obj.superType === 'port') {
-            return false;
-        } else if (!obj.id) {
-            return false;
+    public getObjects = (): FabricObject[] => {
+        const objects = this.canvas.getObjects().filter((obj: FabricObject) => {
+            if (obj.id === 'workarea') {
+                return false;
+            } else if (obj.id === 'grid') {
+                return false;
+            } else if (obj.superType === 'port') {
+                return false;
+            } else if (!obj.id) {
+                return false;
+            }
+            return true;
+        }) as FabricObject[];
+        if (objects.length) {
+            objects.forEach(obj => this.objectMap[obj.id] = obj);
+        } else {
+            this.objectMap = {};
         }
-        return true;
-    });
+        return objects;
+    }
 
     /**
      * @description Set key pair
@@ -649,7 +658,7 @@ class Handler implements HandlerOptions {
      * @param {boolean} [loaded=false]
      * @returns
      */
-    public add = (obj: FabricObjectOption, centered = true, loaded = false) => {
+    public add = (obj: FabricObjectOption, centered = true, loaded = false, transaction = true) => {
         const { editable, onAdd, gridOption, defaultOption } = this;
         const option: any = {
             hasControls: editable,
@@ -674,7 +683,7 @@ class Handler implements HandlerOptions {
         }, option);
         // Individually create canvas object
         if (obj.superType === 'link') {
-            return this.linkHandler.create(newOption);
+            return this.linkHandler.create(newOption, loaded, transaction);
         }
         if (obj.type === 'svg') {
             return this.addSVG(newOption, centered, loaded);
@@ -720,9 +729,6 @@ class Handler implements HandlerOptions {
         if (!editable && createdObj.animation && createdObj.animation.autoplay) {
             this.animationHandler.play(createdObj.id);
         }
-        if (onAdd && editable && !loaded) {
-            onAdd(createdObj);
-        }
         if (!loaded) {
             if (createdObj.superType === 'node') {
                 createdObj.setShadow({
@@ -734,8 +740,11 @@ class Handler implements HandlerOptions {
         if (gridOption.enabled) {
             this.gridHandler.setCoords(createdObj);
         }
-        if (!this.transactionHandler.active) {
+        if (!this.transactionHandler.active && transaction) {
             this.transactionHandler.save('add');
+        }
+        if (onAdd && editable && !loaded) {
+            onAdd(createdObj);
         }
         return createdObj;
     }
@@ -830,6 +839,9 @@ class Handler implements HandlerOptions {
         const activeObject = target || this.canvas.getActiveObject() as any;
         if (this.prevTarget && this.prevTarget.superType === 'link') {
             this.linkHandler.remove(this.prevTarget);
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('remove');
+            }
             return;
         }
         if (!activeObject) {
@@ -1205,6 +1217,9 @@ class Handler implements HandlerOptions {
                 this.clipboard = activeSelection;
                 this.canvas.setActiveObject(activeSelection);
                 this.canvas.renderAll();
+                if (!this.transactionHandler.active) {
+                    this.transactionHandler.save('paste');
+                }
                 return true;
             }
         }

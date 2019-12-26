@@ -8,7 +8,7 @@ import MapProperty from './MapProperty';
 import LinkProperty from './LinkProperty';
 import VideoProperty from './VideoProperty';
 import ElementProperty from './ElementProperty';
-import IFrameProperty from './IFrameProperty';
+import IframeProperty from './IframeProperty';
 import AnimationProperty from './AnimationProperty';
 import ShadowProperty from './ShadowProperty';
 import UserProperty from './UserProperty';
@@ -385,8 +385,8 @@ export default {
             component: GeneralProperty,
         },
         video: {
-            title: 'IFrame',
-            component: IFrameProperty,
+            title: 'Iframe',
+            component: IframeProperty,
         },
     },
     svg: {

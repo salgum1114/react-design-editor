@@ -1,19 +1,22 @@
 import Handler from './Handler';
-import { FabricObject } from '../utils';
 import { CurvedLink } from '../objects';
-import { PortObject, NodeObject } from '../objects/Node';
+import { NodeObject } from '../objects/Node';
+import { PortObject } from '../objects/Port';
+import { LinkObject } from '../objects/Link';
 
-export interface LinkHandlerOptions {
-    onAdd?: (object: FabricObject) => void;
+interface LinkOption {
+    type: string;
+    fromNode: string;
+    fromPort: string;
+    toNode: string;
+    toPort: string;
 }
 
 class LinkHandler {
     handler: Handler;
-    onAdd?: (object: FabricObject) => void;
 
-    constructor(handler: Handler, options: LinkHandlerOptions) {
+    constructor(handler: Handler) {
         this.handler = handler;
-        this.onAdd = options.onAdd;
     }
 
     init = (target: any) => {
@@ -22,11 +25,11 @@ class LinkHandler {
             return;
         }
         this.handler.interactionMode = 'link';
-        const { left, top } = target;
-        // const points = [left, top, left, top];
-        const fromPort = { left, top };
+        const { left, top, nodeId, id } = target;
+        const fromPort = { left, top, id };
         const toPort = { left, top };
-        this.handler.activeLine = new CurvedLink(target.nodeId, fromPort, null, toPort, {
+        const fromNode = this.handler.objectMap[nodeId]
+        this.handler.activeLine = new CurvedLink(fromNode, fromPort, null, toPort, {
             strokeWidth: 2,
             fill: '#999999',
             stroke: '#999999',
@@ -37,8 +40,6 @@ class LinkHandler {
             hasBorders: false,
             hasControls: false,
             evented: false,
-            fromNode: target.nodeId,
-            fromPort: target.id,
         });
         this.handler.canvas.add(this.handler.activeLine);
     }
@@ -61,34 +62,34 @@ class LinkHandler {
         }
         const link = {
             type: 'curvedLink',
-            fromNode: this.handler.activeLine.fromNode,
-            fromPort: this.handler.activeLine.fromPort,
+            fromNode: this.handler.activeLine.fromNode.id,
+            fromPort: this.handler.activeLine.fromPort.id,
             toNode: target.nodeId,
             toPort: target.id,
         };
-        this.create(link, true);
         this.finish();
+        this.create(link, true);
     }
 
-    create = (link: any, init = false, transaction = true) => {
-        const fromNode = this.handler.findById(link.fromNode) as NodeObject;
+    create = (link: LinkOption, init = false, transaction = true) => {
+        const fromNode = this.handler.objectMap[link.fromNode] as NodeObject;
         const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPort || !port.id)[0];
-        const toNode = this.handler.findById(link.toNode) as NodeObject;
+        const toNode = this.handler.objectMap[link.toNode] as NodeObject;
         const { toPort } = toNode;
-        const createdObj = this.handler.fabricObjects[link.type].create(fromNode, fromPort, toNode, toPort, { ...link });
+        const createdObj = this.handler.fabricObjects[link.type].create(fromNode, fromPort, toNode, toPort, { ...link }) as LinkObject;
         this.handler.canvas.add(createdObj);
         this.handler.objects = this.handler.getObjects();
         const { editable } = this.handler;
-        if (this.onAdd && editable && init) {
-            this.onAdd(createdObj);
+        if (this.handler.onAdd && editable && init) {
+            this.handler.onAdd(createdObj);
         }
         this.handler.canvas.renderAll();
         createdObj.setPort(fromNode, fromPort, toNode, toPort);
         this.handler.portHandler.setCoords(fromNode);
         this.handler.portHandler.setCoords(toNode);
         this.handler.canvas.requestRenderAll();
-        if (transaction) {
-            this.handler.transactionHandler.save(createdObj, 'add');
+        if (!this.handler.transactionHandler.active && transaction) {
+            this.handler.transactionHandler.save('add');
         }
         return createdObj;
     }
@@ -103,7 +104,7 @@ class LinkHandler {
         link.setCoords();
     }
 
-    removeFrom = (link: any) => {
+    removeFrom = (link: LinkObject) => {
         if (link.fromNode.fromPort.length) {
             let index = -1;
             link.fromNode.fromPort.forEach((port: any) => {
@@ -124,7 +125,7 @@ class LinkHandler {
         }
     }
 
-    removeTo = (link: any) => {
+    removeTo = (link: LinkObject) => {
         if (link.toNode.toPort.links.length) {
             let index = -1;
             link.toNode.toPort.links.some((portLink: any, i: number) => {
@@ -155,7 +156,7 @@ class LinkHandler {
             this.removeAll(link);
         }
         this.handler.canvas.remove(link);
-        this.handler.removeOriginById(link.id);
+        this.handler.objects = this.handler.getObjects();
     }
 
     alreadyConnect = (target: any) => {
@@ -166,7 +167,7 @@ class LinkHandler {
     }
 
     duplicate = (target: any) => {
-        if (target.links.some((link: any) => link.fromNode.id === this.handler.activeLine.fromNode)) {
+        if (target.links.some((link: any) => link.fromNode === this.handler.activeLine.fromNode)) {
             console.warn('Duplicate connections can not be made.');
             return;
         }

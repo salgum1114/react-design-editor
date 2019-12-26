@@ -3,17 +3,11 @@ import { fabric } from 'fabric';
 import Handler from './Handler';
 import { VideoObject } from '../objects/Video';
 
-export interface ZoomHandlerOptions {
-    onZoom?: (zoomRatio: number) => void;
-}
-
 class ZoomHandler {
     handler?: Handler;
-    onZoom?: (zoomRatio: number) => void;
 
-    constructor(handler: Handler, options: ZoomHandlerOptions) {
+    constructor(handler: Handler) {
         this.handler = handler;
-        this.onZoom = options.onZoom;
     }
 
     /**
@@ -43,8 +37,8 @@ class ZoomHandler {
                 }
             }
         });
-        if (this.onZoom) {
-            this.onZoom(zoomRatio);
+        if (this.handler.onZoom) {
+            this.handler.onZoom(zoomRatio);
         }
     }
 

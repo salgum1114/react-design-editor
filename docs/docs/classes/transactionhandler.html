@@ -87,8 +87,12 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#active" class="tsd-kind-icon">active</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#handler" class="tsd-kind-icon">handler</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#redo" class="tsd-kind-icon">redo</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#redos" class="tsd-kind-icon">redos</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#state" class="tsd-kind-icon">state</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#undo" class="tsd-kind-icon">undo</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#undos" class="tsd-kind-icon">undos</a></li>
 							</ul>
 						</section>
@@ -96,9 +100,8 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#init" class="tsd-kind-icon">init</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#redo" class="tsd-kind-icon">redo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#replay" class="tsd-kind-icon">replay</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#save" class="tsd-kind-icon">save</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#undo" class="tsd-kind-icon">undo</a></li>
 							</ul>
 						</section>
 					</div>
@@ -116,7 +119,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:8</li>
+									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:50</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -133,32 +136,90 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="active" class="tsd-anchor"></a>
+					<h3>active</h3>
+					<div class="tsd-signature tsd-kind-icon">active<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:49</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="handler" class="tsd-anchor"></a>
 					<h3>handler</h3>
 					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="handler.html" class="tsd-signature-type">Handler</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:6</li>
+							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:46</li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="redo" class="tsd-anchor"></a>
+					<h3>redo</h3>
+					<div class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> =&nbsp;throttle(() &#x3D;&gt; {const redo &#x3D; this.redos.pop();if (!redo) {return;}this.undos.push({type: &#x27;undo&#x27;,json: JSON.stringify(this.state),});this.replay(redo);}, 100)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:120</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>description</dt>
+							<dd><p>Redo transaction</p>
+							</dd>
+							<dt>returns</dt>
+							<dd></dd>
+						</dl>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="redos" class="tsd-anchor"></a>
 					<h3>redos</h3>
-					<div class="tsd-signature tsd-kind-icon">redos<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
+					<div class="tsd-signature tsd-kind-icon">redos<span class="tsd-signature-symbol">:</span> <a href="../interfaces/transactionevent.html" class="tsd-signature-type">TransactionEvent</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:7</li>
+							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:47</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="undos" class="tsd-anchor"></a>
-					<h3>undos</h3>
-					<div class="tsd-signature tsd-kind-icon">undos<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div>
+					<a name="state" class="tsd-anchor"></a>
+					<h3>state</h3>
+					<div class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">:</span> <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:8</li>
+							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:50</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="undo" class="tsd-anchor"></a>
+					<h3>undo</h3>
+					<div class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> =&nbsp;throttle(() &#x3D;&gt; {const undo &#x3D; this.undos.pop();if (!undo) {return;}this.redos.push({type: &#x27;redo&#x27;,json: JSON.stringify(this.state),});this.replay(undo);}, 100)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:104</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>description</dt>
+							<dd><p>Undo transaction</p>
+							</dd>
+							<dt>returns</dt>
+							<dd></dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a name="undos" class="tsd-anchor"></a>
+					<h3>undos</h3>
+					<div class="tsd-signature tsd-kind-icon">undos<span class="tsd-signature-symbol">:</span> <a href="../interfaces/transactionevent.html" class="tsd-signature-type">TransactionEvent</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:48</li>
 						</ul>
 					</aside>
 				</section>
@@ -175,7 +236,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:17</li>
+									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:59</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -183,42 +244,22 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="redo" class="tsd-anchor"></a>
-					<h3>redo</h3>
+					<a name="replay" class="tsd-anchor"></a>
+					<h3>replay</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">replay<span class="tsd-signature-symbol">(</span>transaction<span class="tsd-signature-symbol">: </span><a href="../interfaces/transactionevent.html" class="tsd-signature-type">TransactionEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:106</li>
-								</ul>
-							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="save" class="tsd-anchor"></a>
-					<h3>save</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">save<span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, type<span class="tsd-signature-symbol">: </span><a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:28</li>
+									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:135</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>target: <span class="tsd-signature-type">any</span></h5>
-								</li>
-								<li>
-									<h5>type: <a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a></h5>
+									<h5>transaction: <a href="../interfaces/transactionevent.html" class="tsd-signature-type">TransactionEvent</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -226,19 +267,31 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="undo" class="tsd-anchor"></a>
-					<h3>undo</h3>
+					<a name="save" class="tsd-anchor"></a>
+					<h3>save</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+						<li class="tsd-signature tsd-kind-icon">save<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a>, canvasJSON<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, _isWorkarea<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:73</li>
+									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:71</li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>type: <a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> canvasJSON: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> _isWorkarea: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;true</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -263,10 +316,22 @@
 								<a href="transactionhandler.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="transactionhandler.html#active" class="tsd-kind-icon">active</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#handler" class="tsd-kind-icon">handler</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="transactionhandler.html#redo" class="tsd-kind-icon">redo</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#redos" class="tsd-kind-icon">redos</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="transactionhandler.html#state" class="tsd-kind-icon">state</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+								<a href="transactionhandler.html#undo" class="tsd-kind-icon">undo</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#undos" class="tsd-kind-icon">undos</a>
@@ -275,13 +340,10 @@
 								<a href="transactionhandler.html#init" class="tsd-kind-icon">init</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="transactionhandler.html#redo" class="tsd-kind-icon">redo</a>
+								<a href="transactionhandler.html#replay" class="tsd-kind-icon">replay</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#save" class="tsd-kind-icon">save</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="transactionhandler.html#undo" class="tsd-kind-icon">undo</a>
 							</li>
 						</ul>
 					</li>
