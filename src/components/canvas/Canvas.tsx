@@ -34,6 +34,9 @@ const defaultKeyboardEvent = {
 };
 
 const defaultPropertiesToInclude = [
+    'id',
+    'name',
+    'locke',
     'editable',
 ];
 
@@ -80,7 +83,18 @@ class Canvas extends Component<CanvasProps> {
     }
 
     componentDidMount() {
-        const { editable, canvasOption, width, height, keyEvent, guidelineOption, defaultOption, responsive, propertiesToInclude, ...other } = this.props;
+        const {
+            editable,
+            canvasOption,
+            width,
+            height,
+            keyEvent,
+            guidelineOption,
+            defaultOption,
+            responsive,
+            propertiesToInclude,
+            ...other
+        } = this.props;
         const { id } = this.state;
         if (responsive) {
             this.createObserver();

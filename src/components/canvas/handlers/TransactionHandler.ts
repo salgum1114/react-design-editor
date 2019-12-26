@@ -1,11 +1,53 @@
-import Handler from './Handler';
+import { fabric } from 'fabric';
+import throttle from 'lodash/throttle';
 
-export type TransactionType = 'add' | 'remove' | 'moved' | 'scaled' | 'rotated' | 'skewed';
+import Handler from './Handler';
+import { FabricObject } from '../utils';
+import { NodeObject } from '../objects/Node';
+import { LinkObject } from '../objects/Link';
+
+export type TransactionType = 'add'
+| 'remove'
+| 'moved'
+| 'scaled'
+| 'rotated'
+| 'skewed'
+| 'group'
+| 'ungroup'
+| 'paste'
+| 'bringForward'
+| 'bringToFront'
+| 'sendBackwards'
+| 'sendToBack'
+| 'redo'
+| 'undo'
+;
+
+export interface TransactionTransform {
+    scaleX?: number;
+    scaleY?: number;
+    skewX?: number;
+    skewY?: number;
+    angle?: number;
+    left?: number;
+    top?: number;
+    flipX?: number;
+    flipY?: number;
+    originX?: string;
+    originY?: string;
+}
+
+export interface TransactionEvent {
+    json: string;
+    type: TransactionType;
+}
 
 class TransactionHandler {
     handler: Handler;
-    redos: any[];
-    undos: any[];
+    redos: TransactionEvent[];
+    undos: TransactionEvent[];
+    active: boolean = false;
+    state: FabricObject[] = [];
 
     constructor(handler: Handler) {
         this.handler = handler;
@@ -21,116 +63,110 @@ class TransactionHandler {
 
     /**
      * @description Save transaction
-     * @param {FabricObject} target
      * @param {TransactionType} type
+     * @param {*} [canvasJSON]
+     * @param {boolean} [isWorkarea=true]
      * @returns
      */
-    save = (target: any, type: TransactionType) => {
-        if (!type) {
-            console.warn('Must enter the transaction type');
+    save = (type: TransactionType, canvasJSON?: any, _isWorkarea: boolean = true) => {
+        if (!this.handler.keyEvent.transaction) {
             return;
         }
-        const undo = {
-            type,
-        } as any;
-        if (target.superType === 'node') {
-            undo.target = {
-                id: target.id,
-                name: target.name,
-                description: target.description,
-                superType: target.superType,
-                type: target.type,
-                nodeClazz: target.nodeClazz,
-                configuration: target.configuration,
-                properties: {
-                    left: target.left || 0,
-                    top: target.top || 0,
-                    iconName: target.descriptor.icon,
-                },
-            };
-        } else if (target.superType === 'link') {
-            undo.target = {
-                id: target.id,
-                type: target.type,
-                superType: target.superType,
-                fromNode: target.fromNode.id,
-                fromPort: target.fromPort,
-                toNode: target.toNode.id,
-            };
+        try {
+            if (this.state) {
+                const json = JSON.stringify(this.state);
+                this.redos = [];
+                this.undos.push({
+                    type,
+                    json,
+                });
+            }
+            const { objects }: { objects: FabricObject[] } = canvasJSON || this.handler.canvas.toJSON(this.handler.propertiesToInclude);
+            this.state = objects.filter(obj => {
+                if (obj.id === 'workarea') {
+                    return false;
+                } else if (obj.id === 'grid') {
+                    return false;
+                } else if (obj.superType === 'port') {
+                    return false;
+                }
+                return true;
+            });
+        } catch (error) {
+            console.error(error);
         }
-        // else if (target.type === 'activeSelection') {
-
-        // } else {
-
-        // }
-        this.undos.push(undo);
     }
 
     /**
      * @description Undo transaction
-     * @returns {any}
+     * @returns
      */
-    undo = () => {
+    undo = throttle(() => {
         const undo = this.undos.pop();
         if (!undo) {
-            return false;
+            return;
         }
-        const { target, type } = undo;
-        if (type === 'add') {
-            if (target.superType === 'link') {
-                const findObject = this.handler.findById(target.id);
-                this.handler.linkHandler.remove(findObject);
-            } else {
-                this.handler.removeById(target.id);
-            }
-        } else if (type === 'remove') {
-            if (target.superType === 'node') {
-                target.left = target.properties.left;
-                target.top = target.properties.top;
-            }
-            this.handler.add({ ...target, id: null }, false, true);
-        }
-        // else if (type === 'moved') {
-        // } else if (type === 'scaled') {
-        // } else if (type === 'rotated') {
-        // } else if (type === 'skewed') {
-        // }
-        this.redos.push(undo);
-        return undo;
-    }
+        this.redos.push({
+            type: 'redo',
+            json: JSON.stringify(this.state),
+        });
+        this.replay(undo);
+    }, 100);
 
     /**
      * @description Redo transaction
-     * @returns {any}
+     * @returns
      */
-    redo = () => {
+    redo = throttle(() => {
         const redo = this.redos.pop();
         if (!redo) {
-            return false;
+            return;
         }
-        const { target, type } = redo;
-        if (type === 'add') {
-            if (target.superType === 'link') {
-                this.handler.linkHandler.remove(target);
-            } else {
-                this.handler.removeById(target.id);
-            }
-            this.redos.push({
-                target,
-                type: 'remove',
+        this.undos.push({
+            type: 'undo',
+            json: JSON.stringify(this.state),
+        });
+        this.replay(redo);
+    }, 100)
+
+    /**
+     * @description Replay transaction
+     */
+    replay = (transaction: TransactionEvent) => {
+        const objects = JSON.parse(transaction.json) as FabricObject[];
+        this.state = objects;
+        this.active = true;
+        this.handler.canvas.renderOnAddRemove = false;
+        this.handler.clear();
+        this.handler.canvas.discardActiveObject();
+        fabric.util.enlivenObjects(objects, (enlivenObjects: FabricObject[]) => {
+            enlivenObjects.forEach(obj => {
+                const targetIndex = this.handler.canvas._objects.length;
+                if (obj.superType === 'node') {
+                    this.handler.canvas.insertAt(obj, targetIndex, false);
+                    this.handler.portHandler.create(obj as NodeObject);
+                } else if (obj.superType === 'link') {
+                    const link = obj as LinkObject;
+                    this.handler.objects = this.handler.getObjects();
+                    this.handler.linkHandler.create({
+                        type: 'curvedLink',
+                        fromNode: link.fromNode.id,
+                        fromPort: link.fromPort.id,
+                        toNode: link.toNode.id,
+                        toPort: link.toPort.id,
+                    });
+                } else {
+                    this.handler.canvas.insertAt(obj, targetIndex, false);
+                }
             });
-        }
-        // else if (type === 'remove') {
-        //     if (target.superType === 'link') {
-        //     } else {
-        //     }
-        // } else if (type === 'moved') {
-        // } else if (type === 'scaled') {
-        // } else if (type === 'rotated') {
-        // } else if (type === 'skewed') {
-        // }
-        this.undos.push(redo);
-        return redo;
+            this.handler.canvas.renderOnAddRemove = true;
+            this.active = false;
+            this.handler.canvas.renderAll();
+            this.handler.objects = this.handler.getObjects();
+            if (this.handler.onTransaction) {
+                this.handler.onTransaction(transaction);
+            }
+        }, null);
     }
 }
 

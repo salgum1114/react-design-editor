@@ -97,7 +97,8 @@ const Chart = fabric.util.createClass(fabric.Rect, {
                         pointer-events: ${editable ? 'none' : 'auto'};`,
             }) as HTMLDivElement;
             this.createChart(chartOption);
-            this.container.appendChild(this.element);
+            const container = document.getElementById(this.container);
+            container.appendChild(this.element);
         }
     },
 });
@@ -105,5 +106,7 @@ const Chart = fabric.util.createClass(fabric.Rect, {
 Chart.fromObject = (options: ChartObject, callback: (obj: ChartObject) => any) => {
     return callback(new Chart(options.chartOption, options));
 };
+
+window.fabric.Chart = Chart;
 
 export default Chart;

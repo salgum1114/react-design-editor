@@ -45,7 +45,7 @@ class WorkareaHandler {
     public init = () => {
         const { workareaOption } = this.handler;
         const mergedWorkareaOption = Object.assign({}, defaultWorkareaOption, workareaOption);
-        const image = new Image();
+        const image = new Image(mergedWorkareaOption.width, mergedWorkareaOption.height);
         image.width = mergedWorkareaOption.width;
         image.height = mergedWorkareaOption.height;
         this.handler.workarea = new fabric.Image(image, mergedWorkareaOption) as WorkareaObject;

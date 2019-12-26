@@ -4,6 +4,7 @@ import i18next from 'i18next';
 
 import { FabricObject } from '../utils';
 import { LinkObject } from './Link';
+import Port, { PortObject } from './Port';
 
 export const NODE_COLORS = {
     TRIGGER: {
@@ -49,12 +50,6 @@ export const getEllipsis = (text: string, length: number) => {
 };
 
 export type NodeType = 'TRIGGER' | 'LOGIC' | 'DATA' | 'ACTION';
-
-export interface PortObject extends FabricObject<fabric.Rect> {
-    links?: LinkObject[];
-    nodeId?: string;
-    enabled?: boolean;
-}
 
 export interface NodeObject extends FabricObject<fabric.Group> {
     errorFlag?: fabric.IText;
@@ -198,7 +193,7 @@ const Node = fabric.util.createClass(fabric.Group, {
     },
     createToPort(left: number, top: number) {
         if (this.descriptor.inEnabled) {
-            this.toPort = new fabric.Rect({
+            this.toPort = new Port({
                 id: 'defaultInPort',
                 type: 'toPort',
                 ...this.toPortOption(),
@@ -223,16 +218,16 @@ const Node = fabric.util.createClass(fabric.Group, {
         return this.fromPort;
     },
     singlePort(portOption: any) {
-        const fromPort = new fabric.Rect({
+        const fromPort = new Port({
             id: 'defaultFromPort',
             type: 'fromPort',
             ...portOption,
-        });
+        })
         return [fromPort];
     },
     staticPort(portOption: any) {
         return this.descriptor.outPorts.map((outPort: any, i: number) => {
-            return new fabric.Rect({
+            return new Port({
                 id: outPort,
                 type: 'fromPort',
                 ...portOption,
@@ -249,7 +244,7 @@ const Node = fabric.util.createClass(fabric.Group, {
         return [];
     },
     broadcastPort(portOption: any) {
-        const fromPort = new fabric.Rect({
+        const fromPort = new Port({
             id: 'broadcastFromPort',
             type: 'fromPort',
             ...portOption,
@@ -281,5 +276,14 @@ const Node = fabric.util.createClass(fabric.Group, {
 Node.fromObject = (options: NodeObject, callback: (obj: NodeObject) => any) => {
     return callback(new Node(options));
 };
+
+// @ts-ignore
+window.fabric.FromPort = Port;
+
+// @ts-ignore
+window.fabric.ToPort = Port;
+
+// @ts-ignore
+window.fabric.Node = Node;
 
 export default Node;

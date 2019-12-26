@@ -108,6 +108,7 @@ class ImageMapEditor extends Component {
     canvasHandlers = {
         onAdd: (target) => {
             const { editing } = this.state;
+            this.forceUpdate();
             if (!editing) {
                 this.changeEditing(true);
             }
@@ -154,6 +155,7 @@ class ImageMapEditor extends Component {
         },
         onModified: debounce(() => {
             const { editing } = this.state;
+            this.forceUpdate();
             if (!editing) {
                 this.changeEditing(true);
             }
@@ -176,7 +178,6 @@ class ImageMapEditor extends Component {
             }
             if (changedKey === 'width' || changedKey === 'height') {
                 this.canvasRef.handler.scaleToResize(allValues.width, allValues.height);
-                this.canvasRef.handler.transactionHandler.save(selectedItem, 'modified');
                 return;
             }
             if (changedKey === 'locked') {
@@ -422,6 +423,9 @@ class ImageMapEditor extends Component {
                 </Menu>
             );
         },
+        onTransaction: (transaction) => {
+            this.forceUpdate();
+        },
     }
 
     handlers = {
@@ -602,6 +606,7 @@ class ImageMapEditor extends Component {
             onTooltip,
             onClick,
             onContext,
+            onTransaction,
         } = this.canvasHandlers;
         const {
             onChangePreview,
@@ -696,6 +701,10 @@ class ImageMapEditor extends Component {
                             onTooltip={onTooltip}
                             onClick={onClick}
                             onContext={onContext}
+                            onTransaction={onTransaction}
+                            keyEvent={{
+                                transaction: true,
+                            }}
                         />
                     </div>
                     <div className="rde-editor-footer-toolbar">

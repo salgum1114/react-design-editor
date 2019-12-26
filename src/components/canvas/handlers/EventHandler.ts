@@ -22,9 +22,11 @@ class EventHandler {
             this.handler.canvas.on({
                 'object:modified': this.modified,
                 'object:scaling': this.scaling,
+                'object:scaled': this.scaled,
                 'object:moving': this.moving,
                 'object:moved': this.moved,
                 'object:rotating': this.rotating,
+                'object:rotated': this.rotated,
                 'mouse:wheel': this.mousewheel,
                 'mouse:down': this.mousedown,
                 'mouse:move': this.mousemove,
@@ -138,7 +140,7 @@ class EventHandler {
      * @returns
      */
     public modified = (opt: FabricEvent) => {
-        const { target } = opt as any;
+        const { target } = opt;
         if (!target) {
             return;
         }
@@ -195,8 +197,11 @@ class EventHandler {
      * @param {FabricEvent} opt
      */
     public moved = (opt: FabricEvent) => {
-        const { target } = opt as any;
+        const { target } = opt;
         this.handler.gridHandler.setCoords(target);
+        if (!this.handler.transactionHandler.active) {
+            this.handler.transactionHandler.save('moved');
+        }
         if (target.superType === 'element') {
             const { id } = target;
             const el = this.handler.elementHandler.findById(id);
@@ -229,6 +234,16 @@ class EventHandler {
     }
 
     /**
+     * @description Scaled object
+     * @param {FabricEvent} opt
+     */
+    public scaled = (_opt: FabricEvent) => {
+        if (!this.handler.transactionHandler.active) {
+            this.handler.transactionHandler.save('scaled');
+        }
+    }
+
+    /**
      * @description Rotating object
      * @param {FabricEvent} opt
      */
@@ -239,6 +254,16 @@ class EventHandler {
             const el = this.handler.elementHandler.findById(id);
             // update the element
             this.handler.elementHandler.setScaleOrAngle(el, target);
+        }
+    }
+
+    /**
+     * @description Rotated object
+     * @param {FabricEvent} opt
+     */
+    public rotated = (_opt: FabricEvent) => {
+        if (!this.handler.transactionHandler.active) {
+            this.handler.transactionHandler.save('rotated');
         }
     }
 
@@ -344,7 +369,7 @@ class EventHandler {
                 } else {
                     toPort = target;
                 }
-                if (toPort && toPort.links.some((link: any) => link.fromNode.id === this.handler.activeLine.fromNode)) {
+                if (toPort && toPort.links.some((link: any) => link.fromNode.id === this.handler.activeLine.fromNode.id)) {
                     console.warn('Duplicate connections can not be made.');
                     return;
                 }
@@ -630,7 +655,6 @@ class EventHandler {
      * @returns
      */
     public paste = (e: ClipboardEvent) => {
-        console.log(e.clipboardData);
         if (this.handler.canvas.wrapperEl !== document.activeElement) {
             return false;
         }
@@ -657,7 +681,7 @@ class EventHandler {
                                 }
                                 obj.left = obj.properties.left + grid;
                                 obj.top = obj.properties.top + grid;
-                                const createdObj = this.handler.add(obj, false, true);
+                                const createdObj = this.handler.add(obj, false, true, false);
                                 this.handler.canvas.setActiveObject(createdObj as FabricObject);
                                 this.handler.canvas.requestRenderAll();
                             } else {
@@ -674,7 +698,7 @@ class EventHandler {
                                         obj.left = obj.properties.left + grid;
                                         obj.top = obj.properties.top + grid;
                                     }
-                                    const createdObj = this.handler.add(obj, false, true);
+                                    const createdObj = this.handler.add(obj, false, true, false);
                                     if (obj.superType === 'node') {
                                         nodes.push(createdObj);
                                     } else {
@@ -687,6 +711,9 @@ class EventHandler {
                                 });
                                 this.handler.canvas.setActiveObject(activeSelection);
                                 this.handler.canvas.requestRenderAll();
+                            }
+                            if (!this.handler.transactionHandler.active) {
+                                this.handler.transactionHandler.save('paste');
                             }
                             this.handler.copy();
                         }
@@ -779,10 +806,10 @@ class EventHandler {
             } else if (e.ctrlKey && e.keyCode === 86 && paste && !clipboard) {
                 e.preventDefault();
                 this.handler.paste();
-            } else if (e.keyCode === 90 && transaction) {
+            } else if (e.ctrlKey && e.keyCode === 90 && transaction) {
                 e.preventDefault();
                 this.handler.transactionHandler.undo();
-            } else if (e.keyCode === 88 && transaction) {
+            } else if (e.ctrlKey && e.keyCode === 89 && transaction) {
                 e.preventDefault();
                 this.handler.transactionHandler.redo();
             }

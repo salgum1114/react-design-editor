@@ -1,5 +1,6 @@
 import Handler from './Handler';
-import { NodeObject, PortObject } from '../objects/Node';
+import { NodeObject } from '../objects/Node';
+import { PortObject } from '../objects/Port';
 
 class PortHandler {
     handler?: Handler;
@@ -21,7 +22,7 @@ class PortHandler {
         if (toPort) {
             toPort.on('mouseover', () => {
                 if (this.handler.interactionMode === 'link' && this.handler.activeLine && this.handler.activeLine.class === 'line') {
-                    if (toPort.links.some(link => link.fromNode.id ===  this.handler.activeLine.fromNode)) {
+                    if (toPort.links.some(link => link.fromNode ===  this.handler.activeLine.fromNode)) {
                         toPort.set({
                             fill: toPort.errorFill,
                         });
@@ -98,7 +99,7 @@ class PortHandler {
             target.toPort.setCoords();
             if (target.toPort.links.length) {
                 target.toPort.links.forEach(link => {
-                    const fromPort = link.fromNode.fromPort.filter(port => port.id === link.fromPort)[0];
+                    const fromPort = link.fromNode.fromPort.filter(port => port.id === link.fromPort.id)[0];
                     this.handler.linkHandler.setCoords(fromPort.left, fromPort.top, toCoords.left, toCoords.top, link);
                 });
             }
@@ -156,14 +157,18 @@ class PortHandler {
         this.create(target);
         toPort.links.forEach((link: any) => {
             link.fromNode = link.fromNode.id;
+            link.fromPort = link.fromPort.id;
             link.toNode = target.toPort.nodeId;
+            link.toPort = target.toPort.id;
             this.handler.linkHandler.create(link);
         });
         fromPort.filter(op => target.fromPort.some(np => np.id === op.id)).forEach(port => {
             port.links.forEach((link: any) => {
-                if (link.fromPort === port.id) {
+                if (link.fromPort.id === port.id) {
                     link.fromNode = port.nodeId;
+                    link.fromPort = port.id;
                     link.toNode = link.toNode.id;
+                    link.toPort = link.toPort.id;
                     this.handler.linkHandler.create(link);
                     this.setCoords(target);
                 }

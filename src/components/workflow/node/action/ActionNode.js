@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 
 import { NODE_COLORS } from '../../constant/constants';
-import Node from '../Node';
+import { Node } from '../../../canvas/objects';
 
 const ActionNode = fabric.util.createClass(Node, {
     initialize(options) {
@@ -16,5 +16,11 @@ const ActionNode = fabric.util.createClass(Node, {
 ActionNode.fromObject = function (options, callback) {
     return callback(new ActionNode(options));
 };
+
+window.fabric.ActionNode = ActionNode;
+
+window.fabric.DebugNode = ActionNode;
+
+window.fabric.EmailNode = ActionNode;
 
 export default ActionNode;

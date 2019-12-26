@@ -85,7 +85,8 @@ const Element = fabric.util.createClass(fabric.Rect, {
             this.scriptEl.innerHTML = js;
             document.head.appendChild(this.scriptEl);
 
-            this.container.appendChild(this.element);
+            const container = document.getElementById(this.container);
+            container.appendChild(this.element);
             this.element.innerHTML = html;
         }
     },
@@ -94,5 +95,7 @@ const Element = fabric.util.createClass(fabric.Rect, {
 Element.fromObject = (options: ElementObject, callback: (obj: ElementObject) => any) => {
     return callback(new Element(options.code, options));
 };
+
+window.fabric.Element = Element;
 
 export default Element;

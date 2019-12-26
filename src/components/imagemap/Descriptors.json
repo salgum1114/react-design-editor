@@ -51,8 +51,6 @@
             },
             "option": {
                 "type": "image",
-                "width": 120,
-                "height": 120,
                 "name": "New image",
                 "src": "./images/sample/transparentBg.png"
             }
@@ -198,7 +196,7 @@
             }
         },
         {
-			"name": "IFrame",
+			"name": "Iframe",
 			"description": "",
 			"type": "element",
 			"icon": {

@@ -39,4 +39,6 @@ VirtualButtonNode.fromObject = function (options, callback) {
     return callback(new VirtualButtonNode(options));
 };
 
+window.fabric.VirtualButtonNode = VirtualButtonNode;
+
 export default VirtualButtonNode;

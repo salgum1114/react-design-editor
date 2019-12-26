@@ -179,7 +179,7 @@ class WorkflowEditor extends Component {
                     } else if (obj.superType === 'link') {
                         const link = {
                             fromNode: obj.fromNode.id,
-                            fromPort: obj.fromNode.type === 'BroadcastNode' ? obj.fromPortIndex : obj.fromPort,
+                            fromPort: obj.fromNode.type === 'BroadcastNode' ? obj.fromPortIndex : obj.fromPort.id,
                             toNode: obj.toNode.id,
                             properties: {
                                 left: obj.left || 0,
@@ -348,7 +348,7 @@ class WorkflowEditor extends Component {
                         onAdd={onAdd}
                         onRemove={onRemove}
                         onModified={onModified}
-                        keyEvent={{ move: false, transaction: false, clipboard: true }}
+                        keyEvent={{ move: false, transaction: true, clipboard: true }}
                     />
                     <div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
                         <WorkflowNodeConfigurations

@@ -2,16 +2,17 @@ import { fabric } from 'fabric';
 import uuid from 'uuid';
 
 import { FabricObject } from '../utils';
-import { OUT_PORT_TYPE, NodeObject, PortObject } from './Node';
+import { OUT_PORT_TYPE, NodeObject } from './Node';
+import { PortObject } from './Port';
 
 export interface LinkObject extends FabricObject<fabric.Line> {
     fromNode?: NodeObject;
     toNode?: NodeObject;
-    fromPort?: string;
-    toPort?: string;
+    fromPort?: PortObject;
+    toPort?: PortObject;
     fromPortIndex?: number;
-    setPort?: (fromNode: any, fromPort: string, toNode: any, toPort: string) => void;
-    setPortEnabled?: (node: any, port: any, enabled: any) => void;
+    setPort?: (fromNode: NodeObject, fromPort: PortObject, toNode: NodeObject, toPort: PortObject) => void;
+    setPortEnabled?: (node: NodeObject, port: PortObject, enabled: boolean) => void;
 }
 
 const Link = fabric.util.createClass(fabric.Line, {
@@ -19,9 +20,6 @@ const Link = fabric.util.createClass(fabric.Line, {
     superType: 'link',
     initialize(fromNode: Partial<NodeObject>, fromPort: Partial<PortObject>, toNode: Partial<NodeObject>, toPort: Partial<PortObject>, options: Partial<LinkObject>) {
         options = options || {};
-        if (fromNode.type === 'BroadcastNode') {
-            fromPort = fromNode.fromPort[0];
-        }
         const coords = [fromPort.left, fromPort.top, toPort.left, toPort.top];
         this.callSuper('initialize', coords, options);
         this.set({
@@ -38,15 +36,14 @@ const Link = fabric.util.createClass(fabric.Line, {
             perPixelTargetFind: true,
             lockMovementX: true,
             lockMovementY: true,
-            fromNode,
-            toNode,
             selectable: false,
+            fromNode,
+            fromPort,
+            toNode,
+            toPort,
         });
     },
     setPort(fromNode: NodeObject, fromPort: PortObject, _toNode: NodeObject, toPort: PortObject) {
-        if (fromNode.type === 'BroadcastNode') {
-            fromPort = fromNode.fromPort[0];
-        }
         fromPort.links.push(this);
         toPort.links.push(this);
         this.setPortEnabled(fromNode, fromPort, false);
@@ -62,7 +59,7 @@ const Link = fabric.util.createClass(fabric.Line, {
             }
             port.links.forEach((link, index) => {
                 link.set({
-                    fromPort: 'broadcastFromPort',
+                    fromPort: port,
                     fromPortIndex: index,
                 });
             });
@@ -106,7 +103,10 @@ const Link = fabric.util.createClass(fabric.Line, {
 });
 
 Link.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
-    return callback(new Link(options));
+    const { fromNode, fromPort, toNode, toPort } = options;
+    return callback(new Link(fromNode, fromPort, toNode, toPort, options));
 };
+
+window.fabric.Link = Link;
 
 export default Link;

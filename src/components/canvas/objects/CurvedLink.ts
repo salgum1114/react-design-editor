@@ -1,11 +1,13 @@
 import { fabric } from 'fabric';
 
 import Link, { LinkObject } from './Link';
+import { NodeObject } from './Node';
+import { PortObject } from './Port';
 
 const CurvedLink = fabric.util.createClass(Link, {
     type: 'curvedLink',
     superType: 'link',
-    initialize(fromNode: any, fromPort: any, toNode: any, toPort: any, options: any) {
+    initialize(fromNode: Partial<NodeObject>, fromPort: Partial<PortObject>, toNode: Partial<NodeObject>, toPort: Partial<PortObject>, options: Partial<LinkObject>) {
         options = options || {};
         this.callSuper('initialize', fromNode, fromPort, toNode, toPort, options);
     },
@@ -38,7 +40,10 @@ const CurvedLink = fabric.util.createClass(Link, {
 });
 
 CurvedLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
-    return callback(new CurvedLink(options));
+    const { fromNode, fromPort, toNode, toPort } = options;
+    return callback(new CurvedLink(fromNode, fromPort, toNode, toPort, options));
 };
+
+window.fabric.CurvedLink = CurvedLink;
 
 export default CurvedLink;

@@ -5,6 +5,7 @@ import i18n from 'i18next';
 import { FlexBox, FlexItem } from '../flex';
 import ImageMapList from './ImageMapList';
 import { CommonButton } from '../common';
+import Icon from '../icon/Icon';
 
 class ImageMapHeaderToolbar extends Component {
     static propTypes = {
@@ -159,22 +160,22 @@ class ImageMapHeaderToolbar extends Component {
                     />
                 </FlexItem>
                 <FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
-                    {/* <Button
+                    <CommonButton
                         className="rde-action-btn"
-                        disabled={isCropping || (canvasRef && !canvasRef.undos.length)}
+                        disabled={isCropping || (canvasRef && !canvasRef.handler.transactionHandler.undos.length)}
                         onClick={() => canvasRef.handler.transactionHandler.undo()}
                     >
                         <Icon name="undo-alt" style={{ marginRight: 8 }} />
-                        {'Undo'}
-                    </Button>
-                    <Button
+                        Undo
+                    </CommonButton>
+                    <CommonButton
                         className="rde-action-btn"
-                        disabled={isCropping || (canvasRef && !canvasRef.redos.length)}
+                        disabled={isCropping || (canvasRef && !canvasRef.handler.transactionHandler.redos.length)}
                         onClick={() => canvasRef.handler.transactionHandler.redo()}
                     >
-                        {'Redo'}
+                        Redo
                         <Icon name="redo-alt" style={{ marginLeft: 8 }} />
-                    </Button> */}
+                    </CommonButton>
                 </FlexItem>
             </FlexBox>
         );

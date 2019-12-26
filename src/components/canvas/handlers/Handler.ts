@@ -40,6 +40,7 @@ import {
 } from '../utils';
 import CanvasObject from '../CanvasObject';
 import { NodeObject } from '../objects/Node';
+import { TransactionEvent } from './TransactionHandler';
 
 export interface HandlerOptions {
     /**
@@ -207,6 +208,11 @@ export interface HandlerOptions {
      * @memberof HandlerOptions
      */
     onRemove?: (target: FabricObject) => void;
+    /**
+     * @description When has been undo or redo, Called function
+     * @memberof HandlerOptions
+     */
+    onTransaction?: (transaction: TransactionEvent) => void;
 }
 
 /**
@@ -249,6 +255,7 @@ class Handler implements HandlerOptions {
     public onModified?: (target: FabricObject) => void;
     public onSelect?: (target: FabricObject) => void;
     public onRemove?: (target: FabricObject) => void;
+    public onTransaction?: (transaction: TransactionEvent) => void;
 
     public imageHandler: ImageHandler;
     public chartHandler: ChartHandler;
@@ -270,6 +277,7 @@ class Handler implements HandlerOptions {
     public eventHandler: EventHandler;
     public drawingHandler: DrawingHandler;
 
+    public objectMap: Record<string, FabricObject> = {};
     public objects: FabricObject[];
     public activeLine?: any;
     public activeShape?: any;
@@ -331,35 +339,28 @@ class Handler implements HandlerOptions {
         this.onDblClick = options.onDblClick;
         this.onSelect = options.onSelect;
         this.onRemove = options.onRemove;
+        this.onTransaction = options.onTransaction;
     }
 
     /**
      * @description Init handlers
      * @param {HandlerOptions} options
      */
-    public initHandler = (options: HandlerOptions) => {
+    public initHandler = (_options: HandlerOptions) => {
         this.imageHandler = new ImageHandler(this);
         this.chartHandler = new ChartHandler(this);
         this.elementHandler = new ElementHandler(this);
         this.cropHandler = new CropHandler(this);
         this.animationHandler = new AnimationHandler(this);
-        this.contextmenuHandler = new ContextmenuHandler(this, {
-            onContext: options.onContext,
-        });
-        this.tooltipHandler = new TooltipHandler(this, {
-            onTooltip: options.onTooltip,
-        });
-        this.zoomHandler = new ZoomHandler(this, {
-            onZoom: options.onZoom,
-        });
+        this.contextmenuHandler = new ContextmenuHandler(this);
+        this.tooltipHandler = new TooltipHandler(this);
+        this.zoomHandler = new ZoomHandler(this);
         this.workareaHandler = new WorkareaHandler(this);
         this.modeHandler = new ModeHandler(this);
         this.transactionHandler = new TransactionHandler(this);
         this.gridHandler = new GridHandler(this);
         this.portHandler = new PortHandler(this);
-        this.linkHandler = new LinkHandler(this, {
-            onAdd: options.onAdd,
-        });
+        this.linkHandler = new LinkHandler(this);
         this.nodeHandler = new NodeHandler(this);
         this.alignmentHandler = new AlignmentHandler(this);
         this.guidelineHandler = new GuidelineHandler(this);
@@ -371,18 +372,26 @@ class Handler implements HandlerOptions {
      * @description Get primary object
      * @returns {FabricObject[]}
      */
-    public getObjects = (): FabricObject[] => this.canvas.getObjects().filter((obj: FabricObject) => {
-        if (obj.id === 'workarea') {
-            return false;
-        } else if (obj.id === 'grid') {
-            return false;
-        } else if (obj.superType === 'port') {
-            return false;
-        } else if (!obj.id) {
-            return false;
+    public getObjects = (): FabricObject[] => {
+        const objects = this.canvas.getObjects().filter((obj: FabricObject) => {
+            if (obj.id === 'workarea') {
+                return false;
+            } else if (obj.id === 'grid') {
+                return false;
+            } else if (obj.superType === 'port') {
+                return false;
+            } else if (!obj.id) {
+                return false;
+            }
+            return true;
+        }) as FabricObject[];
+        if (objects.length) {
+            objects.forEach(obj => this.objectMap[obj.id] = obj);
+        } else {
+            this.objectMap = {};
         }
-        return true;
-    });
+        return objects;
+    }
 
     /**
      * @description Set key pair
@@ -466,11 +475,11 @@ class Handler implements HandlerOptions {
     /**
      * @description Set key pair by object
      * @param {FabricObject} obj
-     * @param {keyof FabricObject} key
+     * @param {string} key
      * @param {*} value
      * @returns
      */
-    public setByObject = (obj: any, key: keyof FabricObject, value: any) => {
+    public setByObject = (obj: any, key: string, value: any) => {
         if (!obj) {
             return;
         }
@@ -504,10 +513,10 @@ class Handler implements HandlerOptions {
     /**
      * @description Set key pair by id
      * @param {string} id
-     * @param {keyof FabricObject} key
+     * @param {string} key
      * @param {*} value
      */
-    public setById = (id: string, key: keyof FabricObject, value: any) => {
+    public setById = (id: string, key: string, value: any) => {
         const findObject = this.findById(id);
         this.setByObject(findObject, key, value);
     }
@@ -515,10 +524,10 @@ class Handler implements HandlerOptions {
     /**
      * @description Set partial by object
      * @param {FabricObject} obj
-     * @param {any} option
+     * @param {FabricObjectOption} option
      * @returns
      */
-    public setByPartial = (obj: any, option: any) => {
+    public setByPartial = (obj: FabricObject, option: FabricObjectOption) => {
         if (!obj) {
             return;
         }
@@ -550,12 +559,12 @@ class Handler implements HandlerOptions {
      * @param {fabric.Shadow} option
      * @returns
      */
-    public setShadow = (option: fabric.Shadow) => {
+    public setShadow = (option: fabric.IShadowOptions) => {
         const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (!activeObject) {
             return;
         }
-        activeObject.setShadow(option);
+        activeObject.setShadow(option as fabric.Shadow);
         this.canvas.requestRenderAll();
         const { onModified } = this;
         if (onModified) {
@@ -649,7 +658,7 @@ class Handler implements HandlerOptions {
      * @param {boolean} [loaded=false]
      * @returns
      */
-    public add = (obj: FabricObjectOption, centered = true, loaded = false) => {
+    public add = (obj: FabricObjectOption, centered = true, loaded = false, transaction = true) => {
         const { editable, onAdd, gridOption, defaultOption } = this;
         const option: any = {
             hasControls: editable,
@@ -669,12 +678,12 @@ class Handler implements HandlerOptions {
             option.scaleY = this.workarea.scaleY;
         }
         const newOption = Object.assign({}, defaultOption, obj, {
-            container: this.container,
+            container: this.container.id,
             editable,
         }, option);
         // Individually create canvas object
         if (obj.superType === 'link') {
-            return this.linkHandler.create(newOption);
+            return this.linkHandler.create(newOption, loaded, transaction);
         }
         if (obj.type === 'svg') {
             return this.addSVG(newOption, centered, loaded);
@@ -720,9 +729,6 @@ class Handler implements HandlerOptions {
         if (!editable && createdObj.animation && createdObj.animation.autoplay) {
             this.animationHandler.play(createdObj.id);
         }
-        if (onAdd && editable && !loaded) {
-            onAdd(createdObj);
-        }
         if (!loaded) {
             if (createdObj.superType === 'node') {
                 createdObj.setShadow({
@@ -733,6 +739,12 @@ class Handler implements HandlerOptions {
         }
         if (gridOption.enabled) {
             this.gridHandler.setCoords(createdObj);
+        }
+        if (!this.transactionHandler.active && transaction) {
+            this.transactionHandler.save('add');
+        }
+        if (onAdd && editable && !loaded) {
+            onAdd(createdObj);
         }
         return createdObj;
     }
@@ -757,8 +769,11 @@ class Handler implements HandlerOptions {
      */
     public addImage = (obj: FabricImage) => {
         const { defaultOption } = this;
-        const image = new Image();
         const { filters = [], ...otherOption } = obj;
+        const image = new Image();
+        if (obj.src) {
+            image.src = obj.src;
+        }
         const createdObj = new fabric.Image(image, {
             ...defaultOption,
             ...otherOption,
@@ -824,6 +839,9 @@ class Handler implements HandlerOptions {
         const activeObject = target || this.canvas.getActiveObject() as any;
         if (this.prevTarget && this.prevTarget.superType === 'link') {
             this.linkHandler.remove(this.prevTarget);
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('remove');
+            }
             return;
         }
         if (!activeObject) {
@@ -860,7 +878,6 @@ class Handler implements HandlerOptions {
                 }
             }
             this.canvas.remove(activeObject);
-            this.removeOriginById(activeObject.id);
         } else {
             const { _objects: activeObjects } = activeObject;
             const existDeleted = activeObjects.some((obj: any) => typeof obj.deletable !== 'undefined' && !obj.deletable);
@@ -892,9 +909,12 @@ class Handler implements HandlerOptions {
                     }
                 }
                 this.canvas.remove(obj);
-                this.removeOriginById(obj.id);
             });
         }
+        if (!this.transactionHandler.active) {
+            this.transactionHandler.save('remove');
+        }
+        this.objects = this.getObjects();
         const { onRemove } = this;
         if (onRemove) {
             onRemove(activeObject);
@@ -1197,6 +1217,9 @@ class Handler implements HandlerOptions {
                 this.clipboard = activeSelection;
                 this.canvas.setActiveObject(activeSelection);
                 this.canvas.renderAll();
+                if (!this.transactionHandler.active) {
+                    this.transactionHandler.save('paste');
+                }
                 return true;
             }
         }
@@ -1245,6 +1268,9 @@ class Handler implements HandlerOptions {
             this.canvas.setActiveObject(clonedObj);
             this.portHandler.create(clonedObj);
             this.canvas.requestRenderAll();
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('paste');
+            }
         }, propertiesToInclude);
         return true;
     }
@@ -1308,7 +1334,7 @@ class Handler implements HandlerOptions {
      * @returns
      */
     public findOriginById = (id: string) => {
-        let findObject;
+        let findObject: FabricObject;
         const exist = this.objects.some(obj => {
             if (obj.id === id) {
                 findObject = obj;
@@ -1318,7 +1344,7 @@ class Handler implements HandlerOptions {
         });
         if (!exist) {
             console.warn('Not found object by id.');
-            return exist;
+            return null;
         }
         return findObject;
     }
@@ -1527,8 +1553,8 @@ class Handler implements HandlerOptions {
      * @description Active selection to group
      * @returns
      */
-    public toGroup = () => {
-        const activeObject = this.canvas.getActiveObject() as fabric.ActiveSelection;
+    public toGroup = (target?: FabricObject) => {
+        const activeObject = target || this.canvas.getActiveObject() as fabric.ActiveSelection;
         if (!activeObject) {
             return;
         }
@@ -1539,21 +1565,26 @@ class Handler implements HandlerOptions {
         group.set({
             id: uuid(),
             name: 'New group',
+            type: 'group',
             ...this.defaultOption,
         });
-        const { onSelect } = this;
-        if (onSelect) {
-            onSelect(group);
+        this.objects = this.getObjects();
+        if (!this.transactionHandler.active) {
+            this.transactionHandler.save('group');
+        }
+        if (this.onSelect) {
+            this.onSelect(group);
         }
         this.canvas.renderAll();
+        return group;
     }
 
     /**
      * @description Group to active selection
      * @returns
      */
-    public toActiveSelection = () => {
-        const activeObject = this.canvas.getActiveObject() as fabric.Group;
+    public toActiveSelection = (target?: FabricObject) => {
+        const activeObject = target || this.canvas.getActiveObject() as fabric.Group;
         if (!activeObject) {
             return;
         }
@@ -1561,11 +1592,15 @@ class Handler implements HandlerOptions {
             return;
         }
         const activeSelection = activeObject.toActiveSelection();
-        const { onSelect } = this;
-        if (onSelect) {
-            onSelect(activeSelection);
+        this.objects = this.getObjects();
+        if (!this.transactionHandler.active) {
+            this.transactionHandler.save('ungroup');
+        }
+        if (this.onSelect) {
+            this.onSelect(activeSelection);
         }
         this.canvas.renderAll();
+        return activeSelection;
     }
 
     /**
@@ -1575,6 +1610,9 @@ class Handler implements HandlerOptions {
         const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (activeObject) {
             this.canvas.bringForward(activeObject);
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('bringForward');
+            }
             const { onModified } = this;
             if (onModified) {
                 onModified(activeObject);
@@ -1589,6 +1627,9 @@ class Handler implements HandlerOptions {
         const activeObject = this.canvas.getActiveObject() as FabricObject;
         if (activeObject) {
             this.canvas.bringToFront(activeObject);
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('bringToFront');
+            }
             const { onModified } = this;
             if (onModified) {
                 onModified(activeObject);
@@ -1607,6 +1648,9 @@ class Handler implements HandlerOptions {
             if (firstObject.id === activeObject.id) {
                 return;
             }
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('sendBackwards');
+            }
             this.canvas.sendBackwards(activeObject);
             const { onModified } = this;
             if (onModified) {
@@ -1623,6 +1667,9 @@ class Handler implements HandlerOptions {
         if (activeObject) {
             this.canvas.sendToBack(activeObject);
             this.canvas.sendToBack(this.canvas.getObjects()[1]);
+            if (!this.transactionHandler.active) {
+                this.transactionHandler.save('sendToBack');
+            }
             const { onModified } = this;
             if (onModified) {
                 onModified(activeObject);
@@ -1635,8 +1682,7 @@ class Handler implements HandlerOptions {
      * @param {boolean} [includeWorkarea=false]
      */
     public clear = (includeWorkarea = false) => {
-        const { canvas } = this;
-        const ids = canvas.getObjects().reduce((prev, curr: any) => {
+        const ids = this.canvas.getObjects().reduce((prev, curr: any) => {
             if (curr.superType === 'element') {
                 prev.push(curr.id);
                 return prev;
@@ -1645,18 +1691,18 @@ class Handler implements HandlerOptions {
         }, []);
         this.elementHandler.removeByIds(ids);
         if (includeWorkarea) {
-            canvas.clear();
+            this.canvas.clear();
             this.workarea = null;
         } else {
-            canvas.getObjects().forEach((obj: any) => {
-                if (obj.id === 'grid') {
+            this.canvas.getObjects().forEach((obj: any) => {
+                if (obj.id === 'grid' || obj.id === 'workarea') {
                     return;
                 }
-                if (obj.id !== 'workarea') {
-                    canvas.remove(obj);
-                }
+                this.canvas.remove(obj);
             });
         }
+        this.objects = this.getObjects();
+        this.canvas.renderAll();
     }
 
     /**
