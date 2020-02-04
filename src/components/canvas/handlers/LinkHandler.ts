@@ -68,10 +68,10 @@ class LinkHandler {
             toPort: target.id,
         };
         this.finish();
-        this.create(link, true);
+        this.create(link);
     }
 
-    create = (link: LinkOption, init = false, transaction = true) => {
+    create = (link: LinkOption, loaded = false, transaction = true) => {
         const fromNode = this.handler.objectMap[link.fromNode] as NodeObject;
         const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPort || !port.id)[0];
         const toNode = this.handler.objectMap[link.toNode] as NodeObject;
@@ -80,7 +80,7 @@ class LinkHandler {
         this.handler.canvas.add(createdObj);
         this.handler.objects = this.handler.getObjects();
         const { editable } = this.handler;
-        if (this.handler.onAdd && editable && init) {
+        if (this.handler.onAdd && editable && !loaded) {
             this.handler.onAdd(createdObj);
         }
         this.handler.canvas.renderAll();

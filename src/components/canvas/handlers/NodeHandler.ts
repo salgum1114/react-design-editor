@@ -202,8 +202,8 @@ class NodeHandler {
             if (object.superType === 'link') {
                 const { fromNode, toNode } = object;
                 if (fromNode && toNode) {
-                    const fromIndex = targetObjects.findIndex((obj: FabricObject) => obj.id === fromNode);
-                    const toIndex = targetObjects.findIndex((obj: FabricObject) => obj.id === toNode);
+                    const fromIndex = targetObjects.findIndex((obj: FabricObject) => obj.id === fromNode.id);
+                    const toIndex = targetObjects.findIndex((obj: FabricObject) => obj.id === toNode.id);
                     if ((fromIndex >= 0 && targetObjects[fromIndex]) && (toIndex >= 0 && targetObjects[toIndex])) {
                         if (lastObject) {
                             object.setShadow({
