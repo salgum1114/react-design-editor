@@ -1534,7 +1534,7 @@ class Handler implements HandlerOptions {
                 if (obj.superType === 'element') {
                     obj.id = uuid();
                 }
-                this.add(obj, false, true);
+                this.add(obj, false, true, false);
                 this.canvas.renderAll();
             });
             if (callback) {
@@ -1547,7 +1547,7 @@ class Handler implements HandlerOptions {
     /**
      * @description Export json
      */
-    public exportJSON = () => this.canvas.toDatalessJSON(this.propertiesToInclude)
+    public exportJSON = () => this.canvas.toJSON(this.propertiesToInclude)
 
     /**
      * @description Active selection to group

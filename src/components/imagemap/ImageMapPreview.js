@@ -14,9 +14,6 @@ class ImageMapPreview extends Component {
         onAction: PropTypes.func,
     }
 
-    componentDidMount() {
-    }
-
     render() {
         const { onChangePreview, onTooltip, onClick, preview } = this.props;
         const previewClassName = classnames('rde-preview', { preview });

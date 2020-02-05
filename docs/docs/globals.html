@@ -172,6 +172,7 @@
 								<li class="tsd-kind-variable tsd-is-external"><a href="globals.html#filter_types" class="tsd-kind-icon">FILTER_<wbr>TYPES</a></li>
 								<li class="tsd-kind-variable tsd-is-external"><a href="globals.html#gif" class="tsd-kind-icon">Gif</a></li>
 								<li class="tsd-kind-variable tsd-is-external"><a href="globals.html#iframe" class="tsd-kind-icon">Iframe</a></li>
+								<li class="tsd-kind-variable tsd-is-external"><a href="globals.html#line" class="tsd-kind-icon">Line</a></li>
 								<li class="tsd-kind-variable tsd-is-external"><a href="globals.html#link" class="tsd-kind-icon">Link</a></li>
 								<li class="tsd-kind-variable tsd-is-external"><a href="globals.html#node" class="tsd-kind-icon">Node</a></li>
 								<li class="tsd-kind-variable tsd-is-external"><a href="globals.html#orthogonallink" class="tsd-kind-icon">Orthogonal<wbr>Link</a></li>
@@ -408,7 +409,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-external">
 					<a name="arrow" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> Arrow</h3>
-					<div class="tsd-signature tsd-kind-icon">Arrow<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;fabric.util.createClass(fabric.Line, {type: &#x27;arrow&#x27;,superType: &#x27;drawing&#x27;,initialize(points: any, options: any) {console.log(points, options);options &#x3D; options || {};this.callSuper(&#x27;initialize&#x27;, points, options);},_render(ctx: CanvasRenderingContext2D) {this.callSuper(&#x27;_render&#x27;, ctx);ctx.save();const xDiff &#x3D; this.x2 - this.x1;const yDiff &#x3D; this.y2 - this.y1;const angle &#x3D; Math.atan2(yDiff, xDiff);ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);ctx.rotate(angle);ctx.beginPath();// Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)ctx.moveTo(5, 0);ctx.lineTo(-5, 5);ctx.lineTo(-5, -5);ctx.closePath();ctx.fillStyle &#x3D; this.stroke;ctx.fill();ctx.restore();},})</span></div>
+					<div class="tsd-signature tsd-kind-icon">Arrow<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;fabric.util.createClass(fabric.Line, {type: &#x27;arrow&#x27;,superType: &#x27;drawing&#x27;,initialize(points: any, options: any) {if (!points) {const { x1, x2, y1, y2 } &#x3D; options;points &#x3D; [x1, y1, x2, y2];}options &#x3D; options || {};this.callSuper(&#x27;initialize&#x27;, points, options);},_render(ctx: CanvasRenderingContext2D) {this.callSuper(&#x27;_render&#x27;, ctx);ctx.save();const xDiff &#x3D; this.x2 - this.x1;const yDiff &#x3D; this.y2 - this.y1;const angle &#x3D; Math.atan2(yDiff, xDiff);ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);ctx.rotate(angle);ctx.beginPath();// Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)ctx.moveTo(5, 0);ctx.lineTo(-5, 5);ctx.lineTo(-5, -5);ctx.closePath();ctx.fillStyle &#x3D; this.stroke;ctx.fill();ctx.restore();},})</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in src/components/canvas/objects/Arrow.ts:3</li>
@@ -482,6 +483,16 @@
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in src/components/canvas/objects/Iframe.ts:12</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-external">
+					<a name="line" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> Line</h3>
+					<div class="tsd-signature tsd-kind-icon">Line<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;fabric.util.createClass(fabric.Line, {type: &#x27;line&#x27;,superType: &#x27;drawing&#x27;,initialize(points: any, options: any) {if (!points) {const { x1, x2, y1, y2 } &#x3D; options;points &#x3D; [x1, y1, x2, y2];}options &#x3D; options || {};this.callSuper(&#x27;initialize&#x27;, points, options);},_render(ctx: CanvasRenderingContext2D) {this.callSuper(&#x27;_render&#x27;, ctx);},})</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/components/canvas/objects/Line.ts:3</li>
 						</ul>
 					</aside>
 				</section>
@@ -594,7 +605,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/CanvasObject.ts:26</li>
+									<li>Defined in src/components/canvas/CanvasObject.ts:27</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -676,7 +687,7 @@
 					<div class="tsd-signature tsd-kind-icon">Canvas<wbr>Object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/CanvasObject.ts:28</li>
+							<li>Defined in src/components/canvas/CanvasObject.ts:29</li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal tsd-is-external">
@@ -685,7 +696,7 @@
 						<div class="tsd-signature tsd-kind-icon">arrow<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:62</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:63</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -698,7 +709,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:63</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:64</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -726,7 +737,7 @@
 						<div class="tsd-signature tsd-kind-icon">chart<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:65</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:66</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -739,7 +750,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:66</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:67</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -759,7 +770,7 @@
 						<div class="tsd-signature tsd-kind-icon">circle<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:41</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:42</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -772,7 +783,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:42</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:43</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -792,7 +803,7 @@
 						<div class="tsd-signature tsd-kind-icon">curved<wbr>Link<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:100</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:101</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -805,7 +816,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:101</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:102</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -837,7 +848,7 @@
 						<div class="tsd-signature tsd-kind-icon">element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:82</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:83</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -850,7 +861,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:83</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:84</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -878,7 +889,7 @@
 						<div class="tsd-signature tsd-kind-icon">gif<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:91</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:92</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -891,7 +902,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:92</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:93</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -911,7 +922,7 @@
 						<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:29</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:30</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -924,7 +935,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:30</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:31</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -952,7 +963,7 @@
 						<div class="tsd-signature tsd-kind-icon">i-<wbr>text<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:32</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:33</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -965,7 +976,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:33</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:34</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -993,7 +1004,7 @@
 						<div class="tsd-signature tsd-kind-icon">iframe<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:85</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:86</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1006,7 +1017,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:86</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:87</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1034,7 +1045,7 @@
 						<div class="tsd-signature tsd-kind-icon">image<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:47</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:48</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1047,7 +1058,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:48</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:49</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1075,20 +1086,20 @@
 						<div class="tsd-signature tsd-kind-icon">line<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:59</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:60</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
 							<a name="canvasobject.line.create-10" class="tsd-anchor"></a>
 							<h3>create</h3>
 							<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
-								<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Line</span></li>
+								<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>__namedParameters<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 							</ul>
 							<ul class="tsd-descriptions">
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:60</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:61</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1105,7 +1116,7 @@
 											</ul>
 										</li>
 									</ul>
-									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Line</span></h4>
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 								</li>
 							</ul>
 						</section>
@@ -1116,7 +1127,7 @@
 						<div class="tsd-signature tsd-kind-icon">link<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:97</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:98</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1129,7 +1140,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:98</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:99</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1161,7 +1172,7 @@
 						<div class="tsd-signature tsd-kind-icon">node<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:94</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:95</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1174,7 +1185,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:95</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:96</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1194,7 +1205,7 @@
 						<div class="tsd-signature tsd-kind-icon">orthogonal<wbr>Link<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:103</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:104</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1207,7 +1218,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:104</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:105</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1239,7 +1250,7 @@
 						<div class="tsd-signature tsd-kind-icon">polygon<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:53</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:54</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1252,7 +1263,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:54</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:55</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1280,7 +1291,7 @@
 						<div class="tsd-signature tsd-kind-icon">rect<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:44</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:45</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1293,7 +1304,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:45</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:46</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1313,7 +1324,7 @@
 						<div class="tsd-signature tsd-kind-icon">textbox<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:35</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:36</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1326,7 +1337,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:36</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:37</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1354,7 +1365,7 @@
 						<div class="tsd-signature tsd-kind-icon">triangle<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:38</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:39</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1367,7 +1378,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:39</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:40</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1387,7 +1398,7 @@
 						<div class="tsd-signature tsd-kind-icon">video<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/CanvasObject.ts:88</li>
+								<li>Defined in src/components/canvas/CanvasObject.ts:89</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-external">
@@ -1400,7 +1411,7 @@
 								<li class="tsd-description">
 									<aside class="tsd-sources">
 										<ul>
-											<li>Defined in src/components/canvas/CanvasObject.ts:89</li>
+											<li>Defined in src/components/canvas/CanvasObject.ts:90</li>
 										</ul>
 									</aside>
 									<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2383,6 +2394,9 @@
 					</li>
 					<li class=" tsd-kind-variable tsd-is-external">
 						<a href="globals.html#iframe" class="tsd-kind-icon">Iframe</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-external">
+						<a href="globals.html#line" class="tsd-kind-icon">Line</a>
 					</li>
 					<li class=" tsd-kind-variable tsd-is-external">
 						<a href="globals.html#link" class="tsd-kind-icon">Link</a>

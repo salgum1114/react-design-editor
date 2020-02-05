@@ -4,7 +4,10 @@ const Arrow = fabric.util.createClass(fabric.Line, {
     type: 'arrow',
     superType: 'drawing',
     initialize(points: any, options: any) {
-        console.log(points, options);
+        if (!points) {
+            const { x1, x2, y1, y2 } = options;
+            points = [x1, y1, x2, y2];
+        }
         options = options || {};
         this.callSuper('initialize', points, options);
     },
