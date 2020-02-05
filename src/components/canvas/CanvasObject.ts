@@ -11,6 +11,7 @@ import {
     Link,
     CurvedLink,
     OrthogonalLink,
+    Line,
 } from './objects';
 import { FabricObject } from './utils';
 import { Code } from './objects/Element';
@@ -57,7 +58,7 @@ const CanvasObject: CanvasObjectSchema = {
         }),
     },
     line: {
-        create: ({ points, ...option }: { points: any }) => new fabric.Line(points, option),
+        create: ({ points, ...option }: { points: any }) => new Line(points, option),
     },
     arrow: {
         create: ({ points, ...option }: { points: any }) => new Arrow(points, option),

@@ -3,7 +3,7 @@ import uuid from 'uuid';
 
 import Handler from './Handler';
 import { FabricEvent, FabricObject } from '../utils';
-import { Arrow } from '../objects';
+import { Arrow, Line } from '../objects';
 
 class DrawingHandler {
     handler: Handler;
@@ -236,7 +236,7 @@ class DrawingHandler {
                 });
             }
             const points = [x, y, x, y];
-            this.handler.activeLine = new fabric.Line(points, {
+            this.handler.activeLine = new Line(points, {
                 strokeWidth: 2,
                 fill: '#999999',
                 stroke: '#999999',
