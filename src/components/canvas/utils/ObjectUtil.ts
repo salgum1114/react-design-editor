@@ -177,25 +177,72 @@ export type FabricGroup = FabricObject<fabric.Group> & {
 };
 
 export type FabricImage = FabricObject & Omit<fabric.Image, 'filters'> & {
+    /**
+     * @description Image URL
+     * @type {string}
+     */
     src?: string;
+    /**
+     * @description Image File or Blob
+     * @type {File}
+     */
     file?: File;
+    /**
+     * @description Image Filter
+     * @type {IFilter[]}
+     */
     filters?: IFilter[];
 }
 
 export interface FabricElement extends FabricObject<fabric.Rect> {
+    /**
+     * @description Wrapped Element
+     * @type {HTMLDivElement}
+     */
     container: HTMLDivElement;
+    /**
+     * @description Target Element
+     * @type {HTMLDivElement}
+     */
     element: HTMLDivElement;
+    /**
+     * @description Source of Element Object
+     */
     setSource: (source: any) => void;
 }
 
 export type WorkareaLayout = 'fixed' | 'responsive' | 'fullscreen';
 
 export interface WorkareaOption {
+    /**
+     * @description Image URL
+     * @type {string}
+     */
     src?: string;
+    /**
+     * @description Image File or Blbo
+     * @type {File}
+     */
     file?: File;
+    /**
+     * @description Workarea Width
+     * @type {number}
+     */
     width?: number;
+    /**
+     * @description Workarea Height
+     * @type {number}
+     */
     height?: number;
+    /**
+     * @description Workarea Background Color
+     * @type {string}
+     */
     backgroundColor?: string;
+    /**
+     * @description Workarea Layout Type
+     * @type {WorkareaLayout}
+     */
     layout?: WorkareaLayout;
 }
 

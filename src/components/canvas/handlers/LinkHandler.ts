@@ -3,6 +3,7 @@ import { CurvedLink } from '../objects';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
 import { LinkObject } from '../objects/Link';
+import warning from 'warning';
 
 interface LinkOption {
     type: string;
@@ -19,13 +20,15 @@ class LinkHandler {
         this.handler = handler;
     }
 
-    init = (target: any) => {
-        if (!target.enabled) {
-            console.warn('A connected node already exists.');
+    init = (port: PortObject) => {
+        if (this.isDrawing()) {
+            return;
+        }
+        if (this.isConnected(port)) {
             return;
         }
         this.handler.interactionMode = 'link';
-        const { left, top, nodeId, id } = target;
+        const { left, top, nodeId, id } = port;
         const fromPort = { left, top, id };
         const toPort = { left, top };
         const fromNode = this.handler.objectMap[nodeId]
@@ -51,21 +54,23 @@ class LinkHandler {
         this.handler.canvas.renderAll();
     }
 
-    generate = (target: PortObject) => {
-        if (!target) {
-            console.warn('Does not exist target.');
+    generate = (port: PortObject) => {
+        if (!port) {
+            warning(!port, 'Does not exist target port.');
             return;
         }
-        if (target.nodeId === this.handler.activeLine.fromNode) {
-            console.warn('Can not select the same node.');
+        if (this.isDuplicate(port)) {
+            return;
+        }
+        if (this.isSameNode(port)) {
             return;
         }
         const link = {
             type: 'curvedLink',
             fromNode: this.handler.activeLine.fromNode.id,
             fromPort: this.handler.activeLine.fromPort.id,
-            toNode: target.nodeId,
-            toPort: target.id,
+            toNode: port.nodeId,
+            toPort: port.id,
         };
         this.finish();
         this.create(link);
@@ -159,25 +164,27 @@ class LinkHandler {
         this.handler.objects = this.handler.getObjects();
     }
 
-    alreadyConnect = (target: any) => {
-        if (!target.enabled) {
-            console.warn('A connected node already exists.');
-            return;
-        }
+    isConnected = (port: PortObject) => {
+        warning(port.enabled, 'A connected node already exists.');
+        return !port.enabled;
     }
 
-    duplicate = (target: any) => {
-        if (target.links.some((link: any) => link.fromNode === this.handler.activeLine.fromNode)) {
-            console.warn('Duplicate connections can not be made.');
-            return;
-        }
+    isSameNode = (port: PortObject) => {
+        const validate = port.nodeId === this.handler.activeLine.fromNode.id;
+        warning(!validate, 'Cannot select the same node.');
+        return validate;
     }
 
-    alreadyDrawing = () => {
-        if (this.handler.interactionMode === 'link' && this.handler.activeLine) {
-            console.warn('Already drawing links.');
-            return;
-        }
+    isDuplicate = (port: PortObject) => {
+        const validate = port.links.some(link => link.fromNode.id === this.handler.activeLine.fromNode.id);
+        warning(!validate, 'Duplicate connections cannot be made.');
+        return validate;
+    }
+
+    isDrawing = () => {
+        const validate = this.handler.interactionMode === 'link' && this.handler.activeLine;
+        warning(!validate, 'Already drawing links.');
+        return validate;
     }
 }
 

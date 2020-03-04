@@ -347,7 +347,7 @@ class EventHandler {
             this.panning = true;
             return;
         }
-        const target = event.target as any;
+        const { target } = event;
         if (editable) {
             if (this.handler.prevTarget && this.handler.prevTarget.superType === 'link') {
                 this.handler.prevTarget.set({
@@ -355,10 +355,6 @@ class EventHandler {
                 });
             }
             if (target && target.type === 'fromPort') {
-                if (this.handler.interactionMode === 'link' && this.handler.activeLine) {
-                    console.warn('Already drawing links.');
-                    return;
-                }
                 this.handler.linkHandler.init(target);
                 return;
             }
@@ -368,10 +364,6 @@ class EventHandler {
                     toPort = target.toPort;
                 } else {
                     toPort = target;
-                }
-                if (toPort && toPort.links.some((link: any) => link.fromNode.id === this.handler.activeLine.fromNode.id)) {
-                    console.warn('Duplicate connections can not be made.');
-                    return;
                 }
                 this.handler.linkHandler.generate(toPort);
                 return;
