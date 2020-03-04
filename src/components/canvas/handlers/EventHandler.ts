@@ -757,7 +757,6 @@ class EventHandler {
         if (!Object.keys(keyEvent).length) {
             return;
         }
-        e.stopPropagation();
         const { move, all, copy, paste, esc, del, clipboard, transaction } = keyEvent;
         if (this.handler.interactionHandler.isDrawingMode()) {
             if (esc && e.keyCode === 27) {
@@ -775,8 +774,8 @@ class EventHandler {
         }
         if (e.keyCode === 87) {
             this.keyCode = e.keyCode;
-        } else if (e.keyCode === 81) {
-            this.keyCode = e.keyCode;
+            this.handler.interactionHandler.grab();
+            return;
         }
         if (e.altKey && editable) {
             this.handler.interactionHandler.grab();
@@ -793,7 +792,9 @@ class EventHandler {
             return;
         }
         if (editable) {
-            if (e.keyCode === 46 && del) {
+            if (e.keyCode === 81) {
+                this.keyCode = e.keyCode;
+            } else if (e.keyCode === 46 && del) {
                 this.handler.remove();
             } else if (e.code.includes('Arrow') && move) {
                 this.arrowmoving(e);
@@ -822,8 +823,7 @@ class EventHandler {
      * @description Key up event on canvas
      * @param {KeyboardEvent} _e
      */
-    public keyup = (e: KeyboardEvent) => {
-        e.stopPropagation();
+    public keyup = (_e: KeyboardEvent) => {
         if (this.handler.interactionHandler.isDrawingMode()) {
             return;
         }

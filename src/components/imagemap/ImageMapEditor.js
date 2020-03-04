@@ -103,6 +103,7 @@ class ImageMapEditor extends Component {
         this.setState({
             selectedItem: null,
         });
+        this.shortcutHandlers.esc();
     }
 
     canvasHandlers = {
@@ -441,7 +442,6 @@ class ImageMapEditor extends Component {
                         return true;
                     });
                     this.preview.canvasRef.handler.importJSON(data);
-                    this.shortcutHandlers.esc();
                     return;
                 }
                 this.preview.canvasRef.handler.clear();
@@ -561,8 +561,6 @@ class ImageMapEditor extends Component {
                 if (e.keyCode === 27) {
                     this.handlers.onChangePreview(false);
                 }
-            }, {
-                once: true,
             });
         },
     }
@@ -722,7 +720,7 @@ class ImageMapEditor extends Component {
                     styles={styles}
                     dataSources={dataSources}
                 />
-                {/* <ImageMapPreview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onClick={onClick} /> */}
+                <ImageMapPreview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onClick={onClick} />
             </div>
         );
         return (
