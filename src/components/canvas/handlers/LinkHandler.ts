@@ -1,18 +1,44 @@
+import warning from 'warning';
+
 import Handler from './Handler';
 import { CurvedLink } from '../objects';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
 import { LinkObject } from '../objects/Link';
-import warning from 'warning';
 
-interface LinkOption {
+export interface LinkOption {
+    /**
+     * @description Link Type
+     * @type {string}
+     */
     type: string;
-    fromNode: string;
-    fromPort: string;
-    toNode: string;
-    toPort: string;
+    /**
+     * @description FromNode id of Link
+     * @type {string}
+     */
+    fromNodeId?: string;
+    /**
+     * @description FromPort id of Link
+     * @type {string}
+     */
+    fromPortId?: string;
+    /**
+     * @description ToNode id of Link
+     * @type {string}
+     */
+    toNodeId?: string;
+    /**
+     * @description ToPort id of Link
+     * @type {string}
+     */
+    toPortId?: string;
 }
 
+/**
+ * @description Link Handler Class
+ * @author salgum1114
+ * @class LinkHandler
+ */
 class LinkHandler {
     handler: Handler;
 
@@ -20,6 +46,10 @@ class LinkHandler {
         this.handler = handler;
     }
 
+    /**
+     * @description On source port click, start link
+     * @param {PortObject} port
+     */
     init = (port: PortObject) => {
         if (this.isDrawing()) {
             return;
@@ -47,6 +77,9 @@ class LinkHandler {
         this.handler.canvas.add(this.handler.activeLine);
     }
 
+    /**
+     * @description End drawing link.
+     */
     finish = () => {
         this.handler.interactionMode = 'selection';
         this.handler.canvas.remove(this.handler.activeLine);
@@ -54,6 +87,10 @@ class LinkHandler {
         this.handler.canvas.renderAll();
     }
 
+    /**
+     * @description On dest port click, finish link
+     * @param {PortObject} port
+     */
     generate = (port: PortObject) => {
         if (!port) {
             warning(!port, 'Does not exist target port.');
@@ -67,19 +104,26 @@ class LinkHandler {
         }
         const link = {
             type: 'curvedLink',
-            fromNode: this.handler.activeLine.fromNode.id,
-            fromPort: this.handler.activeLine.fromPort.id,
-            toNode: port.nodeId,
-            toPort: port.id,
+            fromNodeId: this.handler.activeLine.fromNode.id,
+            fromPortId: this.handler.activeLine.fromPort.id,
+            toNodeId: port.nodeId,
+            toPortId: port.id,
         };
         this.finish();
         this.create(link);
     }
 
+    /**
+     * @description Add link in Canvas
+     * @param {LinkOption} link
+     * @param {boolean} [loaded=false]
+     * @param {boolean} [transaction=true]
+     * @returns
+     */
     create = (link: LinkOption, loaded = false, transaction = true) => {
-        const fromNode = this.handler.objectMap[link.fromNode] as NodeObject;
-        const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPort || !port.id)[0];
-        const toNode = this.handler.objectMap[link.toNode] as NodeObject;
+        const fromNode = this.handler.objectMap[link.fromNodeId] as NodeObject;
+        const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPortId || !port.id)[0];
+        const toNode = this.handler.objectMap[link.toNodeId] as NodeObject;
         const { toPort } = toNode;
         const createdObj = this.handler.fabricObjects[link.type].create(fromNode, fromPort, toNode, toPort, { ...link }) as LinkObject;
         this.handler.canvas.add(createdObj);
@@ -99,7 +143,15 @@ class LinkHandler {
         return createdObj;
     }
 
-    setCoords = (x1: any, y1: any, x2: any, y2: any, link: any) => {
+    /**
+     * @description Set coordinate of link
+     * @param {number} x1
+     * @param {number} y1
+     * @param {number} x2
+     * @param {number} y2
+     * @param {LinkObject} link
+     */
+    setCoords = (x1: number, y1: number, x2: number, y2: number, link: LinkObject) => {
         link.set({
             x1,
             y1,
@@ -109,6 +161,10 @@ class LinkHandler {
         link.setCoords();
     }
 
+    /**
+     * @description When the link is deleted, linked FromNode delete
+     * @param {LinkObject} link
+     */
     removeFrom = (link: LinkObject) => {
         if (link.fromNode.fromPort.length) {
             let index = -1;
@@ -130,6 +186,10 @@ class LinkHandler {
         }
     }
 
+    /**
+     * @description When the link is deleted, linked ToNode delete
+     * @param {LinkObject} link
+     */
     removeTo = (link: LinkObject) => {
         if (link.toNode.toPort.links.length) {
             let index = -1;
@@ -147,12 +207,21 @@ class LinkHandler {
         }
     }
 
-    removeAll = (link: any) => {
+    /**
+     * @description When the link is deleted, linked node delete
+     * @param {LinkObject} link
+     */
+    removeAll = (link: LinkObject) => {
         this.removeFrom(link);
         this.removeTo(link);
     }
 
-    remove = (link: any, type?: string) => {
+    /**
+     * @description Remove link in canvas
+     * @param {LinkObject} link
+     * @param {string} [type]
+     */
+    remove = (link: LinkObject, type?: string) => {
         if (type === 'from') {
             this.removeFrom(link);
         } else if (type === 'to') {
@@ -164,23 +233,42 @@ class LinkHandler {
         this.handler.objects = this.handler.getObjects();
     }
 
+    /**
+     * @description Check if there is a port connected
+     * @param {PortObject} port
+     * @returns
+     */
     isConnected = (port: PortObject) => {
         warning(port.enabled, 'A connected node already exists.');
         return !port.enabled;
     }
 
+    /**
+     * @description Check if select same node
+     * @param {PortObject} port
+     * @returns
+     */
     isSameNode = (port: PortObject) => {
         const validate = port.nodeId === this.handler.activeLine.fromNode.id;
         warning(!validate, 'Cannot select the same node.');
         return validate;
     }
 
+    /**
+     * @description Check if select same node
+     * @param {PortObject} port
+     * @returns
+     */
     isDuplicate = (port: PortObject) => {
         const validate = port.links.some(link => link.fromNode.id === this.handler.activeLine.fromNode.id);
         warning(!validate, 'Duplicate connections cannot be made.');
         return validate;
     }
 
+    /**
+     * @description Check if draw the link
+     * @returns
+     */
     isDrawing = () => {
         const validate = this.handler.interactionMode === 'link' && this.handler.activeLine;
         warning(!validate, 'Already drawing links.');

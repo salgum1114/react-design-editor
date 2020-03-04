@@ -49,16 +49,17 @@ class ImageMapFooterToolbar extends Component {
     /* eslint-disable react/sort-comp, react/prop-types */
     handlers = {
         selection: () => {
-            this.props.canvasRef.handler.modeHandler.selection((obj) => {
-                return {
-                    selectable: obj.superType !== 'port',
-                    evented: true,
-                };
-            });
+            if (this.props.canvasRef.handler.interactionHandler.isDrawingMode()) {
+                return;
+            }
+            this.forceUpdate();
             this.setState({ interactionMode: 'selection' });
         },
         grab: () => {
-            this.props.canvasRef.handler.modeHandler.grab();
+            if (this.props.canvasRef.handler.interactionHandler.isDrawingMode()) {
+                return;
+            }
+            this.forceUpdate();
             this.setState({ interactionMode: 'grab' });
         },
     }

@@ -12,7 +12,6 @@ import {
     TooltipHandler,
     ZoomHandler,
     WorkareaHandler,
-    ModeHandler,
     TransactionHandler,
     LinkHandler,
     AlignmentHandler,
@@ -22,6 +21,7 @@ import {
     NodeHandler,
     EventHandler,
     DrawingHandler,
+    InteractionHandler,
 } from '.';
 import {
     FabricObject,
@@ -41,120 +41,104 @@ import {
 import CanvasObject from '../CanvasObject';
 import { NodeObject } from '../objects/Node';
 import { TransactionEvent } from './TransactionHandler';
+import { LinkObject } from '../objects/Link';
+import { PortObject } from '../objects/Port';
+import { LinkOption } from './LinkHandler';
 
 export interface HandlerOptions {
     /**
      * @description Canvas id
      * @type {string}
-     * @memberof HandlerOptions
      */
     id?: string;
     /**
      * @description Canvas object
      * @type {FabricCanvas}
-     * @memberof HandlerOptions
      */
     canvas?: FabricCanvas;
     /**
      * @description Canvas parent element
      * @type {HTMLDivElement}
-     * @memberof HandlerOptions
      */
     container?: HTMLDivElement;
     /**
      * @description Canvas editable
      * @type {boolean}
-     * @memberof HandlerOptions
      */
     editable?: boolean;
     /**
      * @description Canvas interaction mode
      * @type {InteractionMode}
-     * @memberof HandlerOptions
      */
     interactionMode?: InteractionMode;
     /**
      * @description Persist properties for object
      * @type {string[]}
-     * @memberof HandlerOptions
      */
     propertiesToInclude?: string[];
     /**
      * @description Minimum zoom ratio
      * @type {number}
-     * @memberof HandlerOptions
      */
     minZoom?: number;
     /**
      * @description Maximum zoom ratio
      * @type {number}
-     * @memberof HandlerOptions
      */
     maxZoom?: number;
     /**
      * @description Workarea option
      * @type {WorkareaOption}
-     * @memberof HandlerOptions
      */
     workareaOption?: WorkareaOption;
     /**
      * @description Canvas option
      * @type {CanvasOption}
-     * @memberof HandlerOptions
      */
     canvasOption?: CanvasOption;
     /**
      * @description Grid option
      * @type {GridOption}
-     * @memberof HandlerOptions
      */
     gridOption?: GridOption;
     /**
      * @description Default option for Fabric Object
      * @type {FabricObjectOption}
-     * @memberof HandlerOptions
      */
     defaultOption?: FabricObjectOption;
     /**
      * @description Guideline option
      * @type {GuidelineOption}
-     * @memberof HandlerOptions
      */
     guidelineOption?: GuidelineOption;
     /**
      * @description Whether to use zoom
      * @type {boolean}
-     * @memberof HandlerOptions
      */
     zoomEnabled?: boolean;
     /**
      * @description ActiveSelection option
      * @type {FabricObjectOption}
-     * @memberof HandlerOptions
      */
     activeSelection?: FabricObjectOption;
     /**
      * @description Canvas width
      * @type {number}
-     * @memberof HandlerOptions
      */
     width?: number;
     /**
      * @description Canvas height
      * @type {number}
-     * @memberof HandlerOptions
      */
     height?: number;
     /**
      * @description Keyboard event in Canvas
      * @type {KeyEvent}
-     * @memberof HandlerOptions
      */
     keyEvent?: KeyEvent;
     /**
      * @description Append custom objects
      * @type {{ [key: string]: any }}
-     * @memberof HandlerOptions
      */
     fabricObjects?: {
         [key: string]: {
@@ -165,54 +149,48 @@ export interface HandlerOptions {
 
     /**
      * @description When has been added object in Canvas, Called function
-     * @memberof HandlerOptions
      */
     onAdd?: (object: FabricObject) => void;
     /**
      * @description Return contextmenu element
-     * @memberof HandlerOptions
      */
     onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject) => Promise<any> | any;
     /**
      * @description Return tooltip element
-     * @memberof HandlerOptions
      */
     onTooltip?: (el: HTMLDivElement, target?: FabricObject) => Promise<any> | any;
     /**
      * @description When zoom, Called function
-     * @memberof HandlerOptions
      */
     onZoom?: (zoomRatio: number) => void;
     /**
      * @description When clicked object, Called function
-     * @memberof HandlerOptions
      */
     onClick?: (canvas: FabricCanvas, target: FabricObject) => void;
     /**
      * @description When double clicked object, Called function
-     * @memberof HandlerOptions
      */
     onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
     /**
      * @description When modified object, Called function
-     * @memberof HandlerOptions
      */
     onModified?: (target: FabricObject) => void;
     /**
      * @description When select object, Called function
-     * @memberof HandlerOptions
      */
     onSelect?: (target: FabricObject) => void;
     /**
      * @description When has been removed object in Canvas, Called function
-     * @memberof HandlerOptions
      */
     onRemove?: (target: FabricObject) => void;
     /**
      * @description When has been undo or redo, Called function
-     * @memberof HandlerOptions
      */
     onTransaction?: (transaction: TransactionEvent) => void;
+    /**
+     * @description When has been changed interaction mode, Called function
+     */
+    onInteraction?: (interactionMode: InteractionMode) => void;
 }
 
 /**
@@ -256,6 +234,7 @@ class Handler implements HandlerOptions {
     public onSelect?: (target: FabricObject) => void;
     public onRemove?: (target: FabricObject) => void;
     public onTransaction?: (transaction: TransactionEvent) => void;
+    public onInteraction?: (interactionMode: InteractionMode) => void;
 
     public imageHandler: ImageHandler;
     public chartHandler: ChartHandler;
@@ -266,7 +245,7 @@ class Handler implements HandlerOptions {
     public tooltipHandler: TooltipHandler;
     public zoomHandler: ZoomHandler;
     public workareaHandler: WorkareaHandler;
-    public modeHandler: ModeHandler;
+    public interactionHandler: InteractionHandler;
     public transactionHandler: TransactionHandler;
     public gridHandler: GridHandler;
     public portHandler: PortHandler;
@@ -340,6 +319,7 @@ class Handler implements HandlerOptions {
         this.onSelect = options.onSelect;
         this.onRemove = options.onRemove;
         this.onTransaction = options.onTransaction;
+        this.onInteraction = options.onInteraction;
     }
 
     /**
@@ -356,7 +336,7 @@ class Handler implements HandlerOptions {
         this.tooltipHandler = new TooltipHandler(this);
         this.zoomHandler = new ZoomHandler(this);
         this.workareaHandler = new WorkareaHandler(this);
-        this.modeHandler = new ModeHandler(this);
+        this.interactionHandler = new InteractionHandler(this);
         this.transactionHandler = new TransactionHandler(this);
         this.gridHandler = new GridHandler(this);
         this.portHandler = new PortHandler(this);
@@ -838,7 +818,7 @@ class Handler implements HandlerOptions {
     public remove = (target?: FabricObject) => {
         const activeObject = target || this.canvas.getActiveObject() as any;
         if (this.prevTarget && this.prevTarget.superType === 'link') {
-            this.linkHandler.remove(this.prevTarget);
+            this.linkHandler.remove(this.prevTarget as LinkObject);
             if (!this.transactionHandler.active) {
                 this.transactionHandler.save('remove');
             }
@@ -1154,7 +1134,7 @@ class Handler implements HandlerOptions {
             if (clipboard.getObjects().some((obj: any) => obj.superType === 'node')) {
                 this.canvas.discardActiveObject();
                 const objects = [] as any[];
-                const linkObjects = [] as any[];
+                const linkObjects = [] as LinkOption[];
                 clipboard.getObjects().forEach((obj: any) => {
                     if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
                         return;
@@ -1172,9 +1152,9 @@ class Handler implements HandlerOptions {
                         });
                     }
                     if (obj.fromPort.length) {
-                        obj.fromPort.forEach((port: any) => {
+                        obj.fromPort.forEach((port: PortObject) => {
                             if (port.links.length) {
-                                port.links.forEach((link: any) => {
+                                port.links.forEach((link: LinkObject) => {
                                     const linkTarget = {
                                         fromNode: clonedObj.id,
                                         fromPort: port.id,
@@ -1202,10 +1182,10 @@ class Handler implements HandlerOptions {
                         const toNode = objects[toNodeIndex];
                         const link = {
                             type: 'curvedLink',
-                            fromNode,
-                            fromPort,
-                            toNode: toNode.id,
-                            toPort: toNode.toPort.id,
+                            fromNodeId: fromNode,
+                            fromPortId: fromPort,
+                            toNodeId: toNode.id,
+                            toPortId: toNode.toPort.id,
                         };
                         this.linkHandler.create(link);
                     });

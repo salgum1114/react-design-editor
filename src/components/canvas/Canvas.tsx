@@ -119,7 +119,7 @@ class Canvas extends Component<CanvasProps> {
         this.handler.gridHandler.init();
         if (editable) {
             this.handler.transactionHandler.init();
-            this.handler.modeHandler.selection();
+            this.handler.interactionHandler.selection();
             if (guidelineOption.enabled) {
                 this.handler.guidelineHandler.init();
             }

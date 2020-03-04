@@ -722,7 +722,7 @@ class ImageMapEditor extends Component {
                     styles={styles}
                     dataSources={dataSources}
                 />
-                <ImageMapPreview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onClick={onClick} />
+                {/* <ImageMapPreview ref={(c) => { this.preview = c; }} preview={preview} onChangePreview={onChangePreview} onTooltip={onTooltip} onClick={onClick} /> */}
             </div>
         );
         return (

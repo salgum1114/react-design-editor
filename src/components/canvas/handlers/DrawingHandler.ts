@@ -13,7 +13,7 @@ class DrawingHandler {
 
     polygon = {
         init: () => {
-            this.handler.modeHandler.drawing(null, 'polygon');
+            this.handler.interactionHandler.drawing('polygon');
             this.handler.pointArray = [];
             this.handler.lineArray = [];
             this.handler.activeLine = null;
@@ -33,7 +33,7 @@ class DrawingHandler {
             this.handler.activeLine = null;
             this.handler.activeShape = null;
             this.handler.canvas.renderAll();
-            this.handler.modeHandler.selection();
+            this.handler.interactionHandler.selection();
         },
         addPoint: (opt: FabricEvent) => {
             const { e, absolutePointer } = opt;
@@ -147,7 +147,7 @@ class DrawingHandler {
             this.handler.pointArray = [];
             this.handler.activeLine = null;
             this.handler.activeShape = null;
-            this.handler.modeHandler.selection();
+            this.handler.interactionHandler.selection();
         },
         // TODO... polygon resize
         // createResize: (target, points) => {
@@ -199,7 +199,7 @@ class DrawingHandler {
 
     line = {
         init: () => {
-            this.handler.modeHandler.drawing(null, 'line');
+            this.handler.interactionHandler.drawing('line');
             this.handler.pointArray = [];
             this.handler.activeLine = null;
         },
@@ -211,7 +211,7 @@ class DrawingHandler {
             this.handler.pointArray = [];
             this.handler.activeLine = null;
             this.handler.canvas.renderAll();
-            this.handler.modeHandler.selection();
+            this.handler.interactionHandler.selection();
         },
         addPoint: (opt: FabricEvent) => {
             const { absolutePointer } = opt;
@@ -278,13 +278,13 @@ class DrawingHandler {
             this.handler.add(option, false);
             this.handler.pointArray = [];
             this.handler.activeLine = null;
-            this.handler.modeHandler.selection();
+            this.handler.interactionHandler.selection();
         },
     }
 
     arrow = {
         init: () => {
-            this.handler.modeHandler.drawing(null, 'arrow');
+            this.handler.interactionHandler.drawing('arrow');
             this.handler.pointArray = [];
             this.handler.activeLine = null;
         },
@@ -296,7 +296,7 @@ class DrawingHandler {
             this.handler.pointArray = [];
             this.handler.activeLine = null;
             this.handler.canvas.renderAll();
-            this.handler.modeHandler.selection();
+            this.handler.interactionHandler.selection();
         },
         addPoint: (opt: FabricEvent) => {
             const { absolutePointer } = opt;
@@ -360,7 +360,7 @@ class DrawingHandler {
             this.handler.add(option, false);
             this.handler.pointArray = [];
             this.handler.activeLine = null;
-            this.handler.modeHandler.selection();
+            this.handler.interactionHandler.selection();
         },
     }
 

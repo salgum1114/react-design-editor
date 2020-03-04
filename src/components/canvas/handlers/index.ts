@@ -9,7 +9,7 @@ export { default as TooltipHandler } from './TooltipHandler';
 export { default as TransactionHandler } from './TransactionHandler';
 export { default as ZoomHandler } from './ZoomHandler';
 export { default as WorkareaHandler } from './WorkareaHandler';
-export { default as ModeHandler } from './ModeHandler';
+export { default as InteractionHandler } from './InteractionHandler';
 export { default as GridHandler } from './GridHandler';
 export { default as PortHandler } from './PortHandler';
 export { default as LinkHandler } from './LinkHandler';
@@ -18,4 +18,3 @@ export { default as AlignmentHandler } from './AlignmentHandler';
 export { default as GuidelineHandler } from './GuidelineHandler';
 export { default as EventHandler } from './EventHandler';
 export { default as DrawingHandler } from './DrawingHandler';
-

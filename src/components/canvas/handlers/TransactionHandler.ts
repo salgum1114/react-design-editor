@@ -150,10 +150,10 @@ class TransactionHandler {
                     this.handler.objects = this.handler.getObjects();
                     this.handler.linkHandler.create({
                         type: 'curvedLink',
-                        fromNode: link.fromNode.id,
-                        fromPort: link.fromPort.id,
-                        toNode: link.toNode.id,
-                        toPort: link.toPort.id,
+                        fromNodeId: link.fromNode.id,
+                        fromPortId: link.fromPort.id,
+                        toNodeId: link.toNode.id,
+                        toPortId: link.toPort.id,
                     });
                 } else {
                     this.handler.canvas.insertAt(obj, targetIndex, false);
