@@ -3,10 +3,11 @@
 [![](https://img.shields.io/npm/l/react-design-editor?style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
 [![](https://img.shields.io/david/salgum1114/react-design-editor?style=flat-square)](https://david-dm.org/salgum1114/react-design-editor)
 [![](https://img.shields.io/david/dev/salgum1114/react-design-editor?style=flat-square)](https://david-dm.org/salgum1114/react-design-editor?type=dev)
+![build](https://github.com/salgum1114/react-design-editor/workflows/build/badge.svg)
 
 - React Design Editor has started to develope direct manipulation of editable design tools like Powerpoint, We've developed it with reactjs, ant.design, fabricjs
 
-- Layouts and components such as property edits, item lists, toolbars were developed as react.js and the ant.design component was primarily used.
+- Layouts and components such as property edits, item lists, toolbars were developed as react.js and the ant.design component was **primarily** used.
 
 - The project is constantly being developed to support a variety of functions, and its goal is to be able to draw workflow (BPMN) in the future.
 
