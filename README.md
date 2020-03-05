@@ -1,9 +1,9 @@
 # React Design Editor
-[![](https://flat.badgen.net/npm/v/react-design-editor?icon=npm)](https://www.npmjs.com/package/react-design-editor)
 [![](https://img.shields.io/npm/l/react-design-editor?style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
+![build](https://github.com/salgum1114/react-design-editor/workflows/build/badge.svg)
+[![](https://flat.badgen.net/npm/v/react-design-editor?icon=npm)](https://www.npmjs.com/package/react-design-editor)
 [![](https://img.shields.io/david/salgum1114/react-design-editor?style=flat-square)](https://david-dm.org/salgum1114/react-design-editor)
 [![](https://img.shields.io/david/dev/salgum1114/react-design-editor?style=flat-square)](https://david-dm.org/salgum1114/react-design-editor?type=dev)
-![build](https://github.com/salgum1114/react-design-editor/workflows/build/badge.svg)
 
 - React Design Editor has started to develope direct manipulation of editable design tools like Powerpoint, We've developed it with reactjs, ant.design, fabricjs
 
