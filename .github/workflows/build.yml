@@ -27,6 +27,5 @@ jobs:
     - run: npm install
     - run: npm run lint
     - run: npm run build:lib --if-present
-    - run: npm test
       env:
         CI: true
