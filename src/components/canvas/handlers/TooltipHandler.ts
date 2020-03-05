@@ -16,6 +16,9 @@ class TooltipHandler {
         }
     }
 
+    /**
+     * @description Init tooltip
+     */
     init = () => {
         this.tooltipEl = document.createElement('div');
         this.tooltipEl.id = `${this.handler.id}_tooltip`;
@@ -23,6 +26,10 @@ class TooltipHandler {
         document.body.appendChild(this.tooltipEl);
     }
 
+    /**
+     * @description Show tooltip
+     * @param {FabricObject} [target]
+     */
     show = debounce(async (target?: FabricObject) => {
         if (target.tooltip && target.tooltip.enabled) {
             while (this.tooltipEl.hasChildNodes()) {
@@ -62,6 +69,10 @@ class TooltipHandler {
         }
     }, 100)
 
+    /**
+     * @description Hide tooltip
+     * @param {fabric.Object} [_target]
+     */
     hide = debounce((_target?: fabric.Object) => {
         this.handler.target = null;
         if (this.tooltipEl) {

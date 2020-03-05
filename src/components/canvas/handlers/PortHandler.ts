@@ -12,7 +12,6 @@ class PortHandler {
     /**
      * @description Create port
      * @param {NodeObject} target
-     * @returns
      */
     create = (target: NodeObject) => {
         if (!target.createToPort) {

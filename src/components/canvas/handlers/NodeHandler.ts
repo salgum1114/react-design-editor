@@ -48,7 +48,6 @@ class NodeHandler {
     /**
      * @description Select the node path
      * @param {string[]} [path]
-     * @returns
      */
     selectByPath = (path?: string[]) => {
         if (!path || !path.length) {
@@ -143,7 +142,7 @@ class NodeHandler {
     }
 
     /**
-     * @description Deselect
+     * @description Deselect nodes
      */
     deselect = () => {
         this.handler.objects.forEach((object: FabricObject) => {
@@ -176,7 +175,6 @@ class NodeHandler {
     /**
      * @description Highlight node path
      * @param {string[]} [path]
-     * @returns
      */
     highlightingByPath = (path?: string[]) => {
         if (!path || !path.length) {
@@ -224,6 +222,12 @@ class NodeHandler {
         this.handler.canvas.requestRenderAll();
     }
 
+    /**
+     * @description Highlight link
+     * @param {FabricObject} object
+     * @param {FabricObject} targetObject
+     * @param {number} [duration=500]
+     */
     highlightingLink = (object: FabricObject, targetObject: FabricObject, duration = 500) => {
         object.animation = {
             duration,
@@ -235,6 +239,11 @@ class NodeHandler {
         this.handler.animationHandler.play(object.id, false);
     }
 
+    /**
+     * @description Highlight node
+     * @param {*} object
+     * @param {number} [duration=500]
+     */
     highlightingNode = (object: any, duration = 500) => {
         const maxBlur = 50;
         const minBlur = 0;

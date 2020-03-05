@@ -66,7 +66,6 @@ class TransactionHandler {
      * @param {TransactionType} type
      * @param {*} [canvasJSON]
      * @param {boolean} [isWorkarea=true]
-     * @returns
      */
     save = (type: TransactionType, canvasJSON?: any, _isWorkarea: boolean = true) => {
         if (!this.handler.keyEvent.transaction) {
@@ -99,7 +98,6 @@ class TransactionHandler {
 
     /**
      * @description Undo transaction
-     * @returns
      */
     undo = throttle(() => {
         const undo = this.undos.pop();
@@ -115,7 +113,6 @@ class TransactionHandler {
 
     /**
      * @description Redo transaction
-     * @returns
      */
     redo = throttle(() => {
         const redo = this.redos.pop();
@@ -131,6 +128,7 @@ class TransactionHandler {
 
     /**
      * @description Replay transaction
+     * @param {TransactionEvent} transaction
      */
     replay = (transaction: TransactionEvent) => {
         const objects = JSON.parse(transaction.json) as FabricObject[];

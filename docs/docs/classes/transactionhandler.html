@@ -161,7 +161,7 @@
 					<div class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> =&nbsp;throttle(() &#x3D;&gt; {const redo &#x3D; this.redos.pop();if (!redo) {return;}this.undos.push({type: &#x27;undo&#x27;,json: JSON.stringify(this.state),});this.replay(redo);}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:120</li>
+							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:117</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -169,8 +169,6 @@
 							<dt>description</dt>
 							<dd><p>Redo transaction</p>
 							</dd>
-							<dt>returns</dt>
-							<dd></dd>
 						</dl>
 					</div>
 				</section>
@@ -200,7 +198,7 @@
 					<div class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> =&nbsp;throttle(() &#x3D;&gt; {const undo &#x3D; this.undos.pop();if (!undo) {return;}this.redos.push({type: &#x27;redo&#x27;,json: JSON.stringify(this.state),});this.replay(undo);}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:104</li>
+							<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:102</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -208,8 +206,6 @@
 							<dt>description</dt>
 							<dd><p>Undo transaction</p>
 							</dd>
-							<dt>returns</dt>
-							<dd></dd>
 						</dl>
 					</div>
 				</section>
@@ -253,13 +249,17 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:135</li>
+									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:133</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>transaction: <a href="../interfaces/transactionevent.html" class="tsd-signature-type">TransactionEvent</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+										</div>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -276,7 +276,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:71</li>
+									<li>Defined in src/components/canvas/handlers/TransactionHandler.ts:70</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>

@@ -3,13 +3,19 @@ import { fabric } from 'fabric';
 import Handler from './Handler';
 import { FabricObject, InteractionMode } from '../utils';
 
+type IReturnType = { selectable?: boolean, evented?: boolean } | boolean;
+
 class InteractionHandler {
     handler: Handler;
     constructor(handler: Handler) {
         this.handler = handler;
     }
 
-    public selection = (callback?: (obj: FabricObject) => any) => {
+    /**
+     * @description Change selection mode
+     * @param {(obj: FabricObject) => IReturnType} [callback]
+     */
+    public selection = (callback?: (obj: FabricObject) => IReturnType) => {
         if (this.handler.interactionMode === 'selection') {
             return;
         }
@@ -46,7 +52,11 @@ class InteractionHandler {
         this.handler.canvas.renderAll();
     }
 
-    public grab = (callback?: (obj: FabricObject) => any) => {
+    /**
+     * @description Change grab mode
+     * @param {(obj: FabricObject) => IReturnType} [callback]
+     */
+    public grab = (callback?: (obj: FabricObject) => IReturnType) => {
         if (this.handler.interactionMode === 'grab') {
             return;
         }
@@ -74,7 +84,12 @@ class InteractionHandler {
         this.handler.canvas.renderAll();
     }
 
-    public drawing = (type?: InteractionMode, callback?: (obj: FabricObject) => any) => {
+    /**
+     * @description Change drawing mode
+     * @param {InteractionMode} [type]
+     * @param {(obj: FabricObject) => IReturnType} [callback]
+     */
+    public drawing = (type?: InteractionMode, callback?: (obj: FabricObject) => IReturnType) => {
         if (this.isDrawingMode()) {
             return;
         }
@@ -102,7 +117,11 @@ class InteractionHandler {
         this.handler.canvas.renderAll();
     }
 
-    public moving = (e: any) => {
+    /**
+     * @description Moving objects in grap mode
+     * @param {MouseEvent} e
+     */
+    public moving = (e: MouseEvent) => {
         if (this.isDrawingMode()) {
             return;
         }
