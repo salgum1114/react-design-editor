@@ -88,6 +88,7 @@
 								<li class="tsd-kind-class tsd-is-external tsd-is-not-exported"><a href="classes/mediaelementplayer.html" class="tsd-kind-icon">Media<wbr>Element<wbr>Player</a></li>
 								<li class="tsd-kind-class tsd-is-external"><a href="classes/nodehandler.html" class="tsd-kind-icon">Node<wbr>Handler</a></li>
 								<li class="tsd-kind-class tsd-is-external"><a href="classes/porthandler.html" class="tsd-kind-icon">Port<wbr>Handler</a></li>
+								<li class="tsd-kind-class tsd-is-external"><a href="classes/shortcuthandler.html" class="tsd-kind-icon">Shortcut<wbr>Handler</a></li>
 								<li class="tsd-kind-class tsd-is-external"><a href="classes/tooltiphandler.html" class="tsd-kind-icon">Tooltip<wbr>Handler</a></li>
 								<li class="tsd-kind-class tsd-is-external"><a href="classes/transactionhandler.html" class="tsd-kind-icon">Transaction<wbr>Handler</a></li>
 								<li class="tsd-kind-class tsd-is-external"><a href="classes/workareahandler.html" class="tsd-kind-icon">Workarea<wbr>Handler</a></li>
@@ -226,7 +227,7 @@
 					<div class="tsd-signature tsd-kind-icon">Canvas<wbr>Props<span class="tsd-signature-symbol">:</span> <a href="interfaces/handleroptions.html" class="tsd-signature-type">HandlerOptions</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/Canvas.tsx:43</li>
+							<li>Defined in src/components/canvas/Canvas.tsx:45</li>
 						</ul>
 					</aside>
 				</section>
@@ -344,7 +345,7 @@
 					<div class="tsd-signature tsd-kind-icon">Interaction<wbr>Mode<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"selection"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"grab"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"polygon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"line"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"arrow"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"link"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"crop"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/utils/ObjectUtil.ts:388</li>
+							<li>Defined in src/components/canvas/utils/ObjectUtil.ts:400</li>
 						</ul>
 					</aside>
 				</section>
@@ -573,7 +574,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Properties<wbr>ToInclude<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[&#x27;id&#x27;,&#x27;name&#x27;,&#x27;locke&#x27;,&#x27;editable&#x27;,]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/Canvas.tsx:36</li>
+							<li>Defined in src/components/canvas/Canvas.tsx:38</li>
 						</ul>
 					</aside>
 				</section>
@@ -665,9 +666,14 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/utils/ObjectUtil.ts:407</li>
+									<li>Defined in src/components/canvas/utils/ObjectUtil.ts:419</li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>toObject util</p>
+								</div>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -1798,6 +1804,16 @@
 						</aside>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external tsd-is-not-exported">
+						<a name="defaultkeyboardevent.cut" class="tsd-anchor"></a>
+						<h3>cut</h3>
+						<div class="tsd-signature tsd-kind-icon">cut<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in src/components/canvas/Canvas.tsx:35</li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external tsd-is-not-exported">
 						<a name="defaultkeyboardevent.del" class="tsd-anchor"></a>
 						<h3>del</h3>
 						<div class="tsd-signature tsd-kind-icon">del<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
@@ -1844,6 +1860,16 @@
 						<aside class="tsd-sources">
 							<ul>
 								<li>Defined in src/components/canvas/Canvas.tsx:33</li>
+							</ul>
+						</aside>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external tsd-is-not-exported">
+						<a name="defaultkeyboardevent.zoom" class="tsd-anchor"></a>
+						<h3>zoom</h3>
+						<div class="tsd-signature tsd-kind-icon">zoom<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in src/components/canvas/Canvas.tsx:34</li>
 							</ul>
 						</aside>
 					</section>
@@ -2198,6 +2224,9 @@
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/porthandler.html" class="tsd-kind-icon">Port<wbr>Handler</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-external">
+						<a href="classes/shortcuthandler.html" class="tsd-kind-icon">Shortcut<wbr>Handler</a>
 					</li>
 					<li class=" tsd-kind-class tsd-is-external">
 						<a href="classes/tooltiphandler.html" class="tsd-kind-icon">Tooltip<wbr>Handler</a>
