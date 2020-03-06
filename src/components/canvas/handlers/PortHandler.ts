@@ -10,7 +10,7 @@ class PortHandler {
     }
 
     /**
-     * @description Create port
+     * Create port
      * @param {NodeObject} target
      */
     create = (target: NodeObject) => {
@@ -83,7 +83,7 @@ class PortHandler {
     }
 
     /**
-     * @description Set coords port
+     * Set coords port
      * @param {NodeObject} target
      */
     setCoords = (target: NodeObject) => {
@@ -126,7 +126,7 @@ class PortHandler {
     }
 
     /**
-     * @description Recreate port
+     * Recreate port
      * @param {NodeObject} target
      */
     recreate = (target: NodeObject) => {

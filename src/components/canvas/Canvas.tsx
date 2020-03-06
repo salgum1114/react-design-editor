@@ -31,6 +31,8 @@ const defaultKeyboardEvent = {
     del: true,
     clipboard: false,
     transaction: true,
+    zoom: true,
+    cut: true,
 };
 
 const defaultPropertiesToInclude = [

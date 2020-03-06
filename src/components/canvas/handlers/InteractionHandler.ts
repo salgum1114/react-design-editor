@@ -12,7 +12,7 @@ class InteractionHandler {
     }
 
     /**
-     * @description Change selection mode
+     * Change selection mode
      * @param {(obj: FabricObject) => IReturnType} [callback]
      */
     public selection = (callback?: (obj: FabricObject) => IReturnType) => {
@@ -53,7 +53,7 @@ class InteractionHandler {
     }
 
     /**
-     * @description Change grab mode
+     * Change grab mode
      * @param {(obj: FabricObject) => IReturnType} [callback]
      */
     public grab = (callback?: (obj: FabricObject) => IReturnType) => {
@@ -85,7 +85,7 @@ class InteractionHandler {
     }
 
     /**
-     * @description Change drawing mode
+     * Change drawing mode
      * @param {InteractionMode} [type]
      * @param {(obj: FabricObject) => IReturnType} [callback]
      */
@@ -118,7 +118,7 @@ class InteractionHandler {
     }
 
     /**
-     * @description Moving objects in grap mode
+     * Moving objects in grap mode
      * @param {MouseEvent} e
      */
     public moving = (e: MouseEvent) => {
@@ -138,7 +138,7 @@ class InteractionHandler {
     }
 
     /**
-     * @description Whether is drawing mode
+     * Whether is drawing mode
      * @returns
      */
     public isDrawingMode = () => {

@@ -17,7 +17,7 @@ class TooltipHandler {
     }
 
     /**
-     * @description Init tooltip
+     * Init tooltip
      */
     init = () => {
         this.tooltipEl = document.createElement('div');
@@ -27,7 +27,7 @@ class TooltipHandler {
     }
 
     /**
-     * @description Show tooltip
+     * Show tooltip
      * @param {FabricObject} [target]
      */
     show = debounce(async (target?: FabricObject) => {
@@ -70,7 +70,7 @@ class TooltipHandler {
     }, 100)
 
     /**
-     * @description Hide tooltip
+     * Hide tooltip
      * @param {fabric.Object} [_target]
      */
     hide = debounce((_target?: fabric.Object) => {

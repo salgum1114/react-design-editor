@@ -11,7 +11,7 @@ class AnimationHandler {
     }
 
     /**
-     * @description Play the animation
+     * Play the animation
      * @param {string} id
      * @param {boolean} [hasControls]
      * @returns
@@ -43,7 +43,7 @@ class AnimationHandler {
     }
 
     /**
-     * @description Pause the animation
+     * Pause the animation
      * @param {string} id
      * @returns
      */
@@ -56,7 +56,7 @@ class AnimationHandler {
     }
 
     /**
-     * @description Stop the animation
+     * Stop the animation
      * @param {string} id
      * @param {boolean} [hasControls=true]
      * @returns
@@ -70,7 +70,7 @@ class AnimationHandler {
     }
 
     /**
-     * @description Restart the animation
+     * Restart the animation
      * @param {string} id
      * @returns
      */
@@ -87,7 +87,7 @@ class AnimationHandler {
     }
 
     /**
-     * @description Init animation
+     * Init animation
      * @param {FabricObject} obj
      * @param {boolean} [hasControls=true]
      * @returns
@@ -172,7 +172,7 @@ class AnimationHandler {
     }
 
     /**
-     * @description Get animation option
+     * Get animation option
      * @param {FabricObject} obj
      * @param {boolean} [hasControls]
      * @returns

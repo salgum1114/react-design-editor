@@ -54,7 +54,7 @@ class TransactionHandler {
     }
 
     /**
-     * @description Init transaction
+     * Init transaction
      */
     init = () => {
         this.redos = [];
@@ -62,7 +62,7 @@ class TransactionHandler {
     }
 
     /**
-     * @description Save transaction
+     * Save transaction
      * @param {TransactionType} type
      * @param {*} [canvasJSON]
      * @param {boolean} [isWorkarea=true]
@@ -97,7 +97,7 @@ class TransactionHandler {
     }
 
     /**
-     * @description Undo transaction
+     * Undo transaction
      */
     undo = throttle(() => {
         const undo = this.undos.pop();
@@ -112,7 +112,7 @@ class TransactionHandler {
     }, 100);
 
     /**
-     * @description Redo transaction
+     * Redo transaction
      */
     redo = throttle(() => {
         const redo = this.redos.pop();
@@ -127,7 +127,7 @@ class TransactionHandler {
     }, 100)
 
     /**
-     * @description Replay transaction
+     * Replay transaction
      * @param {TransactionEvent} transaction
      */
     replay = (transaction: TransactionEvent) => {

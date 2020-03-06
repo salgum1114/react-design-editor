@@ -15,7 +15,7 @@ class CropHandler {
     }
 
     /**
-     * @description Validate crop type
+     * Validate crop type
      * @returns
      */
     public validType = () => {
@@ -30,7 +30,7 @@ class CropHandler {
     }
 
     /**
-     * @description Start crop image
+     * Start crop image
      */
     public start = () => {
         if (this.validType()) {
@@ -58,7 +58,7 @@ class CropHandler {
     }
 
     /**
-     * @description Finish crop image
+     * Finish crop image
      */
     public finish = () => {
         const { left, top, width, height, scaleX, scaleY } = this.cropRect;
@@ -73,7 +73,7 @@ class CropHandler {
     }
 
     /**
-     * @description Cancel crop
+     * Cancel crop
      */
     cancel = () => {
         this.handler.interactionMode = 'selection';
@@ -87,7 +87,7 @@ class CropHandler {
     }
 
     /**
-     * @description Resize crop
+     * Resize crop
      * @param {FabricEvent} opt
      */
     resize = (opt: fabric.IEvent) => {
@@ -202,7 +202,7 @@ class CropHandler {
     }
 
     /**
-     * @description Resize crop
+     * Resize crop
      * @param {FabricEvent} opt
      */
     moving = (opt: fabric.IEvent) => {

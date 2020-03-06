@@ -11,7 +11,7 @@ class ZoomHandler {
     }
 
     /**
-     * @description Zoom to point
+     * Zoom to point
      * @param {fabric.Point} point
      * @param {number} zoom
      */
@@ -43,7 +43,7 @@ class ZoomHandler {
     }
 
     /**
-     * @description Zoom one to one
+     * Zoom one to one
      */
     public zoomOneToOne = () => {
         const center = this.handler.canvas.getCenter();
@@ -52,7 +52,7 @@ class ZoomHandler {
     }
 
     /**
-     * @description Zoom to fit
+     * Zoom to fit
      */
     public zoomToFit = () => {
         let scaleX;
@@ -76,7 +76,7 @@ class ZoomHandler {
     }
 
     /**
-     * @description Zoom in
+     * Zoom in
      */
     public zoomIn = () => {
         let zoomRatio = this.handler.canvas.getZoom();
@@ -86,7 +86,7 @@ class ZoomHandler {
     }
 
     /**
-     * @description Zoom out
+     * Zoom out
      */
     public zoomOut = () => {
         let zoomRatio = this.handler.canvas.getZoom();

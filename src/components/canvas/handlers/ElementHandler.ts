@@ -24,7 +24,7 @@ class ElementHandler {
     }
 
     /**
-     * @description Set element by id
+     * Set element by id
      * @param {string} id
      * @param {*} source
      * @returns {void}
@@ -38,7 +38,7 @@ class ElementHandler {
     }
 
     /**
-     * @description Set element
+     * Set element
      * @param {ElementObjectType} obj
      * @param {*} source
      */
@@ -47,7 +47,7 @@ class ElementHandler {
     }
 
     /**
-     * @description Find element by id with type
+     * Find element by id with type
      * @param {string} id
      * @param {ElementType} [type='container']
      * @returns
@@ -57,7 +57,7 @@ class ElementHandler {
     }
 
     /**
-     * @description Remove element
+     * Remove element
      * @param {HTMLElement} el
      * @returns
      */
@@ -69,7 +69,7 @@ class ElementHandler {
     }
 
     /**
-     * @description Remove element by id
+     * Remove element by id
      * @param {string} id
      */
     public removeById = (id: string) => {
@@ -100,7 +100,7 @@ class ElementHandler {
     }
 
     /**
-     * @description Remove element by ids
+     * Remove element by ids
      * @param {string[]} ids
      */
     public removeByIds = (ids: string[]) => {
@@ -110,7 +110,7 @@ class ElementHandler {
     }
 
     /**
-     * @description Set position
+     * Set position
      * @param {HTMLElement} el
      * @param {number} left
      * @param {number} top
@@ -144,7 +144,7 @@ class ElementHandler {
     }
 
     /**
-     * @description Set size
+     * Set size
      * @param {HTMLElement} el
      * @param {number} width
      * @param {number} height
@@ -160,7 +160,7 @@ class ElementHandler {
     }
 
     /**
-     * @description Set scale or angle
+     * Set scale or angle
      * @param {HTMLElement} el
      * @param {number} scaleX
      * @param {number} scaleY

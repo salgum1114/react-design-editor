@@ -7,7 +7,7 @@ class AlignmentHandler {
     }
 
     /**
-     * @description Align left at selection
+     * Align left at selection
      */
     public left = () => {
         const activeObject = this.handler.canvas.getActiveObject();
@@ -25,7 +25,7 @@ class AlignmentHandler {
     }
 
     /**
-     * @description Align center at selection
+     * Align center at selection
      */
     public center = () => {
         const activeObject = this.handler.canvas.getActiveObject();
@@ -42,7 +42,7 @@ class AlignmentHandler {
     }
 
     /**
-     * @description Align right at selection
+     * Align right at selection
      */
     public right = () => {
         const activeObject = this.handler.canvas.getActiveObject();
