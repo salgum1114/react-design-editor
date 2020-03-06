@@ -12,7 +12,7 @@ class NodeHandler {
     }
 
     /**
-     * @description Get the node path by target object
+     * Get the node path by target object
      * @param {NodeObject} target
      * @param {NodeObject[]} [nodes=[]]
      * @param {string} [direction='init']
@@ -46,7 +46,7 @@ class NodeHandler {
     }
 
     /**
-     * @description Select the node path
+     * Select the node path
      * @param {string[]} [path]
      */
     selectByPath = (path?: string[]) => {
@@ -120,7 +120,7 @@ class NodeHandler {
     }
 
     /**
-     * @description Select node by id
+     * Select node by id
      * @param {string} id
      */
     selectById = (id: string) => {
@@ -142,7 +142,7 @@ class NodeHandler {
     }
 
     /**
-     * @description Deselect nodes
+     * Deselect nodes
      */
     deselect = () => {
         this.handler.objects.forEach((object: FabricObject) => {
@@ -173,7 +173,7 @@ class NodeHandler {
     }
 
     /**
-     * @description Highlight node path
+     * Highlight node path
      * @param {string[]} [path]
      */
     highlightingByPath = (path?: string[]) => {
@@ -223,7 +223,7 @@ class NodeHandler {
     }
 
     /**
-     * @description Highlight link
+     * Highlight link
      * @param {FabricObject} object
      * @param {FabricObject} targetObject
      * @param {number} [duration=500]
@@ -240,7 +240,7 @@ class NodeHandler {
     }
 
     /**
-     * @description Highlight node
+     * Highlight node
      * @param {*} object
      * @param {number} [duration=500]
      */

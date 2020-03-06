@@ -243,3 +243,45 @@ video {
     border-radius: 3px;
     opacity: 0;
 }
+
+.rde-shortcut-help {
+    display: flex;
+    justify-content: space-around;
+    &-list {
+        list-style: none;
+        margin: 0;
+        padding: 0 0 10px;
+        width: 350px;
+        li {
+            margin-right: 40px;
+        }
+    }
+    &-key {
+        line-height: 1.8;
+        margin-right: 2em;
+        padding: 5px 0;
+        span {
+            background-color: #fefefe;
+            background-repeat: repeat-x;
+            border: 1px solid #666;
+            border-radius: 3px;
+            box-shadow: 0 0 5px #7e7e7e;
+            color: #3a3a3a;
+            display: inline-block;
+            font-size: 12px;
+            padding: 0 8px;
+            text-align: center;
+        }
+        &-unit {
+            bottom: 2px;
+            margin-right: 4px;
+            min-width: 60px;
+            position: relative;
+        }
+        &-def {
+            color: #3a3a3a;
+            display: inline-block;
+            margin-left: 1em;
+        }
+    }
+}

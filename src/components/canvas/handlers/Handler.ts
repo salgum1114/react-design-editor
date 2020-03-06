@@ -22,6 +22,7 @@ import {
     EventHandler,
     DrawingHandler,
     InteractionHandler,
+    ShortcutHandler,
 } from '.';
 import {
     FabricObject,
@@ -47,97 +48,97 @@ import { LinkOption } from './LinkHandler';
 
 export interface HandlerOptions {
     /**
-     * @description Canvas id
+     * Canvas id
      * @type {string}
      */
     id?: string;
     /**
-     * @description Canvas object
+     * Canvas object
      * @type {FabricCanvas}
      */
     canvas?: FabricCanvas;
     /**
-     * @description Canvas parent element
+     * Canvas parent element
      * @type {HTMLDivElement}
      */
     container?: HTMLDivElement;
     /**
-     * @description Canvas editable
+     * Canvas editable
      * @type {boolean}
      */
     editable?: boolean;
     /**
-     * @description Canvas interaction mode
+     * Canvas interaction mode
      * @type {InteractionMode}
      */
     interactionMode?: InteractionMode;
     /**
-     * @description Persist properties for object
+     * Persist properties for object
      * @type {string[]}
      */
     propertiesToInclude?: string[];
     /**
-     * @description Minimum zoom ratio
+     * Minimum zoom ratio
      * @type {number}
      */
     minZoom?: number;
     /**
-     * @description Maximum zoom ratio
+     * Maximum zoom ratio
      * @type {number}
      */
     maxZoom?: number;
     /**
-     * @description Workarea option
+     * Workarea option
      * @type {WorkareaOption}
      */
     workareaOption?: WorkareaOption;
     /**
-     * @description Canvas option
+     * Canvas option
      * @type {CanvasOption}
      */
     canvasOption?: CanvasOption;
     /**
-     * @description Grid option
+     * Grid option
      * @type {GridOption}
      */
     gridOption?: GridOption;
     /**
-     * @description Default option for Fabric Object
+     * Default option for Fabric Object
      * @type {FabricObjectOption}
      */
     defaultOption?: FabricObjectOption;
     /**
-     * @description Guideline option
+     * Guideline option
      * @type {GuidelineOption}
      */
     guidelineOption?: GuidelineOption;
     /**
-     * @description Whether to use zoom
+     * Whether to use zoom
      * @type {boolean}
      */
     zoomEnabled?: boolean;
     /**
-     * @description ActiveSelection option
+     * ActiveSelection option
      * @type {FabricObjectOption}
      */
     activeSelection?: FabricObjectOption;
     /**
-     * @description Canvas width
+     * Canvas width
      * @type {number}
      */
     width?: number;
     /**
-     * @description Canvas height
+     * Canvas height
      * @type {number}
      */
     height?: number;
     /**
-     * @description Keyboard event in Canvas
+     * Keyboard event in Canvas
      * @type {KeyEvent}
      */
     keyEvent?: KeyEvent;
     /**
-     * @description Append custom objects
+     * Append custom objects
      * @type {{ [key: string]: any }}
      */
     fabricObjects?: {
@@ -148,53 +149,53 @@ export interface HandlerOptions {
     [key: string]: any;
 
     /**
-     * @description When has been added object in Canvas, Called function
+     * When has been added object in Canvas, Called function
      */
     onAdd?: (object: FabricObject) => void;
     /**
-     * @description Return contextmenu element
+     * Return contextmenu element
      */
     onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject) => Promise<any> | any;
     /**
-     * @description Return tooltip element
+     * Return tooltip element
      */
     onTooltip?: (el: HTMLDivElement, target?: FabricObject) => Promise<any> | any;
     /**
-     * @description When zoom, Called function
+     * When zoom, Called function
      */
     onZoom?: (zoomRatio: number) => void;
     /**
-     * @description When clicked object, Called function
+     * When clicked object, Called function
      */
     onClick?: (canvas: FabricCanvas, target: FabricObject) => void;
     /**
-     * @description When double clicked object, Called function
+     * When double clicked object, Called function
      */
     onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
     /**
-     * @description When modified object, Called function
+     * When modified object, Called function
      */
     onModified?: (target: FabricObject) => void;
     /**
-     * @description When select object, Called function
+     * When select object, Called function
      */
     onSelect?: (target: FabricObject) => void;
     /**
-     * @description When has been removed object in Canvas, Called function
+     * When has been removed object in Canvas, Called function
      */
     onRemove?: (target: FabricObject) => void;
     /**
-     * @description When has been undo or redo, Called function
+     * When has been undo or redo, Called function
      */
     onTransaction?: (transaction: TransactionEvent) => void;
     /**
-     * @description When has been changed interaction mode, Called function
+     * When has been changed interaction mode, Called function
      */
     onInteraction?: (interactionMode: InteractionMode) => void;
 }
 
 /**
- * @description Main handler for Canvas
+ * Main handler for Canvas
  * @class Handler
  * @implements {HandlerOptions}
  */
@@ -255,6 +256,7 @@ class Handler implements HandlerOptions {
     public guidelineHandler: GuidelineHandler;
     public eventHandler: EventHandler;
     public drawingHandler: DrawingHandler;
+    public shortcutHandler: ShortcutHandler;
 
     public objectMap: Record<string, FabricObject> = {};
     public objects: FabricObject[];
@@ -265,6 +267,7 @@ class Handler implements HandlerOptions {
     public target?: FabricObject;
     public pointArray?: any[];
     public lineArray?: any[];
+    public isCut = false;
 
     private isRequsetAnimFrame = false;
     private requestFrame: any;
@@ -277,7 +280,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Init class fields
+     * Init class fields
      * @param {HandlerOptions} options
      */
     public init = (options: HandlerOptions) => {
@@ -305,7 +308,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Init callback
+     * Init callback
      * @param {HandlerOptions} options
      */
     public initCallback = (options: HandlerOptions) => {
@@ -323,7 +326,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Init handlers
+     * Init handlers
      * @param {HandlerOptions} options
      */
     public initHandler = (_options: HandlerOptions) => {
@@ -346,10 +349,11 @@ class Handler implements HandlerOptions {
         this.guidelineHandler = new GuidelineHandler(this);
         this.eventHandler = new EventHandler(this);
         this.drawingHandler = new DrawingHandler(this);
+        this.shortcutHandler = new ShortcutHandler(this);
     }
 
     /**
-     * @description Get primary object
+     * Get primary object
      * @returns {FabricObject[]}
      */
     public getObjects = (): FabricObject[] => {
@@ -374,7 +378,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Set key pair
+     * Set key pair
      * @param {keyof FabricObject} key
      * @param {*} value
      * @returns
@@ -412,7 +416,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Set option
+     * Set option
      * @param {Partial<FabricObject>} option
      * @returns
      */
@@ -453,7 +457,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Set key pair by object
+     * Set key pair by object
      * @param {FabricObject} obj
      * @param {string} key
      * @param {*} value
@@ -491,7 +495,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Set key pair by id
+     * Set key pair by id
      * @param {string} id
      * @param {string} key
      * @param {*} value
@@ -502,7 +506,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Set partial by object
+     * Set partial by object
      * @param {FabricObject} obj
      * @param {FabricObjectOption} option
      * @returns
@@ -535,7 +539,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Set shadow
+     * Set shadow
      * @param {fabric.Shadow} option
      * @returns
      */
@@ -553,7 +557,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Set the image
+     * Set the image
      * @param {FabricImage} obj
      * @param {*} source
      * @returns
@@ -581,7 +585,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Set image by id
+     * Set image by id
      * @param {string} id
      * @param {*} source
      */
@@ -591,7 +595,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Set visible
+     * Set visible
      * @param {boolean} [visible]
      * @returns
      */
@@ -632,7 +636,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Add object
+     * Add object
      * @param {FabricObjectOption} obj
      * @param {boolean} [centered=true]
      * @param {boolean} [loaded=false]
@@ -730,7 +734,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Add group object
+     * Add group object
      * @param {FabricGroup} obj
      * @param {boolean} [centered=true]
      * @param {boolean} [loaded=false]
@@ -743,7 +747,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Add iamge object
+     * Add iamge object
      * @param {FabricImage} obj
      * @returns
      */
@@ -766,7 +770,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Add svg object
+     * Add svg object
      * @param {*} obj
      * @param {boolean} [centered=true]
      * @param {boolean} [loaded=false]
@@ -811,7 +815,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Remove object
+     * Remove object
      * @param {FabricObject} target
      * @returns {any}
      */
@@ -902,7 +906,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Remove object by id
+     * Remove object by id
      * @param {string} id
      */
     public removeById = (id: string) => {
@@ -913,7 +917,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Delete at origin object list
+     * Delete at origin object list
      * @param {string} id
      */
     public removeOriginById = (id: string) => {
@@ -924,7 +928,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Duplicate object
+     * Duplicate object
      * @returns
      */
     public duplicate = () => {
@@ -978,7 +982,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Duplicate object by id
+     * Duplicate object by id
      * @param {string} id
      * @returns
      */
@@ -1013,7 +1017,18 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Copy to clipboard
+     * Cut object
+     *
+     */
+    public cut = () => {
+        this.copy();
+        this.remove();
+        this.isCut = true;
+    }
+
+    /**
+     * Copy to clipboard
+     *
      * @param {*} value
      */
     public copyToClipboard = (value: any) => {
@@ -1027,7 +1042,8 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Copy object
+     * Copy object
+     *
      * @returns
      */
     public copy = () => {
@@ -1055,7 +1071,7 @@ class Handler implements HandlerOptions {
                                         port.links.forEach((link: any) => {
                                             const linkTarget = {
                                                 fromNodeIndex: index,
-                                                fromPort: port.id,
+                                                fromPortId: port.id,
                                                 type: 'curvedLink',
                                                 superType: 'link',
                                             } as any;
@@ -1119,17 +1135,20 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Paste object
+     * Paste object
+     *
      * @returns
      */
     public paste = () => {
-        const { onAdd, propertiesToInclude, gridOption: { grid = 10 }, clipboard } = this;
+        const { onAdd, propertiesToInclude, gridOption: { grid = 10 }, clipboard, isCut } = this;
+        const padding = isCut ? 0 : grid;
         if (!clipboard) {
             return false;
         }
         if (typeof clipboard.cloneable !== 'undefined' && !clipboard.cloneable) {
             return false;
         }
+        this.isCut = false;
         if (clipboard.type === 'activeSelection') {
             if (clipboard.getObjects().some((obj: any) => obj.superType === 'node')) {
                 this.canvas.discardActiveObject();
@@ -1142,13 +1161,13 @@ class Handler implements HandlerOptions {
                     const clonedObj = obj.duplicate();
                     if (clonedObj.type === 'SwitchNode') {
                         clonedObj.set({
-                            left: obj.left + grid + grid,
-                            top: obj.top + grid,
+                            left: obj.left + padding + padding,
+                            top: obj.top + padding,
                         });
                     } else {
                         clonedObj.set({
-                            left: obj.left + grid,
-                            top: obj.top + grid,
+                            left: obj.left + padding,
+                            top: obj.top + padding,
                         });
                     }
                     if (obj.fromPort.length) {
@@ -1194,7 +1213,11 @@ class Handler implements HandlerOptions {
                     canvas: this.canvas,
                     ...this.activeSelection,
                 });
-                this.clipboard = activeSelection;
+                if (isCut) {
+                    this.clipboard = null;
+                } else {
+                    this.clipboard = activeSelection;
+                }
                 this.canvas.setActiveObject(activeSelection);
                 this.canvas.renderAll();
                 if (!this.transactionHandler.active) {
@@ -1206,15 +1229,15 @@ class Handler implements HandlerOptions {
         clipboard.clone((clonedObj: any) => {
             this.canvas.discardActiveObject();
             clonedObj.set({
-                left: clonedObj.left + grid,
-                top: clonedObj.top + grid,
-                id: uuid(),
+                left: clonedObj.left + padding,
+                top: clonedObj.top + padding,
+                id: isCut ? clonedObj.id : uuid(),
                 evented: true,
             });
             if (clonedObj.type === 'activeSelection') {
                 clonedObj.canvas = this.canvas;
                 clonedObj.forEachObject((obj: any) => {
-                    obj.set('id', uuid());
+                    obj.set('id', isCut ? obj.id : uuid());
                     this.canvas.add(obj);
                     if (obj.dblclick) {
                         obj.on('mousedblclick', this.eventHandler.object.mousedblclick);
@@ -1228,8 +1251,6 @@ class Handler implements HandlerOptions {
             } else {
                 if (clonedObj.superType === 'node') {
                     clonedObj = clonedObj.duplicate();
-                } else {
-                    clonedObj.set('id', uuid());
                 }
                 this.canvas.add(clonedObj);
                 if (clonedObj.dblclick) {
@@ -1244,7 +1265,11 @@ class Handler implements HandlerOptions {
                 top: clonedObj.top,
                 left: clonedObj.left,
             });
-            this.clipboard = newClipboard;
+            if (isCut) {
+                this.clipboard = null;
+            } else {
+                this.clipboard = newClipboard;
+            }
             this.canvas.setActiveObject(clonedObj);
             this.portHandler.create(clonedObj);
             this.canvas.requestRenderAll();
@@ -1256,7 +1281,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Load the image
+     * Load the image
      * @param {FabricImage} obj
      * @param {string} src
      */
@@ -1282,13 +1307,13 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Find object by object
+     * Find object by object
      * @param {FabricObject} obj
      */
     public find = (obj: FabricObject) => this.findById(obj.id)
 
     /**
-     * @description Find object by id
+     * Find object by id
      * @param {string} id
      * @returns {(FabricObject | null)}
      */
@@ -1309,7 +1334,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Find object in origin list
+     * Find object in origin list
      * @param {string} id
      * @returns
      */
@@ -1330,7 +1355,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Return origin object list
+     * Return origin object list
      * @param {string} id
      * @returns
      */
@@ -1356,7 +1381,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Select object
+     * Select object
      * @param {FabricObject} obj
      * @param {boolean} [find]
      */
@@ -1373,7 +1398,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Select by id
+     * Select by id
      * @param {string} id
      */
     public selectById = (id: string) => {
@@ -1386,7 +1411,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Select all
+     * Select all
      * @returns
      */
     public selectAll = () => {
@@ -1424,7 +1449,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Save origin width, height
+     * Save origin width, height
      * @param {FabricObject} obj
      * @param {number} width
      * @param {number} height
@@ -1443,7 +1468,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description When set the width, height, Adjust the size
+     * When set the width, height, Adjust the size
      * @param {number} width
      * @param {number} height
      */
@@ -1461,7 +1486,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Import json
+     * Import json
      * @param {*} json
      * @param {(canvas: FabricCanvas) => void} [callback]
      */
@@ -1525,12 +1550,12 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Export json
+     * Export json
      */
     public exportJSON = () => this.canvas.toJSON(this.propertiesToInclude)
 
     /**
-     * @description Active selection to group
+     * Active selection to group
      * @returns
      */
     public toGroup = (target?: FabricObject) => {
@@ -1560,7 +1585,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Group to active selection
+     * Group to active selection
      * @returns
      */
     public toActiveSelection = (target?: FabricObject) => {
@@ -1584,7 +1609,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Bring forward
+     * Bring forward
      */
     public bringForward = () => {
         const activeObject = this.canvas.getActiveObject() as FabricObject;
@@ -1601,7 +1626,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Bring to front
+     * Bring to front
      */
     public bringToFront = () => {
         const activeObject = this.canvas.getActiveObject() as FabricObject;
@@ -1618,7 +1643,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Send backwards
+     * Send backwards
      * @returns
      */
     public sendBackwards = () => {
@@ -1640,7 +1665,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Send to back
+     * Send to back
      */
     public sendToBack = () => {
         const activeObject = this.canvas.getActiveObject() as FabricObject;
@@ -1658,7 +1683,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Clear canvas
+     * Clear canvas
      * @param {boolean} [includeWorkarea=false]
      */
     public clear = (includeWorkarea = false) => {
@@ -1686,7 +1711,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Start request animation frame
+     * Start request animation frame
      */
     public startRequestAnimFrame = () => {
         if (!this.isRequsetAnimFrame) {
@@ -1700,7 +1725,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Stop request animation frame
+     * Stop request animation frame
      */
     public stopRequestAnimFrame = () => {
         this.isRequsetAnimFrame = false;
@@ -1715,7 +1740,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Save target object as image
+     * Save target object as image
      * @param {FabricObject} targetObject
      * @param {string} [option={ name: 'New Image', format: 'png', quality: 1 }]
      */
@@ -1741,7 +1766,7 @@ class Handler implements HandlerOptions {
     }
 
     /**
-     * @description Save canvas as image
+     * Save canvas as image
      * @param {string} [option={ name: 'New Image', format: 'png', quality: 1 }]
      */
     public saveCanvasImage = (option = { name: 'New Image', format: 'png', quality: 1 }) => {

@@ -131,7 +131,8 @@
         "stop": "중지",
         "execute": "실행",
         "go-github": "Github로 이동!!",
-        "go-docs": "Documents로 이동!!"
+        "go-docs": "Documents로 이동!!",
+        "shortcut-help": "단축키"
     },
     "common": {
         "name": "Name",
@@ -180,5 +181,30 @@
     "validation": {
         "enter-property": "{{arg}}을(를) 입력하세요.",
         "already-property": "{{arg}}가(이) 이미 존재합니다."
+    },
+    "shortcut": {
+        "q": "Selection",
+        "w": "Grab",
+        "plus": "Zoom In",
+        "minus": "Zoom Out",
+        "h": "Shortcut Help",
+        "escape": "Deselect",
+        "arrow-up": "Move Up",
+        "arrow-down": "Move Down",
+        "arrow-left": "Move Left",
+        "arrow-right": "Move Right",
+        "delete": "Delete",
+        "ctrl-a": "Select All",
+        "ctrl-c": "Copy",
+        "ctrl-v": "Paste",
+        "ctrl-x": "Cut",
+        "ctrl-z": "Undo",
+        "ctrl-y": "Redo",
+        "alt-mouse-left": "Grab",
+        "shfit-mouse-left": "Multi Selection",
+        "mouse-left": "Select",
+        "mouse-right": "Context Memu",
+        "o": "Zoom 1:1",
+        "p": "Zoom Fit"
     }
 }

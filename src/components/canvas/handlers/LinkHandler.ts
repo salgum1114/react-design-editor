@@ -8,34 +8,34 @@ import { LinkObject } from '../objects/Link';
 
 export interface LinkOption {
     /**
-     * @description Link Type
+     * Link Type
      * @type {string}
      */
     type: string;
     /**
-     * @description FromNode id of Link
+     * FromNode id of Link
      * @type {string}
      */
     fromNodeId?: string;
     /**
-     * @description FromPort id of Link
+     * FromPort id of Link
      * @type {string}
      */
     fromPortId?: string;
     /**
-     * @description ToNode id of Link
+     * ToNode id of Link
      * @type {string}
      */
     toNodeId?: string;
     /**
-     * @description ToPort id of Link
+     * ToPort id of Link
      * @type {string}
      */
     toPortId?: string;
 }
 
 /**
- * @description Link Handler Class
+ * Link Handler Class
  * @author salgum1114
  * @class LinkHandler
  */
@@ -47,7 +47,7 @@ class LinkHandler {
     }
 
     /**
-     * @description On source port click, start link
+     * On source port click, start link
      * @param {PortObject} port
      */
     init = (port: PortObject) => {
@@ -78,7 +78,7 @@ class LinkHandler {
     }
 
     /**
-     * @description End drawing link.
+     * End drawing link.
      */
     finish = () => {
         this.handler.interactionMode = 'selection';
@@ -88,7 +88,7 @@ class LinkHandler {
     }
 
     /**
-     * @description On dest port click, finish link
+     * On dest port click, finish link
      * @param {PortObject} port
      */
     generate = (port: PortObject) => {
@@ -114,7 +114,7 @@ class LinkHandler {
     }
 
     /**
-     * @description Add link in Canvas
+     * Add link in Canvas
      * @param {LinkOption} link
      * @param {boolean} [loaded=false]
      * @param {boolean} [transaction=true]
@@ -144,7 +144,7 @@ class LinkHandler {
     }
 
     /**
-     * @description Set coordinate of link
+     * Set coordinate of link
      * @param {number} x1
      * @param {number} y1
      * @param {number} x2
@@ -162,7 +162,7 @@ class LinkHandler {
     }
 
     /**
-     * @description When the link is deleted, linked FromNode delete
+     * When the link is deleted, linked FromNode delete
      * @param {LinkObject} link
      */
     removeFrom = (link: LinkObject) => {
@@ -187,7 +187,7 @@ class LinkHandler {
     }
 
     /**
-     * @description When the link is deleted, linked ToNode delete
+     * When the link is deleted, linked ToNode delete
      * @param {LinkObject} link
      */
     removeTo = (link: LinkObject) => {
@@ -208,7 +208,7 @@ class LinkHandler {
     }
 
     /**
-     * @description When the link is deleted, linked node delete
+     * When the link is deleted, linked node delete
      * @param {LinkObject} link
      */
     removeAll = (link: LinkObject) => {
@@ -217,7 +217,7 @@ class LinkHandler {
     }
 
     /**
-     * @description Remove link in canvas
+     * Remove link in canvas
      * @param {LinkObject} link
      * @param {string} [type]
      */
@@ -234,7 +234,7 @@ class LinkHandler {
     }
 
     /**
-     * @description Check if there is a port connected
+     * Check if there is a port connected
      * @param {PortObject} port
      * @returns
      */
@@ -244,7 +244,7 @@ class LinkHandler {
     }
 
     /**
-     * @description Check if select same node
+     * Check if select same node
      * @param {PortObject} port
      * @returns
      */
@@ -255,7 +255,7 @@ class LinkHandler {
     }
 
     /**
-     * @description Check if select same node
+     * Check if select same node
      * @param {PortObject} port
      * @returns
      */
@@ -266,7 +266,7 @@ class LinkHandler {
     }
 
     /**
-     * @description Check if draw the link
+     * Check if draw the link
      * @returns
      */
     isDrawing = () => {

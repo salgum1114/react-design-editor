@@ -7,7 +7,7 @@ import { VideoObject } from '../objects/Video';
 import { NodeObject } from '../objects/Node';
 
 /**
- * @description Event Handler Class
+ * Event Handler Class
  * @author salgum1114
  * @class EventHandler
  */
@@ -20,7 +20,8 @@ class EventHandler {
     }
 
     /**
-     * @description Attch event on document
+     * Attch event on document
+     *
      */
     public attachEventListener = () => {
         if (this.handler.editable) {
@@ -57,12 +58,13 @@ class EventHandler {
         this.handler.canvas.wrapperEl.addEventListener('mousedown', this.onmousedown, false);
         this.handler.canvas.wrapperEl.addEventListener('contextmenu', this.contextmenu, false);
         if (this.handler.keyEvent.clipboard) {
-            this.handler.canvas.wrapperEl.addEventListener('paste', this.paste, false);
+            document.addEventListener('paste', this.paste, false);
         }
     }
 
     /**
-     * @description Detach event on document
+     * Detach event on document
+     *
      */
     public detachEventListener = () => {
         if (this.handler.editable) {
@@ -107,12 +109,12 @@ class EventHandler {
     }
 
     /**
-     * @description Individual object event
-     * @memberof EventHandler
+     * Individual object event
+     *
      */
     public object = {
         /**
-         * @description Mouse down event on object
+         * Mouse down event on object
          * @param {FabricEvent} opt
          */
         mousedown: (opt: FabricEvent) => {
@@ -125,7 +127,7 @@ class EventHandler {
             }
         },
         /**
-         * @description Mouse double click event on object
+         * Mouse double click event on object
          * @param {FabricEvent} opt
          */
         mousedblclick: (opt: FabricEvent) => {
@@ -140,7 +142,8 @@ class EventHandler {
     }
 
     /**
-     * @description Modified event object
+     * Modified event object
+     *
      * @param {FabricEvent} opt
      * @returns
      */
@@ -159,7 +162,8 @@ class EventHandler {
     }
 
     /**
-     * @description Moving event object
+     * Moving event object
+     *
      * @param {FabricEvent} opt
      * @returns
      */
@@ -198,7 +202,8 @@ class EventHandler {
     }
 
     /**
-     * @description Moved event object
+     * Moved event object
+     *
      * @param {FabricEvent} opt
      */
     public moved = (opt: FabricEvent) => {
@@ -215,7 +220,8 @@ class EventHandler {
     }
 
     /**
-     * @description Scaling event object
+     * Scaling event object
+     *
      * @param {FabricEvent} opt
      */
     public scaling = (opt: FabricEvent) => {
@@ -239,7 +245,8 @@ class EventHandler {
     }
 
     /**
-     * @description Scaled event object
+     * Scaled event object
+     *
      * @param {FabricEvent} opt
      */
     public scaled = (_opt: FabricEvent) => {
@@ -249,7 +256,8 @@ class EventHandler {
     }
 
     /**
-     * @description Rotating event object
+     * Rotating event object
+     *
      * @param {FabricEvent} opt
      */
     public rotating = (opt: FabricEvent) => {
@@ -263,7 +271,8 @@ class EventHandler {
     }
 
     /**
-     * @description Rotated event object
+     * Rotated event object
+     *
      * @param {FabricEvent} opt
      */
     public rotated = (_opt: FabricEvent) => {
@@ -273,7 +282,8 @@ class EventHandler {
     }
 
     /**
-     * @description Moing object at keyboard arrow key down event
+     * Moing object at keyboard arrow key down event
+     *
      * @param {KeyboardEvent} e
      * @returns
      */
@@ -313,7 +323,8 @@ class EventHandler {
     }
 
     /**
-     * @description Zoom at mouse wheel event
+     * Zoom at mouse wheel event
+     *
      * @param {FabricEvent<WheelEvent>} opt
      * @returns
      */
@@ -336,7 +347,8 @@ class EventHandler {
     }
 
     /**
-     * @description Mouse down event on object
+     * Mouse down event on object
+     *
      * @param {FabricEvent<MouseEvent>} opt
      * @returns
      */
@@ -407,7 +419,8 @@ class EventHandler {
     }
 
     /**
-     * @description Mouse move event on canvas
+     * Mouse move event on canvas
+     *
      * @param {FabricEvent<MouseEvent>} opt
      * @returns
      */
@@ -466,7 +479,8 @@ class EventHandler {
     }
 
     /**
-     * @description Mouse up event on canvas
+     * Mouse up event on canvas
+     *
      * @param {FabricEvent<MouseEvent>} opt
      * @returns
      */
@@ -499,7 +513,8 @@ class EventHandler {
     }
 
     /**
-     * @description Mouse out event on canvas
+     * Mouse out event on canvas
+     *
      * @param {FabricEvent<MouseEvent>} opt
      */
     public mouseout = (opt: FabricEvent) => {
@@ -510,7 +525,8 @@ class EventHandler {
     }
 
     /**
-     * @description Selection event event on canvas
+     * Selection event event on canvas
+     *
      * @param {FabricEvent} opt
      */
     public selection = (opt: FabricEvent) => {
@@ -527,7 +543,8 @@ class EventHandler {
     }
 
     /**
-     * @description Before the render
+     * Before the render
+     *
      * @param {FabricEvent} _opt
      */
     public beforeRender = (_opt: FabricEvent) => {
@@ -535,7 +552,8 @@ class EventHandler {
     }
 
     /**
-     * @description After the render
+     * After the render
+     *
      * @param {FabricEvent} _opt
      */
     public afterRender = (_opt: FabricEvent) => {
@@ -550,7 +568,8 @@ class EventHandler {
     }
 
     /**
-     * @description Called resize event on canvas
+     * Called resize event on canvas
+     *
      * @param {number} nextWidth
      * @param {number} nextHeight
      * @returns
@@ -647,7 +666,8 @@ class EventHandler {
     }
 
     /**
-     * @description Paste event on canvas
+     * Paste event on canvas
+     *
      * @param {ClipboardEvent} e
      * @returns
      */
@@ -668,7 +688,8 @@ class EventHandler {
                     const textPlain = clipboardData.getData('text/plain');
                     try {
                         const objects = JSON.parse(textPlain);
-                        const { gridOption: { grid = 10 } } = this.handler;
+                        const { gridOption: { grid = 10 }, isCut } = this.handler;
+                        const padding = isCut ? 0 : grid;
                         if (objects && Array.isArray(objects)) {
                             const filteredObjects = objects.filter(obj => obj !== null);
                             if (filteredObjects.length === 1) {
@@ -676,8 +697,8 @@ class EventHandler {
                                 if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
                                     return;
                                 }
-                                obj.left = obj.properties.left + grid;
-                                obj.top = obj.properties.top + grid;
+                                obj.left = obj.properties.left + padding;
+                                obj.top = obj.properties.top + padding;
                                 const createdObj = this.handler.add(obj, false, true, false);
                                 this.handler.canvas.setActiveObject(createdObj as FabricObject);
                                 this.handler.canvas.requestRenderAll();
@@ -689,11 +710,11 @@ class EventHandler {
                                         return;
                                     }
                                     if (obj.superType === 'link') {
-                                        obj.fromNode = nodes[obj.fromNodeIndex].id;
-                                        obj.toNode = nodes[obj.toNodeIndex].id;
+                                        obj.fromNodeId = nodes[obj.fromNodeIndex].id;
+                                        obj.toNodeId = nodes[obj.toNodeIndex].id;
                                     } else {
-                                        obj.left = obj.properties.left + grid;
-                                        obj.top = obj.properties.top + grid;
+                                        obj.left = obj.properties.left + padding;
+                                        obj.top = obj.properties.top + padding;
                                     }
                                     const createdObj = this.handler.add(obj, false, true, false);
                                     if (obj.superType === 'node') {
@@ -712,6 +733,7 @@ class EventHandler {
                             if (!this.handler.transactionHandler.active) {
                                 this.handler.transactionHandler.save('paste');
                             }
+                            this.handler.isCut = false;
                             this.handler.copy();
                         }
                     } catch (error) {
@@ -749,7 +771,8 @@ class EventHandler {
     }
 
     /**
-     * @description Keydown event on document
+     * Keydown event on document
+     *
      * @param {KeyboardEvent} e
      */
     public keydown = (e: KeyboardEvent) => {
@@ -757,9 +780,9 @@ class EventHandler {
         if (!Object.keys(keyEvent).length) {
             return;
         }
-        const { move, all, copy, paste, esc, del, clipboard, transaction } = keyEvent;
+        const { clipboard } = keyEvent;
         if (this.handler.interactionHandler.isDrawingMode()) {
-            if (esc && e.keyCode === 27) {
+            if (this.handler.shortcutHandler.isEscape(e)) {
                 if (this.handler.interactionMode === 'polygon') {
                     this.handler.drawingHandler.polygon.finish();
                 } else if (this.handler.interactionMode === 'line') {
@@ -772,7 +795,7 @@ class EventHandler {
             }
             return;
         }
-        if (e.keyCode === 87) {
+        if (this.handler.shortcutHandler.isW(e)) {
             this.keyCode = e.keyCode;
             this.handler.interactionHandler.grab();
             return;
@@ -781,7 +804,7 @@ class EventHandler {
             this.handler.interactionHandler.grab();
             return;
         }
-        if (e.keyCode === 27 && esc) {
+        if (this.handler.shortcutHandler.isEscape(e)) {
             if (this.handler.interactionMode === 'selection') {
                 this.handler.canvas.discardActiveObject();
                 this.handler.canvas.renderAll();
@@ -792,27 +815,42 @@ class EventHandler {
             return;
         }
         if (editable) {
-            if (e.keyCode === 81) {
+            if (this.handler.shortcutHandler.isQ(e)) {
                 this.keyCode = e.keyCode;
-            } else if (e.keyCode === 46 && del) {
+            } else if (this.handler.shortcutHandler.isDelete(e)) {
                 this.handler.remove();
-            } else if (e.code.includes('Arrow') && move) {
+            } else if (this.handler.shortcutHandler.isArrow(e)) {
                 this.arrowmoving(e);
-            } else if (e.ctrlKey && e.keyCode === 65 && all) {
+            } else if (this.handler.shortcutHandler.isCtrlA(e)) {
                 e.preventDefault();
                 this.handler.selectAll();
-            } else if (e.ctrlKey && e.keyCode === 67 && copy) {
+            } else if (this.handler.shortcutHandler.isCtrlC(e)) {
                 e.preventDefault();
                 this.handler.copy();
-            } else if (e.ctrlKey && e.keyCode === 86 && paste && !clipboard) {
+            } else if (this.handler.shortcutHandler.isCtrlV(e) && !clipboard) {
                 e.preventDefault();
                 this.handler.paste();
-            } else if (e.ctrlKey && e.keyCode === 90 && transaction) {
+            } else if (this.handler.shortcutHandler.isCtrlX(e)) {
+                e.preventDefault();
+                this.handler.cut();
+            } else if (this.handler.shortcutHandler.isCtrlZ(e)) {
                 e.preventDefault();
                 this.handler.transactionHandler.undo();
-            } else if (e.ctrlKey && e.keyCode === 89 && transaction) {
+            } else if (this.handler.shortcutHandler.isCtrlY(e)) {
                 e.preventDefault();
                 this.handler.transactionHandler.redo();
+            } else if (this.handler.shortcutHandler.isPlus(e)) {
+                e.preventDefault();
+                this.handler.zoomHandler.zoomIn();
+            } else if (this.handler.shortcutHandler.isMinus(e)) {
+                e.preventDefault();
+                this.handler.zoomHandler.zoomOut();
+            } else if (this.handler.shortcutHandler.isO(e)) {
+                e.preventDefault();
+                this.handler.zoomHandler.zoomOneToOne();
+            } else if (this.handler.shortcutHandler.isP(e)) {
+                e.preventDefault();
+                this.handler.zoomHandler.zoomToFit();
             }
             return;
         }
@@ -820,20 +858,22 @@ class EventHandler {
     }
 
     /**
-     * @description Key up event on canvas
+     * Key up event on canvas
+     *
      * @param {KeyboardEvent} _e
      */
-    public keyup = (_e: KeyboardEvent) => {
+    public keyup = (e: KeyboardEvent) => {
         if (this.handler.interactionHandler.isDrawingMode()) {
             return;
         }
-        if (this.keyCode !== 87) {
+        if (!this.handler.shortcutHandler.isW(e)) {
             this.handler.interactionHandler.selection();
         }
     }
 
     /**
-     * @description Context menu event on canvas
+     * Context menu event on canvas
+     *
      * @param {MouseEvent} e
      */
     public contextmenu = (e: MouseEvent) => {
@@ -849,7 +889,8 @@ class EventHandler {
     }
 
     /**
-     * @description Mouse down event on canvas
+     * Mouse down event on canvas
+     *
      * @param {MouseEvent} _e
      */
     public onmousedown = (_e: MouseEvent) => {

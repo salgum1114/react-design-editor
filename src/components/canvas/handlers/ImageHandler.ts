@@ -102,7 +102,7 @@ const SHARPEN_MATRIX = [0, -1, 0, -1, 5, -1, 0, -1, 0];
 const EMBOSS_MATRIX = [1, 1, 1, 1, 0.7, -1, -1, -1, -1];
 
 /**
- * @description Image Handler
+ * Image Handler
  * @author salgum1114
  * @date 2019-09-01
  * @class ImageHandler
@@ -116,7 +116,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Create filter by type
+     * Create filter by type
      * @param {IFilter} filter
      */
     public createFilter = (filter: IFilter) => {
@@ -190,7 +190,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Create filter by types
+     * Create filter by types
      * @param {IFilter[]} filters
      */
     public createFilters = (filters: IFilter[]) => {
@@ -214,7 +214,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply filter by type
+     * Apply filter by type
      * @param {string} type
      * @param {*} [value]
      * @param {fabric.Image} [imageObj]
@@ -238,7 +238,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply filter in image
+     * Apply filter in image
      * @param {fabric.Image} [imageObj]
      * @param {number} index
      * @param {fabric.IBaseFilter} filter
@@ -253,7 +253,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply filter value in image
+     * Apply filter value in image
      * @param {fabric.Image} [imageObj]
      * @param {number} index
      * @param {string} prop
@@ -274,7 +274,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply grayscale in image
+     * Apply grayscale in image
      * @param {fabric.Image} [imageObj]
      * @param {boolean} [grayscale=false]
      * @param {GrayscaleModeType} [value]
@@ -286,7 +286,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply invert in image
+     * Apply invert in image
      * @param {fabric.Image} [imageObj]
      * @param {boolean} [invert=false]
      */
@@ -295,7 +295,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply remove color in image
+     * Apply remove color in image
      * @param {fabric.Image} [imageObj]
      * @param {boolean} [removeColor=false]
      * @param {RemoveColorFilter} [value]
@@ -305,7 +305,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply sepia in image
+     * Apply sepia in image
      * @param {fabric.Image} [imageObj]
      * @param {boolean} [sepia=false]
      */
@@ -314,7 +314,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply brownie in image
+     * Apply brownie in image
      * @param {boolean} [brownie=false]
      * @param {fabric.Image} [imageObj]
      */
@@ -323,7 +323,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply brightness in image
+     * Apply brightness in image
      * @param {boolean} [brightness=false]
      * @param {number} [value]
      * @param {fabric.Image} [imageObj]
@@ -335,7 +335,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply contrast in image
+     * Apply contrast in image
      * @param {boolean} [contrast=false]
      * @param {number} [value]
      * @param {fabric.Image} [imageObj]
@@ -347,7 +347,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply saturation in image
+     * Apply saturation in image
      * @param {boolean} [saturation=false]
      * @param {number} [value]
      * @param {fabric.Image} [imageObj]
@@ -359,7 +359,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply noise in image
+     * Apply noise in image
      * @param {boolean} [noise=false]
      * @param {number} [value]
      * @param {fabric.Image} [imageObj]
@@ -371,7 +371,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply vintage in image
+     * Apply vintage in image
      * @param {boolean} [vintage=false]
      * @param {fabric.Image} [imageObj]
      */
@@ -380,7 +380,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply pixelate in image
+     * Apply pixelate in image
      * @param {boolean} [pixelate=false]
      * @param {number} [value]
      * @param {fabric.Image} [imageObj]
@@ -392,7 +392,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply blur in image
+     * Apply blur in image
      * @param {boolean} [blur=false]
      * @param {number} [value]
      * @param {fabric.Image} imageObj
@@ -404,7 +404,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply sharpen in image
+     * Apply sharpen in image
      * @param {boolean} [sharpen=false]
      * @param {number[]} [value=[0, -1,  0, -1,  5, -1, 0, -1,  0]]
      * @param {fabric.Image} [imageObj]
@@ -416,7 +416,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply emboss in image
+     * Apply emboss in image
      * @param {boolean} [emboss=false]
      * @param {number[]} [value=[1, 1, 1, 1, 0.7, -1, -1, -1, -1]]
      * @param {fabric.Image} [imageObj]
@@ -428,7 +428,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply technicolor in image
+     * Apply technicolor in image
      * @param {boolean} [technicolor=false]
      * @param {fabric.Image} [imageObj]
      */
@@ -437,7 +437,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply polaroid in image
+     * Apply polaroid in image
      * @param {boolean} [polaroid=false]
      * @param {fabric.Image} [imageObj]
      */
@@ -446,7 +446,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply blend color in image
+     * Apply blend color in image
      * @param {boolean} [blend=false]
      * @param {BlendColorFilter} [value]
      * @param {fabric.Image} [imageObj]
@@ -456,7 +456,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply gamma in image
+     * Apply gamma in image
      * @param {boolean} [gamma=false]
      * @param {GammaFilter} [value]
      * @param {fabric.Image} [imageObj]
@@ -466,7 +466,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply kodachrome in image
+     * Apply kodachrome in image
      * @param {boolean} [kodachrome=false]
      * @param {fabric.Image} [imageObj]
      */
@@ -475,7 +475,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply black white in image
+     * Apply black white in image
      * @param {boolean} [blackWhite=false]
      * @param {fabric.Image} [imageObj]
      */
@@ -484,7 +484,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply blend image in image
+     * Apply blend image in image
      * @param {boolean} [blendImage=false]
      * @param {BlendImageFilter} value
      * @param {fabric.Image} [imageObj]
@@ -494,7 +494,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply hue rotation in image
+     * Apply hue rotation in image
      * @param {boolean} [hue=false]
      * @param {HueRotationFilter} [value]
      * @param {fabric.Image} [imageObj]
@@ -506,7 +506,7 @@ class ImageHandler {
     // }
 
     /**
-     * @description Apply resize in image
+     * Apply resize in image
      * @param {boolean} [resize=false]
      * @param {ResizeFilter} [value]
      * @param {fabric.Image} [imageObj]
@@ -516,7 +516,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply tint in image
+     * Apply tint in image
      * @param {boolean} [tint=false]
      * @param {TintFilter} [value]
      * @param {fabric.Image} [imageObj]
@@ -526,7 +526,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply mask in image
+     * Apply mask in image
      * @param {boolean} [mask=false]
      * @param {MaskFilter} [value]
      * @param {fabric.Image} [imageObj]
@@ -536,7 +536,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply multiply in image
+     * Apply multiply in image
      * @param {boolean} [multiply=false]
      * @param {MultiplyFilter} [value]
      * @param {fabric.Image} [imageObj]
@@ -546,7 +546,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply sepia2 in image
+     * Apply sepia2 in image
      * @param {boolean} [sepia2=false]
      * @param {fabric.Image} [imageObj]
      */
@@ -555,7 +555,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply gradient transparency in image
+     * Apply gradient transparency in image
      * @param {boolean} [gradientTransparency=false]
      * @param {GradientTransparencyFilter} [value]
      * @param {fabric.Image} [imageObj]
@@ -565,7 +565,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply color matrix in image
+     * Apply color matrix in image
      * @param {boolean} [colorMatrix=false]
      * @param {ColorMatrixFilter} [value]
      * @param {fabric.Image} [imageObj]
@@ -575,7 +575,7 @@ class ImageHandler {
     }
 
     /**
-     * @description Apply remove white in image
+     * Apply remove white in image
      * @param {boolean} [removeWhite=false]
      * @param {RemoveWhiteFilter} [value]
      * @param {fabric.Image} [imageObj]

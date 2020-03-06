@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
-import { Button, Menu, Tooltip } from 'antd';
+import { Button, Menu, Tooltip, Modal } from 'antd';
 import PropTypes from 'prop-types';
 import i18n from 'i18next';
 
 import { FlexBox } from '../components/flex';
 import Icon from '../components/icon/Icon';
+import { ShortcutHelp } from '../components/help';
 
 class Title extends Component {
     static propTypes = {
         currentMenu: PropTypes.string,
         onChangeMenu: PropTypes.func,
+    }
+
+    state = {
+        visible: false,
     }
 
     componentDidMount() {
@@ -25,9 +30,15 @@ class Title extends Component {
         goDocs: () => {
             window.open('https://salgum1114.github.io/react-design-editor/docs');
         },
+        showHelp: () => {
+            this.setState({
+                visible: true,
+            });
+        },
     }
 
     render() {
+        const { visible } = this.state;
         return (
             <FlexBox style={{ background: 'linear-gradient(141deg,#23303e,#404040 51%,#23303e 75%)' }} flexWrap="wrap" flex="1" alignItems="center">
                 <FlexBox style={{ marginLeft: 8 }} flex="0 1 auto">
@@ -58,6 +69,19 @@ class Title extends Component {
                             <Icon name="book" prefix="fas" size={1.5} />
                         </Button>
                     </Tooltip>
+                    <Tooltip title={i18n.t('action.shortcut-help')} overlayStyle={{ fontSize: 16 }}>
+                        <Button
+                            className="rde-action-btn"
+                            style={{
+                                color: 'white',
+                            }}
+                            shape="circle"
+                            size="large"
+                            onClick={this.handlers.showHelp}
+                        >
+                            <Icon name="question" prefix="fas" size={1.5} />
+                        </Button>
+                    </Tooltip>
                 </FlexBox>
                 <FlexBox style={{ marginLeft: 88 }}>
                     <Menu mode="horizontal" theme="dark" style={{ background: 'transparent', fontSize: '16px' }} onClick={this.props.onChangeMenu} selectedKeys={[this.props.current]}>
@@ -73,6 +97,15 @@ class Title extends Component {
                         data-ad-slot="5790685139"
                     />
                 </FlexBox>
+                <Modal
+                    visible={visible}
+                    onCancel={() => this.setState({ visible: false })}
+                    closable
+                    footer={null}
+                    width="50%"
+                >
+                    <ShortcutHelp />
+                </Modal>
             </FlexBox>
         );
     }

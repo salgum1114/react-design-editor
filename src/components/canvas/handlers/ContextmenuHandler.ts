@@ -3,7 +3,6 @@ import debounce from 'lodash/debounce';
 
 import { Handler } from '.';
 
-
 class ContextmenuHandler {
     handler: Handler;
     contextmenuEl: HTMLDivElement;
@@ -14,7 +13,8 @@ class ContextmenuHandler {
     }
 
     /**
-     * @description Init context menu
+     * Init context menu
+     *
      */
     public init = () => {
         this.contextmenuEl = document.createElement('div');
@@ -24,8 +24,8 @@ class ContextmenuHandler {
     }
 
     /**
-     * @description Show context menu
-     * @memberof ContextmenuHandler
+     * Show context menu
+     *
      */
     public show = debounce(async (e, target) => {
         const { onContext } = this.handler;
@@ -48,8 +48,8 @@ class ContextmenuHandler {
     }, 100)
 
     /**
-     * @description Hide context menu
-     * @memberof ContextmenuHandler
+     * Hide context menu
+     *
      */
     public hide = debounce(() => {
         if (this.contextmenuEl) {
