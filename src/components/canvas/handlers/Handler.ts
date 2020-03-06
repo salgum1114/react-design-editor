@@ -267,6 +267,7 @@ class Handler implements HandlerOptions {
     public target?: FabricObject;
     public pointArray?: any[];
     public lineArray?: any[];
+    public isCut = false;
 
     private isRequsetAnimFrame = false;
     private requestFrame: any;
@@ -1022,6 +1023,7 @@ class Handler implements HandlerOptions {
     public cut = () => {
         this.copy();
         this.remove();
+        this.isCut = true;
     }
 
     /**
@@ -1069,7 +1071,7 @@ class Handler implements HandlerOptions {
                                         port.links.forEach((link: any) => {
                                             const linkTarget = {
                                                 fromNodeIndex: index,
-                                                fromPort: port.id,
+                                                fromPortId: port.id,
                                                 type: 'curvedLink',
                                                 superType: 'link',
                                             } as any;
@@ -1138,13 +1140,15 @@ class Handler implements HandlerOptions {
      * @returns
      */
     public paste = () => {
-        const { onAdd, propertiesToInclude, gridOption: { grid = 10 }, clipboard } = this;
+        const { onAdd, propertiesToInclude, gridOption: { grid = 10 }, clipboard, isCut } = this;
+        const padding = isCut ? 0 : grid;
         if (!clipboard) {
             return false;
         }
         if (typeof clipboard.cloneable !== 'undefined' && !clipboard.cloneable) {
             return false;
         }
+        this.isCut = false;
         if (clipboard.type === 'activeSelection') {
             if (clipboard.getObjects().some((obj: any) => obj.superType === 'node')) {
                 this.canvas.discardActiveObject();
@@ -1157,13 +1161,13 @@ class Handler implements HandlerOptions {
                     const clonedObj = obj.duplicate();
                     if (clonedObj.type === 'SwitchNode') {
                         clonedObj.set({
-                            left: obj.left + grid + grid,
-                            top: obj.top + grid,
+                            left: obj.left + padding + padding,
+                            top: obj.top + padding,
                         });
                     } else {
                         clonedObj.set({
-                            left: obj.left + grid,
-                            top: obj.top + grid,
+                            left: obj.left + padding,
+                            top: obj.top + padding,
                         });
                     }
                     if (obj.fromPort.length) {
@@ -1209,7 +1213,11 @@ class Handler implements HandlerOptions {
                     canvas: this.canvas,
                     ...this.activeSelection,
                 });
-                this.clipboard = activeSelection;
+                if (isCut) {
+                    this.clipboard = null;
+                } else {
+                    this.clipboard = activeSelection;
+                }
                 this.canvas.setActiveObject(activeSelection);
                 this.canvas.renderAll();
                 if (!this.transactionHandler.active) {
@@ -1221,15 +1229,15 @@ class Handler implements HandlerOptions {
         clipboard.clone((clonedObj: any) => {
             this.canvas.discardActiveObject();
             clonedObj.set({
-                left: clonedObj.left + grid,
-                top: clonedObj.top + grid,
-                id: uuid(),
+                left: clonedObj.left + padding,
+                top: clonedObj.top + padding,
+                id: isCut ? clonedObj.id : uuid(),
                 evented: true,
             });
             if (clonedObj.type === 'activeSelection') {
                 clonedObj.canvas = this.canvas;
                 clonedObj.forEachObject((obj: any) => {
-                    obj.set('id', uuid());
+                    obj.set('id', isCut ? obj.id : uuid());
                     this.canvas.add(obj);
                     if (obj.dblclick) {
                         obj.on('mousedblclick', this.eventHandler.object.mousedblclick);
@@ -1243,8 +1251,6 @@ class Handler implements HandlerOptions {
             } else {
                 if (clonedObj.superType === 'node') {
                     clonedObj = clonedObj.duplicate();
-                } else {
-                    clonedObj.set('id', uuid());
                 }
                 this.canvas.add(clonedObj);
                 if (clonedObj.dblclick) {
@@ -1259,7 +1265,11 @@ class Handler implements HandlerOptions {
                 top: clonedObj.top,
                 left: clonedObj.left,
             });
-            this.clipboard = newClipboard;
+            if (isCut) {
+                this.clipboard = null;
+            } else {
+                this.clipboard = newClipboard;
+            }
             this.canvas.setActiveObject(clonedObj);
             this.portHandler.create(clonedObj);
             this.canvas.requestRenderAll();

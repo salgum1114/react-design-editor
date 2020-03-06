@@ -58,7 +58,7 @@ class EventHandler {
         this.handler.canvas.wrapperEl.addEventListener('mousedown', this.onmousedown, false);
         this.handler.canvas.wrapperEl.addEventListener('contextmenu', this.contextmenu, false);
         if (this.handler.keyEvent.clipboard) {
-            this.handler.canvas.wrapperEl.addEventListener('paste', this.paste, false);
+            document.addEventListener('paste', this.paste, false);
         }
     }
 
@@ -688,7 +688,8 @@ class EventHandler {
                     const textPlain = clipboardData.getData('text/plain');
                     try {
                         const objects = JSON.parse(textPlain);
-                        const { gridOption: { grid = 10 } } = this.handler;
+                        const { gridOption: { grid = 10 }, isCut } = this.handler;
+                        const padding = isCut ? 0 : grid;
                         if (objects && Array.isArray(objects)) {
                             const filteredObjects = objects.filter(obj => obj !== null);
                             if (filteredObjects.length === 1) {
@@ -696,8 +697,8 @@ class EventHandler {
                                 if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
                                     return;
                                 }
-                                obj.left = obj.properties.left + grid;
-                                obj.top = obj.properties.top + grid;
+                                obj.left = obj.properties.left + padding;
+                                obj.top = obj.properties.top + padding;
                                 const createdObj = this.handler.add(obj, false, true, false);
                                 this.handler.canvas.setActiveObject(createdObj as FabricObject);
                                 this.handler.canvas.requestRenderAll();
@@ -709,11 +710,11 @@ class EventHandler {
                                         return;
                                     }
                                     if (obj.superType === 'link') {
-                                        obj.fromNode = nodes[obj.fromNodeIndex].id;
-                                        obj.toNode = nodes[obj.toNodeIndex].id;
+                                        obj.fromNodeId = nodes[obj.fromNodeIndex].id;
+                                        obj.toNodeId = nodes[obj.toNodeIndex].id;
                                     } else {
-                                        obj.left = obj.properties.left + grid;
-                                        obj.top = obj.properties.top + grid;
+                                        obj.left = obj.properties.left + padding;
+                                        obj.top = obj.properties.top + padding;
                                     }
                                     const createdObj = this.handler.add(obj, false, true, false);
                                     if (obj.superType === 'node') {
@@ -732,6 +733,7 @@ class EventHandler {
                             if (!this.handler.transactionHandler.active) {
                                 this.handler.transactionHandler.save('paste');
                             }
+                            this.handler.isCut = false;
                             this.handler.copy();
                         }
                     } catch (error) {
@@ -813,7 +815,6 @@ class EventHandler {
             return;
         }
         if (editable) {
-            e.preventDefault();
             if (this.handler.shortcutHandler.isQ(e)) {
                 this.keyCode = e.keyCode;
             } else if (this.handler.shortcutHandler.isDelete(e)) {
@@ -821,24 +822,34 @@ class EventHandler {
             } else if (this.handler.shortcutHandler.isArrow(e)) {
                 this.arrowmoving(e);
             } else if (this.handler.shortcutHandler.isCtrlA(e)) {
+                e.preventDefault();
                 this.handler.selectAll();
             } else if (this.handler.shortcutHandler.isCtrlC(e)) {
+                e.preventDefault();
                 this.handler.copy();
             } else if (this.handler.shortcutHandler.isCtrlV(e) && !clipboard) {
+                e.preventDefault();
                 this.handler.paste();
             } else if (this.handler.shortcutHandler.isCtrlX(e)) {
+                e.preventDefault();
                 this.handler.cut();
             } else if (this.handler.shortcutHandler.isCtrlZ(e)) {
+                e.preventDefault();
                 this.handler.transactionHandler.undo();
             } else if (this.handler.shortcutHandler.isCtrlY(e)) {
+                e.preventDefault();
                 this.handler.transactionHandler.redo();
             } else if (this.handler.shortcutHandler.isPlus(e)) {
+                e.preventDefault();
                 this.handler.zoomHandler.zoomIn();
             } else if (this.handler.shortcutHandler.isMinus(e)) {
+                e.preventDefault();
                 this.handler.zoomHandler.zoomOut();
             } else if (this.handler.shortcutHandler.isO(e)) {
+                e.preventDefault();
                 this.handler.zoomHandler.zoomOneToOne();
             } else if (this.handler.shortcutHandler.isP(e)) {
+                e.preventDefault();
                 this.handler.zoomHandler.zoomToFit();
             }
             return;
