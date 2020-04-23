@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { Form, Row, Col } from 'antd';
 import debounce from 'lodash/debounce';
 import ReactAce from 'react-ace';
-import 'brace/mode/javascript';
-import 'brace/mode/html';
-import 'brace/mode/css';
-import 'brace/theme/chrome';
+
+import 'ace-builds/src-noconflict/mode-html';
+import 'ace-builds/src-noconflict/mode-css';
+import 'ace-builds/src-noconflict/mode-javascript';
+import 'ace-builds/src-noconflict/theme-github';
 
 import AcePreview from './AcePreview';
 
@@ -125,7 +126,7 @@ class AceEditor extends Component {
                                 <ReactAce
                                     ref={(c) => { this.htmlRef = c; }}
                                     mode="html"
-                                    theme="chrome"
+                                    theme="github"
                                     width="100%"
                                     height="200px"
                                     defaultValue={html}
@@ -146,7 +147,7 @@ class AceEditor extends Component {
                                 <ReactAce
                                     ref={(c) => { this.cssRef = c; }}
                                     mode="css"
-                                    theme="chrome"
+                                    theme="github"
                                     width="100%"
                                     height="200px"
                                     defaultValue={css}
@@ -167,7 +168,7 @@ class AceEditor extends Component {
                                 <ReactAce
                                     ref={(c) => { this.jsRef = c; }}
                                     mode="javascript"
-                                    theme="chrome"
+                                    theme="github"
                                     width="100%"
                                     height="200px"
                                     defaultValue={js}

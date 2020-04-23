@@ -2,25 +2,25 @@ import { fabric } from 'fabric';
 import { v4 } from 'uuid';
 import i18next from 'i18next';
 
-import { FabricObject } from '../utils';
-import { LinkObject } from './Link';
-import Port, { PortObject } from './Port';
+import { FabricObject } from '../../canvas';
+import Port, { PortObject } from '../../canvas/objects/Port';
+import { LinkObject } from '../../canvas/objects/Link';
 
 export const NODE_COLORS = {
 	TRIGGER: {
-		fill: '#48C9B0',
+		fill: '#38424b',
 		border: '#1ABC9C',
 	},
 	LOGIC: {
-		fill: '#AF7AC5',
+		fill: '#38424b',
 		border: '#9B59B6',
 	},
 	DATA: {
-		fill: '#5DADE2',
+		fill: '#38424b',
 		border: '#3498DB',
 	},
 	ACTION: {
-		fill: '#F5B041',
+		fill: '#38424b',
 		border: 'rgb(243, 156, 18)',
 	},
 };
@@ -92,7 +92,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 			fontFamily: 'Font Awesome 5 Free',
 			fontWeight: 900,
 			fontSize: 20,
-			fill: 'rgba(255, 255, 255, 0.8)',
+			fill: options.stroke,
 		});
 		let name = 'Default Node';
 		if (options.name) {
@@ -129,6 +129,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 			originY: 'top',
 			hasRotatingPoint: false,
 			hasControls: false,
+			borderColor: 'red',
 		});
 		this.callSuper('initialize', node, option);
 		icon.set({

@@ -739,7 +739,7 @@ class EventHandler {
                     } catch (error) {
                         console.error(error);
                         // const item = {
-                        //     id: uuid(),
+                        //     id: uuv4id(),
                         //     type: 'textbox',
                         //     text: textPlain,
                         // };
@@ -754,7 +754,7 @@ class EventHandler {
                     //     const { type } = file;
                     //     if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
                     //         const item = {
-                    //             id: uuid(),
+                    //             id: v4(),
                     //             type: 'image',
                     //             file,
                     //             superType: 'image',

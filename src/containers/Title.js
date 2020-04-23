@@ -87,6 +87,7 @@ class Title extends Component {
                     <Menu mode="horizontal" theme="dark" style={{ background: 'transparent', fontSize: '16px' }} onClick={this.props.onChangeMenu} selectedKeys={[this.props.current]}>
                         <Menu.Item key="imagemap" style={{ color: '#fff' }}>{i18n.t('imagemap.imagemap')}</Menu.Item>
                         <Menu.Item key="workflow" style={{ color: '#fff' }}>{i18n.t('workflow.workflow')}</Menu.Item>
+                        <Menu.Item key="flow" style={{ color: '#fff' }}>{i18n.t('flow.flow')}</Menu.Item>
                     </Menu>
                 </FlexBox>
                 <FlexBox flex="1" justifyContent="flex-end">

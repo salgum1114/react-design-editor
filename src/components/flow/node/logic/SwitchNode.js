@@ -2,7 +2,7 @@ import { fabric } from 'fabric';
 import { v4 } from 'uuid';
 
 import LogicNode from './LogicNode';
-import { getEllipsis } from '../../configuration/NodeConfiguration';
+import { getEllipsis } from '../../../workflow/configuration/NodeConfiguration';
 import { Port } from '../../../canvas/objects';
 
 const SwitchNode = fabric.util.createClass(LogicNode, {
