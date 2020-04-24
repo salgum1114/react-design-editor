@@ -241,12 +241,13 @@ class NodeHandler {
 
     /**
      * Highlight node
+     *
      * @param {*} object
      * @param {number} [duration=500]
+     * @param {number} [minBlur=0]
+     * @param {number} [maxBlur=50]
      */
-    highlightingNode = (object: any, duration = 500) => {
-        const maxBlur = 50;
-        const minBlur = 0;
+    highlightingNode = (object: any, duration = 500, minBlur = 0, maxBlur = 50) => {
         const onComplete = () => {
             if (object.shadow.blur === maxBlur) {
                 object.animating = true;

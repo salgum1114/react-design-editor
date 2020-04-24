@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { fabric } from 'fabric';
-import uuid from 'uuid/v4';
+import { v4 } from 'uuid';
 import ResizeObserver from 'resize-observer-polyfill';
 import union from 'lodash/union';
 
@@ -35,6 +35,14 @@ const defaultKeyboardEvent = {
 	cut: true,
 };
 
+const defaultGripOption = {
+	enabled: false,
+	grid: 10,
+	snapToGrid: false,
+	lineColor: '#ebebeb',
+	borderColor: '#cccccc',
+};
+
 const defaultPropertiesToInclude = ['id', 'name', 'locke', 'editable'];
 
 export type CanvasProps = HandlerOptions & {
@@ -51,7 +59,7 @@ class Canvas extends Component<CanvasProps> {
 	public container = React.createRef<HTMLDivElement>();
 	private resizeObserver: ResizeObserver;
 	static defaultProps: CanvasProps = {
-		id: uuid(),
+		id: v4(),
 		editable: true,
 		canvasOption: {
 			selection: true,
@@ -66,11 +74,7 @@ class Canvas extends Component<CanvasProps> {
 		maxZoom: 300,
 		propertiesToInclude: defaultPropertiesToInclude,
 		workareaOption: {},
-		gridOption: {
-			enabled: false,
-			grid: 10,
-			snapToGrid: false,
-		},
+		gridOption: defaultGripOption,
 		guidelineOption: {
 			enabled: true,
 		},
@@ -79,7 +83,7 @@ class Canvas extends Component<CanvasProps> {
 	};
 
 	state = {
-		id: uuid(),
+		id: v4(),
 	};
 
 	componentDidMount() {
@@ -93,6 +97,7 @@ class Canvas extends Component<CanvasProps> {
 			defaultOption,
 			responsive,
 			propertiesToInclude,
+			gridOption,
 			...other
 		} = this.props;
 		const { id } = this.state;
@@ -118,6 +123,7 @@ class Canvas extends Component<CanvasProps> {
 			editable,
 			defaultOption,
 			propertiesToInclude: mergedPropertiesToInclude,
+			gridOption: Object.assign({}, defaultGripOption, gridOption),
 			...other,
 		});
 		this.handler.gridHandler.init();
