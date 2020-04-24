@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Canvas | react-design-editor - v0.0.22</title>
-	<meta name="description" content="">
+	<title>Canvas | react-design-editor</title>
+	<meta name="description" content="Documentation for react-design-editor">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">react-design-editor - v0.0.22</a>
+					<a href="../index.html" class="title">react-design-editor</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -160,11 +160,20 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from Component.__constructor</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:425</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:486</li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<dl class="tsd-comment-tags">
+									<dt>deprecated</dt>
+									<dd></dd>
+									<dt>see</dt>
+									<dd><p><a href="https://reactjs.org/docs/legacy-context.html">https://reactjs.org/docs/legacy-context.html</a></p>
+									</dd>
+								</dl>
+							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
@@ -175,9 +184,9 @@
 						</li>
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from Component.__constructor</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:427</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:488</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -211,17 +220,17 @@
 					<div class="tsd-signature tsd-kind-icon">canvas<span class="tsd-signature-symbol">:</span> <a href="../globals.html#fabriccanvas" class="tsd-signature-type">FabricCanvas</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L50">src/components/canvas/Canvas.tsx:50</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L58">src/components/canvas/Canvas.tsx:58</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="container" class="tsd-anchor"></a>
 					<h3>container</h3>
-					<div class="tsd-signature tsd-kind-icon">container<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RefObject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HTMLDivElement</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> =&nbsp;React.createRef&lt;HTMLDivElement&gt;()</span></div>
+					<div class="tsd-signature tsd-kind-icon">container<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RefObject</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HTMLDivElement</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = React.createRef&lt;HTMLDivElement&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L51">src/components/canvas/Canvas.tsx:51</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L59">src/components/canvas/Canvas.tsx:59</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -230,24 +239,25 @@
 					<h3>context</h3>
 					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from Component.context</p>
+						<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#context">context</a></p>
 						<ul>
-							<li>Defined in node_modules/@types/react/index.d.ts:425</li>
+							<li>Defined in node_modules/@types/react/index.d.ts:486</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>If using the new style context, re-declare this in your class to be the
-							<code>React.ContextType</code> of your <code>static contextType</code>.</p>
+								<code>React.ContextType</code> of your <code>static contextType</code>.
+							Should be used with type annotation or static contextType.</p>
 						</div>
 						<pre><code class="language-ts"><span class="hljs-keyword">static</span> contextType = MyContext
-context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContext&gt;</code></pre>
+<span class="hljs-comment">// For TS pre-3.7:</span>
+context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContext&gt;
+<span class="hljs-comment">// For TS 3.7 and above:</span>
+<span class="hljs-keyword">declare</span> context: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContext&gt;</code></pre>
 						<dl class="tsd-comment-tags">
-							<dt>deprecated</dt>
-							<dd><p>if used without a type annotation, or without static contextType</p>
-							</dd>
 							<dt>see</dt>
-							<dd><p><a href="https://reactjs.org/docs/legacy-context.html">https://reactjs.org/docs/legacy-context.html</a></p>
+							<dd><p><a href="https://reactjs.org/docs/context.html">https://reactjs.org/docs/context.html</a></p>
 							</dd>
 						</dl>
 					</div>
@@ -258,29 +268,29 @@ context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContex
 					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="handler.html" class="tsd-signature-type">Handler</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L49">src/components/canvas/Canvas.tsx:49</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L57">src/components/canvas/Canvas.tsx:57</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="props" class="tsd-anchor"></a>
 					<h3>props</h3>
-					<div class="tsd-signature tsd-kind-icon">props<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#canvasprops" class="tsd-signature-type">CanvasProps</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">props<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#canvasprops" class="tsd-signature-type">CanvasProps</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>children<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ReactNode</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from Component.props</p>
+						<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#props">props</a></p>
 						<ul>
-							<li>Defined in node_modules/@types/react/index.d.ts:450</li>
+							<li>Defined in node_modules/@types/react/index.d.ts:511</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-external">
 					<a name="refs" class="tsd-anchor"></a>
 					<h3>refs</h3>
-					<div class="tsd-signature tsd-kind-icon">refs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<div class="tsd-signature tsd-kind-icon">refs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from Component.refs</p>
+						<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#refs">refs</a></p>
 						<ul>
-							<li>Defined in node_modules/@types/react/index.d.ts:456</li>
+							<li>Defined in node_modules/@types/react/index.d.ts:517</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -305,7 +315,7 @@ context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContex
 					<div class="tsd-signature tsd-kind-icon">resize<wbr>Observer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ResizeObserver</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L52">src/components/canvas/Canvas.tsx:52</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L60">src/components/canvas/Canvas.tsx:60</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -314,9 +324,9 @@ context!: React.ContextType&lt;<span class="hljs-keyword">typeof</span> MyContex
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> <span class="tsd-flag ts-flagOptional">Optional</span> context<wbr>Type</h3>
 					<div class="tsd-signature tsd-kind-icon">context<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Context</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from Component.contextType</p>
+						<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#contexttype">contextType</a></p>
 						<ul>
-							<li>Defined in node_modules/@types/react/index.d.ts:410</li>
+							<li>Defined in node_modules/@types/react/index.d.ts:468</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -353,9 +363,9 @@ class Foo extends React.Component {
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from DeprecatedLifecycle.UNSAFE_componentWillMount</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#unsafe_componentwillmount">UNSAFE_componentWillMount</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:638</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:712</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -391,9 +401,9 @@ class Foo extends React.Component {
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from DeprecatedLifecycle.UNSAFE_componentWillReceiveProps</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#unsafe_componentwillreceiveprops">UNSAFE_componentWillReceiveProps</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:670</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:744</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -440,9 +450,9 @@ class Foo extends React.Component {
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from DeprecatedLifecycle.UNSAFE_componentWillUpdate</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#unsafe_componentwillupdate">UNSAFE_componentWillUpdate</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:698</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:772</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -491,7 +501,7 @@ class Foo extends React.Component {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L208">src/components/canvas/Canvas.tsx:208</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L214">src/components/canvas/Canvas.tsx:214</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -507,9 +517,9 @@ class Foo extends React.Component {
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from ComponentLifecycle.componentDidCatch</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#componentdidcatch">componentDidCatch</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:567</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:641</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -542,7 +552,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Overrides ComponentLifecycle.componentDidMount</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L85">src/components/canvas/Canvas.tsx:85</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L89">src/components/canvas/Canvas.tsx:89</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -560,7 +570,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Overrides NewLifecycle.componentDidUpdate</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L134">src/components/canvas/Canvas.tsx:134</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L140">src/components/canvas/Canvas.tsx:140</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -582,9 +592,9 @@ class Foo extends React.Component {
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from DeprecatedLifecycle.componentWillMount</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#componentwillmount">componentWillMount</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:624</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:698</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -619,9 +629,9 @@ class Foo extends React.Component {
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from DeprecatedLifecycle.componentWillReceiveProps</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#componentwillreceiveprops">componentWillReceiveProps</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:653</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:727</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -669,7 +679,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Overrides ComponentLifecycle.componentWillUnmount</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L188">src/components/canvas/Canvas.tsx:188</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L194">src/components/canvas/Canvas.tsx:194</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -685,9 +695,9 @@ class Foo extends React.Component {
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from DeprecatedLifecycle.componentWillUpdate</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#componentwillupdate">componentWillUpdate</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:683</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:757</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -735,7 +745,7 @@ class Foo extends React.Component {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L200">src/components/canvas/Canvas.tsx:200</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L206">src/components/canvas/Canvas.tsx:206</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -746,22 +756,22 @@ class Foo extends React.Component {
 					<a name="forceupdate" class="tsd-anchor"></a>
 					<h3>force<wbr>Update</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">force<wbr>Update<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">force<wbr>Update<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from Component.forceUpdate</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#forceupdate">forceUpdate</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:442</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:503</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <span class="tsd-signature-type">function</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
-										<li class="tsd-parameter-siganture">
+										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
 												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
@@ -787,9 +797,9 @@ class Foo extends React.Component {
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from NewLifecycle.getSnapshotBeforeUpdate</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#getsnapshotbeforeupdate">getSnapshotBeforeUpdate</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:603</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:677</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -810,10 +820,7 @@ class Foo extends React.Component {
 									<h5>prevState: <span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">SS</span>
-								<span class="tsd-signature-symbol"> | </span>
-								<span class="tsd-signature-type">null</span>
-							</h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">SS</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -828,7 +835,7 @@ class Foo extends React.Component {
 							<aside class="tsd-sources">
 								<p>Overrides Component.render</p>
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L214">src/components/canvas/Canvas.tsx:214</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L220">src/components/canvas/Canvas.tsx:220</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Element</span></h4>
@@ -839,31 +846,31 @@ class Foo extends React.Component {
 					<a name="setstate" class="tsd-anchor"></a>
 					<h3>set<wbr>State</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>State&lt;K&gt;<span class="tsd-signature-symbol">(</span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span>, callback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>State&lt;K&gt;<span class="tsd-signature-symbol">(</span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>prevState<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol">&gt;</span>, props<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#canvasprops" class="tsd-signature-type">CanvasProps</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span>, callback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from Component.setState</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#setstate">setState</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:437</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:498</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>K<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">keyof S</span></h4>
+									<h4>K<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">S</span></h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>state: <span class="tsd-signature-type">function</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></h5>
+									<h5>state: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>prevState<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol">&gt;</span>, props<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#canvasprops" class="tsd-signature-type">CanvasProps</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">S</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <span class="tsd-signature-type">function</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> callback: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
 									<ul class="tsd-parameters">
-										<li class="tsd-parameter-siganture">
+										<li class="tsd-parameter-signature">
 											<ul class="tsd-signatures tsd-kind-type-literal">
 												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 											</ul>
@@ -889,9 +896,9 @@ class Foo extends React.Component {
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Inherited from ComponentLifecycle.shouldComponentUpdate</p>
+								<p>Inherited from <a href="canvas.html">Canvas</a>.<a href="canvas.html#shouldcomponentupdate">shouldComponentUpdate</a></p>
 								<ul>
-									<li>Defined in node_modules/@types/react/index.d.ts:557</li>
+									<li>Defined in node_modules/@types/react/index.d.ts:631</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -930,16 +937,16 @@ class Foo extends React.Component {
 					<aside class="tsd-sources">
 						<p>Overrides Component.state</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L81">src/components/canvas/Canvas.tsx:81</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L85">src/components/canvas/Canvas.tsx:85</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="state.id" class="tsd-anchor"></a>
 						<h3>id</h3>
-						<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;uuid()</span></div>
+						<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = v4()</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L82">src/components/canvas/Canvas.tsx:82</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L86">src/components/canvas/Canvas.tsx:86</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -950,16 +957,16 @@ class Foo extends React.Component {
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Props<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L53">src/components/canvas/Canvas.tsx:53</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L61">src/components/canvas/Canvas.tsx:61</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.defaultoption" class="tsd-anchor"></a>
 						<h3>default<wbr>Option</h3>
-						<div class="tsd-signature tsd-kind-icon">default<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<div class="tsd-signature tsd-kind-icon">default<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L59">src/components/canvas/Canvas.tsx:59</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L67">src/components/canvas/Canvas.tsx:67</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -971,30 +978,60 @@ class Foo extends React.Component {
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.editable" class="tsd-anchor"></a>
 						<h3>editable</h3>
-						<div class="tsd-signature tsd-kind-icon">editable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+						<div class="tsd-signature tsd-kind-icon">editable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L55">src/components/canvas/Canvas.tsx:55</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L63">src/components/canvas/Canvas.tsx:63</a></li>
 							</ul>
 						</aside>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
-						<a name="defaultprops.id-1" class="tsd-anchor"></a>
-						<h3>id</h3>
-						<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;uuid()</span></div>
+						<a name="defaultprops.gridoption" class="tsd-anchor"></a>
+						<h3>grid<wbr>Option</h3>
+						<div class="tsd-signature tsd-kind-icon">grid<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>borderColor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>enabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>grid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>lineColor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>snapToGrid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = defaultGripOption</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L54">src/components/canvas/Canvas.tsx:54</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L77">src/components/canvas/Canvas.tsx:77</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-type-declaration">
+							<h4>Type declaration</h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter">
+									<h5>border<wbr>Color<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li class="tsd-parameter">
+									<h5>enabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								</li>
+								<li class="tsd-parameter">
+									<h5>grid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li class="tsd-parameter">
+									<h5>line<wbr>Color<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li class="tsd-parameter">
+									<h5>snap<wbr>ToGrid<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+						</div>
+					</section>
+					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
+						<a name="defaultprops.id-1" class="tsd-anchor"></a>
+						<h3>id</h3>
+						<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = v4()</span></div>
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L62">src/components/canvas/Canvas.tsx:62</a></li>
 							</ul>
 						</aside>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.keyevent" class="tsd-anchor"></a>
 						<h3>key<wbr>Event</h3>
-						<div class="tsd-signature tsd-kind-icon">key<wbr>Event<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<div class="tsd-signature tsd-kind-icon">key<wbr>Event<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L77">src/components/canvas/Canvas.tsx:77</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L81">src/components/canvas/Canvas.tsx:81</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1006,60 +1043,60 @@ class Foo extends React.Component {
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.maxzoom" class="tsd-anchor"></a>
 						<h3>max<wbr>Zoom</h3>
-						<div class="tsd-signature tsd-kind-icon">max<wbr>Zoom<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;300</span></div>
+						<div class="tsd-signature tsd-kind-icon">max<wbr>Zoom<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 300</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L66">src/components/canvas/Canvas.tsx:66</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L74">src/components/canvas/Canvas.tsx:74</a></li>
 							</ul>
 						</aside>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.minzoom" class="tsd-anchor"></a>
 						<h3>min<wbr>Zoom</h3>
-						<div class="tsd-signature tsd-kind-icon">min<wbr>Zoom<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;30</span></div>
+						<div class="tsd-signature tsd-kind-icon">min<wbr>Zoom<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 30</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L65">src/components/canvas/Canvas.tsx:65</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L73">src/components/canvas/Canvas.tsx:73</a></li>
 							</ul>
 						</aside>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.propertiestoinclude" class="tsd-anchor"></a>
 						<h3>properties<wbr>ToInclude</h3>
-						<div class="tsd-signature tsd-kind-icon">properties<wbr>ToInclude<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;defaultPropertiesToInclude</span></div>
+						<div class="tsd-signature tsd-kind-icon">properties<wbr>ToInclude<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = defaultPropertiesToInclude</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L67">src/components/canvas/Canvas.tsx:67</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L75">src/components/canvas/Canvas.tsx:75</a></li>
 							</ul>
 						</aside>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.responsive" class="tsd-anchor"></a>
 						<h3>responsive</h3>
-						<div class="tsd-signature tsd-kind-icon">responsive<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+						<div class="tsd-signature tsd-kind-icon">responsive<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L78">src/components/canvas/Canvas.tsx:78</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L82">src/components/canvas/Canvas.tsx:82</a></li>
 							</ul>
 						</aside>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.tooltip" class="tsd-anchor"></a>
 						<h3>tooltip</h3>
-						<div class="tsd-signature tsd-kind-icon">tooltip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> =&nbsp;null</span></div>
+						<div class="tsd-signature tsd-kind-icon">tooltip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L63">src/components/canvas/Canvas.tsx:63</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L71">src/components/canvas/Canvas.tsx:71</a></li>
 							</ul>
 						</aside>
 					</section>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.workareaoption" class="tsd-anchor"></a>
 						<h3>workarea<wbr>Option</h3>
-						<div class="tsd-signature tsd-kind-icon">workarea<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+						<div class="tsd-signature tsd-kind-icon">workarea<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L68">src/components/canvas/Canvas.tsx:68</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L76">src/components/canvas/Canvas.tsx:76</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -1071,10 +1108,10 @@ class Foo extends React.Component {
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 						<a name="defaultprops.zoomenabled" class="tsd-anchor"></a>
 						<h3>zoom<wbr>Enabled</h3>
-						<div class="tsd-signature tsd-kind-icon">zoom<wbr>Enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+						<div class="tsd-signature tsd-kind-icon">zoom<wbr>Enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L64">src/components/canvas/Canvas.tsx:64</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L72">src/components/canvas/Canvas.tsx:72</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -1084,16 +1121,16 @@ class Foo extends React.Component {
 						<div class="tsd-signature tsd-kind-icon">active<wbr>Selection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L60">src/components/canvas/Canvas.tsx:60</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L68">src/components/canvas/Canvas.tsx:68</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 							<a name="defaultprops.activeselection.hascontrols" class="tsd-anchor"></a>
 							<h3>has<wbr>Controls</h3>
-							<div class="tsd-signature tsd-kind-icon">has<wbr>Controls<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+							<div class="tsd-signature tsd-kind-icon">has<wbr>Controls<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L61">src/components/canvas/Canvas.tsx:61</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L69">src/components/canvas/Canvas.tsx:69</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1104,56 +1141,16 @@ class Foo extends React.Component {
 						<div class="tsd-signature tsd-kind-icon">canvas<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L56">src/components/canvas/Canvas.tsx:56</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L64">src/components/canvas/Canvas.tsx:64</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 							<a name="defaultprops.canvasoption.selection" class="tsd-anchor"></a>
 							<h3>selection</h3>
-							<div class="tsd-signature tsd-kind-icon">selection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+							<div class="tsd-signature tsd-kind-icon">selection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L57">src/components/canvas/Canvas.tsx:57</a></li>
-								</ul>
-							</aside>
-						</section>
-					</section>
-					<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-object-literal tsd-is-external">
-						<a name="defaultprops.gridoption" class="tsd-anchor"></a>
-						<h3>grid<wbr>Option</h3>
-						<div class="tsd-signature tsd-kind-icon">grid<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L69">src/components/canvas/Canvas.tsx:69</a></li>
-							</ul>
-						</aside>
-						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
-							<a name="defaultprops.gridoption.enabled" class="tsd-anchor"></a>
-							<h3>enabled</h3>
-							<div class="tsd-signature tsd-kind-icon">enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L70">src/components/canvas/Canvas.tsx:70</a></li>
-								</ul>
-							</aside>
-						</section>
-						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
-							<a name="defaultprops.gridoption.grid" class="tsd-anchor"></a>
-							<h3>grid</h3>
-							<div class="tsd-signature tsd-kind-icon">grid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;10</span></div>
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L71">src/components/canvas/Canvas.tsx:71</a></li>
-								</ul>
-							</aside>
-						</section>
-						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
-							<a name="defaultprops.gridoption.snaptogrid" class="tsd-anchor"></a>
-							<h3>snap<wbr>ToGrid</h3>
-							<div class="tsd-signature tsd-kind-icon">snap<wbr>ToGrid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> =&nbsp;false</span></div>
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L72">src/components/canvas/Canvas.tsx:72</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L65">src/components/canvas/Canvas.tsx:65</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1164,16 +1161,16 @@ class Foo extends React.Component {
 						<div class="tsd-signature tsd-kind-icon">guideline<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L74">src/components/canvas/Canvas.tsx:74</a></li>
+								<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L78">src/components/canvas/Canvas.tsx:78</a></li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
 							<a name="defaultprops.guidelineoption.enabled-1" class="tsd-anchor"></a>
 							<h3>enabled</h3>
-							<div class="tsd-signature tsd-kind-icon">enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> =&nbsp;true</span></div>
+							<div class="tsd-signature tsd-kind-icon">enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/Canvas.tsx#L75">src/components/canvas/Canvas.tsx:75</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/Canvas.tsx#L79">src/components/canvas/Canvas.tsx:79</a></li>
 								</ul>
 							</aside>
 						</section>
@@ -1293,59 +1290,6 @@ class Foo extends React.Component {
 	<div class="container">
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
 		</div>
 	</div>
 </footer>
