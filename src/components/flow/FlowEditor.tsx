@@ -28,7 +28,11 @@ const FlowEditor = () => {
 			setSelectedFlowNode(null);
 		}
 	};
-	console.log(canvasRef);
+	const handleAdd = (target: NodeObject) => {
+		if (target.superType === 'node') {
+			canvasRef.current.handler.nodeHandler.highlightingNode(target, 100);
+		}
+	};
 	return (
 		<Container className="" loading={loading}>
 			<div className="flow-editor">
@@ -64,6 +68,7 @@ const FlowEditor = () => {
 									.toString(),
 							}}
 							onSelect={handleSelect}
+							onAdd={handleAdd}
 						/>
 					</div>
 					<div className="flow-editor-toolbar">

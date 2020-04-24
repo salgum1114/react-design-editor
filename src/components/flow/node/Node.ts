@@ -1,10 +1,11 @@
+import color from 'color';
 import { fabric } from 'fabric';
 import { v4 } from 'uuid';
 import i18next from 'i18next';
 
-import { FabricObject } from '../../canvas';
-import Port, { PortObject } from '../../canvas/objects/Port';
+import { FabricObject, CirclePort } from '../../canvas';
 import { LinkObject } from '../../canvas/objects/Link';
+import Port, { PortObject } from '../../canvas/objects/Port';
 
 export const NODE_COLORS = {
 	TRIGGER: {
@@ -129,7 +130,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 			originY: 'top',
 			hasRotatingPoint: false,
 			hasControls: false,
-			borderColor: 'red',
+			borderColor: '#08979c',
 		});
 		this.callSuper('initialize', node, option);
 		icon.set({
@@ -137,8 +138,8 @@ const Node = fabric.util.createClass(fabric.Group, {
 			left: icon.left + 10,
 		});
 		this.label.set({
-			top: this.label.top + this.label.height / 2 + 4,
-			left: this.label.left + 35,
+			top: this.label.top + this.label.height / 2 + 3,
+			left: this.label.left + 37,
 		});
 		this.errorFlag.set({
 			left: rect.left,
@@ -167,6 +168,9 @@ const Node = fabric.util.createClass(fabric.Group, {
 	},
 	defaultPortOption() {
 		const { type }: { type: NodeType } = this.descriptor as any;
+		const fill = color('#718096')
+			.lighten(0.2)
+			.toString();
 		return {
 			nodeId: this.id,
 			hasBorders: false,
@@ -178,13 +182,14 @@ const Node = fabric.util.createClass(fabric.Group, {
 			lockScalingX: true,
 			lockScalingY: true,
 			superType: 'port',
-			originFill: 'rgba(0, 0, 0, 0.1)',
-			hoverFill: 'green',
-			errorFill: 'red',
-			fill: 'rgba(0, 0, 0, 0.1)',
+			fill,
+			originFill: fill,
+			hoverFill: fill,
+			selectFill: fill,
 			hoverCursor: 'pointer',
 			strokeWidth: 2,
 			stroke: this.descriptor ? NODE_COLORS[type].border : 'rgba(0, 0, 0, 1)',
+			radius: 6,
 			width: 10,
 			height: 10,
 			links: [] as LinkObject[],
@@ -204,7 +209,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 	},
 	createToPort(left: number, top: number) {
 		if (this.descriptor.inEnabled) {
-			this.toPort = new Port({
+			this.toPort = new CirclePort({
 				id: 'defaultInPort',
 				type: 'toPort',
 				...this.toPortOption(),
@@ -245,9 +250,9 @@ const Node = fabric.util.createClass(fabric.Group, {
 				left: i === 0 ? portOption.left - 20 : portOption.left + 20,
 				top: portOption.top,
 				leftDiff: i === 0 ? -20 : 20,
-				fill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
-				originFill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
-				hoverFill: i === 0 ? 'rgba(0, 255, 0, 1)' : 'rgba(255, 0, 0, 1)',
+				fill: i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)',
+				originFill: i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)',
+				hoverFill: i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)',
 			});
 		});
 	},

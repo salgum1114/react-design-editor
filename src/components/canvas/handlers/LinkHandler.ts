@@ -40,6 +40,7 @@ export interface LinkOption {
  * @class LinkHandler
  */
 class LinkHandler {
+	private port: PortObject = null;
 	handler: Handler;
 
 	constructor(handler: Handler) {
@@ -57,6 +58,10 @@ class LinkHandler {
 		if (this.isConnected(port)) {
 			return;
 		}
+		this.port = port;
+		this.port.set({
+			fill: port.selectFill,
+		});
 		this.handler.interactionMode = 'link';
 		const { left, top, nodeId, id } = port;
 		const fromPort = { left, top, id };
@@ -80,7 +85,12 @@ class LinkHandler {
 	/**
 	 * End drawing link.
 	 */
-	finish = () => {
+	finish = (link?: LinkObject) => {
+		if (!link) {
+			this.port.set({
+				fill: this.port.originFill,
+			});
+		}
 		this.handler.interactionMode = 'selection';
 		this.handler.canvas.remove(this.handler.activeLine);
 		this.handler.activeLine = null;
@@ -109,8 +119,8 @@ class LinkHandler {
 			toNodeId: port.nodeId,
 			toPortId: port.id,
 		};
-		this.finish();
-		this.create(link);
+		const createdLink = this.create(link);
+		this.finish(createdLink);
 	};
 
 	/**
@@ -168,23 +178,21 @@ class LinkHandler {
 	 * @param {LinkObject} link
 	 */
 	removeFrom = (link: LinkObject) => {
-		if (link.fromNode.fromPort.length) {
+		if (link.fromPort) {
 			let index = -1;
-			link.fromNode.fromPort.forEach((port: any) => {
-				if (port.links.length) {
-					port.links.some((portLink: any, i: number) => {
-						if (link.id === portLink.id) {
-							index = i;
-							return true;
-						}
-						return false;
-					});
-					if (index > -1) {
-						port.links.splice(index, 1);
+			if (link.fromPort.links.length) {
+				link.fromPort.links.some((portLink: any, i: number) => {
+					if (link.id === portLink.id) {
+						index = i;
+						return true;
 					}
+					return false;
+				});
+				if (index > -1) {
+					link.fromPort.links.splice(index, 1);
 				}
-				link.setPortEnabled(link.fromNode, port, true);
-			});
+			}
+			link.setPortEnabled(link.fromNode, link.fromPort, true);
 		}
 	};
 

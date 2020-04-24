@@ -1,17 +1,8 @@
 import { fabric } from 'fabric';
 
-import { FabricObject } from '../utils';
-import { LinkObject } from './Link';
+import { PortObject } from './Port';
 
-export interface PortObject extends FabricObject<fabric.Rect> {
-	links?: LinkObject[];
-	nodeId?: string;
-	enabled?: boolean;
-	hoverFill?: string;
-	selectFill?: string;
-}
-
-const Port = fabric.util.createClass(fabric.Rect, {
+const CirclePort = fabric.util.createClass(fabric.Circle, {
 	type: 'port',
 	superType: 'port',
 	initialize(options: any) {
@@ -31,11 +22,11 @@ const Port = fabric.util.createClass(fabric.Rect, {
 	},
 });
 
-Port.fromObject = (options: PortObject, callback: (obj: PortObject) => any) => {
-	return callback(new Port(options));
+CirclePort.fromObject = (options: PortObject, callback: (obj: PortObject) => any) => {
+	return callback(new CirclePort(options));
 };
 
 // @ts-ignore
-window.fabric.Port = Port;
+window.fabric.CirclePort = CirclePort;
 
-export default Port;
+export default CirclePort;

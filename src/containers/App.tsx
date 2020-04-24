@@ -15,7 +15,7 @@ interface IState {
 
 class App extends Component<any, IState> {
 	state: IState = {
-		activeEditor: 'flow',
+		activeEditor: 'imagemap',
 	};
 
 	onChangeMenu = ({ key }) => {

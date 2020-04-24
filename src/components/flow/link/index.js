@@ -1,9 +1,17 @@
+import color from 'color';
+
 import { Link, CurvedLink, OrthogonalLink } from '../../canvas/objects';
 
 const defaultOption = {
 	fill: 'rgba(0, 0, 0, 0)',
-	stroke: 'rgb(95, 106, 106)',
-	originStroke: 'rgb(95, 106, 106)',
+	stroke: color('#718096')
+		.lighten(0.2)
+		.toString(),
+	originStroke: color('#718096')
+		.lighten(0.2)
+		.toString(),
+	// stroke: 'rgb(95, 106, 106)',
+	// originStroke: 'rgb(95, 106, 106)',
 	action: {
 		enabled: false,
 	},

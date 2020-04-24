@@ -71,7 +71,6 @@ class FlowItems extends Component<IProps> {
 	};
 
 	handleAddNode = (descriptor: any, centered = true) => {
-		console.log(this.props.canvas);
 		this.props.canvas.handler.add(
 			Object.assign({}, descriptor, {
 				id: v4(),

@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
 import { v4 } from 'uuid';
+import color from 'color';
 
 import LogicNode from './LogicNode';
 import { Port } from '../../../canvas/objects';
@@ -14,13 +15,12 @@ const FilterNode = fabric.util.createClass(LogicNode, {
 			return new Port({
 				id: outPort,
 				type: 'fromPort',
-				left: i === 0 ? left - 20 : left + 20,
+				left: i === 0 ? left - 40 : left + 40,
 				top,
-				leftDiff: i === 0 ? -20 : 20,
+				leftDiff: i === 0 ? -40 : 40,
 				...this.fromPortOption(),
-				fill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
-				originFill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
-				hoverFill: i === 0 ? 'rgba(0, 255, 0, 1)' : 'rgba(255, 0, 0, 1)',
+				fill: i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)',
+				originFill: i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)',
 			});
 		});
 		return this.fromPort;

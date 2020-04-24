@@ -725,7 +725,6 @@ class Handler implements HandlerOptions {
 				createdObj.setShadow({
 					color: createdObj.stroke,
 				} as fabric.Shadow);
-				this.nodeHandler.highlightingNode(createdObj);
 			}
 		}
 		if (gridOption.enabled) {
