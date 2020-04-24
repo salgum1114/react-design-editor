@@ -3,8 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>TooltipHandler | react-design-editor - v0.0.22</title>
-	<meta name="description" content="">
+	<title>TooltipHandler | react-design-editor</title>
+	<meta name="description" content="Documentation for react-design-editor">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
 </head>
@@ -13,7 +13,7 @@
 	<div class="tsd-page-toolbar">
 		<div class="container">
 			<div class="table-wrap">
-				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
 					<div class="field">
 						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
 						<input id="tsd-search-field" type="text" />
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="../index.html" class="title">react-design-editor - v0.0.22</a>
+					<a href="../index.html" class="title">react-design-editor</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -115,7 +115,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/handlers/TooltipHandler.ts#L10">src/components/canvas/handlers/TooltipHandler.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/handlers/TooltipHandler.ts#L10">src/components/canvas/handlers/TooltipHandler.ts:10</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -137,17 +137,17 @@
 					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="handler.html" class="tsd-signature-type">Handler</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/handlers/TooltipHandler.ts#L8">src/components/canvas/handlers/TooltipHandler.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/handlers/TooltipHandler.ts#L8">src/components/canvas/handlers/TooltipHandler.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="hide" class="tsd-anchor"></a>
 					<h3>hide</h3>
-					<div class="tsd-signature tsd-kind-icon">hide<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> =&nbsp;debounce((_target?: fabric.Object) &#x3D;&gt; {this.handler.target &#x3D; null;if (this.tooltipEl) {this.tooltipEl.classList.add(&#x27;tooltip-hidden&#x27;);}}, 100)</span></div>
+					<div class="tsd-signature tsd-kind-icon">hide<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> = debounce((_target?: fabric.Object) &#x3D;&gt; {this.handler.target &#x3D; null;if (this.tooltipEl) {this.tooltipEl.classList.add(&#x27;tooltip-hidden&#x27;);}}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/handlers/TooltipHandler.ts#L76">src/components/canvas/handlers/TooltipHandler.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/handlers/TooltipHandler.ts#L76">src/components/canvas/handlers/TooltipHandler.ts:76</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -163,10 +163,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="show" class="tsd-anchor"></a>
 					<h3>show</h3>
-					<div class="tsd-signature tsd-kind-icon">show<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> =&nbsp;debounce(async (target?: FabricObject) &#x3D;&gt; {if (target.tooltip &amp;&amp; target.tooltip.enabled) {while (this.tooltipEl.hasChildNodes()) {this.tooltipEl.removeChild(this.tooltipEl.firstChild);}const tooltip &#x3D; document.createElement(&#x27;div&#x27;);tooltip.className &#x3D; &#x27;rde-tooltip-right&#x27;;let element &#x3D; target.name as any;const { onTooltip } &#x3D; this.handler;if (onTooltip) {element &#x3D; await onTooltip(this.tooltipEl, target);if (!element) {return;}}tooltip.innerHTML &#x3D; element;this.tooltipEl.appendChild(tooltip);ReactDOM.render(element, tooltip);this.tooltipEl.classList.remove(&#x27;tooltip-hidden&#x27;);const zoom &#x3D; this.handler.canvas.getZoom();const { clientHeight } &#x3D; this.tooltipEl;const { width, height, scaleX, scaleY } &#x3D; target;const { left, top } &#x3D; target.getBoundingRect();const { _offset: offset } &#x3D; this.handler.canvas.calcOffset() as any;const objWidthDiff &#x3D; (width * scaleX) * zoom;const objHeightDiff &#x3D; (((height * scaleY) * zoom) / 2) - (clientHeight / 2);const calcLeft &#x3D; offset.left + left + objWidthDiff;const calcTop &#x3D; offset.top + top + objHeightDiff;if (document.body.clientWidth &lt;&#x3D; (calcLeft + this.tooltipEl.offsetWidth)) {this.tooltipEl.style.left &#x3D; &#x60;${left + offset.left - this.tooltipEl.offsetWidth}px&#x60;;tooltip.className &#x3D; &#x27;rde-tooltip-left&#x27;;} else {this.tooltipEl.style.left &#x3D; &#x60;${calcLeft}px&#x60;;}this.tooltipEl.style.top &#x3D; &#x60;${calcTop}px&#x60;;this.handler.target &#x3D; target;}}, 100)</span></div>
+					<div class="tsd-signature tsd-kind-icon">show<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> = debounce(async (target?: FabricObject) &#x3D;&gt; {if (target.tooltip &amp;&amp; target.tooltip.enabled) {while (this.tooltipEl.hasChildNodes()) {this.tooltipEl.removeChild(this.tooltipEl.firstChild);}const tooltip &#x3D; document.createElement(&#x27;div&#x27;);tooltip.className &#x3D; &#x27;rde-tooltip-right&#x27;;let element &#x3D; target.name as any;const { onTooltip } &#x3D; this.handler;if (onTooltip) {element &#x3D; await onTooltip(this.tooltipEl, target);if (!element) {return;}}tooltip.innerHTML &#x3D; element;this.tooltipEl.appendChild(tooltip);ReactDOM.render(element, tooltip);this.tooltipEl.classList.remove(&#x27;tooltip-hidden&#x27;);const zoom &#x3D; this.handler.canvas.getZoom();const { clientHeight } &#x3D; this.tooltipEl;const { width, height, scaleX, scaleY } &#x3D; target;const { left, top } &#x3D; target.getBoundingRect();const { _offset: offset } &#x3D; this.handler.canvas.calcOffset() as any;const objWidthDiff &#x3D; (width * scaleX) * zoom;const objHeightDiff &#x3D; (((height * scaleY) * zoom) / 2) - (clientHeight / 2);const calcLeft &#x3D; offset.left + left + objWidthDiff;const calcTop &#x3D; offset.top + top + objHeightDiff;if (document.body.clientWidth &lt;&#x3D; (calcLeft + this.tooltipEl.offsetWidth)) {this.tooltipEl.style.left &#x3D; &#x60;${left + offset.left - this.tooltipEl.offsetWidth}px&#x60;;tooltip.className &#x3D; &#x27;rde-tooltip-left&#x27;;} else {this.tooltipEl.style.left &#x3D; &#x60;${calcLeft}px&#x60;;}this.tooltipEl.style.top &#x3D; &#x60;${calcTop}px&#x60;;this.handler.target &#x3D; target;}}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/handlers/TooltipHandler.ts#L33">src/components/canvas/handlers/TooltipHandler.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/handlers/TooltipHandler.ts#L33">src/components/canvas/handlers/TooltipHandler.ts:33</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -185,7 +185,7 @@
 					<div class="tsd-signature tsd-kind-icon">target<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/handlers/TooltipHandler.ts#L10">src/components/canvas/handlers/TooltipHandler.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/handlers/TooltipHandler.ts#L10">src/components/canvas/handlers/TooltipHandler.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -195,7 +195,7 @@
 					<div class="tsd-signature tsd-kind-icon">tooltip<wbr>El<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLDivElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/handlers/TooltipHandler.ts#L9">src/components/canvas/handlers/TooltipHandler.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/handlers/TooltipHandler.ts#L9">src/components/canvas/handlers/TooltipHandler.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -212,7 +212,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/79728f6/src/components/canvas/handlers/TooltipHandler.ts#L22">src/components/canvas/handlers/TooltipHandler.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/c29704f/src/components/canvas/handlers/TooltipHandler.ts#L22">src/components/canvas/handlers/TooltipHandler.ts:22</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -275,59 +275,6 @@
 	<div class="container">
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
-			<ul class="tsd-legend">
-				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
-				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
-				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
-				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
-				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
-				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
-				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
-				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
-				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
-				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
-				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
-				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
-				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
-			</ul>
-			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
-				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
-			</ul>
 		</div>
 	</div>
 </footer>

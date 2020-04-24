@@ -1,6 +1,6 @@
 {
 	"name": "react-design-editor",
-	"version": "0.0.22",
+	"version": "0.0.23",
 	"description": "Design Editor Tools with React.js + ant.design + fabric.js",
 	"main": "dist/react-design-editor.min.js",
 	"typings": "lib/index.d.ts",
@@ -70,7 +70,6 @@
 		"react-json-view": "^1.19.1",
 		"resize-observer-polyfill": "^1.5.1",
 		"store": "^2.0.12",
-		"typescript": "^3.8.3",
 		"uuid": "^7.0.3",
 		"warning": "^4.0.3"
 	},
@@ -119,6 +118,7 @@
 		"tslint": "^6.1.1",
 		"tslint-react": "^5.0.0",
 		"typedoc": "^0.17.4",
+		"typescript": "^3.8.3",
 		"url-loader": "^4.1.0",
 		"webpack": "^4.43.0",
 		"webpack-cli": "^3.3.11",
