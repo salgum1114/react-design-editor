@@ -247,12 +247,11 @@ const Node = fabric.util.createClass(fabric.Group, {
 				id: outPort,
 				type: 'fromPort',
 				...portOption,
-				left: i === 0 ? portOption.left - 20 : portOption.left + 20,
+				left: i === 0 ? portOption.left - 40 : portOption.left + 40,
 				top: portOption.top,
-				leftDiff: i === 0 ? -20 : 20,
+				leftDiff: i === 0 ? -40 : 40,
 				fill: i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)',
 				originFill: i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)',
-				hoverFill: i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)',
 			});
 		});
 	},

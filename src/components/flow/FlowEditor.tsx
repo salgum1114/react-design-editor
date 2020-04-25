@@ -10,9 +10,9 @@ import Nodes from './node';
 import Links from './link';
 import Descriptors from '../workflow/Descriptors.json';
 
-const nodes = Nodes(Descriptors);
-
 import './style/index.less';
+
+const nodes = Nodes(Descriptors);
 
 const FlowEditor = () => {
 	const canvasRef = useRef<Canvas>();

@@ -720,12 +720,10 @@ class Handler implements HandlerOptions {
 		if (!editable && createdObj.animation && createdObj.animation.autoplay) {
 			this.animationHandler.play(createdObj.id);
 		}
-		if (!loaded) {
-			if (createdObj.superType === 'node') {
-				createdObj.setShadow({
-					color: createdObj.stroke,
-				} as fabric.Shadow);
-			}
+		if (createdObj.superType === 'node') {
+			createdObj.setShadow({
+				color: createdObj.stroke,
+			} as fabric.Shadow);
 		}
 		if (gridOption.enabled) {
 			this.gridHandler.setCoords(createdObj);
