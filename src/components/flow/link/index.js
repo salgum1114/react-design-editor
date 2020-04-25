@@ -6,12 +6,12 @@ const defaultOption = {
 	fill: 'rgba(0, 0, 0, 0)',
 	stroke: color('#718096')
 		.lighten(0.2)
+		.rgb()
 		.toString(),
 	originStroke: color('#718096')
 		.lighten(0.2)
+		.rgb()
 		.toString(),
-	// stroke: 'rgb(95, 106, 106)',
-	// originStroke: 'rgb(95, 106, 106)',
 	action: {
 		enabled: false,
 	},
