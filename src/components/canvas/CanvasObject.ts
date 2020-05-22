@@ -1,6 +1,19 @@
 import { fabric } from 'fabric';
 
-import { Arrow, Gif, Chart, Element, Iframe, Video, Node, Link, CurvedLink, OrthogonalLink, Line } from './objects';
+import {
+	Arrow,
+	Gif,
+	Chart,
+	Element,
+	Iframe,
+	Video,
+	Node,
+	Link,
+	CurvedLink,
+	OrthogonalLink,
+	Line,
+	Cube,
+} from './objects';
 import { FabricObject } from './utils';
 import { Code } from './objects/Element';
 
@@ -32,6 +45,9 @@ const CanvasObject: CanvasObjectSchema = {
 	},
 	rect: {
 		create: (option: any) => new fabric.Rect(option),
+	},
+	cube: {
+		create: (option: any) => new Cube(option),
 	},
 	image: {
 		create: ({ element = new Image(), ...option }) =>

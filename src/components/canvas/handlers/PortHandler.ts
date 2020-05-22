@@ -125,7 +125,7 @@ class PortHandler {
 				});
 				port.setCoords();
 				if (port.links.length) {
-					port.links.forEach((link: any) => {
+					port.links.forEach(link => {
 						this.handler.linkHandler.setCoords(
 							left,
 							top,

@@ -115,7 +115,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/6874580/src/components/canvas/handlers/TooltipHandler.ts#L10">src/components/canvas/handlers/TooltipHandler.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/0f43ff0/src/components/canvas/handlers/TooltipHandler.ts#L10">src/components/canvas/handlers/TooltipHandler.ts:10</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -137,7 +137,7 @@
 					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="handler.html" class="tsd-signature-type">Handler</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/6874580/src/components/canvas/handlers/TooltipHandler.ts#L8">src/components/canvas/handlers/TooltipHandler.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/0f43ff0/src/components/canvas/handlers/TooltipHandler.ts#L8">src/components/canvas/handlers/TooltipHandler.ts:8</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -147,7 +147,7 @@
 					<div class="tsd-signature tsd-kind-icon">hide<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> = debounce((_target?: fabric.Object) &#x3D;&gt; {this.handler.target &#x3D; null;if (this.tooltipEl) {this.tooltipEl.classList.add(&#x27;tooltip-hidden&#x27;);}}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/6874580/src/components/canvas/handlers/TooltipHandler.ts#L76">src/components/canvas/handlers/TooltipHandler.ts:76</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/0f43ff0/src/components/canvas/handlers/TooltipHandler.ts#L76">src/components/canvas/handlers/TooltipHandler.ts:76</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -166,7 +166,7 @@
 					<div class="tsd-signature tsd-kind-icon">show<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Cancelable</span><span class="tsd-signature-symbol"> = debounce(async (target?: FabricObject) &#x3D;&gt; {if (target.tooltip &amp;&amp; target.tooltip.enabled) {while (this.tooltipEl.hasChildNodes()) {this.tooltipEl.removeChild(this.tooltipEl.firstChild);}const tooltip &#x3D; document.createElement(&#x27;div&#x27;);tooltip.className &#x3D; &#x27;rde-tooltip-right&#x27;;let element &#x3D; target.name as any;const { onTooltip } &#x3D; this.handler;if (onTooltip) {element &#x3D; await onTooltip(this.tooltipEl, target);if (!element) {return;}}tooltip.innerHTML &#x3D; element;this.tooltipEl.appendChild(tooltip);ReactDOM.render(element, tooltip);this.tooltipEl.classList.remove(&#x27;tooltip-hidden&#x27;);const zoom &#x3D; this.handler.canvas.getZoom();const { clientHeight } &#x3D; this.tooltipEl;const { width, height, scaleX, scaleY } &#x3D; target;const { left, top } &#x3D; target.getBoundingRect();const { _offset: offset } &#x3D; this.handler.canvas.calcOffset() as any;const objWidthDiff &#x3D; (width * scaleX) * zoom;const objHeightDiff &#x3D; (((height * scaleY) * zoom) / 2) - (clientHeight / 2);const calcLeft &#x3D; offset.left + left + objWidthDiff;const calcTop &#x3D; offset.top + top + objHeightDiff;if (document.body.clientWidth &lt;&#x3D; (calcLeft + this.tooltipEl.offsetWidth)) {this.tooltipEl.style.left &#x3D; &#x60;${left + offset.left - this.tooltipEl.offsetWidth}px&#x60;;tooltip.className &#x3D; &#x27;rde-tooltip-left&#x27;;} else {this.tooltipEl.style.left &#x3D; &#x60;${calcLeft}px&#x60;;}this.tooltipEl.style.top &#x3D; &#x60;${calcTop}px&#x60;;this.handler.target &#x3D; target;}}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/6874580/src/components/canvas/handlers/TooltipHandler.ts#L33">src/components/canvas/handlers/TooltipHandler.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/0f43ff0/src/components/canvas/handlers/TooltipHandler.ts#L33">src/components/canvas/handlers/TooltipHandler.ts:33</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -185,7 +185,7 @@
 					<div class="tsd-signature tsd-kind-icon">target<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/6874580/src/components/canvas/handlers/TooltipHandler.ts#L10">src/components/canvas/handlers/TooltipHandler.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/0f43ff0/src/components/canvas/handlers/TooltipHandler.ts#L10">src/components/canvas/handlers/TooltipHandler.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -195,7 +195,7 @@
 					<div class="tsd-signature tsd-kind-icon">tooltip<wbr>El<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLDivElement</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/6874580/src/components/canvas/handlers/TooltipHandler.ts#L9">src/components/canvas/handlers/TooltipHandler.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/0f43ff0/src/components/canvas/handlers/TooltipHandler.ts#L9">src/components/canvas/handlers/TooltipHandler.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -212,7 +212,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/6874580/src/components/canvas/handlers/TooltipHandler.ts#L22">src/components/canvas/handlers/TooltipHandler.ts:22</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/0f43ff0/src/components/canvas/handlers/TooltipHandler.ts#L22">src/components/canvas/handlers/TooltipHandler.ts:22</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
