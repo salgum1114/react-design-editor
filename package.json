@@ -10,13 +10,13 @@
 	],
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "node clean && webpack -p --config webpack.prod.js && typedoc",
+		"build": "npm run clean && webpack -p --config webpack.prod.js && typedoc",
 		"build:lib": "npm run tsc && webpack -p --config webpack.lib.js",
 		"start": "npm install && npm run start:dev",
 		"start:dev": "webpack-dev-server --config webpack.dev.js --inline",
 		"deploy": "npm run build:lib && npm publish",
 		"lint": "npm run tsc",
-		"clean": "node clean",
+		"clean": "node scripts/clean",
 		"tsc": "tsc",
 		"typedoc": "typedoc"
 	},
@@ -108,6 +108,7 @@
 		"eslint-plugin-react": "^7.19.0",
 		"file-loader": "^6.0.0",
 		"fs-extra": "^9.0.0",
+		"gh-pages": "^2.2.0",
 		"html-webpack-plugin": "^3.2.0",
 		"less": "^2.7.3",
 		"less-loader": "^5.0.0",
