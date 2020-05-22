@@ -14,6 +14,7 @@
 		"build:lib": "npm run tsc && webpack -p --config webpack.lib.js",
 		"start": "npm install && npm run start:dev",
 		"start:dev": "webpack-dev-server --config webpack.dev.js --inline",
+		"ghpages": "npm run build && node scripts/ghpages",
 		"deploy": "npm run build:lib && npm publish",
 		"lint": "npm run tsc",
 		"clean": "node scripts/clean",
