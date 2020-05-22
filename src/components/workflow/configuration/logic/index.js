@@ -5,9 +5,9 @@ import FunctionNodeConfiguration from './FunctionNodeConfiguration';
 import SwitchNodeConfiguration from './SwitchNodeConfiguration';
 
 export default {
-    BroadcastNode: BroadcastNodeConfiguration,
-    DelayNode: DelayNodeConfiguration,
-    FilterNode: FilterNodeConfiguration,
-    FunctionNode: FunctionNodeConfiguration,
-    SwitchNode: SwitchNodeConfiguration,
+	BroadcastNode: BroadcastNodeConfiguration,
+	DelayNode: DelayNodeConfiguration,
+	FilterNode: FilterNodeConfiguration,
+	FunctionNode: FunctionNodeConfiguration,
+	SwitchNode: SwitchNodeConfiguration,
 };

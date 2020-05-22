@@ -3,25 +3,23 @@ import { Form } from 'antd';
 import AceModal from '../../ace/AceModal';
 
 export default {
-    render(canvasRef, form, data) {
-        const { getFieldDecorator } = form;
-        if (!data) {
-            return null;
-        }
-        return (
-            <Form.Item>
-                {
-                    getFieldDecorator('code', {
-                        rules: [{
-                            required: true,
-                            message: 'Please input code',
-                        }],
-                        initialValue: data.code,
-                    })(
-                        <AceModal form={form} code={data.code} />,
-                    )
-                }
-            </Form.Item>
-        );
-    },
+	render(canvasRef, form, data) {
+		const { getFieldDecorator } = form;
+		if (!data) {
+			return null;
+		}
+		return (
+			<Form.Item>
+				{getFieldDecorator('code', {
+					rules: [
+						{
+							required: true,
+							message: 'Please input code',
+						},
+					],
+					initialValue: data.code,
+				})(<AceModal form={form} code={data.code} />)}
+			</Form.Item>
+		);
+	},
 };
