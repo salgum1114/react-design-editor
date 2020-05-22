@@ -123,11 +123,6 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
 	 */
 	anime?: anime.AnimeInstance;
 	/**
-	 * Trigger property
-	 * @type {TriggerProperty}
-	 */
-	trigger?: TriggerProperty;
-	/**
 	 * Tooltip property
 	 * @type {TooltipProperty}
 	 */
@@ -181,7 +176,7 @@ export type FabricGroup = FabricObject<fabric.Group> & {
 };
 
 export type FabricImage = FabricObject &
-	Omit<fabric.Image, 'filters'> & {
+	fabric.Image & {
 		/**
 		 * Image URL
 		 * @type {string}
