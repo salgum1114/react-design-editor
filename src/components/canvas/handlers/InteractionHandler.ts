@@ -27,32 +27,20 @@ class InteractionHandler {
 		}
 		this.handler.canvas.defaultCursor = 'default';
 		this.handler.workarea.hoverCursor = 'default';
-		this.handler.canvas.getObjects().forEach((obj: any) => {
-			if (obj.id !== 'workarea') {
-				if (obj.id === 'grid') {
-					obj.selectable = false;
-					obj.evented = false;
-					return;
-				}
+		this.handler.getObjects().forEach(obj => {
+			if (callback) {
+				this.interactionCallback(obj, callback);
+			} else {
 				// When typeof selection is ActiveSelection, ignoring selectable, because link position left: 0, top: 0
-				if (obj.superType === 'link') {
+				if (obj.superType === 'link' || obj.superType === 'port') {
 					obj.selectable = false;
 					obj.evented = true;
+					obj.hoverCursor = 'pointer';
 					return;
 				}
-				if (callback) {
-					const ret = callback(obj);
-					if (typeof ret === 'object') {
-						obj.selectable = ret.selectable;
-						obj.evented = ret.evented;
-					} else {
-						obj.selectable = ret;
-						obj.evented = ret;
-					}
-				} else {
-					obj.selectable = true;
-					obj.evented = true;
-				}
+				obj.hoverCursor = 'move';
+				obj.selectable = true;
+				obj.evented = true;
 			}
 		});
 		this.handler.canvas.renderAll();
@@ -70,21 +58,12 @@ class InteractionHandler {
 		this.handler.canvas.selection = false;
 		this.handler.canvas.defaultCursor = 'grab';
 		this.handler.workarea.hoverCursor = 'grab';
-		this.handler.canvas.getObjects().forEach((obj: any) => {
-			if (obj.id !== 'workarea') {
-				if (callback) {
-					const ret = callback(obj);
-					if (typeof ret === 'object') {
-						obj.selectable = ret.selectable;
-						obj.evented = ret.evented;
-					} else {
-						obj.selectable = ret;
-						obj.evented = ret;
-					}
-				} else {
-					obj.selectable = false;
-					obj.evented = this.handler.editable ? false : true;
-				}
+		this.handler.getObjects().forEach(obj => {
+			if (callback) {
+				this.interactionCallback(obj, callback);
+			} else {
+				obj.selectable = false;
+				obj.evented = this.handler.editable ? false : true;
 			}
 		});
 		this.handler.canvas.renderAll();
@@ -103,21 +82,37 @@ class InteractionHandler {
 		this.handler.canvas.selection = false;
 		this.handler.canvas.defaultCursor = 'pointer';
 		this.handler.workarea.hoverCursor = 'pointer';
-		this.handler.canvas.getObjects().forEach((obj: any) => {
-			if (obj.id !== 'workarea') {
-				if (callback) {
-					const ret = callback(obj);
-					if (typeof ret === 'object') {
-						obj.selectable = ret.selectable;
-						obj.evented = ret.evented;
-					} else {
-						obj.selectable = ret;
-						obj.evented = ret;
-					}
-				} else {
+		this.handler.getObjects().forEach(obj => {
+			if (callback) {
+				this.interactionCallback(obj, callback);
+			} else {
+				obj.selectable = false;
+				obj.evented = this.handler.editable ? false : true;
+			}
+		});
+		this.handler.canvas.renderAll();
+	};
+
+	public linking = (callback?: (obj: FabricObject) => IReturnType) => {
+		if (this.isDrawingMode()) {
+			return;
+		}
+		this.handler.interactionMode = 'link';
+		this.handler.canvas.selection = false;
+		this.handler.canvas.defaultCursor = 'default';
+		this.handler.workarea.hoverCursor = 'default';
+		this.handler.getObjects().forEach(obj => {
+			if (callback) {
+				this.interactionCallback(obj, callback);
+			} else {
+				if (obj.superType === 'node' || obj.superType === 'port') {
+					obj.hoverCursor = 'pointer';
 					obj.selectable = false;
-					obj.evented = this.handler.editable ? false : true;
+					obj.evented = true;
+					return;
 				}
+				obj.selectable = false;
+				obj.evented = this.handler.editable ? false : true;
 			}
 		});
 		this.handler.canvas.renderAll();
@@ -155,6 +150,16 @@ class InteractionHandler {
 			this.handler.interactionMode === 'line' ||
 			this.handler.interactionMode === 'polygon'
 		);
+	};
+
+	/**
+	 * Interaction callback
+	 *
+	 * @param {FabricObject} obj
+	 * @param {(obj: FabricObject) => void} [callback]
+	 */
+	private interactionCallback = (obj: FabricObject, callback?: (obj: FabricObject) => void) => {
+		callback(obj);
 	};
 }
 

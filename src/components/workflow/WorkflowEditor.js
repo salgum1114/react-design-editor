@@ -50,7 +50,9 @@ class WorkflowEditor extends Component {
 				this.canvasHandlers.onSelect(null);
 				return;
 			}
-			this.canvasRef.handler.select(target);
+			if (target.superType === 'node') {
+				this.canvasRef.handler.select(target);
+			}
 		},
 		onSelect: target => {
 			this.nodeConfigurationRef.props.form.validateFields(err => {

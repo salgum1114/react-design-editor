@@ -62,7 +62,7 @@ class LinkHandler {
 		this.port.set({
 			fill: port.selectFill,
 		});
-		this.handler.interactionMode = 'link';
+		this.handler.interactionHandler.linking();
 		const { left, top, nodeId, id } = port;
 		const fromPort = { left, top, id };
 		const toPort = { left, top };
@@ -91,7 +91,7 @@ class LinkHandler {
 				fill: this.port.originFill,
 			});
 		}
-		this.handler.interactionMode = 'selection';
+		this.handler.interactionHandler.selection();
 		this.handler.canvas.remove(this.handler.activeLine);
 		this.handler.activeLine = null;
 		this.handler.canvas.renderAll();
