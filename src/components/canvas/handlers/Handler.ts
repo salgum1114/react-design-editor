@@ -150,14 +150,17 @@ export interface HandlerOptions {
 
 	/**
 	 * When has been added object in Canvas, Called function
+	 *
 	 */
 	onAdd?: (object: FabricObject) => void;
 	/**
 	 * Return contextmenu element
+	 *
 	 */
 	onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject) => Promise<any> | any;
 	/**
 	 * Return tooltip element
+	 *
 	 */
 	onTooltip?: (el: HTMLDivElement, target?: FabricObject) => Promise<any> | any;
 	/**
@@ -166,10 +169,12 @@ export interface HandlerOptions {
 	onZoom?: (zoomRatio: number) => void;
 	/**
 	 * When clicked object, Called function
+	 *
 	 */
 	onClick?: (canvas: FabricCanvas, target: FabricObject) => void;
 	/**
 	 * When double clicked object, Called function
+	 *
 	 */
 	onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
 	/**
@@ -178,20 +183,29 @@ export interface HandlerOptions {
 	onModified?: (target: FabricObject) => void;
 	/**
 	 * When select object, Called function
+	 *
 	 */
 	onSelect?: (target: FabricObject) => void;
 	/**
 	 * When has been removed object in Canvas, Called function
+	 *
 	 */
 	onRemove?: (target: FabricObject) => void;
 	/**
 	 * When has been undo or redo, Called function
+	 *
 	 */
 	onTransaction?: (transaction: TransactionEvent) => void;
 	/**
 	 * When has been changed interaction mode, Called function
+	 *
 	 */
 	onInteraction?: (interactionMode: InteractionMode) => void;
+	/**
+	 * When canvas has been loaded
+	 *
+	 */
+	onLoad?: (handler: Handler, canvas?: fabric.Canvas) => void;
 }
 
 /**
@@ -236,6 +250,7 @@ class Handler implements HandlerOptions {
 	public onRemove?: (target: FabricObject) => void;
 	public onTransaction?: (transaction: TransactionEvent) => void;
 	public onInteraction?: (interactionMode: InteractionMode) => void;
+	public onLoad?: (handler: Handler, canvas?: fabric.Canvas) => void;
 
 	public imageHandler: ImageHandler;
 	public chartHandler: ChartHandler;
@@ -277,6 +292,9 @@ class Handler implements HandlerOptions {
 		this.init(options);
 		this.initCallback(options);
 		this.initHandler(options);
+		if (this.onLoad) {
+			this.onLoad(this, this.canvas);
+		}
 	}
 
 	/**
@@ -323,6 +341,7 @@ class Handler implements HandlerOptions {
 		this.onRemove = options.onRemove;
 		this.onTransaction = options.onTransaction;
 		this.onInteraction = options.onInteraction;
+		this.onLoad = options.onLoad;
 	};
 
 	/**

@@ -4,8 +4,7 @@ import { v4 } from 'uuid';
 import ResizeObserver from 'resize-observer-polyfill';
 import union from 'lodash/union';
 
-import { Handler } from './handlers';
-import { HandlerOptions } from './handlers/Handler';
+import Handler, { HandlerOptions } from './handlers/Handler';
 import { FabricCanvas } from './utils';
 
 import '../../styles/core/canvas.less';
