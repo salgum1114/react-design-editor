@@ -292,9 +292,6 @@ class Handler implements HandlerOptions {
 		this.init(options);
 		this.initCallback(options);
 		this.initHandler(options);
-		if (this.onLoad) {
-			this.onLoad(this, this.canvas);
-		}
 	}
 
 	/**
@@ -321,7 +318,6 @@ class Handler implements HandlerOptions {
 		this.width = options.width;
 		this.height = options.height;
 		this.keyEvent = options.keyEvent;
-
 		this.objects = [];
 	};
 
