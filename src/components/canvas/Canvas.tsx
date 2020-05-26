@@ -97,7 +97,6 @@ class Canvas extends Component<CanvasProps> {
 			responsive,
 			propertiesToInclude,
 			gridOption,
-			onLoad,
 			...other
 		} = this.props;
 		const { id } = this.state;
@@ -124,7 +123,6 @@ class Canvas extends Component<CanvasProps> {
 			defaultOption,
 			propertiesToInclude: mergedPropertiesToInclude,
 			gridOption: Object.assign({}, defaultGripOption, gridOption),
-			onLoad,
 			...other,
 		});
 		this.handler.gridHandler.init();
@@ -136,9 +134,6 @@ class Canvas extends Component<CanvasProps> {
 			}
 		}
 		this.handler.eventHandler.attachEventListener();
-		if (onLoad) {
-			onLoad(this.handler, this.canvas);
-		}
 	}
 
 	componentDidUpdate(prevProps: CanvasProps) {

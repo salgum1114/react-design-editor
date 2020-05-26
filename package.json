@@ -1,6 +1,6 @@
 {
 	"name": "react-design-editor",
-	"version": "0.0.28",
+	"version": "0.0.29",
 	"description": "Design Editor Tools with React.js + ant.design + fabric.js",
 	"main": "dist/react-design-editor.min.js",
 	"typings": "lib/index.d.ts",

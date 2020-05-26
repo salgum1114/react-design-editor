@@ -12,35 +12,36 @@ class ImageMapPreview extends Component {
 		onChangePreview: PropTypes.func,
 		onTooltip: PropTypes.func,
 		onAction: PropTypes.func,
+		objects: PropTypes.any,
 	};
 
 	render() {
-		const { onChangePreview, onTooltip, onClick, preview } = this.props;
+		const { onChangePreview, onTooltip, onClick, preview, objects } = this.props;
 		const previewClassName = classnames('rde-preview', { preview });
 		return (
-			<div className={previewClassName}>
-				<div
-					ref={c => {
-						this.container = c;
-					}}
-					style={{ overvlow: 'hidden', display: 'flex', flex: '1', height: '100%' }}
-				>
-					<Canvas
+			preview && (
+				<div className={previewClassName}>
+					<div
 						ref={c => {
-							this.canvasRef = c;
+							this.container = c;
 						}}
-						editable={false}
-						canvasOption={{
-							backgroundColor: '#f3f3f3',
-						}}
-						onTooltip={onTooltip}
-						onClick={onClick}
-					/>
-					<Button className="rde-action-btn rde-preview-close-btn" onClick={onChangePreview}>
-						<Icon name="times" size={1.5} />
-					</Button>
+						style={{ overvlow: 'hidden', display: 'flex', flex: '1', height: '100%' }}
+					>
+						<Canvas
+							editable={false}
+							canvasOption={{
+								backgroundColor: '#f3f3f3',
+							}}
+							onLoad={handler => handler.importJSON(objects)}
+							onTooltip={onTooltip}
+							onClick={onClick}
+						/>
+						<Button className="rde-action-btn rde-preview-close-btn" onClick={onChangePreview}>
+							<Icon name="times" size={1.5} />
+						</Button>
+					</div>
 				</div>
-			</div>
+			)
 		);
 	}
 }

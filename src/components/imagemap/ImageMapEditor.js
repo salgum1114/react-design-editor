@@ -89,6 +89,7 @@ class ImageMapEditor extends Component {
 		dataSources: [],
 		editing: false,
 		descriptors: {},
+		objects: undefined,
 	};
 
 	componentDidMount() {
@@ -479,24 +480,16 @@ class ImageMapEditor extends Component {
 
 	handlers = {
 		onChangePreview: checked => {
-			this.setState(
-				{
-					preview: typeof checked === 'object' ? false : checked,
-				},
-				() => {
-					if (this.state.preview) {
-						const data = this.canvasRef.handler.exportJSON().objects.filter(obj => {
-							if (!obj.id) {
-								return false;
-							}
-							return true;
-						});
-						this.preview.canvasRef.handler.importJSON(data);
-						return;
-					}
-					this.preview.canvasRef.handler.clear();
-				},
-			);
+			const data = this.canvasRef.handler.exportJSON().objects.filter(obj => {
+				if (!obj.id) {
+					return false;
+				}
+				return true;
+			});
+			this.setState({
+				preview: typeof checked === 'object' ? false : checked,
+				objects: data,
+			});
 		},
 		onProgress: progress => {
 			this.setState({
@@ -529,7 +522,7 @@ class ImageMapEditor extends Component {
 								}
 								return true;
 							});
-							this.canvasRef.handler.importJSON(JSON.stringify(data));
+							this.canvasRef.handler.importJSON(data);
 						}
 					};
 					reader.onloadend = () => {
@@ -646,6 +639,7 @@ class ImageMapEditor extends Component {
 			dataSources,
 			editing,
 			descriptors,
+			objects,
 		} = this.state;
 		const {
 			onAdd,
@@ -786,13 +780,11 @@ class ImageMapEditor extends Component {
 					dataSources={dataSources}
 				/>
 				<ImageMapPreview
-					ref={c => {
-						this.preview = c;
-					}}
 					preview={preview}
 					onChangePreview={onChangePreview}
 					onTooltip={onTooltip}
 					onClick={onClick}
+					objects={objects}
 				/>
 			</div>
 		);
