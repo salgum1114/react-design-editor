@@ -22,22 +22,22 @@ export interface AnimationProperty {
 
 export interface LinkProperty {
 	enabled?: boolean;
-	type?: 'resource' | 'alarm';
-	state?: 'new' | 'tab';
+	type?: string;
+	state?: string;
 	dashboard?: any;
 }
 
 export interface TooltipProperty {
 	enabled?: boolean;
-	type?: 'resource' | 'alarm';
+	type?: string;
 	template?: string;
 }
 
 export interface TriggerProperty {
 	enabled?: boolean;
-	type?: 'resource' | 'alarm';
+	type?: string;
 	script?: string;
-	effect?: 'style' | 'animation';
+	effect?: string;
 }
 
 export interface FabricCanvasOption {

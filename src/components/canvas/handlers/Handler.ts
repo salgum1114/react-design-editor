@@ -577,10 +577,10 @@ class Handler implements HandlerOptions {
 	/**
 	 * Set the image
 	 * @param {FabricImage} obj
-	 * @param {*} source
+	 * @param {(File | string)} [source]
 	 * @returns
 	 */
-	public setImage = (obj: FabricImage, source: any) => {
+    public setImage = (obj: FabricImage, source?: File | string) => {
 		if (!source) {
 			this.loadImage(obj, null);
 			obj.set('file', null);
