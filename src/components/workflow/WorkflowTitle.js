@@ -1,36 +1,32 @@
 import React, { Component } from 'react';
-import { FlexBox, FlexItem } from '../flex';
+import { Flex } from '../flex';
 
 class WorkflowTitle extends Component {
 	render() {
 		const { title, content, action, children } = this.props;
 		return (
 			children || (
-				<FlexBox className="rde-content-layout-title" alignItems="center" flexWrap="wrap">
-					<FlexItem flex="0 1 auto">
-						<FlexBox
+				<Flex className="rde-content-layout-title" alignItems="center" flexWrap="wrap">
+					<Flex.Item flex="0 1 auto">
+						<Flex
 							className="rde-content-layout-title-title"
 							justifyContent="flex-start"
 							alignItems="center"
 						>
 							{title instanceof String ? <h3>{title}</h3> : title}
-						</FlexBox>
-					</FlexItem>
-					<FlexItem flex="auto">
-						<FlexBox className="rde-content-layout-title-content" alignItems="center">
+						</Flex>
+					</Flex.Item>
+					<Flex.Item flex="auto">
+						<Flex className="rde-content-layout-title-content" alignItems="center">
 							{content}
-						</FlexBox>
-					</FlexItem>
-					<FlexItem flex="auto">
-						<FlexBox
-							className="rde-content-layout-title-action"
-							justifyContent="flex-end"
-							alignItems="center"
-						>
+						</Flex>
+					</Flex.Item>
+					<Flex.Item flex="auto">
+						<Flex className="rde-content-layout-title-action" justifyContent="flex-end" alignItems="center">
 							{action}
-						</FlexBox>
-					</FlexItem>
-				</FlexBox>
+						</Flex>
+					</Flex.Item>
+				</Flex>
 			)
 		);
 	}

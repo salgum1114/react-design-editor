@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, Divider, Input } from 'antd';
 import i18n from 'i18next';
 
-import { FlexBox } from '../flex';
+import { Flex } from '../flex';
 import NodeDescriptor from './configuration/NodeDescriptor';
 import NodeAction from './configuration/NodeAction';
 import NodeConfiguration from './configuration/NodeConfiguration';
@@ -34,7 +34,7 @@ class WorkflowNodeConfigurations extends Component {
 					{selectedItem ? (
 						<React.Fragment>
 							<NodeDescriptor workflow={workflow} selectedItem={selectedItem} />
-							<FlexBox flexDirection="column" style={{ margin: '8px 16px' }}>
+							<Flex flexDirection="column" style={{ margin: '8px 16px' }}>
 								<Form.Item label={i18n.t('common.name')} colon={false}>
 									{form.getFieldDecorator('name', {
 										initialValue: selectedItem.name,
@@ -64,9 +64,9 @@ class WorkflowNodeConfigurations extends Component {
 										/>,
 									)}
 								</Form.Item>
-							</FlexBox>
+							</Flex>
 							<Divider>{i18n.t('workflow.node-configuration')}</Divider>
-							<FlexBox
+							<Flex
 								flexDirection="column"
 								style={{ height: '100%', overflowY: 'hidden', margin: '8px 16px' }}
 							>
@@ -76,7 +76,7 @@ class WorkflowNodeConfigurations extends Component {
 									selectedItem={selectedItem}
 									workflow={workflow}
 								/>
-							</FlexBox>
+							</Flex>
 							<NodeAction workflow={workflow} selectedItem={selectedItem} canvasRef={canvasRef} />
 						</React.Fragment>
 					) : null}

@@ -5,7 +5,7 @@ import i18n from 'i18next';
 
 import Icon from '../../icon/Icon';
 import CommonButton from '../../common/CommonButton';
-import { FlexBox } from '../../flex';
+import { Flex } from '../../flex';
 import { NODE_COLORS } from '../constant/constants';
 
 class NodeDescriptor extends Component {
@@ -58,7 +58,7 @@ class NodeDescriptor extends Component {
 		const { onTrigger } = this.handlers;
 		const virtualButton =
 			selectedItem.type === 'VirtualButtonNode' ? (
-				<FlexBox justifyContent="center" alignItems="center" flex="1" style={{ marginTop: 24 }}>
+				<Flex justifyContent="center" alignItems="center" flex="1" style={{ marginTop: 24 }}>
 					<CommonButton
 						icon="play"
 						onClick={onTrigger}
@@ -67,10 +67,10 @@ class NodeDescriptor extends Component {
 					>
 						{i18n.t('action.execute')}
 					</CommonButton>
-				</FlexBox>
+				</Flex>
 			) : null;
 		return (
-			<FlexBox flexDirection="column" style={{ margin: '8px 16px' }}>
+			<Flex flexDirection="column" style={{ margin: '8px 16px' }}>
 				<h2 style={{ color: NODE_COLORS[selectedItem.descriptor.type].fill }}>
 					<Icon
 						name={selectedItem.descriptor.icon.length ? selectedItem.descriptor.icon : 'image'}
@@ -80,7 +80,7 @@ class NodeDescriptor extends Component {
 				</h2>
 				<div>{selectedItem.descriptor.description}</div>
 				{virtualButton}
-			</FlexBox>
+			</Flex>
 		);
 	}
 }

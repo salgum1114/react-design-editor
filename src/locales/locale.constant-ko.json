@@ -212,5 +212,8 @@
 		"mouse-right": "Context Memu",
 		"o": "Zoom 1:1",
 		"p": "Zoom Fit"
+	},
+	"placeholder": {
+		"search-node": "Search a node"
 	}
 }

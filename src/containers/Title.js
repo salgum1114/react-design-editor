@@ -3,7 +3,7 @@ import { Button, Menu, Tooltip, Modal } from 'antd';
 import PropTypes from 'prop-types';
 import i18n from 'i18next';
 
-import { FlexBox } from '../components/flex';
+import { Flex } from '../components/flex';
 import Icon from '../components/icon/Icon';
 import { ShortcutHelp } from '../components/help';
 
@@ -40,13 +40,13 @@ class Title extends Component {
 	render() {
 		const { visible } = this.state;
 		return (
-			<FlexBox
+			<Flex
 				style={{ background: 'linear-gradient(141deg,#23303e,#404040 51%,#23303e 75%)' }}
 				flexWrap="wrap"
 				flex="1"
 				alignItems="center"
 			>
-				<FlexBox style={{ marginLeft: 8 }} flex="0 1 auto">
+				<Flex style={{ marginLeft: 8 }} flex="0 1 auto">
 					<span style={{ color: '#fff', fontSize: 24, fontWeight: 500 }}>React Design Editor</span>
 					<Tooltip title={i18n.t('action.go-github')} overlayStyle={{ fontSize: 16 }}>
 						<Button
@@ -87,8 +87,8 @@ class Title extends Component {
 							<Icon name="question" prefix="fas" size={1.5} />
 						</Button>
 					</Tooltip>
-				</FlexBox>
-				<FlexBox style={{ marginLeft: 88 }}>
+				</Flex>
+				<Flex style={{ marginLeft: 88 }}>
 					<Menu
 						mode="horizontal"
 						theme="dark"
@@ -104,15 +104,15 @@ class Title extends Component {
 						</Menu.Item>
 						{/* <Menu.Item key="flow" style={{ color: '#fff' }}>{i18n.t('flow.flow')}</Menu.Item> */}
 					</Menu>
-				</FlexBox>
-				<FlexBox flex="1" justifyContent="flex-end">
+				</Flex>
+				<Flex flex="1" justifyContent="flex-end">
 					<ins
 						className="adsbygoogle"
 						style={{ display: 'inline-block', width: 600, height: 60 }}
 						data-ad-client="ca-pub-8569372752842198"
 						data-ad-slot="5790685139"
 					/>
-				</FlexBox>
+				</Flex>
 				<Modal
 					visible={visible}
 					onCancel={() => this.setState({ visible: false })}
@@ -122,7 +122,7 @@ class Title extends Component {
 				>
 					<ShortcutHelp />
 				</Modal>
-			</FlexBox>
+			</Flex>
 		);
 	}
 }

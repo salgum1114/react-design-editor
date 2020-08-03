@@ -4,7 +4,7 @@ import { Button, Table, Modal, Input, Form } from 'antd';
 import i18n from 'i18next';
 
 import Icon from '../icon/Icon';
-import { FlexBox } from '../flex';
+import { Flex } from '../flex';
 
 class EditTable extends Component {
 	static propTypes = {
@@ -176,15 +176,15 @@ class EditTable extends Component {
 			},
 		];
 		return (
-			<FlexBox flexDirection="column">
-				<FlexBox justifyContent="flex-end">
+			<Flex flexDirection="column">
+				<Flex justifyContent="flex-end">
 					<Button className="rde-action-btn" shape="circle" onClick={this.handleAdd}>
 						<Icon name="plus" />
 					</Button>
 					<Button className="rde-action-btn" shape="circle" onClick={this.handleClear}>
 						<Icon name="times" />
 					</Button>
-				</FlexBox>
+				</Flex>
 				<Table
 					size="small"
 					pagination={{
@@ -220,7 +220,7 @@ class EditTable extends Component {
 						/>
 					</Form.Item>
 				</Modal>
-			</FlexBox>
+			</Flex>
 		);
 	}
 }

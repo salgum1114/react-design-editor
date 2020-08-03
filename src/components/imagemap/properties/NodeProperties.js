@@ -4,7 +4,7 @@ import { Form, Collapse, List } from 'antd';
 
 import PropertyDefinition from './PropertyDefinition';
 import Scrollbar from '../../common/Scrollbar';
-import { FlexBox } from '../../flex';
+import { Flex } from '../../flex';
 
 const { Panel } = Collapse;
 
@@ -46,7 +46,7 @@ class NodeProperties extends Component {
 								);
 							})
 						) : (
-							<FlexBox
+							<Flex
 								justifyContent="center"
 								alignItems="center"
 								style={{
@@ -58,7 +58,7 @@ class NodeProperties extends Component {
 								}}
 							>
 								<List />
-							</FlexBox>
+							</Flex>
 						)}
 					</Collapse>
 				</Form>

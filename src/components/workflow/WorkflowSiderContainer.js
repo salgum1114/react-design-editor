@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Icon from '../icon/Icon';
-import { FlexBox } from '../flex';
+import { Flex } from '../flex';
 
 class RuleChainSiderContainer extends Component {
 	static propTypes = {
@@ -18,9 +18,9 @@ class RuleChainSiderContainer extends Component {
 	render() {
 		const { children, title, content, icon, extra, titleStyle, contentStyle } = this.props;
 		return (
-			<FlexBox flexDirection="column" style={{ height: '100%' }}>
-				<FlexBox style={Object.assign({}, { background: '#f5f4f3', height: '40px' }, titleStyle)}>
-					<FlexBox
+			<Flex flexDirection="column" style={{ height: '100%' }}>
+				<Flex style={Object.assign({}, { background: '#f5f4f3', height: '40px' }, titleStyle)}>
+					<Flex
 						flex="1"
 						justifyContent="flex-start"
 						alignItems="center"
@@ -28,20 +28,20 @@ class RuleChainSiderContainer extends Component {
 					>
 						<Icon name={icon} style={{ marginRight: 8 }} />
 						<h4 style={{ marginBottom: 0 }}>{title}</h4>
-					</FlexBox>
+					</Flex>
 					{extra ? (
-						<FlexBox justifyContent="flex-end" alignItems="center">
+						<Flex justifyContent="flex-end" alignItems="center">
 							{extra}
-						</FlexBox>
+						</Flex>
 					) : null}
-				</FlexBox>
-				<FlexBox
+				</Flex>
+				<Flex
 					flexDirection="column"
 					style={Object.assign({}, { height: '100%', margin: '8px 16px' }, contentStyle)}
 				>
 					{children || content}
-				</FlexBox>
-			</FlexBox>
+				</Flex>
+			</Flex>
 		);
 	}
 }

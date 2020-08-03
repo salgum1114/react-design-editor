@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'antd';
+import { Button, Input } from 'antd';
 
 import Icon from '../icon/Icon';
-import { FlexBox, FlexItem } from '../flex';
+import { Flex } from '../flex';
+import i18next from 'i18next';
 
 class ImageMapList extends Component {
 	static propTypes = {
@@ -15,9 +16,12 @@ class ImageMapList extends Component {
 		const { canvasRef } = this.props;
 		const idCropping = canvasRef ? canvasRef.handler.interactionMode === 'crop' : false;
 		return (
-			<FlexItem className="rde-canvas-list-actions" flex="0 1 auto">
-				<FlexBox justifyContent="space-between" alignItems="center">
-					<FlexBox flex="1" justifyContent="center">
+			<Flex.Item className="rde-canvas-list-actions" flex="0 1 auto">
+				<Flex>
+					<Input.Search placeholder={i18next.t('placeholder.search-node')} />
+				</Flex>
+				<Flex justifyContent="space-between" alignItems="center">
+					<Flex flex="1" justifyContent="center">
 						<Button
 							className="rde-action-btn"
 							style={{ width: '100%', height: 30 }}
@@ -26,8 +30,8 @@ class ImageMapList extends Component {
 						>
 							<Icon name="arrow-up" />
 						</Button>
-					</FlexBox>
-					<FlexBox flex="1" justifyContent="center">
+					</Flex>
+					<Flex flex="1" justifyContent="center">
 						<Button
 							className="rde-action-btn"
 							style={{ width: '100%', height: 30 }}
@@ -36,9 +40,9 @@ class ImageMapList extends Component {
 						>
 							<Icon name="arrow-down" />
 						</Button>
-					</FlexBox>
-				</FlexBox>
-			</FlexItem>
+					</Flex>
+				</Flex>
+			</Flex.Item>
 		);
 	};
 
@@ -95,13 +99,18 @@ class ImageMapList extends Component {
 							className += ' selected-item';
 						}
 						return (
-							<FlexItem
+							<Flex.Item
 								key={obj.id}
 								className={className}
 								flex="1"
+								style={{ cursor: 'pointer' }}
 								onClick={() => canvasRef.handler.select(obj)}
+								onMouseDown={e => e.preventDefault()}
+								onDoubleClick={e => {
+									canvasRef.handler.zoomHandler.zoomToCenter();
+								}}
 							>
-								<FlexBox alignItems="center">
+								<Flex alignItems="center">
 									<Icon
 										className="rde-canvas-list-item-icon"
 										name={icon}
@@ -110,11 +119,7 @@ class ImageMapList extends Component {
 										prefix={prefix}
 									/>
 									<div className="rde-canvas-list-item-text">{title}</div>
-									<FlexBox
-										className="rde-canvas-list-item-actions"
-										flex="1"
-										justifyContent="flex-end"
-									>
+									<Flex className="rde-canvas-list-item-actions" flex="1" justifyContent="flex-end">
 										<Button
 											className="rde-action-btn"
 											shape="circle"
@@ -137,9 +142,9 @@ class ImageMapList extends Component {
 										>
 											<Icon name="trash" />
 										</Button>
-									</FlexBox>
-								</FlexBox>
-							</FlexItem>
+									</Flex>
+								</Flex>
+							</Flex.Item>
 						);
 					})
 			: null;
@@ -147,10 +152,10 @@ class ImageMapList extends Component {
 
 	render() {
 		return (
-			<FlexBox style={{ height: '100%' }} flexDirection="column">
+			<Flex style={{ height: '100%' }} flexDirection="column">
 				{this.renderActions()}
 				<div className="rde-canvas-list-items">{this.renderItem()}</div>
-			</FlexBox>
+			</Flex>
 		);
 	}
 }

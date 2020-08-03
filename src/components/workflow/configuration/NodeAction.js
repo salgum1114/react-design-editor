@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import i18n from 'i18next';
 
 import CommonButton from '../../common/CommonButton';
-import { FlexBox, FlexItem } from '../../flex';
+import { Flex } from '../../flex';
 
 class NodeAction extends Component {
 	static propTypes = {
@@ -14,8 +14,8 @@ class NodeAction extends Component {
 	render() {
 		const { canvasRef, selectedItem } = this.props;
 		return (
-			<FlexBox justifyContent="center" alignItems="flex-end" flex="1">
-				<FlexItem alignSelf="flex-start">
+			<Flex justifyContent="center" alignItems="flex-end" flex="1">
+				<Flex.Item alignSelf="flex-start">
 					<CommonButton
 						icon="clone"
 						onClick={() => {
@@ -24,8 +24,8 @@ class NodeAction extends Component {
 					>
 						{i18n.t('action.clone')}
 					</CommonButton>
-				</FlexItem>
-				<FlexItem alignSelf="flex-end">
+				</Flex.Item>
+				<Flex.Item alignSelf="flex-end">
 					<CommonButton
 						icon="trash"
 						type="danger"
@@ -35,8 +35,8 @@ class NodeAction extends Component {
 					>
 						{i18n.t('action.delete')}
 					</CommonButton>
-				</FlexItem>
-			</FlexBox>
+				</Flex.Item>
+			</Flex>
 		);
 	}
 }

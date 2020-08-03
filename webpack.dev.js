@@ -4,7 +4,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseConfig = require('./webpack.common.js');
 
-const devPort = 8080;
+const devPort = 4000;
 const host = 'localhost';
 
 module.exports = merge(baseConfig, {

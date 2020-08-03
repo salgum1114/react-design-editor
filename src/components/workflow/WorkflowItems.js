@@ -7,7 +7,7 @@ import classnames from 'classnames';
 
 import Icon from '../icon/Icon';
 import { NODE_COLORS } from './constant/constants';
-import { FlexBox } from '../flex';
+import { Flex } from '../flex';
 import { getNode } from './configuration/NodeConfiguration';
 import Scrollbar from '../common/Scrollbar';
 import CommonButton from '../common/CommonButton';
@@ -163,7 +163,7 @@ class WorkflowItems extends Component {
 	};
 
 	renderItems = items => (
-		<FlexBox flexWrap="wrap" flexDirection="column" style={{ width: '100%' }}>
+		<Flex flexWrap="wrap" flexDirection="column" style={{ width: '100%' }}>
 			{items.map(item => (
 				<div
 					key={item.name}
@@ -183,7 +183,7 @@ class WorkflowItems extends Component {
 					{this.state.collapse ? null : <span className="rde-editor-items-item-text">{item.name}</span>}
 				</div>
 			))}
-		</FlexBox>
+		</Flex>
 	);
 
 	render() {
@@ -194,8 +194,8 @@ class WorkflowItems extends Component {
 		});
 		return (
 			<div className={className}>
-				<FlexBox flex="1" flexDirection="column" style={{ height: '100%' }}>
-					<FlexBox justifyContent="center" alignItems="center" style={{ height: 40 }}>
+				<Flex flex="1" flexDirection="column" style={{ height: '100%' }}>
+					<Flex justifyContent="center" alignItems="center" style={{ height: 40 }}>
 						<CommonButton
 							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
 							shape="circle"
@@ -212,9 +212,9 @@ class WorkflowItems extends Component {
 								allowClear
 							/>
 						)}
-					</FlexBox>
+					</Flex>
 					<Scrollbar>
-						<FlexBox flex="1" style={{ overflowY: 'hidden' }}>
+						<Flex flex="1" style={{ overflowY: 'hidden' }}>
 							{textSearch.length ? (
 								this.renderItems(filteredDescriptors)
 							) : (
@@ -235,9 +235,9 @@ class WorkflowItems extends Component {
 									))}
 								</Collapse>
 							)}
-						</FlexBox>
+						</Flex>
 					</Scrollbar>
-				</FlexBox>
+				</Flex>
 			</div>
 		);
 	}

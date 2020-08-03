@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, Button } from 'antd';
 import i18n from 'i18next';
 
-import { FlexBox } from '../../flex';
+import { Flex } from '../../flex';
 import StyleList from './StyleList';
 import StyleModal from './StyleModal';
 import Icon from '../../icon/Icon';
@@ -138,8 +138,8 @@ class Styles extends Component {
 		const { onOk, onCancel, onAdd, onEdit, onDelete, onClear, onChange, onValid } = this.handlers;
 		return (
 			<Form>
-				<FlexBox flexDirection="column">
-					<FlexBox justifyContent="flex-end" style={{ padding: 8 }}>
+				<Flex flexDirection="column">
+					<Flex justifyContent="flex-end" style={{ padding: 8 }}>
 						<Button className="rde-action-btn" shape="circle" onClick={onAdd}>
 							<Icon name="plus" />
 						</Button>
@@ -158,9 +158,9 @@ class Styles extends Component {
 							onChange={onChange}
 							onValid={onValid}
 						/>
-					</FlexBox>
+					</Flex>
 					<StyleList styles={styles} onEdit={onEdit} onDelete={onDelete} />
-				</FlexBox>
+				</Flex>
 			</Form>
 		);
 	}

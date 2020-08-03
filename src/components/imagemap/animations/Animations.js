@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, Button } from 'antd';
 import i18n from 'i18next';
 
-import { FlexBox } from '../../flex';
+import { Flex } from '../../flex';
 import AnimationList from './AnimationList';
 import AnimationModal from './AnimationModal';
 import Icon from '../../icon/Icon';
@@ -156,8 +156,8 @@ class Animations extends Component {
 		return (
 			<Scrollbar>
 				<Form>
-					<FlexBox flexDirection="column">
-						<FlexBox justifyContent="flex-end" style={{ padding: 8 }}>
+					<Flex flexDirection="column">
+						<Flex justifyContent="flex-end" style={{ padding: 8 }}>
 							<Button className="rde-action-btn" shape="circle" onClick={onAdd}>
 								<Icon name="plus" />
 							</Button>
@@ -176,9 +176,9 @@ class Animations extends Component {
 								onChange={onChange}
 								onValid={onValid}
 							/>
-						</FlexBox>
+						</Flex>
 						<AnimationList animations={animations} onEdit={onEdit} onDelete={onDelete} />
-					</FlexBox>
+					</Flex>
 				</Form>
 			</Scrollbar>
 		);

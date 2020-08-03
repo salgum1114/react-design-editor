@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import i18n from 'i18next';
 
-import { FlexBox, FlexItem } from '../flex';
+import { Flex } from '../flex';
 import ImageMapList from './ImageMapList';
 import { CommonButton } from '../common';
 import Icon from '../icon/Icon';
@@ -17,8 +17,8 @@ class ImageMapHeaderToolbar extends Component {
 		const { canvasRef, selectedItem } = this.props;
 		const isCropping = canvasRef ? canvasRef.handler.interactionMode === 'crop' : false;
 		return (
-			<FlexBox className="rde-editor-header-toolbar-container" flex="1">
-				<FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-list">
+			<Flex className="rde-editor-header-toolbar-container" flex="1">
+				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-list">
 					<CommonButton
 						className="rde-action-btn"
 						shape="circle"
@@ -28,8 +28,8 @@ class ImageMapHeaderToolbar extends Component {
 					<div className="rde-canvas-list">
 						<ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} />
 					</div>
-				</FlexItem>
-				<FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
+				</Flex.Item>
+				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
 					<CommonButton
 						className="rde-action-btn"
 						shape="circle"
@@ -62,8 +62,8 @@ class ImageMapHeaderToolbar extends Component {
 						icon="angle-double-down"
 						tooltipTitle={i18n.t('action.send-to-back')}
 					/>
-				</FlexItem>
-				<FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
+				</Flex.Item>
+				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
 					<CommonButton
 						className="rde-action-btn"
 						shape="circle"
@@ -88,8 +88,8 @@ class ImageMapHeaderToolbar extends Component {
 						icon="align-right"
 						tooltipTitle={i18n.t('action.align-right')}
 					/>
-				</FlexItem>
-				<FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-group">
+				</Flex.Item>
+				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-group">
 					<CommonButton
 						className="rde-action-btn"
 						shape="circle"
@@ -106,8 +106,8 @@ class ImageMapHeaderToolbar extends Component {
 						icon="object-ungroup"
 						tooltipTitle={i18n.t('action.object-ungroup')}
 					/>
-				</FlexItem>
-				<FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-crop">
+				</Flex.Item>
+				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-crop">
 					<CommonButton
 						className="rde-action-btn"
 						shape="circle"
@@ -132,8 +132,8 @@ class ImageMapHeaderToolbar extends Component {
 						icon="times"
 						tooltipTitle={i18n.t('action.crop-cancel')}
 					/>
-				</FlexItem>
-				<FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-operation">
+				</Flex.Item>
+				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-operation">
 					<CommonButton
 						className="rde-action-btn"
 						shape="circle"
@@ -158,8 +158,8 @@ class ImageMapHeaderToolbar extends Component {
 						icon="trash"
 						tooltipTitle={i18n.t('action.delete')}
 					/>
-				</FlexItem>
-				<FlexItem className="rde-canvas-toolbar rde-canvas-toolbar-history">
+				</Flex.Item>
+				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-history">
 					<CommonButton
 						className="rde-action-btn"
 						disabled={isCropping || (canvasRef && !canvasRef.handler.transactionHandler.undos.length)}
@@ -176,8 +176,8 @@ class ImageMapHeaderToolbar extends Component {
 						Redo
 						<Icon name="redo-alt" style={{ marginLeft: 8 }} />
 					</CommonButton>
-				</FlexItem>
-			</FlexBox>
+				</Flex.Item>
+			</Flex>
 		);
 	}
 }

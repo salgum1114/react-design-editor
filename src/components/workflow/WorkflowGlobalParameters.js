@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { List, Divider, Modal, Form, Input, Select, InputNumber, Switch } from 'antd';
 import ReactJson from 'react-json-view';
 
-import { FlexBox } from '../flex';
+import { Flex } from '../flex';
 import CommonButton from '../common/CommonButton';
 import InputJson from '../common/InputJson';
 import WorkflowSiderContainer from './WorkflowSiderContainer';
@@ -199,7 +199,7 @@ class WorkflowGlobalParameters extends Component {
 		}
 		return (
 			<WorkflowSiderContainer title={i18n.t('workflow.variables')} icon="globe">
-				<FlexBox justifyContent="flex-end">
+				<Flex justifyContent="flex-end">
 					<CommonButton className="rde-action-btn" shape="circle" icon="plus" onClick={this.handlers.onAdd} />
 					<CommonButton
 						className="rde-action-btn"
@@ -208,7 +208,7 @@ class WorkflowGlobalParameters extends Component {
 						icon="times"
 						onClick={this.handlers.onClear}
 					/>
-				</FlexBox>
+				</Flex>
 				<Divider style={{ margin: '12px 0' }} />
 				<List
 					dataSource={dataSource}
