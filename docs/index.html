@@ -67,125 +67,133 @@
 				<a href="#react-design-editor" id="react-design-editor" style="color: inherit; text-decoration: none;">
 					<h1>React Design Editor</h1>
 				</a>
-				<p><a href="https://en.wikipedia.org/wiki/MIT_License"><img src="https://img.shields.io/npm/l/react-design-editor?style=flat-square" alt=""></a>
-					<a href="https://github.com/salgum1114/react-design-editor/actions"><img src="https://github.com/salgum1114/react-design-editor/workflows/build/badge.svg" alt="build"></a>
-					<a href="https://www.npmjs.com/package/react-design-editor"><img src="https://flat.badgen.net/npm/v/react-design-editor?icon=npm" alt=""></a>
-					<a href="https://david-dm.org/salgum1114/react-design-editor"><img src="https://img.shields.io/david/salgum1114/react-design-editor?style=flat-square" alt=""></a>
-				<a href="https://david-dm.org/salgum1114/react-design-editor?type=dev"><img src="https://img.shields.io/david/dev/salgum1114/react-design-editor?style=flat-square" alt=""></a></p>
+				<p><a href="https://en.wikipedia.org/wiki/MIT_License"><img src="https://img.shields.io/npm/l/react-design-editor?style=flat-square" alt=""></a> <a href="https://github.com/salgum1114/react-design-editor/actions"><img src="https://github.com/salgum1114/react-design-editor/workflows/build/badge.svg" alt="build"></a> <a href="https://www.npmjs.com/package/react-design-editor"><img src="https://flat.badgen.net/npm/v/react-design-editor?icon=npm" alt=""></a> <a href="https://david-dm.org/salgum1114/react-design-editor"><img src="https://img.shields.io/david/salgum1114/react-design-editor?style=flat-square" alt=""></a> <a href="https://david-dm.org/salgum1114/react-design-editor?type=dev"><img src="https://img.shields.io/david/dev/salgum1114/react-design-editor?style=flat-square" alt=""></a></p>
+				<p>React Design Editor is a module for React, written in Javascript/Typescript which provides two primary features:</p>
 				<ul>
-					<li><p>React Design Editor has started to develope direct manipulation of editable design tools like Powerpoint, We&#39;ve developed it with reactjs, ant.design, fabricjs</p>
-					</li>
-					<li><p>Layouts and components such as property edits, item lists, toolbars were developed as react.js and the ant.design component was <strong>primarily</strong> used.</p>
-					</li>
-					<li><p>The project is constantly being developed to support a variety of functions, and its goal is to be able to draw workflow (BPMN) in the future.</p>
-					</li>
+					<li>Image Editor - Create images in React, draw diagrams and arrange compositions using the image editor and save the result to one of several export formats, provides functionality similar to Powerpoint.</li>
+					<li>Business Process Modelling (BPM) - Design flowcharts and process workflows in React and export the model to JSON, which can be imported into the tool (load/save).</li>
 				</ul>
-				<a href="#demos" id="demos" style="color: inherit; text-decoration: none;">
-					<h1>Demos</h1>
-				</a>
-				<p><a href="https://salgum1114.github.io/react-design-editor/">React Design Editor</a></p>
-				<a href="#dependencies" id="dependencies" style="color: inherit; text-decoration: none;">
-					<h1>Dependencies</h1>
+				<p>The module primarily uses the <a href="https://github.com/ant-design/ant-design/">Ant Design</a>, <a href="https://github.com/fabricjs/fabric.js">Fabric.js</a> and <a href="https://github.com/facebook/react">React</a> libraries, but a full list of required dependencies can be found below.</p>
+				<p>Try it out today - the project is being continually developed to support a variety of different functions.</p>
+				<p><a href="https://salgum1114.github.io/react-design-editor/">View Demo</a></p>
+				<a href="#feature-list" id="feature-list" style="color: inherit; text-decoration: none;">
+					<h1>Feature List</h1>
 				</a>
 				<ul>
-					<li>React.js</li>
-					<li>ant.design</li>
-					<li>fabric.js</li>
-					<li>mediaelement.js</li>
-					<li>react-ace</li>
-					<li>interact.js</li>
-					<li>anime.js</li>
-					<li>fontawesome5</li>
-					<li>webpack4</li>
-					<li>babel</li>
+					<li><input checked="" disabled="" type="checkbox"> Add, remove, resize, reorder, clone, copy/paste and drag/drop elements</li>
+					<li><input checked="" disabled="" type="checkbox"> Drawing capability, with polygon, line, arrows and link support</li>
+					<li><input checked="" disabled="" type="checkbox"> Preview mode, tooltips, group/ungroup and zoom functionality</li>
+					<li><input checked="" disabled="" type="checkbox"> Upload (with drag/drop), import and export to JSON or image</li>
+					<li><input checked="" disabled="" type="checkbox"> Image cropping, Image filters, alignment, alignment guides</li>
+					<li><input checked="" disabled="" type="checkbox"> Snap to grid, context menu, animation and video element</li>
+					<li><input checked="" disabled="" type="checkbox"> Various icons in icon picker and fonts from Google Fonts (20)</li>
+					<li><input checked="" disabled="" type="checkbox"> HTML/CSS/JS Element, iFrame element</li>
+					<li><input checked="" disabled="" type="checkbox"> Animation support, with Fade / Bounce / Shake / Scaling / Rotation / Flash effects</li>
+					<li><input checked="" disabled="" type="checkbox"> Code Editor with HTML / CSS / JS / Preview</li>
+					<li><input checked="" disabled="" type="checkbox"> Various interaction modes, including grasp, selection, ctrl + drag grab</li>
+					<li><input checked="" disabled="" type="checkbox"> Multiple layouts, with fixed, responsive, fullscreen and grid modes</li>
+					<li><input checked="" disabled="" type="checkbox"> SVG, Chart and GIF elements</li>
+					<li><input checked="" disabled="" type="checkbox"> Undo/Redo support</li>
+					<li><input disabled="" type="checkbox"> Wireframes - in development</li>
+					<li><input disabled="" type="checkbox"> Multiple Map - in development</li>
+					<li><input disabled="" type="checkbox"> Ruler - in development</li>
 				</ul>
 				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 					<h1>Installation</h1>
 				</a>
-				<ul>
-					<li>npm install --save react-design-editor</li>
-				</ul>
+				<p>Run <code>npm install react-design-editor</code> or <code>yarn add react-design-editor</code></p>
 				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
 					<h1>Getting Started</h1>
 				</a>
-				<ul>
-					<li>git clone <a href="https://github.com/salgum1114/react-design-editor.git">https://github.com/salgum1114/react-design-editor.git</a> - Clone the project</li>
-					<li>npm start - Run script</li>
-					<li><a href="http://localhost:8080">http://localhost:8080</a> - Host access</li>
-				</ul>
-				<a href="#image-map" id="image-map" style="color: inherit; text-decoration: none;">
-					<h1>Image Map</h1>
+				<ol>
+					<li>Clone this Project with <code>git clone https://github.com/salgum1114/react-design-editor.git</code></li>
+					<li>Install dependencies with <code>npm install</code> or <code>yarn</code></li>
+					<li>Run the App with <code>npm start</code> or <code>yarn start</code></li>
+					<li>Open your web browser to <code>http://localhost:8080</code></li>
+				</ol>
+				<a href="#screenshots" id="screenshots" style="color: inherit; text-decoration: none;">
+					<h1>Screenshots</h1>
 				</a>
-				<a href="#three-layout-mode" id="three-layout-mode" style="color: inherit; text-decoration: none;">
-					<h2>Three layout mode</h2>
+				<a href="#image-map-editor" id="image-map-editor" style="color: inherit; text-decoration: none;">
+					<h2>Image Map Editor</h2>
 				</a>
-				<a href="#1-fixed" id="1-fixed" style="color: inherit; text-decoration: none;">
-					<h3>1. Fixed</h3>
+				<a href="#1-fixed-layout-mode" id="1-fixed-layout-mode" style="color: inherit; text-decoration: none;">
+					<h3>1. Fixed Layout Mode</h3>
 				</a>
 				<p><img src="https://user-images.githubusercontent.com/19975642/55678049-6aff6180-592e-11e9-8b29-8e1d60df178a.PNG" alt="fixed"></p>
-				<a href="#2-responsive" id="2-responsive" style="color: inherit; text-decoration: none;">
-					<h3>2. Responsive</h3>
+				<a href="#2-responsive-layout-mode" id="2-responsive-layout-mode" style="color: inherit; text-decoration: none;">
+					<h3>2. Responsive Layout Mode</h3>
 				</a>
 				<p><img src="https://user-images.githubusercontent.com/19975642/55678050-6cc92500-592e-11e9-8a57-c82d371e4be1.PNG" alt="responsive"></p>
-				<a href="#3-fullscreen" id="3-fullscreen" style="color: inherit; text-decoration: none;">
-					<h3>3. Fullscreen</h3>
+				<a href="#3-full-screen-layout-mode" id="3-full-screen-layout-mode" style="color: inherit; text-decoration: none;">
+					<h3>3. Full Screen Layout Mode</h3>
 				</a>
 				<p><img src="https://user-images.githubusercontent.com/19975642/55678051-6dfa5200-592e-11e9-9b9e-b8d8ee3ccb08.PNG" alt="fullscreen"></p>
-				<a href="#preview-mode" id="preview-mode" style="color: inherit; text-decoration: none;">
-					<h3>Preview mode</h3>
+				<a href="#4-preview-mode" id="4-preview-mode" style="color: inherit; text-decoration: none;">
+					<h3>4. Preview Mode</h3>
 				</a>
 				<p><img src="https://user-images.githubusercontent.com/19975642/55678052-6fc41580-592e-11e9-9958-9a9be8239bd7.PNG" alt="preview"></p>
-				<a href="#workflow" id="workflow" style="color: inherit; text-decoration: none;">
-					<h1>Workflow</h1>
+				<a href="#workflow-editor" id="workflow-editor" style="color: inherit; text-decoration: none;">
+					<h2>Workflow Editor</h2>
 				</a>
 				<p><img src="https://user-images.githubusercontent.com/19975642/55678053-718dd900-592e-11e9-9996-cce9b46d8433.PNG" alt="workflow"></p>
-				<a href="#features" id="features" style="color: inherit; text-decoration: none;">
-					<h1>Features</h1>
-				</a>
-				<ul>
-					<li><input checked="" disabled="" type="checkbox"> Add</li>
-					<li><input checked="" disabled="" type="checkbox"> Remove</li>
-					<li><input checked="" disabled="" type="checkbox"> Resize</li>
-					<li><input checked="" disabled="" type="checkbox"> Clone</li>
-					<li><input checked="" disabled="" type="checkbox"> Tooltip</li>
-					<li><input checked="" disabled="" type="checkbox"> Reorder</li>
-					<li><input checked="" disabled="" type="checkbox"> Zoom</li>
-					<li><input checked="" disabled="" type="checkbox"> Preview</li>
-					<li><input checked="" disabled="" type="checkbox"> Copy &amp; Paste</li>
-					<li><input checked="" disabled="" type="checkbox"> Drag &amp; Drop</li>
-					<li><input checked="" disabled="" type="checkbox"> Upload (Drag &amp; Drop)</li>
-					<li><input checked="" disabled="" type="checkbox"> Alignments</li>
-					<li><input checked="" disabled="" type="checkbox"> Drawing - Polygon, Link, Line, Arrow Line</li>
-					<li><input checked="" disabled="" type="checkbox"> Export / Import - JSON</li>
-					<li><input checked="" disabled="" type="checkbox"> Video Element</li>
-					<li><input checked="" disabled="" type="checkbox"> HTML/CSS/JS Element</li>
-					<li><input checked="" disabled="" type="checkbox"> iFrame Element</li>
-					<li><input checked="" disabled="" type="checkbox"> Code Editor - HTML / CSS / JS / Preview</li>
-					<li><input checked="" disabled="" type="checkbox"> Animation - Fade / Bounce / Shake / Scaling / Rotation / Flash</li>
-					<li><input checked="" disabled="" type="checkbox"> Icon Chooser - fontawesome 5.2.0 free version</li>
-					<li><input checked="" disabled="" type="checkbox"> Google Fonts - 20 fonts</li>
-					<li><input checked="" disabled="" type="checkbox"> Align Guidlines - moving</li>
-					<li><input checked="" disabled="" type="checkbox"> Interaction Mode - grap / selection / ctrl + drag grab</li>
-					<li><input checked="" disabled="" type="checkbox"> Group / Ungroup</li>
-					<li><input checked="" disabled="" type="checkbox"> Image Cropping</li>
-					<li><input checked="" disabled="" type="checkbox"> Snap To Grid</li>
-					<li><input checked="" disabled="" type="checkbox"> Multiple Layout - Fixed / Responsive / Fullscreen / Grid</li>
-					<li><input checked="" disabled="" type="checkbox"> Context menu</li>
-					<li><input checked="" disabled="" type="checkbox"> Save Image - Canvas, Target Object</li>
-					<li><input checked="" disabled="" type="checkbox"> Image Filter</li>
-					<li><input checked="" disabled="" type="checkbox"> Undo / Redo</li>
-					<li><input checked="" disabled="" type="checkbox"> SVG Element - development (copy)</li>
-					<li><input checked="" disabled="" type="checkbox"> Chart Element - development (form)</li>
-					<li><input checked="" disabled="" type="checkbox"> GIF Element - development (form)</li>
-					<li><input disabled="" type="checkbox"> Wireframes - development</li>
-					<li><input disabled="" type="checkbox"> Multiple Map - development</li>
-					<li><input disabled="" type="checkbox"> Ruler - development</li>
-				</ul>
 				<a href="#❤️-sponsors-and-backers---" id="❤️-sponsors-and-backers---" style="color: inherit; text-decoration: none;">
 					<h2>❤️ Sponsors and Backers <a href="https://opencollective.com/react-design-editor/contribute"><img src="https://opencollective.com/react-design-editor/tiers/badge.svg" alt=""></a> <a href="https://opencollective.com/react-design-editor/contribute"><img src="https://opencollective.com/react-design-editor/tiers/sponsor/badge.svg?label=Sponsor&color=brightgreen" alt=""></a> <a href="https://opencollective.com/react-design-editor/contribute"><img src="https://opencollective.com/react-design-editor/tiers/backer/badge.svg?label=Backer&color=brightgreen" alt=""></a></h2>
 				</a>
+				<p><a href="https://marketplace.atlassian.com/apps/1222276/workflows-for-confluence"><img src="https://remote.automation-consultants.com/knowledge/download/attachments/57671882/sponsorship.png" alt="Sponsored by Workflows for Confluence"></a></p>
 				<p><a href="https://opencollective.com/react-design-editor/contribute"><img src="https://opencollective.com/react-design-editor/tiers/sponsor.svg?avatarHeight=36" alt=""></a></p>
 				<p><a href="https://opencollective.com/react-design-editor/contribute"><img src="https://opencollective.com/react-design-editor/tiers/backer.svg?avatarHeight=36" alt=""></a></p>
+				<a href="#dependencies" id="dependencies" style="color: inherit; text-decoration: none;">
+					<h1>Dependencies</h1>
+				</a>
+				<table>
+					<thead>
+						<tr>
+							<th>Dependency</th>
+							<th>License(s)</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td><a href="https://github.com/facebook/react">React</a></td>
+							<td>MIT</td>
+						</tr>
+						<tr>
+							<td><a href="https://github.com/ant-design/ant-design/">Ant Design</a></td>
+							<td>MIT</td>
+						</tr>
+						<tr>
+							<td><a href="https://github.com/fabricjs/fabric.js">Fabric.js</a></td>
+							<td>MIT</td>
+						</tr>
+						<tr>
+							<td><a href="https://github.com/mediaelement/mediaelement">MediaElement.js</a></td>
+							<td>MIT</td>
+						</tr>
+						<tr>
+							<td><a href="https://github.com/securingsincity/react-ace">React-Ace</a></td>
+							<td>MIT</td>
+						</tr>
+						<tr>
+							<td><a href="https://github.com/taye/interact.js">interact.js</a></td>
+							<td>MIT</td>
+						</tr>
+						<tr>
+							<td><a href="https://github.com/juliangarnier/anime/">anime.js</a></td>
+							<td>MIT</td>
+						</tr>
+						<tr>
+							<td><a href="https://github.com/webpack/webpack">Webpack 4</a></td>
+							<td>MIT</td>
+						</tr>
+						<tr>
+							<td><a href="https://github.com/babel/babel">Babel</a></td>
+							<td>MIT</td>
+						</tr>
+						<tr>
+							<td><a href="https://github.com/FortAwesome/Font-Awesome">fontawesome5</a></td>
+							<td>Icons (CC BY 4.0), Fonts (SIL OFL 1.1), Code (MIT)</td>
+						</tr>
+				</tbody></table>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -554,6 +562,5 @@
 </div>
 <div class="overlay"></div>
 <script src="assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
