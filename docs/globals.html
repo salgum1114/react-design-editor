@@ -119,6 +119,7 @@
 								<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/handleroptions.html" class="tsd-kind-icon">Handler<wbr>Options</a></li>
 								<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/huerotationfilter.html" class="tsd-kind-icon">Hue<wbr>Rotation<wbr>Filter</a></li>
 								<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/ifilter.html" class="tsd-kind-icon">IFilter</a></li>
+								<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/istate.html" class="tsd-kind-icon">IState</a></li>
 								<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/iframeobject.html" class="tsd-kind-icon">Iframe<wbr>Object</a></li>
 								<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/keyevent.html" class="tsd-kind-icon">Key<wbr>Event</a></li>
 								<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/linkobject.html" class="tsd-kind-icon">Link<wbr>Object</a></li>
@@ -231,7 +232,7 @@
 					<div class="tsd-signature tsd-kind-icon">Canvas<wbr>Props<span class="tsd-signature-symbol">:</span> <a href="interfaces/handleroptions.html" class="tsd-signature-type">HandlerOptions</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>ref<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RefAttributes</span><span class="tsd-signature-symbol">&lt;</span><a href="classes/handler.html" class="tsd-signature-type">Handler</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>responsive<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>style<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">CSSProperties</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/Canvas.tsx:47</li>
+							<li>Defined in src/components/canvas/Canvas.tsx:74</li>
 						</ul>
 					</aside>
 				</section>
@@ -284,7 +285,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-external">
 					<a name="fabricimage" class="tsd-anchor"></a>
 					<h3>Fabric<wbr>Image</h3>
-					<div class="tsd-signature tsd-kind-icon">Fabric<wbr>Image<span class="tsd-signature-symbol">:</span> <a href="globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Image</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>file<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">File</span><span class="tsd-signature-symbol">; </span>filters<span class="tsd-signature-symbol">?: </span><a href="interfaces/ifilter.html" class="tsd-signature-type">IFilter</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>src<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Fabric<wbr>Image<span class="tsd-signature-symbol">:</span> <a href="globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Image</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>_element<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>file<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">File</span><span class="tsd-signature-symbol">; </span>filters<span class="tsd-signature-symbol">?: </span><a href="interfaces/ifilter.html" class="tsd-signature-type">IFilter</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>src<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in src/components/canvas/utils/ObjectUtil.ts:178</li>
@@ -349,7 +350,7 @@
 					<div class="tsd-signature tsd-kind-icon">Interaction<wbr>Mode<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"selection"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"grab"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"polygon"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"line"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"arrow"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"link"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"crop"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/utils/ObjectUtil.ts:408</li>
+							<li>Defined in src/components/canvas/utils/ObjectUtil.ts:409</li>
 						</ul>
 					</aside>
 				</section>
@@ -405,7 +406,7 @@
 					<div class="tsd-signature tsd-kind-icon">Workarea<wbr>Layout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"fixed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"responsive"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"fullscreen"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/utils/ObjectUtil.ts:214</li>
+							<li>Defined in src/components/canvas/utils/ObjectUtil.ts:215</li>
 						</ul>
 					</aside>
 				</section>
@@ -415,7 +416,7 @@
 					<div class="tsd-signature tsd-kind-icon">Workarea<wbr>Object<span class="tsd-signature-symbol">:</span> <a href="globals.html#fabricimage" class="tsd-signature-type">FabricImage</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>_element<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">HTMLImageElement</span><span class="tsd-signature-symbol">; </span>isElement<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>layout<span class="tsd-signature-symbol">?: </span><a href="globals.html#workarealayout" class="tsd-signature-type">WorkareaLayout</a><span class="tsd-signature-symbol">; </span>workareaHeight<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>workareaWidth<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/utils/ObjectUtil.ts:249</li>
+							<li>Defined in src/components/canvas/utils/ObjectUtil.ts:250</li>
 						</ul>
 					</aside>
 				</section>
@@ -598,7 +599,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Properties<wbr>ToInclude<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = [&#x27;id&#x27;, &#x27;name&#x27;, &#x27;locke&#x27;, &#x27;editable&#x27;]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/Canvas.tsx:45</li>
+							<li>Defined in src/components/canvas/Canvas.tsx:72</li>
 						</ul>
 					</aside>
 				</section>
@@ -687,7 +688,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/utils/ObjectUtil.ts:427</li>
+									<li>Defined in src/components/canvas/utils/ObjectUtil.ts:428</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1994,7 +1995,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Workarea<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:7</li>
+							<li>Defined in src/components/canvas/Canvas.tsx:45</li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
@@ -2003,7 +2004,7 @@
 						<div class="tsd-signature tsd-kind-icon">background<wbr>Color<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;#fff&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:16</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:54</li>
 							</ul>
 						</aside>
 					</section>
@@ -2013,7 +2014,7 @@
 						<div class="tsd-signature tsd-kind-icon">has<wbr>Borders<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> = false</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:17</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:55</li>
 							</ul>
 						</aside>
 					</section>
@@ -2023,7 +2024,7 @@
 						<div class="tsd-signature tsd-kind-icon">has<wbr>Controls<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> = false</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:18</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:56</li>
 							</ul>
 						</aside>
 					</section>
@@ -2033,7 +2034,7 @@
 						<div class="tsd-signature tsd-kind-icon">height<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 400</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:9</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:47</li>
 							</ul>
 						</aside>
 					</section>
@@ -2043,7 +2044,7 @@
 						<div class="tsd-signature tsd-kind-icon">hover<wbr>Cursor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;default&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:22</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:60</li>
 							</ul>
 						</aside>
 					</section>
@@ -2053,7 +2054,7 @@
 						<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;workarea&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:24</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:62</li>
 							</ul>
 						</aside>
 					</section>
@@ -2063,7 +2064,7 @@
 						<div class="tsd-signature tsd-kind-icon">is<wbr>Element<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> = false</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:31</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:69</li>
 							</ul>
 						</aside>
 					</section>
@@ -2073,7 +2074,7 @@
 						<div class="tsd-signature tsd-kind-icon">layout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"fixed"</span><span class="tsd-signature-symbol"> = &quot;fixed&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:26</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:64</li>
 							</ul>
 						</aside>
 					</section>
@@ -2083,7 +2084,7 @@
 						<div class="tsd-signature tsd-kind-icon">link<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:27</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:65</li>
 							</ul>
 						</aside>
 						<div class="tsd-type-declaration">
@@ -2098,7 +2099,7 @@
 						<div class="tsd-signature tsd-kind-icon">lock<wbr>MovementX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:20</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:58</li>
 							</ul>
 						</aside>
 					</section>
@@ -2108,7 +2109,7 @@
 						<div class="tsd-signature tsd-kind-icon">lock<wbr>MovementY<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:21</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:59</li>
 							</ul>
 						</aside>
 					</section>
@@ -2118,7 +2119,7 @@
 						<div class="tsd-signature tsd-kind-icon">lock<wbr>ScalingX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:12</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:50</li>
 							</ul>
 						</aside>
 					</section>
@@ -2128,7 +2129,7 @@
 						<div class="tsd-signature tsd-kind-icon">lock<wbr>ScalingY<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:13</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:51</li>
 							</ul>
 						</aside>
 					</section>
@@ -2138,7 +2139,7 @@
 						<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:23</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:61</li>
 							</ul>
 						</aside>
 					</section>
@@ -2148,7 +2149,7 @@
 						<div class="tsd-signature tsd-kind-icon">scaleX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:14</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:52</li>
 							</ul>
 						</aside>
 					</section>
@@ -2158,7 +2159,7 @@
 						<div class="tsd-signature tsd-kind-icon">scaleY<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 1</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:15</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:53</li>
 							</ul>
 						</aside>
 					</section>
@@ -2168,7 +2169,7 @@
 						<div class="tsd-signature tsd-kind-icon">selectable<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> = false</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:19</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:57</li>
 							</ul>
 						</aside>
 					</section>
@@ -2178,7 +2179,7 @@
 						<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;image&quot;</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:25</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:63</li>
 							</ul>
 						</aside>
 					</section>
@@ -2188,7 +2189,7 @@
 						<div class="tsd-signature tsd-kind-icon">width<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 600</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:8</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:46</li>
 							</ul>
 						</aside>
 					</section>
@@ -2198,7 +2199,7 @@
 						<div class="tsd-signature tsd-kind-icon">workarea<wbr>Height<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 400</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:11</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:49</li>
 							</ul>
 						</aside>
 					</section>
@@ -2208,7 +2209,7 @@
 						<div class="tsd-signature tsd-kind-icon">workarea<wbr>Width<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 600</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:10</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:48</li>
 							</ul>
 						</aside>
 					</section>
@@ -2218,7 +2219,7 @@
 						<div class="tsd-signature tsd-kind-icon">tooltip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:28</li>
+								<li>Defined in src/components/canvas/Canvas.tsx:66</li>
 							</ul>
 						</aside>
 						<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-external">
@@ -2227,7 +2228,7 @@
 							<div class="tsd-signature tsd-kind-icon">enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> = false</span></div>
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/WorkareaHandler.ts:29</li>
+									<li>Defined in src/components/canvas/Canvas.tsx:67</li>
 								</ul>
 							</aside>
 						</section>
@@ -2416,6 +2417,9 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/ifilter.html" class="tsd-kind-icon">IFilter</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-external">
+						<a href="interfaces/istate.html" class="tsd-kind-icon">IState</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-is-external">
 						<a href="interfaces/iframeobject.html" class="tsd-kind-icon">Iframe<wbr>Object</a>
