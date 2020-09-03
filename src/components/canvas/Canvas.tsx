@@ -5,7 +5,7 @@ import ResizeObserver from 'resize-observer-polyfill';
 import union from 'lodash/union';
 
 import Handler, { HandlerOptions } from './handlers/Handler';
-import { FabricCanvas, WorkareaObject } from './utils';
+import { FabricCanvas, WorkareaObject, FabricObjectOption } from './utils';
 
 import '../../styles/core/canvas.less';
 import '../../styles/core/tooltip.less';
@@ -69,6 +69,12 @@ const defaultWorkareaOption: Partial<WorkareaObject> = {
 	isElement: false,
 };
 
+const defaultObjectOption: Partial<FabricObjectOption> = {
+	rotation: 0,
+	centeredRotation: true,
+	strokeUniform: true,
+};
+
 const defaultPropertiesToInclude = ['id', 'name', 'locke', 'editable'];
 
 export type CanvasProps = HandlerOptions & {
@@ -95,7 +101,7 @@ class Canvas extends Component<CanvasProps, IState> {
 		canvasOption: {
 			selection: true,
 		},
-		defaultOption: {},
+		defaultOption: defaultObjectOption,
 		activeSelection: {
 			hasControls: true,
 		},
@@ -153,7 +159,7 @@ class Canvas extends Component<CanvasProps, IState> {
 			canvasOption: mergedCanvasOption,
 			guidelineOption,
 			editable,
-			defaultOption,
+			defaultOption: Object.assign({}, defaultObjectOption, defaultOption),
 			propertiesToInclude: mergedPropertiesToInclude,
 			gridOption: Object.assign({}, defaultGripOption, gridOption),
 			width,
@@ -252,12 +258,16 @@ class Canvas extends Component<CanvasProps, IState> {
 	};
 
 	handleLoad = () => {
-		if (this.props.onLoad) {
-			this.props.onLoad(this.handler, this.canvas);
-		}
-		this.setState({
-			loaded: true,
-		});
+		this.setState(
+			{
+				loaded: true,
+			},
+			() => {
+				if (this.props.onLoad) {
+					this.props.onLoad(this.handler, this.canvas);
+				}
+			},
+		);
 	};
 
 	render() {

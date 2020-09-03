@@ -219,7 +219,7 @@ export default {
 								max: 5,
 							},
 						],
-						initialValue: data.animation.scale || 1,
+						initialValue: data.animation.scale || 2,
 					})(<Slider min={1} max={5} step={0.1} />)}
 				</Form.Item>
 			);

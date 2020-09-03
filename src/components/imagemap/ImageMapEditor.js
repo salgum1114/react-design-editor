@@ -182,6 +182,10 @@ class ImageMapEditor extends Component {
 				this.canvasRef.handler.scaleToResize(allValues.width, allValues.height);
 				return;
 			}
+			if (changedKey === 'angle') {
+				this.canvasRef.handler.rotate(allValues.angle);
+				return;
+			}
 			if (changedKey === 'locked') {
 				this.canvasRef.handler.setObject({
 					lockMovementX: changedValue,

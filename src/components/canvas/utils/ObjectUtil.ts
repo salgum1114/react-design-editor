@@ -2,7 +2,7 @@ import { fabric } from 'fabric';
 
 import { IFilter } from '../handlers/ImageHandler';
 
-export type AnimationType = 'fade' | 'bounce' | 'shake' | 'scaling' | 'rotation' | 'flash' | 'none';
+export type AnimationType = 'fade' | 'bounce' | 'shake' | 'scaling' | 'rotation' | 'flash' | 'custom' | 'none';
 
 export interface AnimationProperty {
 	delay?: number;
@@ -98,6 +98,12 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
 	 */
 	originStroke?: string;
 	/**
+	 * Original rotation
+	 *
+	 * @type {number}
+	 */
+	originRotation?: number;
+	/**
 	 * Object editable
 	 * @type {boolean}
 	 */
@@ -162,6 +168,12 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
 	 * @type {boolean}
 	 */
 	locked?: boolean;
+	/**
+	 * This property replaces "angle"
+	 *
+	 * @type {number}
+	 */
+	rotation?: number;
 	[key: string]: any;
 };
 

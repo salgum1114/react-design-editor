@@ -1821,6 +1821,20 @@ class Handler implements HandlerOptions {
 			anchorEl.remove();
 		}
 	};
+
+	/**
+	 * Sets "angle" of an instance with centered rotation
+	 *
+	 * @param {number} angle
+	 */
+	public rotate = (angle: number) => {
+		const activeObject = this.canvas.getActiveObject();
+		if (activeObject) {
+			this.set('rotation', angle);
+			activeObject.rotate(angle);
+			this.canvas.requestRenderAll();
+		}
+	};
 }
 
 export default Handler;
