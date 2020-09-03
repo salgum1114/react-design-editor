@@ -480,12 +480,15 @@ class ImageMapEditor extends Component {
 
 	handlers = {
 		onChangePreview: checked => {
-			const data = this.canvasRef.handler.exportJSON().objects.filter(obj => {
-				if (!obj.id) {
-					return false;
-				}
-				return true;
-			});
+			let data;
+			if (this.canvasRef) {
+				data = this.canvasRef.handler.exportJSON().objects.filter(obj => {
+					if (!obj.id) {
+						return false;
+					}
+					return true;
+				});
+			}
 			this.setState({
 				preview: typeof checked === 'object' ? false : checked,
 				objects: data,
@@ -743,6 +746,7 @@ class ImageMapEditor extends Component {
 								this.canvasRef = c;
 							}}
 							minZoom={30}
+							maxZoom={500}
 							defaultOption={defaultOption}
 							propertiesToInclude={propertiesToInclude}
 							onModified={onModified}

@@ -292,9 +292,6 @@ class Handler implements HandlerOptions {
 		this.init(options);
 		this.initCallback(options);
 		this.initHandler(options);
-		if (this.onLoad) {
-			this.onLoad(this, this.canvas);
-		}
 	}
 
 	/**
@@ -348,6 +345,7 @@ class Handler implements HandlerOptions {
 	 * @param {HandlerOptions} options
 	 */
 	public initHandler = (_options: HandlerOptions) => {
+		this.workareaHandler = new WorkareaHandler(this);
 		this.imageHandler = new ImageHandler(this);
 		this.chartHandler = new ChartHandler(this);
 		this.elementHandler = new ElementHandler(this);
@@ -356,7 +354,6 @@ class Handler implements HandlerOptions {
 		this.contextmenuHandler = new ContextmenuHandler(this);
 		this.tooltipHandler = new TooltipHandler(this);
 		this.zoomHandler = new ZoomHandler(this);
-		this.workareaHandler = new WorkareaHandler(this);
 		this.interactionHandler = new InteractionHandler(this);
 		this.transactionHandler = new TransactionHandler(this);
 		this.gridHandler = new GridHandler(this);
@@ -580,7 +577,7 @@ class Handler implements HandlerOptions {
 	 * @param {(File | string)} [source]
 	 * @returns
 	 */
-    public setImage = (obj: FabricImage, source?: File | string) => {
+	public setImage = (obj: FabricImage, source?: File | string) => {
 		if (!source) {
 			this.loadImage(obj, null);
 			obj.set('file', null);
@@ -707,7 +704,9 @@ class Handler implements HandlerOptions {
 		if (obj.type === 'image') {
 			createdObj = this.addImage(newOption);
 		} else if (obj.type === 'group') {
-			const objects = this.addGroup(newOption, centered, loaded);
+			// TODO...
+			// Group add function needs to be fixed
+			const objects = this.addGroup(newOption, centered, loaded, transaction);
 			const groupOption = Object.assign({}, newOption, { objects, name: 'New Group' });
 			createdObj = this.fabricObjects[obj.type].create(groupOption);
 		} else {
@@ -762,9 +761,9 @@ class Handler implements HandlerOptions {
 	 * @param {boolean} [loaded=false]
 	 * @returns
 	 */
-	public addGroup = (obj: FabricGroup, centered = true, loaded = false) => {
+	public addGroup = (obj: FabricGroup, centered = true, loaded = false, transaction = true) => {
 		return obj.objects.map(child => {
-			return this.add(child, centered, loaded);
+			return this.add(child, centered, loaded, transaction);
 		});
 	};
 
@@ -1535,7 +1534,7 @@ class Handler implements HandlerOptions {
 	 * @param {*} json
 	 * @param {(canvas: FabricCanvas) => void} [callback]
 	 */
-	public importJSON = (json: any, callback?: (canvas: FabricCanvas) => void) => {
+	public importJSON = async (json: any, callback?: (canvas: FabricCanvas) => void) => {
 		if (typeof json === 'string') {
 			json = JSON.parse(json);
 		}
@@ -1556,42 +1555,39 @@ class Handler implements HandlerOptions {
 			prevLeft = workarea.left;
 			prevTop = workarea.top;
 			this.workarea.set(workarea);
-			this.canvas.centerObject(this.workarea);
-			this.workareaHandler.setImage(workarea.src, true);
+			await this.workareaHandler.setImage(workarea.src, true);
 			this.workarea.setCoords();
 		}
-		setTimeout(() => {
-			json.forEach((obj: FabricObjectOption) => {
-				if (obj.id === 'workarea') {
-					return;
-				}
-				const canvasWidth = this.canvas.getWidth();
-				const canvasHeight = this.canvas.getHeight();
-				const { width, height, scaleX, scaleY, layout, left, top } = this.workarea;
-				if (layout === 'fullscreen') {
-					const leftRatio = canvasWidth / (width * scaleX);
-					const topRatio = canvasHeight / (height * scaleY);
-					obj.left *= leftRatio;
-					obj.top *= topRatio;
-					obj.scaleX *= leftRatio;
-					obj.scaleY *= topRatio;
-				} else {
-					const diffLeft = left - prevLeft;
-					const diffTop = top - prevTop;
-					obj.left += diffLeft;
-					obj.top += diffTop;
-				}
-				if (obj.superType === 'element') {
-					obj.id = v4();
-				}
-				this.add(obj, false, true, false);
-				this.canvas.renderAll();
-			});
-			if (callback) {
-				callback(this.canvas);
+		json.forEach((obj: FabricObjectOption) => {
+			if (obj.id === 'workarea') {
+				return;
 			}
-		}, 300);
-		this.canvas.setZoom(1);
+			const canvasWidth = this.canvas.getWidth();
+			const canvasHeight = this.canvas.getHeight();
+			const { width, height, scaleX, scaleY, layout, left, top } = this.workarea;
+			if (layout === 'fullscreen') {
+				const leftRatio = canvasWidth / (width * scaleX);
+				const topRatio = canvasHeight / (height * scaleY);
+				obj.left *= leftRatio;
+				obj.top *= topRatio;
+				obj.scaleX *= leftRatio;
+				obj.scaleY *= topRatio;
+			} else {
+				const diffLeft = left - prevLeft;
+				const diffTop = top - prevTop;
+				obj.left += diffLeft;
+				obj.top += diffTop;
+			}
+			if (obj.superType === 'element') {
+				obj.id = v4();
+			}
+			this.add(obj, false, true, false);
+			this.canvas.renderAll();
+		});
+		if (callback) {
+			callback(this.canvas);
+		}
+		return Promise.resolve(this.canvas);
 	};
 
 	/**

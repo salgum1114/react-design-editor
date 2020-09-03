@@ -42,6 +42,7 @@ class ZoomHandler {
 		if (this.handler.onZoom) {
 			this.handler.onZoom(zoomRatio);
 		}
+		this.handler.canvas.requestRenderAll();
 	};
 
 	/**
@@ -59,17 +60,14 @@ class ZoomHandler {
 	 *
 	 */
 	public zoomToFit = () => {
-		let scaleX;
-		let scaleY;
-		scaleX = this.handler.canvas.getWidth() / this.handler.workarea.width;
-		scaleY = this.handler.canvas.getHeight() / this.handler.workarea.height;
-		if (this.handler.workarea.height > this.handler.workarea.width) {
+		let scaleX = this.handler.canvas.getWidth() / this.handler.workarea.width;
+		const scaleY = this.handler.canvas.getHeight() / this.handler.workarea.height;
+		if (this.handler.workarea.height >= this.handler.workarea.width) {
 			scaleX = scaleY;
 			if (this.handler.canvas.getWidth() < this.handler.workarea.width * scaleX) {
 				scaleX = scaleX * (this.handler.canvas.getWidth() / (this.handler.workarea.width * scaleX));
 			}
 		} else {
-			scaleY = scaleX;
 			if (this.handler.canvas.getHeight() < this.handler.workarea.height * scaleX) {
 				scaleX = scaleX * (this.handler.canvas.getHeight() / (this.handler.workarea.height * scaleX));
 			}

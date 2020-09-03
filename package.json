@@ -1,6 +1,6 @@
 {
 	"name": "react-design-editor",
-	"version": "0.0.31",
+	"version": "0.0.32",
 	"description": "Design Editor Tools with React.js + ant.design + fabric.js",
 	"main": "dist/react-design-editor.min.js",
 	"typings": "lib/index.d.ts",
@@ -43,9 +43,7 @@
 		"fabric": "^3.4.0",
 		"react": "^16.4.1",
 		"react-dom": "^16.4.1",
-		"react-dom-factories": "^1.0.2",
-		"@types/fabric": "^3.0.1",
-		"@types/animejs": "^3.1.0"
+		"react-dom-factories": "^1.0.2"
 	},
 	"dependencies": {
 		"animejs": "^3.0.0",
@@ -55,6 +53,7 @@
 		"echarts": "^4.7.0",
 		"fabric": "^3.6.3",
 		"gifler": "^0.1.0",
+		"honeycomb-grid": "^3.1.7",
 		"i18next": "^19.0.0",
 		"i18next-browser-languagedetector": "^2.2.4",
 		"lodash": "^4.17.10",

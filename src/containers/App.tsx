@@ -6,8 +6,9 @@ import WorkflowEditor from '../components/workflow/WorkflowEditor';
 import Title from './Title';
 import FlowEditor from '../components/flow/FlowEditor';
 import FlowContainer from './FlowContainer';
+import HexGrid from '../components/hexgrid/HexGrid';
 
-type EditorType = 'imagemap' | 'workflow' | 'flow';
+type EditorType = 'imagemap' | 'workflow' | 'flow' | 'hexgrid';
 
 interface IState {
 	activeEditor?: EditorType;
@@ -32,6 +33,8 @@ class App extends Component<any, IState> {
 				return <WorkflowEditor />;
 			case 'flow':
 				return <FlowEditor />;
+			case 'hexgrid':
+				return <HexGrid />;
 		}
 	};
 

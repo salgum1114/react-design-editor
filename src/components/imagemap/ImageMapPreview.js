@@ -35,6 +35,7 @@ class ImageMapPreview extends Component {
 							onLoad={handler => handler.importJSON(objects)}
 							onTooltip={onTooltip}
 							onClick={onClick}
+							maxZoom={500}
 						/>
 						<Button className="rde-action-btn rde-preview-close-btn" onClick={onChangePreview}>
 							<Icon name="times" size={1.5} />

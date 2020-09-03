@@ -14,7 +14,7 @@ class ImageMapList extends Component {
 
 	renderActions = () => {
 		const { canvasRef } = this.props;
-		const idCropping = canvasRef ? canvasRef.handler.interactionMode === 'crop' : false;
+		const idCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
 		return (
 			<Flex.Item className="rde-canvas-list-actions" flex="0 1 auto">
 				<Flex>
@@ -48,7 +48,7 @@ class ImageMapList extends Component {
 
 	renderItem = () => {
 		const { canvasRef, selectedItem } = this.props;
-		const idCropping = canvasRef ? canvasRef.handler.interactionMode === 'crop' : false;
+		const idCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
 		return canvasRef
 			? canvasRef.canvas
 					.getObjects()

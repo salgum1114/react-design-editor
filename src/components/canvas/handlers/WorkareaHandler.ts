@@ -1,35 +1,8 @@
 import { fabric } from 'fabric';
 
 import { Handler } from '.';
-import { WorkareaLayout, WorkareaObject } from '../utils';
+import { WorkareaLayout, WorkareaObject, FabricImage } from '../utils';
 import { VideoObject } from '../objects/Video';
-
-const defaultWorkareaOption: Partial<WorkareaObject> = {
-	width: 600,
-	height: 400,
-	workareaWidth: 600,
-	workareaHeight: 400,
-	lockScalingX: true,
-	lockScalingY: true,
-	scaleX: 1,
-	scaleY: 1,
-	backgroundColor: '#fff',
-	hasBorders: false,
-	hasControls: false,
-	selectable: false,
-	lockMovementX: true,
-	lockMovementY: true,
-	hoverCursor: 'default',
-	name: '',
-	id: 'workarea',
-	type: 'image',
-	layout: 'fixed', // fixed, responsive, fullscreen
-	link: {},
-	tooltip: {
-		enabled: false,
-	},
-	isElement: false,
-};
 
 class WorkareaHandler {
 	handler: Handler;
@@ -44,11 +17,10 @@ class WorkareaHandler {
 	 */
 	public init = () => {
 		const { workareaOption } = this.handler;
-		const mergedWorkareaOption = Object.assign({}, defaultWorkareaOption, workareaOption);
-		const image = new Image(mergedWorkareaOption.width, mergedWorkareaOption.height);
-		image.width = mergedWorkareaOption.width;
-		image.height = mergedWorkareaOption.height;
-		this.handler.workarea = new fabric.Image(image, mergedWorkareaOption) as WorkareaObject;
+		const image = new Image(workareaOption.width, workareaOption.height);
+		image.width = workareaOption.width;
+		image.height = workareaOption.height;
+		this.handler.workarea = new fabric.Image(image, workareaOption) as WorkareaObject;
 		this.handler.canvas.add(this.handler.workarea);
 		this.handler.objects = this.handler.getObjects();
 		this.handler.canvas.centerObject(this.handler.workarea);
@@ -74,13 +46,9 @@ class WorkareaHandler {
 				scaleX = workareaWidth / _element.width;
 				scaleY = workareaHeight / _element.height;
 			} else if (isResponsive) {
-				scaleX = canvas.getWidth() / _element.width;
-				scaleY = canvas.getHeight() / _element.height;
-				if (_element.height >= _element.width) {
-					scaleX = scaleY;
-				} else {
-					scaleY = scaleX;
-				}
+				const scales = this.calculateScale();
+				scaleX = scales.scaleX;
+				scaleY = scales.scaleY;
 			} else {
 				scaleX = canvas.getWidth() / _element.width;
 				scaleY = canvas.getHeight() / _element.height;
@@ -105,8 +73,8 @@ class WorkareaHandler {
 			}
 		});
 		if (isResponsive) {
+			const center = canvas.getCenter();
 			if (isElement) {
-				const center = canvas.getCenter();
 				this.handler.workarea.set({
 					scaleX: 1,
 					scaleY: 1,
@@ -114,10 +82,17 @@ class WorkareaHandler {
 				this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
 			} else {
 				this.handler.workarea.set({
-					width: 0,
-					height: 0,
-					backgroundColor: 'rgba(255, 255, 255, 0)',
+					width: workareaWidth,
+					height: workareaHeight,
 				});
+				scaleX = canvas.getWidth() / workareaWidth;
+				scaleY = canvas.getHeight() / workareaHeight;
+				if (workareaHeight >= workareaWidth) {
+					scaleX = scaleY;
+				} else {
+					scaleY = scaleX;
+				}
+				this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
 			}
 			canvas.centerObject(this.handler.workarea);
 			canvas.renderAll();
@@ -131,8 +106,8 @@ class WorkareaHandler {
 				scaleY,
 			});
 		} else {
-			const width = isFixed ? this.handler.workarea.workareaWidth : this.handler.canvas.getWidth();
-			const height = isFixed ? this.handler.workarea.workareaHeight : this.handler.canvas.getHeight();
+			const width = isFixed ? workareaWidth : this.handler.canvas.getWidth();
+			const height = isFixed ? workareaHeight : this.handler.canvas.getHeight();
 			this.handler.workarea.set({
 				width,
 				height,
@@ -161,92 +136,82 @@ class WorkareaHandler {
 	 * @param {boolean} [loaded]
 	 * @returns
 	 */
-	public setResponsiveImage = (source: string | File, loaded?: boolean) => {
-		const { canvas, workarea, editable } = this.handler;
-		const imageFromUrl = (src: string) => {
-			fabric.Image.fromURL(src, (img: any) => {
-				let scaleX = canvas.getWidth() / img.width;
-				let scaleY = canvas.getHeight() / img.height;
-				if (img.height >= img.width) {
-					scaleX = scaleY;
-					if (canvas.getWidth() < img.width * scaleX) {
-						scaleX = scaleX * (canvas.getWidth() / (img.width * scaleX));
+	public setResponsiveImage = async (source: string | File, loaded?: boolean) => {
+		const imageFromUrl = async (src: string = '') => {
+			return new Promise<WorkareaObject>(resolve => {
+				fabric.Image.fromURL(src, (img: any) => {
+					const { canvas, workarea, editable } = this.handler;
+					const { workareaWidth, workareaHeight } = workarea;
+					const { scaleX, scaleY } = this.calculateScale(img);
+					if (img._element) {
+						workarea.set({
+							...img,
+							isElement: true,
+							selectable: false,
+						});
+					} else {
+						const image = new Image(workareaWidth, workareaHeight);
+						workarea.setElement(image);
+						workarea.set({
+							isElement: false,
+							selectable: false,
+							width: workareaWidth,
+							height: workareaHeight,
+						});
 					}
-				} else {
-					scaleY = scaleX;
-					if (canvas.getHeight() < img.height * scaleX) {
-						scaleX = scaleX * (canvas.getHeight() / (img.height * scaleX));
-					}
-				}
-				img.set({
-					originX: 'left',
-					originY: 'top',
-				});
-				if (!img._element) {
-					workarea.setElement(new Image());
-					workarea.set({
-						isElement: false,
-						selectable: false,
-					});
-				} else {
-					workarea.set({
-						...img,
-						isElement: true,
-						selectable: false,
-					});
-				}
-				if (!src) {
-					scaleX = 1;
-				}
-				canvas.centerObject(workarea);
-				if (editable && !loaded) {
-					canvas.getObjects().forEach(obj => {
-						const { id, player } = obj as VideoObject;
-						if (id !== 'workarea') {
-							const objWidth = obj.width * scaleX;
-							const objHeight = obj.height * scaleY;
-							const el = this.handler.elementHandler.findById(id);
-							this.handler.elementHandler.setScaleOrAngle(el, obj);
-							this.handler.elementHandler.setSize(el, obj);
-							if (player) {
-								player.setPlayerSize(objWidth, objHeight);
+					if (editable && !loaded) {
+						canvas.getObjects().forEach(obj => {
+							const { id, player } = obj as VideoObject;
+							if (id !== 'workarea') {
+								const objWidth = obj.width * scaleX;
+								const objHeight = obj.height * scaleY;
+								const el = this.handler.elementHandler.findById(id);
+								this.handler.elementHandler.setScaleOrAngle(el, obj);
+								this.handler.elementHandler.setSize(el, obj);
+								if (player) {
+									player.setPlayerSize(objWidth, objHeight);
+								}
+								obj.set({
+									scaleX: 1,
+									scaleY: 1,
+								});
+								obj.setCoords();
 							}
-							obj.set({
-								scaleX: 1,
-								scaleY: 1,
-							});
-							obj.setCoords();
-						}
-					});
-				}
-				const center = canvas.getCenter();
-				canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-				this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
-				canvas.renderAll();
+						});
+					}
+					// 파일이 없을 경우 Canvas의 nextWidth, nextHeight 값이 변경되기 전 상태에서 zoomToFit이 동작함
+					// 정상 동작 resize event logic => zoomToFit
+					// 현재 동작 zoomToFit -> resize event logic
+					this.handler.zoomHandler.zoomToFit();
+					canvas.centerObject(workarea);
+					resolve(workarea);
+				});
 			});
 		};
+		const { workarea } = this.handler;
 		if (!source) {
 			workarea.set({
 				src: null,
 				file: null,
 			});
-			imageFromUrl(source as string);
-			return;
+			return imageFromUrl(source as string);
 		}
 		if (source instanceof File) {
-			const reader = new FileReader();
-			reader.onload = () => {
-				workarea.set({
-					file: source,
-				});
-				imageFromUrl(reader.result as string);
-			};
-			reader.readAsDataURL(source);
+			return new Promise<WorkareaObject>(resolve => {
+				const reader = new FileReader();
+				reader.onload = () => {
+					workarea.set({
+						file: source,
+					});
+					imageFromUrl(reader.result as string).then(resolve);
+				};
+				reader.readAsDataURL(source);
+			});
 		} else {
 			workarea.set({
 				src: source,
 			});
-			imageFromUrl(source);
+			return imageFromUrl(source);
 		}
 	};
 
@@ -256,74 +221,77 @@ class WorkareaHandler {
 	 * @param {boolean} [loaded=false]
 	 * @returns
 	 */
-	setImage = (source: string | File, loaded = false) => {
+	setImage = async (source: string | File, loaded = false) => {
 		const { canvas, workarea, editable } = this.handler;
 		if (workarea.layout === 'responsive') {
-			this.setResponsiveImage(source, loaded);
-			return;
+			return this.setResponsiveImage(source, loaded);
 		}
-		const imageFromUrl = (src: string) => {
-			fabric.Image.fromURL(src, (img: any) => {
-				let width = canvas.getWidth();
-				let height = canvas.getHeight();
-				if (workarea.layout === 'fixed') {
-					width = workarea.width * workarea.scaleX;
-					height = workarea.height * workarea.scaleY;
-				}
-				let scaleX = 1;
-				let scaleY = 1;
-				if (img._element) {
-					scaleX = width / img.width;
-					scaleY = height / img.height;
-					img.set({
-						originX: 'left',
-						originY: 'top',
-						scaleX,
-						scaleY,
-					});
-					workarea.set({
-						...img,
-						isElement: true,
-						selectable: false,
-					});
-				} else {
-					workarea.setElement(new Image());
-					workarea.set({
-						width,
-						height,
-						scaleX,
-						scaleY,
-						isElement: false,
-						selectable: false,
-					});
-				}
-				canvas.centerObject(workarea);
-				if (editable && !loaded) {
-					const { layout } = workarea;
-					canvas.getObjects().forEach(obj => {
-						const { id, player } = obj as VideoObject;
-						if (id !== 'workarea') {
-							scaleX = layout !== 'fullscreen' ? 1 : scaleX;
-							scaleY = layout !== 'fullscreen' ? 1 : scaleY;
-							const objWidth = obj.width * scaleX;
-							const objHeight = obj.height * scaleY;
-							const el = this.handler.elementHandler.findById(id);
-							this.handler.elementHandler.setSize(el, obj);
-							if (player) {
-								player.setPlayerSize(objWidth, objHeight);
+		const imageFromUrl = async (src: string) => {
+			return new Promise<WorkareaObject>(resolve => {
+				fabric.Image.fromURL(src, (img: any) => {
+					let width = canvas.getWidth();
+					let height = canvas.getHeight();
+					if (workarea.layout === 'fixed') {
+						width = workarea.width * workarea.scaleX;
+						height = workarea.height * workarea.scaleY;
+					}
+					let scaleX = 1;
+					let scaleY = 1;
+					if (img._element) {
+						scaleX = width / img.width;
+						scaleY = height / img.height;
+						img.set({
+							originX: 'left',
+							originY: 'top',
+							scaleX,
+							scaleY,
+						});
+						workarea.set({
+							...img,
+							isElement: true,
+							selectable: false,
+						});
+					} else {
+						workarea.setElement(new Image());
+						workarea.set({
+							width,
+							height,
+							scaleX,
+							scaleY,
+							isElement: false,
+							selectable: false,
+						});
+					}
+					canvas.centerObject(workarea);
+					if (editable && !loaded) {
+						const { layout } = workarea;
+						canvas.getObjects().forEach(obj => {
+							const { id, player } = obj as VideoObject;
+							if (id !== 'workarea') {
+								scaleX = layout === 'fullscreen' ? scaleX : obj.scaleX;
+								scaleY = layout === 'fullscreen' ? scaleY : obj.scaleY;
+								const el = this.handler.elementHandler.findById(id);
+								this.handler.elementHandler.setSize(el, obj);
+								if (player) {
+									const objWidth = obj.width * scaleX;
+									const objHeight = obj.height * scaleY;
+									player.setPlayerSize(objWidth, objHeight);
+								}
+								obj.set({
+									scaleX,
+									scaleY,
+								});
+								obj.setCoords();
 							}
-							obj.set({
-								scaleX,
-								scaleY,
-							});
-							obj.setCoords();
-						}
-					});
-				}
-				const center = canvas.getCenter();
-				canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-				this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), 1);
-				canvas.renderAll();
+						});
+					}
+					const center = canvas.getCenter();
+					const zoom = loaded || workarea.layout === 'fullscreen' ? 1 : this.handler.canvas.getZoom();
+					canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+					this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
+					canvas.renderAll();
+					resolve(workarea);
+				});
 			});
 		};
 		if (!source) {
@@ -331,24 +299,53 @@ class WorkareaHandler {
 				src: null,
 				file: null,
 			});
-			imageFromUrl(source as string);
-			return;
+			return imageFromUrl(source as string);
 		}
 		if (source instanceof File) {
-			const reader = new FileReader();
-			reader.onload = () => {
-				workarea.set({
-					file: source,
-				});
-				imageFromUrl(reader.result as string);
-			};
-			reader.readAsDataURL(source);
+			return new Promise<WorkareaObject>(resolve => {
+				const reader = new FileReader();
+				reader.onload = () => {
+					workarea.set({
+						file: source,
+					});
+					imageFromUrl(reader.result as string).then(resolve);
+				};
+				reader.readAsDataURL(source);
+			});
 		} else {
 			workarea.set({
 				src: source,
 			});
-			imageFromUrl(source);
+			return imageFromUrl(source);
 		}
+	};
+
+	/**
+	 * Calculate scale to the image
+	 *
+	 * @param {FabricImage} [image]
+	 * @returns
+	 */
+	public calculateScale = (image?: FabricImage) => {
+		const { canvas, workarea } = this.handler;
+		const { workareaWidth, workareaHeight } = workarea;
+		const { _element } = image || workarea;
+		const width = _element?.width || workareaWidth;
+		const height = _element?.height || workareaHeight;
+		let scaleX = canvas.getWidth() / width;
+		let scaleY = canvas.getHeight() / height;
+		if (height >= width) {
+			scaleX = scaleY;
+			if (canvas.getWidth() < width * scaleX) {
+				scaleX = scaleX * (canvas.getWidth() / (width * scaleX));
+			}
+		} else {
+			scaleY = scaleX;
+			if (canvas.getHeight() < height * scaleX) {
+				scaleX = scaleX * (canvas.getHeight() / (height * scaleX));
+			}
+		}
+		return { scaleX, scaleY };
 	};
 }
 

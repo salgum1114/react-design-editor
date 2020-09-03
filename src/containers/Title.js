@@ -103,6 +103,9 @@ class Title extends Component {
 							{i18n.t('workflow.workflow')}
 						</Menu.Item>
 						{/* <Menu.Item key="flow" style={{ color: '#fff' }}>{i18n.t('flow.flow')}</Menu.Item> */}
+						{/* <Menu.Item key="hexgrid" style={{ color: '#fff' }}>
+							{i18n.t('hexgrid.hexgrid')}
+						</Menu.Item> */}
 					</Menu>
 				</Flex>
 				<Flex flex="1" justifyContent="flex-end">

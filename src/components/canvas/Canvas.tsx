@@ -5,7 +5,7 @@ import ResizeObserver from 'resize-observer-polyfill';
 import union from 'lodash/union';
 
 import Handler, { HandlerOptions } from './handlers/Handler';
-import { FabricCanvas } from './utils';
+import { FabricCanvas, WorkareaObject } from './utils';
 
 import '../../styles/core/canvas.less';
 import '../../styles/core/tooltip.less';
@@ -42,6 +42,33 @@ const defaultGripOption = {
 	borderColor: '#cccccc',
 };
 
+const defaultWorkareaOption: Partial<WorkareaObject> = {
+	width: 600,
+	height: 400,
+	workareaWidth: 600,
+	workareaHeight: 400,
+	lockScalingX: true,
+	lockScalingY: true,
+	scaleX: 1,
+	scaleY: 1,
+	backgroundColor: '#fff',
+	hasBorders: false,
+	hasControls: false,
+	selectable: false,
+	lockMovementX: true,
+	lockMovementY: true,
+	hoverCursor: 'default',
+	name: '',
+	id: 'workarea',
+	type: 'image',
+	layout: 'fixed', // fixed, responsive, fullscreen
+	link: {},
+	tooltip: {
+		enabled: false,
+	},
+	isElement: false,
+};
+
 const defaultPropertiesToInclude = ['id', 'name', 'locke', 'editable'];
 
 export type CanvasProps = HandlerOptions & {
@@ -52,7 +79,12 @@ export type CanvasProps = HandlerOptions & {
 	ref?: React.RefAttributes<Handler>;
 };
 
-class Canvas extends Component<CanvasProps> {
+interface IState {
+	id: string;
+	loaded: boolean;
+}
+
+class Canvas extends Component<CanvasProps, IState> {
 	public handler: Handler;
 	public canvas: FabricCanvas;
 	public container = React.createRef<HTMLDivElement>();
@@ -72,17 +104,20 @@ class Canvas extends Component<CanvasProps> {
 		minZoom: 30,
 		maxZoom: 300,
 		propertiesToInclude: defaultPropertiesToInclude,
-		workareaOption: {},
+		workareaOption: defaultWorkareaOption,
 		gridOption: defaultGripOption,
 		guidelineOption: {
 			enabled: true,
 		},
 		keyEvent: {},
 		responsive: true,
+		width: 0,
+		height: 0,
 	};
 
-	state = {
+	state: IState = {
 		id: v4(),
+		loaded: false,
 	};
 
 	componentDidMount() {
@@ -97,12 +132,10 @@ class Canvas extends Component<CanvasProps> {
 			responsive,
 			propertiesToInclude,
 			gridOption,
+			workareaOption,
 			...other
 		} = this.props;
 		const { id } = this.state;
-		if (responsive) {
-			this.createObserver();
-		}
 		const mergedPropertiesToInclude = union(propertiesToInclude, defaultPropertiesToInclude);
 		const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption, {
 			width,
@@ -123,17 +156,16 @@ class Canvas extends Component<CanvasProps> {
 			defaultOption,
 			propertiesToInclude: mergedPropertiesToInclude,
 			gridOption: Object.assign({}, defaultGripOption, gridOption),
+			width,
+			height,
+			workareaOption: Object.assign({}, defaultWorkareaOption, workareaOption),
 			...other,
 		});
-		this.handler.gridHandler.init();
-		if (editable) {
-			this.handler.transactionHandler.init();
-			this.handler.interactionHandler.selection();
-			if (guidelineOption.enabled) {
-				this.handler.guidelineHandler.init();
-			}
+		if (this.props.responsive) {
+			this.createObserver();
+		} else {
+			this.handleLoad();
 		}
-		this.handler.eventHandler.attachEventListener();
 	}
 
 	componentDidUpdate(prevProps: CanvasProps) {
@@ -206,6 +238,9 @@ class Canvas extends Component<CanvasProps> {
 		this.resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
 			const { width = 0, height = 0 } = (entries[0] && entries[0].contentRect) || {};
 			this.handler.eventHandler.resize(width, height);
+			if (!this.state.loaded) {
+				this.handleLoad();
+			}
 		});
 		this.resizeObserver.observe(this.container.current);
 	};
@@ -214,6 +249,15 @@ class Canvas extends Component<CanvasProps> {
 		if (this.resizeObserver) {
 			this.resizeObserver.disconnect();
 		}
+	};
+
+	handleLoad = () => {
+		if (this.props.onLoad) {
+			this.props.onLoad(this.handler, this.canvas);
+		}
+		this.setState({
+			loaded: true,
+		});
 	};
 
 	render() {

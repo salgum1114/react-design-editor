@@ -9,6 +9,9 @@ class InteractionHandler {
 	handler: Handler;
 	constructor(handler: Handler) {
 		this.handler = handler;
+		if (this.handler.editable) {
+			this.selection();
+		}
 	}
 
 	/**

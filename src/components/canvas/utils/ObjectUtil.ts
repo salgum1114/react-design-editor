@@ -192,6 +192,7 @@ export type FabricImage = FabricObject &
 		 * @type {IFilter[]}
 		 */
 		filters?: IFilter[];
+		_element?: any;
 	};
 
 export interface FabricElement extends FabricObject<fabric.Rect> {

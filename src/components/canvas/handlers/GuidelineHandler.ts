@@ -18,6 +18,9 @@ class GuidelineHandler {
 
 	constructor(handler: Handler) {
 		this.handler = handler;
+		if (this.handler.editable && this.handler.guidelineOption.enabled) {
+			this.init();
+		}
 	}
 
 	init = () => {

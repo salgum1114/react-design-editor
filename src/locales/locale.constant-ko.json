@@ -97,6 +97,9 @@
 		"editor": "플로우 에디터",
 		"info": "플로우 정보"
 	},
+	"hexgrid": {
+		"hexgrid": "헥사그리드"
+	},
 	"action": {
 		"selection": "선택 모드(Q)",
 		"grab": "그랩 모드(W 혹은 Alt + 드래그)",

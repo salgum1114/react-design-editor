@@ -15,8 +15,10 @@ class EventHandler {
 	handler: Handler;
 	keyCode: number;
 	panning: boolean;
+
 	constructor(handler: Handler) {
 		this.handler = handler;
+		this.attachEventListener();
 	}
 
 	/**
@@ -600,8 +602,8 @@ class EventHandler {
 			if (this.handler.gridOption.enabled) {
 				return;
 			}
-			this.handler.canvas.getObjects().forEach((obj: any, index) => {
-				if (index !== 0) {
+			this.handler.canvas.getObjects().forEach((obj: FabricObject) => {
+				if (obj.id !== 'workarea') {
 					const left = obj.left + diffWidth;
 					const top = obj.top + diffHeight;
 					obj.set({
@@ -617,29 +619,19 @@ class EventHandler {
 					}
 				}
 			});
-			this.handler.canvas.renderAll();
+			this.handler.canvas.requestRenderAll();
 			return;
 		}
-		let scaleX = nextWidth / this.handler.workarea.width;
-		const scaleY = nextHeight / this.handler.workarea.height;
 		if (this.handler.workarea.layout === 'responsive') {
-			if (this.handler.workarea.height > this.handler.workarea.width) {
-				scaleX = scaleY;
-				if (nextWidth < this.handler.workarea.width * scaleX) {
-					scaleX = scaleX * (nextWidth / (this.handler.workarea.width * scaleX));
-				}
-			} else {
-				if (nextHeight < this.handler.workarea.height * scaleX) {
-					scaleX = scaleX * (nextHeight / (this.handler.workarea.height * scaleX));
-				}
-			}
+			const { scaleX } = this.handler.workareaHandler.calculateScale();
+			const center = this.handler.canvas.getCenter();
 			const deltaPoint = new fabric.Point(diffWidth, diffHeight);
 			this.handler.canvas.relativePan(deltaPoint);
-			const center = this.handler.canvas.getCenter();
 			this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
-			this.handler.canvas.renderAll();
 			return;
 		}
+		const scaleX = nextWidth / this.handler.workarea.width;
+		const scaleY = nextHeight / this.handler.workarea.height;
 		const diffScaleX = nextWidth / (this.handler.workarea.width * this.handler.workarea.scaleX);
 		const diffScaleY = nextHeight / (this.handler.workarea.height * this.handler.workarea.scaleY);
 		this.handler.workarea.set({
