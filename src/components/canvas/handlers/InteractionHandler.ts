@@ -7,6 +7,7 @@ type IReturnType = { selectable?: boolean; evented?: boolean } | boolean;
 
 class InteractionHandler {
 	handler: Handler;
+
 	constructor(handler: Handler) {
 		this.handler = handler;
 		if (this.handler.editable) {

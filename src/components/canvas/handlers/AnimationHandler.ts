@@ -66,7 +66,7 @@ class AnimationHandler {
 		if (!findObject) {
 			return;
 		}
-		this.initAnimation(findObject, hasControls);
+		this.resetAnimation(findObject, hasControls);
 	};
 
 	/**
@@ -87,12 +87,13 @@ class AnimationHandler {
 	};
 
 	/**
-	 * Init animation
+	 * Reset animation
+	 *
 	 * @param {FabricObject} obj
 	 * @param {boolean} [hasControls=true]
 	 * @returns
 	 */
-	public initAnimation = (obj: FabricObject, hasControls = true) => {
+	public resetAnimation = (obj: FabricObject, hasControls = true) => {
 		if (!obj.anime) {
 			return;
 		}
@@ -155,13 +156,12 @@ class AnimationHandler {
 		} else if (type === 'rotation') {
 			Object.assign(option, {
 				angle: obj.originAngle,
-				rotation: obj.originRotation,
+				rotation: obj.originAngle,
 				left: obj.originLeft,
 				top: obj.originTop,
 				originLeft: null,
 				originTop: null,
 				originAngle: null,
-				originRotation: null,
 			});
 		} else if (type === 'flash') {
 			Object.assign(option, {
@@ -179,6 +179,7 @@ class AnimationHandler {
 
 	/**
 	 * Get animation option
+	 *
 	 * @param {FabricObject} obj
 	 * @param {boolean} [hasControls]
 	 * @returns
@@ -219,7 +220,7 @@ class AnimationHandler {
 				this.handler.canvas.requestRenderAll();
 			},
 			complete: () => {
-				this.initAnimation(obj, hasControls);
+				this.resetAnimation(obj, hasControls);
 			},
 		};
 		if (type === 'fade') {
@@ -280,7 +281,6 @@ class AnimationHandler {
 			});
 		} else if (type === 'rotation') {
 			obj.set('originAngle', obj.angle);
-			obj.set('originRotation', obj.angle);
 			obj.set('originLeft', obj.left);
 			obj.set('originTop', obj.top);
 			Object.assign(option, {

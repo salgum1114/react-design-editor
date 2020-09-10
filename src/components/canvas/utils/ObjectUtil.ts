@@ -287,42 +287,12 @@ export type WorkareaObject = FabricImage & {
 	workareaHeight?: number;
 };
 
-export interface CanvasOption {
+export interface CanvasOption extends fabric.ICanvasOptions {
 	/**
 	 * Unique id of Canvas
 	 * @type {string}
 	 */
 	id?: string;
-	/**
-	 * Indicates whether objects should remain in current stack position when selected. When false objects are brought to top and rendered as part of the selection group
-	 * @type {boolean}
-	 */
-	preserveObjectStacking?: boolean;
-	/**
-	 * Canvas width
-	 * @type {number}
-	 */
-	width?: number;
-	/**
-	 * Canvas height
-	 * @type {number}
-	 */
-	height?: number;
-	/**
-	 * Whether group selection should be enabled
-	 * @type {boolean}
-	 */
-	selection?: boolean;
-	/**
-	 * Default mouse cursor of Canvas
-	 * @type {string}
-	 */
-	defaultCursor?: string;
-	/**
-	 * Background color of Canvas
-	 * @type {(string | fabric.Pattern)}
-	 */
-	backgroundColor?: string | fabric.Pattern;
 }
 
 export interface GridOption {
@@ -430,6 +400,12 @@ export interface FabricEvent<T extends any = Event> extends Omit<fabric.IEvent, 
 	absolutePointer?: fabric.Point;
 	transform?: { corner: string; original: FabricObject; originX: string; originY: string; width: number };
 }
+
+export type FabricObjects = {
+	[key: string]: {
+		create: (...args: any) => FabricObject;
+	};
+};
 
 /**
  * toObject util

@@ -2,86 +2,19 @@ import React, { Component } from 'react';
 import { fabric } from 'fabric';
 import { v4 } from 'uuid';
 import ResizeObserver from 'resize-observer-polyfill';
-import union from 'lodash/union';
 
 import Handler, { HandlerOptions } from './handlers/Handler';
-import { FabricCanvas, WorkareaObject, FabricObjectOption } from './utils';
+import { FabricCanvas } from './utils';
+import { defaults } from './constants';
 
 import '../../styles/core/canvas.less';
 import '../../styles/core/tooltip.less';
 import '../../styles/core/contextmenu.less';
 import '../../styles/fabricjs/fabricjs.less';
 
-const defaultCanvasOption = {
-	preserveObjectStacking: true,
-	width: 300,
-	height: 150,
-	selection: true,
-	defaultCursor: 'default',
-	backgroundColor: '#f3f3f3',
-};
-
-const defaultKeyboardEvent = {
-	move: true,
-	all: true,
-	copy: true,
-	paste: true,
-	esc: true,
-	del: true,
-	clipboard: false,
-	transaction: true,
-	zoom: true,
-	cut: true,
-};
-
-const defaultGripOption = {
-	enabled: false,
-	grid: 10,
-	snapToGrid: false,
-	lineColor: '#ebebeb',
-	borderColor: '#cccccc',
-};
-
-const defaultWorkareaOption: Partial<WorkareaObject> = {
-	width: 600,
-	height: 400,
-	workareaWidth: 600,
-	workareaHeight: 400,
-	lockScalingX: true,
-	lockScalingY: true,
-	scaleX: 1,
-	scaleY: 1,
-	backgroundColor: '#fff',
-	hasBorders: false,
-	hasControls: false,
-	selectable: false,
-	lockMovementX: true,
-	lockMovementY: true,
-	hoverCursor: 'default',
-	name: '',
-	id: 'workarea',
-	type: 'image',
-	layout: 'fixed', // fixed, responsive, fullscreen
-	link: {},
-	tooltip: {
-		enabled: false,
-	},
-	isElement: false,
-};
-
-const defaultObjectOption: Partial<FabricObjectOption> = {
-	rotation: 0,
-	centeredRotation: true,
-	strokeUniform: true,
-};
-
-const defaultPropertiesToInclude = ['id', 'name', 'locke', 'editable'];
-
 export type CanvasProps = HandlerOptions & {
 	responsive?: boolean;
 	style?: React.CSSProperties;
-	// TODO...
-	// Ref
 	ref?: React.RefAttributes<Handler>;
 };
 
@@ -98,24 +31,9 @@ class Canvas extends Component<CanvasProps, IState> {
 	static defaultProps: CanvasProps = {
 		id: v4(),
 		editable: true,
-		canvasOption: {
-			selection: true,
-		},
-		defaultOption: defaultObjectOption,
-		activeSelection: {
-			hasControls: true,
-		},
-		tooltip: null,
 		zoomEnabled: true,
 		minZoom: 30,
 		maxZoom: 300,
-		propertiesToInclude: defaultPropertiesToInclude,
-		workareaOption: defaultWorkareaOption,
-		gridOption: defaultGripOption,
-		guidelineOption: {
-			enabled: true,
-		},
-		keyEvent: {},
 		responsive: true,
 		width: 0,
 		height: 0,
@@ -127,23 +45,9 @@ class Canvas extends Component<CanvasProps, IState> {
 	};
 
 	componentDidMount() {
-		const {
-			editable,
-			canvasOption,
-			width,
-			height,
-			keyEvent,
-			guidelineOption,
-			defaultOption,
-			responsive,
-			propertiesToInclude,
-			gridOption,
-			workareaOption,
-			...other
-		} = this.props;
+		const { editable, canvasOption, width, height, responsive, ...other } = this.props;
 		const { id } = this.state;
-		const mergedPropertiesToInclude = union(propertiesToInclude, defaultPropertiesToInclude);
-		const mergedCanvasOption = Object.assign({}, defaultCanvasOption, canvasOption, {
+		const mergedCanvasOption = Object.assign({}, defaults.canvasOption, canvasOption, {
 			width,
 			height,
 			selection: editable,
@@ -153,18 +57,12 @@ class Canvas extends Component<CanvasProps, IState> {
 		this.canvas.renderAll();
 		this.handler = new Handler({
 			id,
-			canvas: this.canvas,
-			container: this.container.current,
-			keyEvent: Object.assign({}, defaultKeyboardEvent, keyEvent),
-			canvasOption: mergedCanvasOption,
-			guidelineOption,
-			editable,
-			defaultOption: Object.assign({}, defaultObjectOption, defaultOption),
-			propertiesToInclude: mergedPropertiesToInclude,
-			gridOption: Object.assign({}, defaultGripOption, gridOption),
 			width,
 			height,
-			workareaOption: Object.assign({}, defaultWorkareaOption, workareaOption),
+			editable,
+			canvas: this.canvas,
+			container: this.container.current,
+			canvasOption: mergedCanvasOption,
 			...other,
 		});
 		if (this.props.responsive) {
@@ -175,69 +73,52 @@ class Canvas extends Component<CanvasProps, IState> {
 	}
 
 	componentDidUpdate(prevProps: CanvasProps) {
-		if (JSON.stringify(this.props.canvasOption) !== JSON.stringify(prevProps.canvasOption)) {
-			this.handler.canvasOption = this.props.canvasOption;
-			this.handler.canvas.setBackgroundColor(
-				this.props.canvasOption.backgroundColor,
-				this.canvas.renderAll.bind(this.handler.canvas),
-			);
-			const {
-				canvasOption: { width: currentWidth, height: currentHeight },
-			} = this.props;
-			const {
-				canvasOption: { width: prevWidth, height: prevHeight },
-			} = prevProps;
-			if (!this.props.responsive && (currentWidth !== prevWidth || currentHeight !== prevHeight)) {
-				this.handler.eventHandler.resize(currentWidth, currentHeight);
-			}
-			if (typeof this.props.canvasOption.selection === 'undefined') {
-				this.canvas.selection = true;
-			} else {
-				this.canvas.selection = this.props.canvasOption.selection;
-			}
-		}
-		if (
-			!this.props.responsive &&
-			(this.props.width !== prevProps.width || this.props.height !== prevProps.height)
-		) {
+		if (this.props.width !== prevProps.width || this.props.height !== prevProps.height) {
 			this.handler.eventHandler.resize(this.props.width, this.props.height);
 		}
+		if (this.props.editable !== prevProps.editable) {
+			this.handler.editable = this.props.editable;
+		}
+		if (this.props.responsive !== prevProps.responsive) {
+			if (!this.props.responsive) {
+				this.destroyObserver();
+			} else {
+				this.destroyObserver();
+				this.createObserver();
+			}
+		}
+		if (JSON.stringify(this.props.canvasOption) !== JSON.stringify(prevProps.canvasOption)) {
+			this.handler.setCanvasOption(this.props.canvasOption);
+		}
 		if (JSON.stringify(this.props.keyEvent) !== JSON.stringify(prevProps.keyEvent)) {
-			this.handler.keyEvent = Object.assign({}, defaultKeyboardEvent, this.props.keyEvent);
+			this.handler.setKeyEvent(this.props.keyEvent);
 		}
 		if (JSON.stringify(this.props.fabricObjects) !== JSON.stringify(prevProps.fabricObjects)) {
-			this.handler.fabricObjects = Object.assign({}, this.handler.fabricObjects, this.props.fabricObjects);
+			this.handler.setFabricObjects(this.props.fabricObjects);
 		}
 		if (JSON.stringify(this.props.workareaOption) !== JSON.stringify(prevProps.workareaOption)) {
-			this.handler.workarea.set({
-				...this.props.workareaOption,
-			});
+			this.handler.setWorkareaOption(this.props.workareaOption);
 		}
 		if (JSON.stringify(this.props.guidelineOption) !== JSON.stringify(prevProps.guidelineOption)) {
-			if (this.props.guidelineOption.enabled) {
-				this.canvas.on({
-					'before:render': this.handler.eventHandler.beforeRender,
-					'after:render': this.handler.eventHandler.afterRender,
-				});
-			} else {
-				this.canvas.off({
-					'before:render': this.handler.eventHandler.beforeRender,
-					'after:render': this.handler.eventHandler.afterRender,
-				});
-			}
+			this.handler.setGuidelineOption(this.props.guidelineOption);
+		}
+		if (JSON.stringify(this.props.objectOption) !== JSON.stringify(prevProps.objectOption)) {
+			this.handler.setObjectOption(this.props.objectOption);
+		}
+		if (JSON.stringify(this.props.gridOption) !== JSON.stringify(prevProps.gridOption)) {
+			this.handler.setGridOption(this.props.gridOption);
+		}
+		if (JSON.stringify(this.props.propertiesToInclude) !== JSON.stringify(prevProps.propertiesToInclude)) {
+			this.handler.setPropertiesToInclude(this.props.propertiesToInclude);
+		}
+		if (JSON.stringify(this.props.activeSelectionOption) !== JSON.stringify(prevProps.activeSelectionOption)) {
+			this.handler.setActiveSelectionOption(this.props.activeSelectionOption);
 		}
 	}
 
 	componentWillUnmount() {
-		this.handler.eventHandler.detachEventListener();
-		this.cancelObserver();
-		this.handler.clear(true);
-		if (this.handler.tooltipHandler.tooltipEl) {
-			document.body.removeChild(this.handler.tooltipHandler.tooltipEl);
-		}
-		if (this.handler.contextmenuHandler.contextmenuEl) {
-			document.body.removeChild(this.handler.contextmenuHandler.contextmenuEl);
-		}
+		this.destroyObserver();
+		this.handler.destroy();
 	}
 
 	createObserver = () => {
@@ -251,9 +132,10 @@ class Canvas extends Component<CanvasProps, IState> {
 		this.resizeObserver.observe(this.container.current);
 	};
 
-	cancelObserver = () => {
+	destroyObserver = () => {
 		if (this.resizeObserver) {
 			this.resizeObserver.disconnect();
+			this.resizeObserver = null;
 		}
 	};
 

@@ -162,6 +162,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 			cloneable: this.get('cloneable'),
 			fromPort: this.get('fromPort'),
 			toPort: this.get('toPort'),
+			errorFlag: this.get('errorFlag'),
 		});
 	},
 	defaultPortOption() {

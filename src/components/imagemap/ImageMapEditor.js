@@ -131,7 +131,7 @@ class ImageMapEditor extends Component {
 				}
 				this.canvasRef.handler.getObjects().forEach(obj => {
 					if (obj) {
-						this.canvasRef.handler.animationHandler.initAnimation(obj, true);
+						this.canvasRef.handler.animationHandler.resetAnimation(obj, true);
 					}
 				});
 				this.setState({
@@ -141,7 +141,7 @@ class ImageMapEditor extends Component {
 			}
 			this.canvasRef.handler.getObjects().forEach(obj => {
 				if (obj) {
-					this.canvasRef.handler.animationHandler.initAnimation(obj, true);
+					this.canvasRef.handler.animationHandler.resetAnimation(obj, true);
 				}
 			});
 			this.setState({
@@ -486,7 +486,7 @@ class ImageMapEditor extends Component {
 		onChangePreview: checked => {
 			let data;
 			if (this.canvasRef) {
-				data = this.canvasRef.handler.exportJSON().objects.filter(obj => {
+				data = this.canvasRef.handler.exportJSON().filter(obj => {
 					if (!obj.id) {
 						return false;
 					}
@@ -556,7 +556,7 @@ class ImageMapEditor extends Component {
 		},
 		onDownload: () => {
 			this.showLoading(true);
-			const objects = this.canvasRef.handler.exportJSON().objects.filter(obj => {
+			const objects = this.canvasRef.handler.exportJSON().filter(obj => {
 				if (!obj.id) {
 					return false;
 				}
@@ -749,9 +749,10 @@ class ImageMapEditor extends Component {
 							ref={c => {
 								this.canvasRef = c;
 							}}
+							className="rde-canvas"
 							minZoom={30}
 							maxZoom={500}
-							defaultOption={defaultOption}
+							objectOption={defaultOption}
 							propertiesToInclude={propertiesToInclude}
 							onModified={onModified}
 							onAdd={onAdd}

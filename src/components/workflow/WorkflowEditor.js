@@ -108,6 +108,7 @@ class WorkflowEditor extends Component {
 					this.setState({
 						workflow: result,
 					});
+					this.canvasRef.handler.clear();
 					const nodes = result.nodes.map(node => {
 						return {
 							...node,
@@ -172,7 +173,7 @@ class WorkflowEditor extends Component {
 			const nodes = [];
 			const links = [];
 			try {
-				this.canvasRef.handler.getObjects().forEach(obj => {
+				this.canvasRef.handler.exportJSON().forEach(obj => {
 					if (obj.superType === 'node') {
 						if (obj.errorFlag.visible) {
 							throw new NodeConfigurationError(
@@ -342,13 +343,14 @@ class WorkflowEditor extends Component {
 						ref={c => {
 							this.canvasRef = c;
 						}}
+						className="rde-canvas"
 						fabricObjects={{ ...nodes, ...Links }}
 						workareaOption={{
 							width: 0,
 							height: 0,
 						}}
 						gridOption={{ enabled: true, grid: 20, snapToGrid: true }}
-						activeSelection={{
+						activeSelectionOption={{
 							hasControls: false,
 							hasBorders: false,
 							perPixelTargetFind: true,
