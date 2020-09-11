@@ -65,7 +65,6 @@ const defaultOption = {
 		type: 'none',
 		loop: true,
 		autoplay: true,
-		delay: 100,
 		duration: 1000,
 	},
 	userProperty: {},
