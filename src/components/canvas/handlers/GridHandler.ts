@@ -9,13 +9,14 @@ class GridHandler {
 
 	constructor(handler: Handler) {
 		this.handler = handler;
-		this.init();
+		this.initialize();
 	}
 
 	/**
 	 * Init grid
+	 *
 	 */
-	public init = () => {
+	public initialize = () => {
 		const { grid, lineColor, borderColor, enabled } = this.handler.gridOption;
 		if (enabled && grid) {
 			const width = 5000;

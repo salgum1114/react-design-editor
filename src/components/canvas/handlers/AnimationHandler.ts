@@ -28,7 +28,7 @@ class AnimationHandler {
 		if (findObject.animation.type === 'none') {
 			return;
 		}
-		const instance = this.getAnimation(findObject, hasControls);
+		const instance = this.getAnime(findObject, hasControls);
 		if (instance) {
 			findObject.set('anime', instance);
 			findObject.set({
@@ -66,7 +66,7 @@ class AnimationHandler {
 		if (!findObject) {
 			return;
 		}
-		this.initAnimation(findObject, hasControls);
+		this.resetAnimation(findObject, hasControls);
 	};
 
 	/**
@@ -87,12 +87,13 @@ class AnimationHandler {
 	};
 
 	/**
-	 * Init animation
+	 * Reset animation
+	 *
 	 * @param {FabricObject} obj
 	 * @param {boolean} [hasControls=true]
 	 * @returns
 	 */
-	public initAnimation = (obj: FabricObject, hasControls = true) => {
+	public resetAnimation = (obj: FabricObject, hasControls = true) => {
 		if (!obj.anime) {
 			return;
 		}
@@ -155,13 +156,12 @@ class AnimationHandler {
 		} else if (type === 'rotation') {
 			Object.assign(option, {
 				angle: obj.originAngle,
-				rotation: obj.originRotation,
+				rotation: obj.originAngle,
 				left: obj.originLeft,
 				top: obj.originTop,
 				originLeft: null,
 				originTop: null,
 				originAngle: null,
-				originRotation: null,
 			});
 		} else if (type === 'flash') {
 			Object.assign(option, {
@@ -179,13 +179,14 @@ class AnimationHandler {
 
 	/**
 	 * Get animation option
+	 *
 	 * @param {FabricObject} obj
 	 * @param {boolean} [hasControls]
 	 * @returns
 	 */
-	getAnimation = (obj: FabricObject, hasControls?: boolean) => {
-		const { delay = 100, duration = 100, autoplay = true, loop = true, type, ...other } = obj.animation;
-		const option = {
+	getAnime = (obj: FabricObject, hasControls?: boolean) => {
+		const { delay = 0, duration = 100, autoplay = true, loop = true, type, ...other } = obj.animation;
+		const option: anime.AnimeParams = {
 			targets: obj,
 			delay,
 			loop,
@@ -219,7 +220,7 @@ class AnimationHandler {
 				this.handler.canvas.requestRenderAll();
 			},
 			complete: () => {
-				this.initAnimation(obj, hasControls);
+				this.resetAnimation(obj, hasControls);
 			},
 		};
 		if (type === 'fade') {
@@ -279,13 +280,15 @@ class AnimationHandler {
 				easing: 'easeInQuad',
 			});
 		} else if (type === 'rotation') {
+			const { angle = 360 } = other;
+			obj.set('rotation', obj.angle);
 			obj.set('originAngle', obj.angle);
-			obj.set('originRotation', obj.angle);
 			obj.set('originLeft', obj.left);
 			obj.set('originTop', obj.top);
 			Object.assign(option, {
-				rotation: other.angle,
-				easing: 'easeInQuad',
+				rotation: angle,
+				easing: 'linear',
+				direction: 'normal',
 			});
 		} else if (type === 'flash') {
 			const { fill = obj.fill, stroke = obj.stroke } = other;

@@ -18,14 +18,14 @@ class EventHandler {
 
 	constructor(handler: Handler) {
 		this.handler = handler;
-		this.attachEventListener();
+		this.initialize();
 	}
 
 	/**
 	 * Attch event on document
 	 *
 	 */
-	public attachEventListener = () => {
+	public initialize() {
 		if (this.handler.editable) {
 			this.handler.canvas.on({
 				'object:modified': this.modified,
@@ -42,8 +42,6 @@ class EventHandler {
 				'selection:cleared': this.selection,
 				'selection:created': this.selection,
 				'selection:updated': this.selection,
-				'before:render': this.handler.guidelineOption.enabled ? this.beforeRender : null,
-				'after:render': this.handler.guidelineOption.enabled ? this.afterRender : null,
 			});
 		} else {
 			this.handler.canvas.on({
@@ -62,13 +60,13 @@ class EventHandler {
 		if (this.handler.keyEvent.clipboard) {
 			document.addEventListener('paste', this.paste, false);
 		}
-	};
+	}
 
 	/**
 	 * Detach event on document
 	 *
 	 */
-	public detachEventListener = () => {
+	public destroy = () => {
 		if (this.handler.editable) {
 			this.handler.canvas.off({
 				'object:modified': this.modified,
@@ -83,8 +81,6 @@ class EventHandler {
 				'selection:cleared': this.selection,
 				'selection:created': this.selection,
 				'selection:updated': this.selection,
-				'before:render': this.beforeRender,
-				'after:render': this.afterRender,
 			});
 		} else {
 			this.handler.canvas.off({
@@ -508,7 +504,7 @@ class EventHandler {
 				this.handler.nodeHandler.getNodePath(node, nodes);
 				const activeSelection = new fabric.ActiveSelection(nodes, {
 					canvas: this.handler.canvas,
-					...this.handler.activeSelection,
+					...this.handler.activeSelectionOption,
 				});
 				this.handler.canvas.setActiveObject(activeSelection);
 				this.handler.canvas.requestRenderAll();
@@ -539,41 +535,16 @@ class EventHandler {
 	 * @param {FabricEvent} opt
 	 */
 	public selection = (opt: FabricEvent) => {
-		const { onSelect, activeSelection } = this.handler;
+		const { onSelect, activeSelectionOption } = this.handler;
 		const target = opt.target as FabricObject<fabric.ActiveSelection>;
 		if (target && target.type === 'activeSelection') {
 			target.set({
-				...activeSelection,
+				...activeSelectionOption,
 			});
 		}
 		if (onSelect) {
 			onSelect(target);
 		}
-	};
-
-	/**
-	 * Before the render
-	 *
-	 * @param {FabricEvent} _opt
-	 */
-	public beforeRender = (_opt: FabricEvent) => {
-		this.handler.canvas.clearContext(this.handler.guidelineHandler.ctx);
-	};
-
-	/**
-	 * After the render
-	 *
-	 * @param {FabricEvent} _opt
-	 */
-	public afterRender = (_opt: FabricEvent) => {
-		for (let i = this.handler.guidelineHandler.verticalLines.length; i--; ) {
-			this.handler.guidelineHandler.drawVerticalLine(this.handler.guidelineHandler.verticalLines[i]);
-		}
-		for (let i = this.handler.guidelineHandler.horizontalLines.length; i--; ) {
-			this.handler.guidelineHandler.drawHorizontalLine(this.handler.guidelineHandler.horizontalLines[i]);
-		}
-		this.handler.guidelineHandler.verticalLines.length = 0;
-		this.handler.guidelineHandler.horizontalLines.length = 0;
 	};
 
 	/**
@@ -704,7 +675,7 @@ class EventHandler {
 								}
 								obj.left = obj.properties.left + padding;
 								obj.top = obj.properties.top + padding;
-								const createdObj = this.handler.add(obj, false, true, false);
+								const createdObj = this.handler.add(obj, false, true);
 								this.handler.canvas.setActiveObject(createdObj as FabricObject);
 								this.handler.canvas.requestRenderAll();
 							} else {
@@ -721,7 +692,7 @@ class EventHandler {
 										obj.left = obj.properties.left + padding;
 										obj.top = obj.properties.top + padding;
 									}
-									const createdObj = this.handler.add(obj, false, true, false);
+									const createdObj = this.handler.add(obj, false, true);
 									if (obj.superType === 'node') {
 										nodes.push(createdObj);
 									} else {
@@ -730,7 +701,7 @@ class EventHandler {
 								});
 								const activeSelection = new fabric.ActiveSelection(nodes.length ? nodes : targets, {
 									canvas: this.handler.canvas,
-									...this.handler.activeSelection,
+									...this.handler.activeSelectionOption,
 								});
 								this.handler.canvas.setActiveObject(activeSelection);
 								this.handler.canvas.requestRenderAll();

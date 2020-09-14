@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 
 import Handler from './Handler';
-import { WorkareaObject, FabricObject } from '../utils';
+import { WorkareaObject, FabricObject, FabricEvent } from '../utils';
 
 class GuidelineHandler {
 	handler: Handler;
@@ -18,12 +18,25 @@ class GuidelineHandler {
 
 	constructor(handler: Handler) {
 		this.handler = handler;
-		if (this.handler.editable && this.handler.guidelineOption.enabled) {
-			this.init();
-		}
+		this.initialize();
 	}
 
-	init = () => {
+	/**
+	 * Initialize guideline handler
+	 *
+	 */
+	public initialize() {
+		if (this.handler.guidelineOption.enabled) {
+			this.handler.canvas.on({
+				'before:render': this.beforeRender,
+				'after:render': this.afterRender,
+			});
+		} else {
+			this.handler.canvas.off({
+				'before:render': this.beforeRender,
+				'after:render': this.afterRender,
+			});
+		}
 		this.ctx = this.handler.canvas.getSelectionContext();
 		this.aligningLineOffset = 5;
 		this.aligningLineMargin = 4;
@@ -33,6 +46,43 @@ class GuidelineHandler {
 		this.zoom = 1;
 		this.verticalLines = [];
 		this.horizontalLines = [];
+	}
+
+	/**
+	 * Destroy guideline handler
+	 *
+	 * @author salgum1114
+	 */
+	public destroy() {
+		this.handler.canvas.off({
+			'before:render': this.beforeRender,
+			'after:render': this.afterRender,
+		});
+	}
+
+	/**
+	 * Before the render
+	 *
+	 * @param {FabricEvent} _opt
+	 */
+	public beforeRender = (_opt: FabricEvent) => {
+		this.handler.canvas.clearContext(this.handler.guidelineHandler.ctx);
+	};
+
+	/**
+	 * After the render
+	 *
+	 * @param {FabricEvent} _opt
+	 */
+	public afterRender = (_opt: FabricEvent) => {
+		for (let i = this.handler.guidelineHandler.verticalLines.length; i--; ) {
+			this.handler.guidelineHandler.drawVerticalLine(this.handler.guidelineHandler.verticalLines[i]);
+		}
+		for (let i = this.handler.guidelineHandler.horizontalLines.length; i--; ) {
+			this.handler.guidelineHandler.drawHorizontalLine(this.handler.guidelineHandler.horizontalLines[i]);
+		}
+		this.handler.guidelineHandler.verticalLines.length = 0;
+		this.handler.guidelineHandler.horizontalLines.length = 0;
 	};
 
 	drawVerticalLine = (coords: { x?: number; y1?: number; y2?: number }) => {

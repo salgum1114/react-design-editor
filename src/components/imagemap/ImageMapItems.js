@@ -104,7 +104,7 @@ class ImageMapItems extends Component {
 			}
 			const id = v4();
 			const option = Object.assign({}, item.option, { id });
-			if (item.option.type === 'svg' && item.type === 'default') {
+			if (item.option.superType === 'svg' && item.type === 'default') {
 				this.handlers.onSVGModalVisible(item.option);
 				return;
 			}
@@ -112,7 +112,7 @@ class ImageMapItems extends Component {
 		},
 		onAddSVG: (option, centered) => {
 			const { canvasRef } = this.props;
-			canvasRef.handler.add({ ...option, type: 'svg', id: v4(), name: 'New SVG' }, centered);
+			canvasRef.handler.add({ ...option, type: 'svg', superType: 'svg', id: v4(), name: 'New SVG' }, centered);
 			this.handlers.onSVGModalVisible();
 		},
 		onDrawingItem: item => {

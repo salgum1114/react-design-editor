@@ -52,25 +52,29 @@ class TransactionHandler {
 	constructor(handler: Handler) {
 		this.handler = handler;
 		if (this.handler.editable) {
-			this.init();
+			this.initialize();
 		}
 	}
 
 	/**
-	 * Init transaction
+	 * Initialize transaction handler
+	 *
 	 */
-	init = () => {
+	public initialize = () => {
 		this.redos = [];
 		this.undos = [];
+		this.state = [];
+		this.active = false;
 	};
 
 	/**
 	 * Save transaction
+	 *
 	 * @param {TransactionType} type
 	 * @param {*} [canvasJSON]
 	 * @param {boolean} [isWorkarea=true]
 	 */
-	save = (type: TransactionType, canvasJSON?: any, _isWorkarea: boolean = true) => {
+	public save = (type: TransactionType, canvasJSON?: any, _isWorkarea: boolean = true) => {
 		if (!this.handler.keyEvent.transaction) {
 			return;
 		}
@@ -102,8 +106,9 @@ class TransactionHandler {
 
 	/**
 	 * Undo transaction
+	 *
 	 */
-	undo = throttle(() => {
+	public undo = throttle(() => {
 		const undo = this.undos.pop();
 		if (!undo) {
 			return;
@@ -117,8 +122,9 @@ class TransactionHandler {
 
 	/**
 	 * Redo transaction
+	 *
 	 */
-	redo = throttle(() => {
+	public redo = throttle(() => {
 		const redo = this.redos.pop();
 		if (!redo) {
 			return;
@@ -132,9 +138,10 @@ class TransactionHandler {
 
 	/**
 	 * Replay transaction
+	 *
 	 * @param {TransactionEvent} transaction
 	 */
-	replay = (transaction: TransactionEvent) => {
+	public replay = (transaction: TransactionEvent) => {
 		const objects = JSON.parse(transaction.json) as FabricObject[];
 		this.state = objects;
 		this.active = true;
@@ -154,10 +161,10 @@ class TransactionHandler {
 						this.handler.objects = this.handler.getObjects();
 						this.handler.linkHandler.create({
 							type: 'curvedLink',
-							fromNodeId: link.fromNode.id,
-							fromPortId: link.fromPort.id,
-							toNodeId: link.toNode.id,
-							toPortId: link.toPort.id,
+							fromNodeId: link.fromNode?.id,
+							fromPortId: link.fromPort?.id,
+							toNodeId: link.toNode?.id,
+							toPortId: link.toPort?.id,
 						});
 					} else {
 						this.handler.canvas.insertAt(obj, targetIndex, false);

@@ -67,12 +67,12 @@ export default {
 											rules: [
 												{
 													type: 'number',
-													min: 100,
+													min: 0,
 													max: 5000,
 												},
 											],
-											initialValue: data.animation.delay,
-										})(<Slider min={100} max={5000} step={100} />)}
+											initialValue: data.animation.delay || 0,
+										})(<Slider min={0} max={5000} step={100} />)}
 									</Form.Item>
 								</Col>
 								<Col span={12}>
@@ -234,7 +234,7 @@ export default {
 								max: 360,
 							},
 						],
-						initialValue: data.animation.angle || data.angle,
+						initialValue: data.animation.angle || 360,
 					})(<Slider min={0} max={360} />)}
 				</Form.Item>
 			);

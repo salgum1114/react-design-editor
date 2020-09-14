@@ -257,6 +257,9 @@ const Node = fabric.util.createClass(fabric.Group, {
 		return this.singlePort(portOption);
 	},
 	setErrors(errors: any) {
+		this.set({
+			errors,
+		});
 		if (errors) {
 			this.errorFlag.set({
 				visible: true,

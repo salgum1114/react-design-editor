@@ -121,16 +121,20 @@ class LinkHandler {
 		};
 		const createdLink = this.create(link);
 		this.finish(createdLink);
+		// TODO...
+		// Save transactions unconditionally
+		if (!this.handler.transactionHandler.active) {
+			this.handler.transactionHandler.save('add');
+		}
 	};
 
 	/**
 	 * Add link in Canvas
 	 * @param {LinkOption} link
 	 * @param {boolean} [loaded=false]
-	 * @param {boolean} [transaction=true]
 	 * @returns
 	 */
-	create = (link: LinkOption, loaded = false, transaction = true) => {
+	create = (link: LinkOption, loaded = false) => {
 		const fromNode = this.handler.objectMap[link.fromNodeId] as NodeObject;
 		const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPortId || !port.id)[0];
 		const toNode = this.handler.objectMap[link.toNodeId] as NodeObject;
@@ -149,9 +153,6 @@ class LinkHandler {
 		this.handler.portHandler.setCoords(fromNode);
 		this.handler.portHandler.setCoords(toNode);
 		this.handler.canvas.requestRenderAll();
-		if (!this.handler.transactionHandler.active && transaction) {
-			this.handler.transactionHandler.save('add');
-		}
 		return createdObj;
 	};
 

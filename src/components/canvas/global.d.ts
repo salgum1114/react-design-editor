@@ -18,6 +18,8 @@ declare module 'fabric/fabric-impl' {
 	class CurvedLink {}
 	class OrthogonalLink {}
 	class Cube {}
+	// SVG
+	class Svg {}
 }
 
 declare global {

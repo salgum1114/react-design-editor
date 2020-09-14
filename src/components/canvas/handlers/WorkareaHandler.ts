@@ -9,13 +9,15 @@ class WorkareaHandler {
 
 	constructor(handler: Handler) {
 		this.handler = handler;
-		this.init();
+		this.initialize();
 	}
 
 	/**
-	 * Init workarea
+	 * Initialize workarea
+	 *
+	 * @author salgum1114
 	 */
-	public init = () => {
+	public initialize() {
 		const { workareaOption } = this.handler;
 		const image = new Image(workareaOption.width, workareaOption.height);
 		image.width = workareaOption.width;
@@ -25,7 +27,7 @@ class WorkareaHandler {
 		this.handler.objects = this.handler.getObjects();
 		this.handler.canvas.centerObject(this.handler.workarea);
 		this.handler.canvas.renderAll();
-	};
+	}
 
 	/**
 	 * Set the layout on workarea

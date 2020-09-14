@@ -1,6 +1,7 @@
 import { fabric } from 'fabric';
 import warning from 'warning';
 import { v4 } from 'uuid';
+import { union } from 'lodash';
 
 import {
 	ElementHandler,
@@ -38,6 +39,7 @@ import {
 	FabricElement,
 	FabricCanvas,
 	FabricGroup,
+	FabricObjects,
 } from '../utils';
 import CanvasObject from '../CanvasObject';
 import { NodeObject } from '../objects/Node';
@@ -45,109 +47,9 @@ import { TransactionEvent } from './TransactionHandler';
 import { LinkObject } from '../objects/Link';
 import { PortObject } from '../objects/Port';
 import { LinkOption } from './LinkHandler';
+import { defaults } from '../constants';
 
-export interface HandlerOptions {
-	/**
-	 * Canvas id
-	 * @type {string}
-	 */
-	id?: string;
-	/**
-	 * Canvas object
-	 * @type {FabricCanvas}
-	 */
-	canvas?: FabricCanvas;
-	/**
-	 * Canvas parent element
-	 * @type {HTMLDivElement}
-	 */
-	container?: HTMLDivElement;
-	/**
-	 * Canvas editable
-	 * @type {boolean}
-	 */
-	editable?: boolean;
-	/**
-	 * Canvas interaction mode
-	 * @type {InteractionMode}
-	 */
-	interactionMode?: InteractionMode;
-	/**
-	 * Persist properties for object
-	 * @type {string[]}
-	 */
-	propertiesToInclude?: string[];
-	/**
-	 * Minimum zoom ratio
-	 * @type {number}
-	 */
-	minZoom?: number;
-	/**
-	 * Maximum zoom ratio
-	 * @type {number}
-	 */
-	maxZoom?: number;
-	/**
-	 * Workarea option
-	 * @type {WorkareaOption}
-	 */
-	workareaOption?: WorkareaOption;
-	/**
-	 * Canvas option
-	 * @type {CanvasOption}
-	 */
-	canvasOption?: CanvasOption;
-	/**
-	 * Grid option
-	 * @type {GridOption}
-	 */
-	gridOption?: GridOption;
-	/**
-	 * Default option for Fabric Object
-	 * @type {FabricObjectOption}
-	 */
-	defaultOption?: FabricObjectOption;
-	/**
-	 * Guideline option
-	 * @type {GuidelineOption}
-	 */
-	guidelineOption?: GuidelineOption;
-	/**
-	 * Whether to use zoom
-	 * @type {boolean}
-	 */
-	zoomEnabled?: boolean;
-	/**
-	 * ActiveSelection option
-	 * @type {FabricObjectOption}
-	 */
-	activeSelection?: FabricObjectOption;
-	/**
-	 * Canvas width
-	 * @type {number}
-	 */
-	width?: number;
-	/**
-	 * Canvas height
-	 * @type {number}
-	 */
-	height?: number;
-	/**
-	 * Keyboard event in Canvas
-	 * @type {KeyEvent}
-	 */
-	keyEvent?: KeyEvent;
-	/**
-	 * Append custom objects
-	 * @type {{ [key: string]: any }}
-	 */
-	fabricObjects?: {
-		[key: string]: {
-			create: (...args: any) => FabricObject;
-		};
-	};
-	[key: string]: any;
-
+export interface HandlerCallback {
 	/**
 	 * When has been added object in Canvas, Called function
 	 *
@@ -208,6 +110,107 @@ export interface HandlerOptions {
 	onLoad?: (handler: Handler, canvas?: fabric.Canvas) => void;
 }
 
+export interface HandlerOption {
+	/**
+	 * Canvas id
+	 * @type {string}
+	 */
+	id?: string;
+	/**
+	 * Canvas object
+	 * @type {FabricCanvas}
+	 */
+	canvas?: FabricCanvas;
+	/**
+	 * Canvas parent element
+	 * @type {HTMLDivElement}
+	 */
+	container?: HTMLDivElement;
+	/**
+	 * Canvas editable
+	 * @type {boolean}
+	 */
+	editable?: boolean;
+	/**
+	 * Canvas interaction mode
+	 * @type {InteractionMode}
+	 */
+	interactionMode?: InteractionMode;
+	/**
+	 * Persist properties for object
+	 * @type {string[]}
+	 */
+	propertiesToInclude?: string[];
+	/**
+	 * Minimum zoom ratio
+	 * @type {number}
+	 */
+	minZoom?: number;
+	/**
+	 * Maximum zoom ratio
+	 * @type {number}
+	 */
+	maxZoom?: number;
+	/**
+	 * Workarea option
+	 * @type {WorkareaOption}
+	 */
+	workareaOption?: WorkareaOption;
+	/**
+	 * Canvas option
+	 * @type {CanvasOption}
+	 */
+	canvasOption?: CanvasOption;
+	/**
+	 * Grid option
+	 * @type {GridOption}
+	 */
+	gridOption?: GridOption;
+	/**
+	 * Default option for Fabric Object
+	 * @type {FabricObjectOption}
+	 */
+	objectOption?: FabricObjectOption;
+	/**
+	 * Guideline option
+	 * @type {GuidelineOption}
+	 */
+	guidelineOption?: GuidelineOption;
+	/**
+	 * Whether to use zoom
+	 * @type {boolean}
+	 */
+	zoomEnabled?: boolean;
+	/**
+	 * ActiveSelection option
+	 * @type {Partial<FabricObjectOption<fabric.ActiveSelection>>}
+	 */
+	activeSelectionOption?: Partial<FabricObjectOption<fabric.ActiveSelection>>;
+	/**
+	 * Canvas width
+	 * @type {number}
+	 */
+	width?: number;
+	/**
+	 * Canvas height
+	 * @type {number}
+	 */
+	height?: number;
+	/**
+	 * Keyboard event in Canvas
+	 * @type {KeyEvent}
+	 */
+	keyEvent?: KeyEvent;
+	/**
+	 * Append custom objects
+	 * @type {{ [key: string]: any }}
+	 */
+	fabricObjects?: FabricObjects;
+	[key: string]: any;
+}
+
+export type HandlerOptions = HandlerOption & HandlerCallback;
+
 /**
  * Main handler for Canvas
  * @class Handler
@@ -220,24 +223,20 @@ class Handler implements HandlerOptions {
 	public container: HTMLDivElement;
 	public editable: boolean;
 	public interactionMode: InteractionMode;
-	public propertiesToInclude?: string[];
 	public minZoom: number;
 	public maxZoom: number;
-	public workareaOption?: WorkareaOption;
-	public canvasOption?: CanvasOption;
-	public gridOption?: GridOption;
-	public fabricObjects?: {
-		[key: string]: {
-			create: (...args: any) => FabricObject;
-		};
-	};
-	public defaultOption?: FabricObjectOption;
-	public guidelineOption?: GuidelineOption;
+	public propertiesToInclude?: string[] = defaults.propertiesToInclude;
+	public workareaOption?: WorkareaOption = defaults.workareaOption;
+	public canvasOption?: CanvasOption = defaults.canvasOption;
+	public gridOption?: GridOption = defaults.gridOption;
+	public objectOption?: FabricObjectOption = defaults.objectOption;
+	public guidelineOption?: GuidelineOption = defaults.guidelineOption;
+	public keyEvent?: KeyEvent = defaults.keyEvent;
+	public activeSelectionOption?: Partial<FabricObjectOption<fabric.ActiveSelection>> = defaults.activeSelectionOption;
+	public fabricObjects?: FabricObjects = CanvasObject;
 	public zoomEnabled?: boolean;
-	public activeSelection?: Partial<FabricObjectOption<fabric.ActiveSelection>>;
 	public width?: number;
 	public height?: number;
-	public keyEvent?: KeyEvent;
 
 	public onAdd?: (object: FabricObject) => void;
 	public onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject) => Promise<any>;
@@ -289,40 +288,50 @@ class Handler implements HandlerOptions {
 	private clipboard: any;
 
 	constructor(options: HandlerOptions) {
-		this.init(options);
+		this.initialize(options);
+	}
+
+	/**
+	 * Initialize handler
+	 *
+	 * @author salgum1114
+	 * @param {HandlerOptions} options
+	 */
+	public initialize(options: HandlerOptions) {
+		this.initOption(options);
 		this.initCallback(options);
-		this.initHandler(options);
+		this.initHandler();
 	}
 
 	/**
 	 * Init class fields
 	 * @param {HandlerOptions} options
 	 */
-	public init = (options: HandlerOptions) => {
+	public initOption = (options: HandlerOptions) => {
 		this.id = options.id;
 		this.canvas = options.canvas;
 		this.container = options.container;
 		this.editable = options.editable;
 		this.interactionMode = options.interactionMode;
-		this.propertiesToInclude = options.propertiesToInclude;
 		this.minZoom = options.minZoom;
 		this.maxZoom = options.maxZoom;
-		this.workareaOption = options.workareaOption;
-		this.canvasOption = options.canvasOption;
-		this.gridOption = options.gridOption;
-		this.defaultOption = options.defaultOption;
-		this.fabricObjects = Object.assign({}, CanvasObject, options.fabricObjects);
-		this.guidelineOption = options.guidelineOption;
 		this.zoomEnabled = options.zoomEnabled;
-		this.activeSelection = options.activeSelection;
 		this.width = options.width;
 		this.height = options.height;
-		this.keyEvent = options.keyEvent;
 		this.objects = [];
+		this.setPropertiesToInclude(options.propertiesToInclude);
+		this.setWorkareaOption(options.workareaOption);
+		this.setCanvasOption(options.canvasOption);
+		this.setGridOption(options.gridOption);
+		this.setObjectOption(options.objectOption);
+		this.setFabricObjects(options.fabricObjects);
+		this.setGuidelineOption(options.guidelineOption);
+		this.setActiveSelectionOption(options.activeSelectionOption);
+		this.setKeyEvent(options.keyEvent);
 	};
 
 	/**
-	 * Init callback
+	 * Initialize callback
 	 * @param {HandlerOptions} options
 	 */
 	public initCallback = (options: HandlerOptions) => {
@@ -341,10 +350,10 @@ class Handler implements HandlerOptions {
 	};
 
 	/**
-	 * Init handlers
-	 * @param {HandlerOptions} options
+	 * Initialize handlers
+	 *
 	 */
-	public initHandler = (_options: HandlerOptions) => {
+	public initHandler = () => {
 		this.workareaHandler = new WorkareaHandler(this);
 		this.imageHandler = new ImageHandler(this);
 		this.chartHandler = new ChartHandler(this);
@@ -663,8 +672,8 @@ class Handler implements HandlerOptions {
 	 * @param {boolean} [loaded=false]
 	 * @returns
 	 */
-	public add = (obj: FabricObjectOption, centered = true, loaded = false, transaction = true) => {
-		const { editable, onAdd, gridOption, defaultOption } = this;
+	public add = (obj: FabricObjectOption, centered = true, loaded = false) => {
+		const { editable, onAdd, gridOption, objectOption } = this;
 		const option: any = {
 			hasControls: editable,
 			hasBorders: editable,
@@ -684,7 +693,7 @@ class Handler implements HandlerOptions {
 		}
 		const newOption = Object.assign(
 			{},
-			defaultOption,
+			objectOption,
 			obj,
 			{
 				container: this.container.id,
@@ -694,10 +703,7 @@ class Handler implements HandlerOptions {
 		);
 		// Individually create canvas object
 		if (obj.superType === 'link') {
-			return this.linkHandler.create(newOption, loaded, transaction);
-		}
-		if (obj.type === 'svg') {
-			return this.addSVG(newOption, centered, loaded);
+			return this.linkHandler.create(newOption, loaded);
 		}
 		let createdObj;
 		// Create canvas object
@@ -706,7 +712,7 @@ class Handler implements HandlerOptions {
 		} else if (obj.type === 'group') {
 			// TODO...
 			// Group add function needs to be fixed
-			const objects = this.addGroup(newOption, centered, loaded, transaction);
+			const objects = this.addGroup(newOption, centered, loaded);
 			const groupOption = Object.assign({}, newOption, { objects, name: 'New Group' });
 			createdObj = this.fabricObjects[obj.type].create(groupOption);
 		} else {
@@ -745,7 +751,7 @@ class Handler implements HandlerOptions {
 		if (gridOption.enabled) {
 			this.gridHandler.setCoords(createdObj);
 		}
-		if (!this.transactionHandler.active && transaction) {
+		if (!this.transactionHandler.active && !loaded) {
 			this.transactionHandler.save('add');
 		}
 		if (onAdd && editable && !loaded) {
@@ -756,14 +762,15 @@ class Handler implements HandlerOptions {
 
 	/**
 	 * Add group object
+	 *
 	 * @param {FabricGroup} obj
 	 * @param {boolean} [centered=true]
 	 * @param {boolean} [loaded=false]
 	 * @returns
 	 */
-	public addGroup = (obj: FabricGroup, centered = true, loaded = false, transaction = true) => {
+	public addGroup = (obj: FabricGroup, centered = true, loaded = false) => {
 		return obj.objects.map(child => {
-			return this.add(child, centered, loaded, transaction);
+			return this.add(child, centered, loaded);
 		});
 	};
 
@@ -773,14 +780,14 @@ class Handler implements HandlerOptions {
 	 * @returns
 	 */
 	public addImage = (obj: FabricImage) => {
-		const { defaultOption } = this;
+		const { objectOption } = this;
 		const { filters = [], ...otherOption } = obj;
 		const image = new Image();
 		if (obj.src) {
 			image.src = obj.src;
 		}
 		const createdObj = new fabric.Image(image, {
-			...defaultOption,
+			...objectOption,
 			...otherOption,
 		}) as FabricImage;
 		createdObj.set({
@@ -788,51 +795,6 @@ class Handler implements HandlerOptions {
 		});
 		this.setImage(createdObj, obj.src || obj.file);
 		return createdObj;
-	};
-
-	/**
-	 * Add svg object
-	 * @param {*} obj
-	 * @param {boolean} [centered=true]
-	 * @param {boolean} [loaded=false]
-	 * @returns
-	 */
-	public addSVG = (obj: any, centered = true, loaded = false) => {
-		const { defaultOption } = this;
-		return new Promise((resolve: any) => {
-			const getSVGElements = (object: any, objects: any, options: any) => {
-				const createdObj = fabric.util.groupSVGElements(objects, options) as FabricObject;
-				createdObj.set({ ...defaultOption, ...object });
-				this.canvas.add(createdObj);
-				this.objects = this.getObjects();
-				const { onAdd, editable } = this;
-				if (!editable && !(obj.superType === 'element')) {
-					createdObj.on('mousedown', this.eventHandler.object.mousedown);
-				}
-				if (createdObj.dblclick) {
-					createdObj.on('mousedblclick', this.eventHandler.object.mousedblclick);
-				}
-				if (editable && !loaded) {
-					this.centerObject(createdObj, centered);
-				}
-				if (!editable && createdObj.animation && createdObj.animation.autoplay) {
-					this.animationHandler.play(createdObj.id);
-				}
-				if (onAdd && !loaded && editable) {
-					onAdd(createdObj);
-				}
-				return createdObj;
-			};
-			if (obj.loadType === 'svg') {
-				fabric.loadSVGFromString(obj.svg, (objects, options) => {
-					resolve(getSVGElements(obj, objects, options));
-				});
-			} else {
-				fabric.loadSVGFromURL(obj.svg, (objects, options) => {
-					resolve(getSVGElements(obj, objects, options));
-				});
-			}
-		});
 	};
 
 	/**
@@ -1138,7 +1100,7 @@ class Handler implements HandlerOptions {
 					return true;
 				}
 			}
-			activeObject.clone((cloned: any) => {
+			activeObject.clone((cloned: FabricObject) => {
 				if (this.keyEvent.clipboard) {
 					if (cloned.superType === 'node') {
 						const node = {
@@ -1156,12 +1118,12 @@ class Handler implements HandlerOptions {
 						};
 						const objects = [node];
 						this.copyToClipboard(JSON.stringify(objects, null, '\t'));
-						return;
+					} else {
+						this.copyToClipboard(JSON.stringify(cloned.toObject(propertiesToInclude), null, '\t'));
 					}
-					this.copyToClipboard(JSON.stringify(cloned.toObject(propertiesToInclude), null, '\t'));
-					return;
+				} else {
+					this.clipboard = cloned;
 				}
-				this.clipboard = cloned;
 			}, propertiesToInclude);
 		}
 		return true;
@@ -1252,18 +1214,18 @@ class Handler implements HandlerOptions {
 				}
 				const activeSelection = new fabric.ActiveSelection(objects, {
 					canvas: this.canvas,
-					...this.activeSelection,
+					...this.activeSelectionOption,
 				});
 				if (isCut) {
 					this.clipboard = null;
 				} else {
 					this.clipboard = activeSelection;
 				}
-				this.canvas.setActiveObject(activeSelection);
-				this.canvas.renderAll();
 				if (!this.transactionHandler.active) {
 					this.transactionHandler.save('paste');
 				}
+				this.canvas.setActiveObject(activeSelection);
+				this.canvas.renderAll();
 				return true;
 			}
 		}
@@ -1272,7 +1234,7 @@ class Handler implements HandlerOptions {
 			clonedObj.set({
 				left: clonedObj.left + padding,
 				top: clonedObj.top + padding,
-				id: isCut ? clonedObj.id : v4(),
+				id: isCut ? clipboard.id : v4(),
 				evented: true,
 			});
 			if (clonedObj.type === 'activeSelection') {
@@ -1283,12 +1245,7 @@ class Handler implements HandlerOptions {
 					if (obj.dblclick) {
 						obj.on('mousedblclick', this.eventHandler.object.mousedblclick);
 					}
-					this.objects = this.getObjects();
 				});
-				if (onAdd) {
-					onAdd(clonedObj);
-				}
-				clonedObj.setCoords();
 			} else {
 				if (clonedObj.superType === 'node') {
 					clonedObj = clonedObj.duplicate();
@@ -1296,10 +1253,6 @@ class Handler implements HandlerOptions {
 				this.canvas.add(clonedObj);
 				if (clonedObj.dblclick) {
 					clonedObj.on('mousedblclick', this.eventHandler.object.mousedblclick);
-				}
-				this.objects = this.getObjects();
-				if (onAdd) {
-					onAdd(clonedObj);
 				}
 			}
 			const newClipboard = clipboard.set({
@@ -1311,12 +1264,21 @@ class Handler implements HandlerOptions {
 			} else {
 				this.clipboard = newClipboard;
 			}
-			this.canvas.setActiveObject(clonedObj);
-			this.portHandler.create(clonedObj);
-			this.canvas.requestRenderAll();
+			if (clonedObj.superType === 'node') {
+				this.portHandler.create(clonedObj);
+			}
 			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('paste');
 			}
+			// TODO...
+			// After toGroup svg elements not rendered.
+			this.objects = this.getObjects();
+			if (onAdd) {
+				onAdd(clonedObj);
+			}
+			clonedObj.setCoords();
+			this.canvas.setActiveObject(clonedObj);
+			this.canvas.requestRenderAll();
 		}, propertiesToInclude);
 		return true;
 	};
@@ -1486,7 +1448,7 @@ class Handler implements HandlerOptions {
 		}
 		const activeSelection = new fabric.ActiveSelection(filteredObjects, {
 			canvas: this.canvas,
-			...this.activeSelection,
+			...this.activeSelectionOption,
 		});
 		this.canvas.setActiveObject(activeSelection);
 		this.canvas.renderAll();
@@ -1543,7 +1505,7 @@ class Handler implements HandlerOptions {
 		this.canvas.setBackgroundColor(this.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
 		const workareaExist = json.filter((obj: FabricObjectOption) => obj.id === 'workarea');
 		if (!this.workarea) {
-			this.workareaHandler.init();
+			this.workareaHandler.initialize();
 		}
 		if (!workareaExist.length) {
 			this.canvas.centerObject(this.workarea);
@@ -1581,9 +1543,10 @@ class Handler implements HandlerOptions {
 			if (obj.superType === 'element') {
 				obj.id = v4();
 			}
-			this.add(obj, false, true, false);
+			this.add(obj, false, true);
 			this.canvas.renderAll();
 		});
+		this.objects = this.getObjects();
 		if (callback) {
 			callback(this.canvas);
 		}
@@ -1593,7 +1556,7 @@ class Handler implements HandlerOptions {
 	/**
 	 * Export json
 	 */
-	public exportJSON = () => this.canvas.toJSON(this.propertiesToInclude);
+	public exportJSON = () => this.canvas.toObject(this.propertiesToInclude).objects as FabricObject[];
 
 	/**
 	 * Active selection to group
@@ -1602,17 +1565,17 @@ class Handler implements HandlerOptions {
 	public toGroup = (target?: FabricObject) => {
 		const activeObject = target || (this.canvas.getActiveObject() as fabric.ActiveSelection);
 		if (!activeObject) {
-			return;
+			return null;
 		}
 		if (activeObject.type !== 'activeSelection') {
-			return;
+			return null;
 		}
-		const group = activeObject.toGroup() as any;
+		const group = activeObject.toGroup() as FabricObject<fabric.Group>;
 		group.set({
 			id: v4(),
 			name: 'New group',
 			type: 'group',
-			...this.defaultOption,
+			...this.objectOption,
 		});
 		this.objects = this.getObjects();
 		if (!this.transactionHandler.active) {
@@ -1740,6 +1703,7 @@ class Handler implements HandlerOptions {
 			this.canvas.clear();
 			this.workarea = null;
 		} else {
+			this.canvas.discardActiveObject();
 			this.canvas.getObjects().forEach((obj: any) => {
 				if (obj.id === 'grid' || obj.id === 'workarea') {
 					return;
@@ -1834,6 +1798,127 @@ class Handler implements HandlerOptions {
 			activeObject.rotate(angle);
 			this.canvas.requestRenderAll();
 		}
+	};
+
+	/**
+	 * Destroy canvas
+	 *
+	 */
+	public destroy = () => {
+		this.eventHandler.destroy();
+		this.guidelineHandler.destroy();
+		this.contextmenuHandler.destory();
+		this.tooltipHandler.destroy();
+		this.clear(true);
+	};
+
+	/**
+	 * Set canvas option
+	 *
+	 * @param {CanvasOption} canvasOption
+	 */
+	public setCanvasOption = (canvasOption: CanvasOption) => {
+		this.canvasOption = Object.assign({}, this.canvasOption, canvasOption);
+		this.canvas.setBackgroundColor(canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
+		if (typeof canvasOption.width !== 'undefined' && typeof canvasOption.height !== 'undefined') {
+			if (this.eventHandler) {
+				this.eventHandler.resize(canvasOption.width, canvasOption.height);
+			} else {
+				this.canvas.setWidth(canvasOption.width).setHeight(canvasOption.height);
+			}
+		}
+		if (typeof canvasOption.selection !== 'undefined') {
+			this.canvas.selection = canvasOption.selection;
+		}
+		if (typeof canvasOption.hoverCursor !== 'undefined') {
+			this.canvas.hoverCursor = canvasOption.hoverCursor;
+		}
+		if (typeof canvasOption.defaultCursor !== 'undefined') {
+			this.canvas.defaultCursor = canvasOption.defaultCursor;
+		}
+		if (typeof canvasOption.preserveObjectStacking !== 'undefined') {
+			this.canvas.preserveObjectStacking = canvasOption.preserveObjectStacking;
+		}
+	};
+
+	/**
+	 * Set keyboard event
+	 *
+	 * @param {KeyEvent} keyEvent
+	 */
+	public setKeyEvent = (keyEvent: KeyEvent) => {
+		this.keyEvent = Object.assign({}, this.keyEvent, keyEvent);
+	};
+
+	/**
+	 * Set fabric objects
+	 *
+	 * @param {FabricObjects} fabricObjects
+	 */
+	public setFabricObjects = (fabricObjects: FabricObjects) => {
+		this.fabricObjects = Object.assign({}, this.fabricObjects, fabricObjects);
+	};
+
+	/**
+	 * Set workarea option
+	 *
+	 * @param {WorkareaOption} workareaOption
+	 */
+	public setWorkareaOption = (workareaOption: WorkareaOption) => {
+		this.workareaOption = Object.assign({}, this.workareaOption, workareaOption);
+		if (this.workarea) {
+			this.workarea.set({
+				...workareaOption,
+			});
+		}
+	};
+
+	/**
+	 * Set guideline option
+	 *
+	 * @param {GuidelineOption} guidelineOption
+	 */
+	public setGuidelineOption = (guidelineOption: GuidelineOption) => {
+		this.guidelineOption = Object.assign({}, this.guidelineOption, guidelineOption);
+		if (this.guidelineHandler) {
+			this.guidelineHandler.initialize();
+		}
+	};
+
+	/**
+	 * Set grid option
+	 *
+	 * @param {GridOption} gridOption
+	 */
+	public setGridOption = (gridOption: GridOption) => {
+		this.gridOption = Object.assign({}, this.gridOption, gridOption);
+	};
+
+	/**
+	 * Set object option
+	 *
+	 * @param {FabricObjectOption} objectOption
+	 */
+	public setObjectOption = (objectOption: FabricObjectOption) => {
+		this.objectOption = Object.assign({}, this.objectOption, objectOption);
+	};
+
+	/**
+	 * Set activeSelection option
+	 *
+	 * @param {Partial<FabricObjectOption<fabric.ActiveSelection>>} activeSelectionOption
+	 */
+	public setActiveSelectionOption = (activeSelectionOption: Partial<FabricObjectOption<fabric.ActiveSelection>>) => {
+		this.activeSelectionOption = Object.assign({}, this.activeSelectionOption, activeSelectionOption);
+	};
+
+	/**
+	 * Set propertiesToInclude
+	 *
+	 * @param {string[]} propertiesToInclude
+	 */
+	public setPropertiesToInclude = (propertiesToInclude: string[]) => {
+		this.propertiesToInclude = union(propertiesToInclude, this.propertiesToInclude);
 	};
 }
 

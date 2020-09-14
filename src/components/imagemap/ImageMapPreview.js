@@ -29,6 +29,7 @@ class ImageMapPreview extends Component {
 					>
 						<Canvas
 							editable={false}
+							className="rde-canvas"
 							canvasOption={{
 								backgroundColor: '#f3f3f3',
 							}}
