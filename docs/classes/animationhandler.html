@@ -93,10 +93,10 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="animationhandler.html#getanimation" class="tsd-kind-icon">get<wbr>Animation</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="animationhandler.html#initanimation" class="tsd-kind-icon">init<wbr>Animation</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="animationhandler.html#getanime" class="tsd-kind-icon">get<wbr>Anime</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="animationhandler.html#pause" class="tsd-kind-icon">pause</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="animationhandler.html#play" class="tsd-kind-icon">play</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="animationhandler.html#resetanimation" class="tsd-kind-icon">reset<wbr>Animation</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="animationhandler.html#restart" class="tsd-kind-icon">restart</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="animationhandler.html#stop" class="tsd-kind-icon">stop</a></li>
 							</ul>
@@ -146,16 +146,16 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="getanimation" class="tsd-anchor"></a>
-					<h3>get<wbr>Animation</h3>
+					<a name="getanime" class="tsd-anchor"></a>
+					<h3>get<wbr>Anime</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Animation<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a>, hasControls<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnimeInstance</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Anime<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a>, hasControls<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AnimeInstance</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/AnimationHandler.ts:180</li>
+									<li>Defined in src/components/canvas/handlers/AnimationHandler.ts:187</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -173,37 +173,6 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AnimeInstance</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="initanimation" class="tsd-anchor"></a>
-					<h3>init<wbr>Animation</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">init<wbr>Animation<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a>, hasControls<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/components/canvas/handlers/AnimationHandler.ts:95</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Init animation</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>obj: <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> hasControls: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -260,6 +229,37 @@
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> hasControls: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="resetanimation" class="tsd-anchor"></a>
+					<h3>reset<wbr>Animation</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">reset<wbr>Animation<span class="tsd-signature-symbol">(</span>obj<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a>, hasControls<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/components/canvas/handlers/AnimationHandler.ts:96</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Reset animation</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>obj: <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> hasControls: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -349,16 +349,16 @@
 								<a href="animationhandler.html#handler" class="tsd-kind-icon">handler</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="animationhandler.html#getanimation" class="tsd-kind-icon">get<wbr>Animation</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="animationhandler.html#initanimation" class="tsd-kind-icon">init<wbr>Animation</a>
+								<a href="animationhandler.html#getanime" class="tsd-kind-icon">get<wbr>Anime</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="animationhandler.html#pause" class="tsd-kind-icon">pause</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="animationhandler.html#play" class="tsd-kind-icon">play</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="animationhandler.html#resetanimation" class="tsd-kind-icon">reset<wbr>Animation</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="animationhandler.html#restart" class="tsd-kind-icon">restart</a>

@@ -107,12 +107,10 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#afterrender" class="tsd-kind-icon">after<wbr>Render</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#arrowmoving" class="tsd-kind-icon">arrowmoving</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#attacheventlistener" class="tsd-kind-icon">attach<wbr>Event<wbr>Listener</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#beforerender" class="tsd-kind-icon">before<wbr>Render</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#contextmenu" class="tsd-kind-icon">contextmenu</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#detacheventlistener" class="tsd-kind-icon">detach<wbr>Event<wbr>Listener</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#destroy" class="tsd-kind-icon">destroy</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#initialize" class="tsd-kind-icon">initialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#keydown" class="tsd-kind-icon">keydown</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#keyup" class="tsd-kind-icon">keyup</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#modified" class="tsd-kind-icon">modified</a></li>
@@ -204,38 +202,6 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="afterrender" class="tsd-anchor"></a>
-					<h3>after<wbr>Render</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">after<wbr>Render<span class="tsd-signature-symbol">(</span>_opt<span class="tsd-signature-symbol">: </span><a href="../interfaces/fabricevent.html" class="tsd-signature-type">FabricEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:568</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>After the render</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>_opt: <a href="../interfaces/fabricevent.html" class="tsd-signature-type">FabricEvent</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-										</div>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="arrowmoving" class="tsd-anchor"></a>
 					<h3>arrowmoving</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
@@ -245,7 +211,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:292</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:288</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -264,60 +230,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="attacheventlistener" class="tsd-anchor"></a>
-					<h3>attach<wbr>Event<wbr>Listener</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">attach<wbr>Event<wbr>Listener<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:28</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Attch event on document</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="beforerender" class="tsd-anchor"></a>
-					<h3>before<wbr>Render</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">before<wbr>Render<span class="tsd-signature-symbol">(</span>_opt<span class="tsd-signature-symbol">: </span><a href="../interfaces/fabricevent.html" class="tsd-signature-type">FabricEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:559</li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Before the render</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>_opt: <a href="../interfaces/fabricevent.html" class="tsd-signature-type">FabricEvent</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-										</div>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="contextmenu" class="tsd-anchor"></a>
 					<h3>contextmenu</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
@@ -327,7 +239,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:884</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:855</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -350,21 +262,43 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="detacheventlistener" class="tsd-anchor"></a>
-					<h3>detach<wbr>Event<wbr>Listener</h3>
+					<a name="destroy" class="tsd-anchor"></a>
+					<h3>destroy</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">detach<wbr>Event<wbr>Listener<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">destroy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:71</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:69</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Detach event on document</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="initialize" class="tsd-anchor"></a>
+					<h3>initialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:28</li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Attch event on document</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -381,7 +315,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:783</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:754</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -413,7 +347,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:870</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:841</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -441,7 +375,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:152</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:148</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -469,7 +403,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:360</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:356</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -497,7 +431,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:436</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:432</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -525,7 +459,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:529</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:525</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -557,7 +491,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:496</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:492</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -585,7 +519,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:333</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:329</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -613,7 +547,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:211</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:207</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -645,7 +579,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:172</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:168</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -673,7 +607,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:901</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:872</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -705,7 +639,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:676</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:647</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -733,7 +667,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:586</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:557</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -764,7 +698,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:280</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:276</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -792,7 +726,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:265</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:261</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -824,7 +758,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:254</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:250</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -852,7 +786,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:229</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:225</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -884,7 +818,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/components/canvas/handlers/EventHandler.ts:541</li>
+									<li>Defined in src/components/canvas/handlers/EventHandler.ts:537</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -915,7 +849,7 @@
 					<div class="tsd-signature tsd-kind-icon">object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/components/canvas/handlers/EventHandler.ts:117</li>
+							<li>Defined in src/components/canvas/handlers/EventHandler.ts:113</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -933,7 +867,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in src/components/canvas/handlers/EventHandler.ts:135</li>
+										<li>Defined in src/components/canvas/handlers/EventHandler.ts:131</li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -965,7 +899,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in src/components/canvas/handlers/EventHandler.ts:122</li>
+										<li>Defined in src/components/canvas/handlers/EventHandler.ts:118</li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -1018,22 +952,16 @@
 								<a href="eventhandler.html#panning" class="tsd-kind-icon">panning</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="eventhandler.html#afterrender" class="tsd-kind-icon">after<wbr>Render</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="eventhandler.html#arrowmoving" class="tsd-kind-icon">arrowmoving</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="eventhandler.html#attacheventlistener" class="tsd-kind-icon">attach<wbr>Event<wbr>Listener</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="eventhandler.html#beforerender" class="tsd-kind-icon">before<wbr>Render</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="eventhandler.html#contextmenu" class="tsd-kind-icon">contextmenu</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="eventhandler.html#detacheventlistener" class="tsd-kind-icon">detach<wbr>Event<wbr>Listener</a>
+								<a href="eventhandler.html#destroy" class="tsd-kind-icon">destroy</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="eventhandler.html#initialize" class="tsd-kind-icon">initialize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="eventhandler.html#keydown" class="tsd-kind-icon">keydown</a>
