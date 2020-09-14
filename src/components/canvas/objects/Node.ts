@@ -162,7 +162,6 @@ const Node = fabric.util.createClass(fabric.Group, {
 			cloneable: this.get('cloneable'),
 			fromPort: this.get('fromPort'),
 			toPort: this.get('toPort'),
-			errorFlag: this.get('errorFlag'),
 		});
 	},
 	defaultPortOption() {
@@ -258,6 +257,9 @@ const Node = fabric.util.createClass(fabric.Group, {
 		return this.singlePort(portOption);
 	},
 	setErrors(errors: any) {
+		this.set({
+			errors,
+		});
 		if (errors) {
 			this.errorFlag.set({
 				visible: true,

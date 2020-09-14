@@ -175,7 +175,7 @@ class WorkflowEditor extends Component {
 			try {
 				this.canvasRef.handler.exportJSON().forEach(obj => {
 					if (obj.superType === 'node') {
-						if (obj.errorFlag.visible) {
+						if (obj.errors) {
 							throw new NodeConfigurationError(
 								i18n.t('workflow.validate-fields-error'),
 								obj.id,

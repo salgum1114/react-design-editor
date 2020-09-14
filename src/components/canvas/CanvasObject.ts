@@ -16,6 +16,7 @@ import {
 } from './objects';
 import { FabricObject } from './utils';
 import { Code } from './objects/Element';
+import Svg, { SvgOption } from './objects/Svg';
 
 export interface ObjectSchema {
 	create: (...option: any) => fabric.Object;
@@ -115,6 +116,9 @@ const CanvasObject: CanvasObjectSchema = {
 	orthogonalLink: {
 		create: (fromNode, fromPort, toNode, toPort, option) =>
 			new OrthogonalLink(fromNode, fromPort, toNode, toPort, option),
+	},
+	svg: {
+		create: (option: SvgOption) => new Svg(option),
 	},
 };
 

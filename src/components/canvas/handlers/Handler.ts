@@ -705,9 +705,6 @@ class Handler implements HandlerOptions {
 		if (obj.superType === 'link') {
 			return this.linkHandler.create(newOption, loaded);
 		}
-		if (obj.type === 'svg') {
-			return this.addSVG(newOption, centered, loaded);
-		}
 		let createdObj;
 		// Create canvas object
 		if (obj.type === 'image') {
@@ -798,51 +795,6 @@ class Handler implements HandlerOptions {
 		});
 		this.setImage(createdObj, obj.src || obj.file);
 		return createdObj;
-	};
-
-	/**
-	 * Add svg object
-	 * @param {*} obj
-	 * @param {boolean} [centered=true]
-	 * @param {boolean} [loaded=false]
-	 * @returns
-	 */
-	public addSVG = (obj: any, centered = true, loaded = false) => {
-		const { objectOption } = this;
-		return new Promise((resolve: any) => {
-			const getSVGElements = (object: any, objects: any, options: any) => {
-				const createdObj = fabric.util.groupSVGElements(objects, options) as FabricObject;
-				createdObj.set({ ...objectOption, ...object });
-				this.canvas.add(createdObj);
-				this.objects = this.getObjects();
-				const { onAdd, editable } = this;
-				if (!editable && !(obj.superType === 'element')) {
-					createdObj.on('mousedown', this.eventHandler.object.mousedown);
-				}
-				if (createdObj.dblclick) {
-					createdObj.on('mousedblclick', this.eventHandler.object.mousedblclick);
-				}
-				if (editable && !loaded) {
-					this.centerObject(createdObj, centered);
-				}
-				if (!editable && createdObj.animation && createdObj.animation.autoplay) {
-					this.animationHandler.play(createdObj.id);
-				}
-				if (onAdd && !loaded && editable) {
-					onAdd(createdObj);
-				}
-				return createdObj;
-			};
-			if (obj.loadType === 'svg') {
-				fabric.loadSVGFromString(obj.svg, (objects, options) => {
-					resolve(getSVGElements(obj, objects, options));
-				});
-			} else {
-				fabric.loadSVGFromURL(obj.svg, (objects, options) => {
-					resolve(getSVGElements(obj, objects, options));
-				});
-			}
-		});
 	};
 
 	/**
@@ -1148,7 +1100,7 @@ class Handler implements HandlerOptions {
 					return true;
 				}
 			}
-			activeObject.clone((cloned: any) => {
+			activeObject.clone((cloned: FabricObject) => {
 				if (this.keyEvent.clipboard) {
 					if (cloned.superType === 'node') {
 						const node = {
@@ -1166,12 +1118,12 @@ class Handler implements HandlerOptions {
 						};
 						const objects = [node];
 						this.copyToClipboard(JSON.stringify(objects, null, '\t'));
-						return;
+					} else {
+						this.copyToClipboard(JSON.stringify(cloned.toObject(propertiesToInclude), null, '\t'));
 					}
-					this.copyToClipboard(JSON.stringify(cloned.toObject(propertiesToInclude), null, '\t'));
-					return;
+				} else {
+					this.clipboard = cloned;
 				}
-				this.clipboard = cloned;
 			}, propertiesToInclude);
 		}
 		return true;
@@ -1269,11 +1221,11 @@ class Handler implements HandlerOptions {
 				} else {
 					this.clipboard = activeSelection;
 				}
-				this.canvas.setActiveObject(activeSelection);
-				this.canvas.renderAll();
 				if (!this.transactionHandler.active) {
 					this.transactionHandler.save('paste');
 				}
+				this.canvas.setActiveObject(activeSelection);
+				this.canvas.renderAll();
 				return true;
 			}
 		}
@@ -1282,7 +1234,7 @@ class Handler implements HandlerOptions {
 			clonedObj.set({
 				left: clonedObj.left + padding,
 				top: clonedObj.top + padding,
-				id: isCut ? clonedObj.id : v4(),
+				id: isCut ? clipboard.id : v4(),
 				evented: true,
 			});
 			if (clonedObj.type === 'activeSelection') {
@@ -1293,12 +1245,7 @@ class Handler implements HandlerOptions {
 					if (obj.dblclick) {
 						obj.on('mousedblclick', this.eventHandler.object.mousedblclick);
 					}
-					this.objects = this.getObjects();
 				});
-				if (onAdd) {
-					onAdd(clonedObj);
-				}
-				clonedObj.setCoords();
 			} else {
 				if (clonedObj.superType === 'node') {
 					clonedObj = clonedObj.duplicate();
@@ -1306,10 +1253,6 @@ class Handler implements HandlerOptions {
 				this.canvas.add(clonedObj);
 				if (clonedObj.dblclick) {
 					clonedObj.on('mousedblclick', this.eventHandler.object.mousedblclick);
-				}
-				this.objects = this.getObjects();
-				if (onAdd) {
-					onAdd(clonedObj);
 				}
 			}
 			const newClipboard = clipboard.set({
@@ -1321,12 +1264,21 @@ class Handler implements HandlerOptions {
 			} else {
 				this.clipboard = newClipboard;
 			}
-			this.canvas.setActiveObject(clonedObj);
-			this.portHandler.create(clonedObj);
-			this.canvas.requestRenderAll();
+			if (clonedObj.superType === 'node') {
+				this.portHandler.create(clonedObj);
+			}
 			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('paste');
 			}
+			// TODO...
+			// After toGroup svg elements not rendered.
+			this.objects = this.getObjects();
+			if (onAdd) {
+				onAdd(clonedObj);
+			}
+			clonedObj.setCoords();
+			this.canvas.setActiveObject(clonedObj);
+			this.canvas.requestRenderAll();
 		}, propertiesToInclude);
 		return true;
 	};
@@ -1594,6 +1546,7 @@ class Handler implements HandlerOptions {
 			this.add(obj, false, true);
 			this.canvas.renderAll();
 		});
+		this.objects = this.getObjects();
 		if (callback) {
 			callback(this.canvas);
 		}
@@ -1612,12 +1565,12 @@ class Handler implements HandlerOptions {
 	public toGroup = (target?: FabricObject) => {
 		const activeObject = target || (this.canvas.getActiveObject() as fabric.ActiveSelection);
 		if (!activeObject) {
-			return;
+			return null;
 		}
 		if (activeObject.type !== 'activeSelection') {
-			return;
+			return null;
 		}
-		const group = activeObject.toGroup() as any;
+		const group = activeObject.toGroup() as FabricObject<fabric.Group>;
 		group.set({
 			id: v4(),
 			name: 'New group',

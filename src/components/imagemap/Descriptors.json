@@ -257,6 +257,7 @@
 			},
 			"option": {
 				"type": "svg",
+				"superType": "svg",
 				"name": "New SVG",
 				"loadType": "svg"
 			}

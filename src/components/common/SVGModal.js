@@ -14,7 +14,7 @@ class SVGModal extends Component {
 	};
 
 	state = {
-		loadType: 'svg',
+		loadType: 'file',
 		visible: false,
 	};
 
@@ -79,8 +79,8 @@ class SVGModal extends Component {
 							initialValue: loadType,
 						})(
 							<Radio.Group onChange={this.handleChangeSvgType}>
-								<Radio.Button value="svg">{i18n.t('common.svg')}</Radio.Button>
 								<Radio.Button value="file">{i18n.t('common.file')}</Radio.Button>
+								<Radio.Button value="svg">{i18n.t('common.svg')}</Radio.Button>
 							</Radio.Group>,
 						)}
 					</Form.Item>
