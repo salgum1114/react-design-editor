@@ -285,6 +285,12 @@ class Handler implements HandlerOptions {
 
 	private isRequsetAnimFrame = false;
 	private requestFrame: any;
+	/**
+	 * Copied object
+	 *
+	 * @private
+	 * @type {*}
+	 */
 	private clipboard: any;
 
 	constructor(options: HandlerOptions) {

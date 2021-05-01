@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import i18n from 'i18next';
 
 import CommonButton from '../common/CommonButton';
+import { code } from '../canvas/constants';
 
 class WorkflowToolbar extends Component {
 	static propTypes = {
@@ -42,9 +43,9 @@ class WorkflowToolbar extends Component {
 			if (this.props.canvasRef.canvas.wrapperEl !== document.activeElement) {
 				return false;
 			}
-			if (e.keyCode === 81) {
+			if (e.code === code.KEY_Q) {
 				this.handlers.selection();
-			} else if (e.keyCode === 87) {
+			} else if (e.code === code.KEY_W) {
 				this.handlers.grab();
 			}
 		},

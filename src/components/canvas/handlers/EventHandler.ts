@@ -5,6 +5,7 @@ import Handler from './Handler';
 import { FabricObject, FabricEvent } from '../utils';
 import { VideoObject } from '../objects/Video';
 import { NodeObject } from '../objects/Node';
+import { code } from '../constants';
 
 /**
  * Event Handler Class
@@ -13,7 +14,7 @@ import { NodeObject } from '../objects/Node';
  */
 class EventHandler {
 	handler: Handler;
-	keyCode: number;
+	code: string;
 	panning: boolean;
 
 	constructor(handler: Handler) {
@@ -293,22 +294,22 @@ class EventHandler {
 		if (activeObject.id === 'workarea') {
 			return false;
 		}
-		if (e.keyCode === 38) {
+		if (e.code === code.ARROW_UP) {
 			activeObject.set('top', activeObject.top - 2);
 			activeObject.setCoords();
 			this.handler.canvas.renderAll();
 			return true;
-		} else if (e.keyCode === 40) {
+		} else if (e.code === code.ARROW_DOWN) {
 			activeObject.set('top', activeObject.top + 2);
 			activeObject.setCoords();
 			this.handler.canvas.renderAll();
 			return true;
-		} else if (e.keyCode === 37) {
+		} else if (e.code === code.ARROW_LEFT) {
 			activeObject.set('left', activeObject.left - 2);
 			activeObject.setCoords();
 			this.handler.canvas.renderAll();
 			return true;
-		} else if (e.keyCode === 39) {
+		} else if (e.code === code.ARROW_RIGHT) {
 			activeObject.set('left', activeObject.left + 2);
 			activeObject.setCoords();
 			this.handler.canvas.renderAll();
@@ -644,7 +645,7 @@ class EventHandler {
 	 * @param {ClipboardEvent} e
 	 * @returns
 	 */
-	public paste = (e: ClipboardEvent) => {
+	public paste = async (e: ClipboardEvent) => {
 		if (this.handler.canvas.wrapperEl !== document.activeElement) {
 			return false;
 		}
@@ -772,7 +773,7 @@ class EventHandler {
 			return;
 		}
 		if (this.handler.shortcutHandler.isW(e)) {
-			this.keyCode = e.keyCode;
+			this.code = e.code;
 			this.handler.interactionHandler.grab();
 			return;
 		}
@@ -792,7 +793,7 @@ class EventHandler {
 		}
 		if (editable) {
 			if (this.handler.shortcutHandler.isQ(e)) {
-				this.keyCode = e.keyCode;
+				this.code = e.code;
 			} else if (this.handler.shortcutHandler.isDelete(e)) {
 				this.handler.remove();
 			} else if (this.handler.shortcutHandler.isArrow(e)) {

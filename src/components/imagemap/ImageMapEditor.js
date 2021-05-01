@@ -16,6 +16,7 @@ import '../../styles/index.less';
 import Container from '../common/Container';
 import CommonButton from '../common/CommonButton';
 import Canvas from '../canvas/Canvas';
+import { code } from '../canvas/constants';
 
 const propertiesToInclude = [
 	'id',
@@ -610,7 +611,7 @@ class ImageMapEditor extends Component {
 	shortcutHandlers = {
 		esc: () => {
 			document.addEventListener('keydown', e => {
-				if (e.keyCode === 27) {
+				if (e.code === code.ESCAPE) {
 					this.handlers.onChangePreview(false);
 				}
 			});
