@@ -13,11 +13,10 @@ const plugins = [
 module.exports = {
 	mode: 'production',
 	entry: {
-		[pkg.name]: ['@babel/polyfill', path.resolve(__dirname, 'src/components/canvas/index.tsx')],
-		[`${pkg.name}.min`]: ['@babel/polyfill', path.resolve(__dirname, 'src/components/canvas/index.tsx')],
+		[pkg.name]: ['@babel/polyfill', path.resolve(__dirname, 'src/canvas/index.tsx')],
+		[`${pkg.name}.min`]: ['@babel/polyfill', path.resolve(__dirname, 'src/canvas/index.tsx')],
 	},
 	output: {
-		// entry에 존재하는 app.js, vendor.js로 뽑혀 나온다.
 		path: path.resolve(__dirname, 'dist'),
 		filename: '[name].js',
 		library: `${pkg.name}.js`,
@@ -65,12 +64,10 @@ module.exports = {
 		],
 	},
 	resolve: {
-		// Add `.ts` and `.tsx` as a resolvable extension.
 		extensions: ['.ts', '.tsx', '.js', 'jsx'],
 	},
 	optimization: {
 		minimizer: [
-			// we specify a custom UglifyJsPlugin here to get source maps in production
 			new TerserPlugin({
 				include: /\.min\.js$/,
 				cache: true,
@@ -79,7 +76,7 @@ module.exports = {
 					warnings: false,
 					compress: {
 						warnings: false,
-						unused: true, // tree shaking(export된 모듈 중 사용하지 않는 모듈은 포함하지않음)
+						unused: true,
 					},
 					ecma: 6,
 					mangle: true,

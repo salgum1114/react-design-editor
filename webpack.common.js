@@ -56,7 +56,6 @@ module.exports = {
 		noEmitOnErrors: true,
 	},
 	resolve: {
-		// Add `.ts` and `.tsx` as a resolvable extension.
 		extensions: ['.ts', '.tsx', '.js', 'jsx'],
 	},
 	node: {

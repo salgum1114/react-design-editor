@@ -1,6 +1,6 @@
 {
 	"imagemap": {
-		"imagemap": "이미지맵",
+		"imagemap": "ImageMap",
 		"imagemap-editing-confirm": "이미지맵 내용이 수정되었습니다. 그래도 하시겠습니까?",
 		"imagemap-editor": "이미지맵 편집기",
 		"marker": {
@@ -76,7 +76,7 @@
 		}
 	},
 	"workflow": {
-		"workflow": "워크 플로우",
+		"workflow": "Workflow",
 		"workflow-list": "워크 플로우 목록",
 		"workflow-editor": "워크 플로우 편집기",
 		"workflow-info": "워크 플로우 정보",
@@ -98,7 +98,7 @@
 		"info": "플로우 정보"
 	},
 	"hexgrid": {
-		"hexgrid": "헥사그리드"
+		"hexgrid": "HexGrid"
 	},
 	"action": {
 		"selection": "선택 모드(Q)",
@@ -218,5 +218,8 @@
 	},
 	"placeholder": {
 		"search-node": "Search a node"
+	},
+	"fiber": {
+		"fiber": "FiberCable"
 	}
 }

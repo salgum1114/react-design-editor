@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { NodeObject } from '../components/canvas/objects/Node';
+import { NodeObject } from '../canvas/objects/Node';
 
 export interface IFlowContext {
 	selectedFlowNode: NodeObject;

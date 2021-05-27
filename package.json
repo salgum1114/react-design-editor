@@ -71,6 +71,7 @@
 		"resize-observer-polyfill": "^1.5.1",
 		"store": "^2.0.12",
 		"uuid": "^7.0.3",
+		"uuidv4": "^6.2.8",
 		"warning": "^4.0.3"
 	},
 	"devDependencies": {
@@ -94,6 +95,7 @@
 		"@types/react-helmet": "^5.0.15",
 		"@types/uuid": "^7.0.2",
 		"@types/warning": "^3.0.0",
+		"@types/webpack-env": "^1.16.0",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^8.1.0",
 		"babel-plugin-dynamic-import-webpack": "^1.1.0",

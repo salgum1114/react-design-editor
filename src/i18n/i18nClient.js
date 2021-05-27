@@ -38,4 +38,4 @@ const i18nClient = i18n
 		},
 	});
 
-export default i18nClient;
+export default () => i18nClient;
