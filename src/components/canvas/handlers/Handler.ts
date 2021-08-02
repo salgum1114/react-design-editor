@@ -716,11 +716,17 @@ class Handler implements HandlerOptions {
 		if (obj.type === 'image') {
 			createdObj = this.addImage(newOption);
 		} else if (obj.type === 'group') {
-			// TODO...
-			// Group add function needs to be fixed
-			const objects = this.addGroup(newOption, centered, loaded);
-			const groupOption = Object.assign({}, newOption, { objects, name: 'New Group' });
-			createdObj = this.fabricObjects[obj.type].create(groupOption);
+			// http://fabricjs.com/fabric-intro-part-3
+            const actualGroup = newOption as FabricGroup;
+            const group = new fabric.Group([], actualGroup);
+
+            actualGroup.objects?.forEach(element => {
+              if (this.fabricObjects && element.type)
+                group.add(this.fabricObjects[element.type].create(element));
+            });
+
+            if (this.fabricObjects)
+              createdObj = group as any // making to any so compiler doesn't complain about "dblclick", "superType" ...
 		} else {
 			createdObj = this.fabricObjects[obj.type].create(newOption);
 		}
