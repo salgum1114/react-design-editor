@@ -1,11 +1,10 @@
-import { fabric } from 'fabric';
 import anime from 'animejs';
-
-import Handler from './Handler';
-import { FabricObject, FabricEvent } from '../utils';
-import { VideoObject } from '../objects/Video';
-import { NodeObject } from '../objects/Node';
+import { fabric } from 'fabric';
 import { code } from '../constants';
+import { NodeObject } from '../objects/Node';
+import { VideoObject } from '../objects/Video';
+import { FabricEvent, FabricObject } from '../utils';
+import Handler from './Handler';
 
 /**
  * Event Handler Class
@@ -28,6 +27,7 @@ class EventHandler {
 	 */
 	public initialize() {
 		if (this.handler.editable) {
+			// @ts-ignore
 			this.handler.canvas.on({
 				'object:modified': this.modified,
 				'object:scaling': this.scaling,
@@ -45,6 +45,7 @@ class EventHandler {
 				'selection:updated': this.selection,
 			});
 		} else {
+			// @ts-ignore
 			this.handler.canvas.on({
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,

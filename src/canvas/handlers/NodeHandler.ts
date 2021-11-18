@@ -64,9 +64,9 @@ class NodeHandler {
 					if (fromIndex >= 0 && targetObjects[fromIndex] && toIndex >= 0 && targetObjects[toIndex]) {
 						object.set({
 							opacity: 1,
-						});
-						object.setShadow({
-							color: object.stroke,
+							shadow: {
+								color: object.stroke,
+							},
 						});
 						this.highlightingNode(object, 300);
 						this.handler.canvas.requestRenderAll();
@@ -90,7 +90,7 @@ class NodeHandler {
 				});
 			}
 			if (!object.animating) {
-				object.setShadow({
+				object.set('shadow', {
 					blur: 0,
 				});
 			}
@@ -98,9 +98,9 @@ class NodeHandler {
 		targetObjects.forEach((object: any) => {
 			object.set({
 				opacity: 1,
-			});
-			object.setShadow({
-				color: object.stroke,
+				shadow: {
+					color: object.stroke,
+				},
 			});
 			this.highlightingNode(object, 300);
 			if (object.toPort) {
@@ -126,7 +126,7 @@ class NodeHandler {
 	selectById = (id: string) => {
 		this.handler.objects.forEach((object: FabricObject) => {
 			if (id === object.id) {
-				object.setShadow({
+				object.set('shadow', {
 					color: object.stroke,
 					blur: 50,
 				} as fabric.Shadow);
@@ -134,7 +134,7 @@ class NodeHandler {
 			} else if (id === object.nodeId) {
 				return;
 			}
-			object.setShadow({
+			object.set('shadow', {
 				blur: 0,
 			} as fabric.Shadow);
 		});
@@ -164,7 +164,7 @@ class NodeHandler {
 			}
 			if (!object.animating) {
 				const node = object as FabricObject;
-				node.setShadow({
+				node.set('shadow', {
 					blur: 0,
 				} as fabric.Shadow);
 			}
@@ -185,11 +185,11 @@ class NodeHandler {
 		const lastObject = targetObjects.filter((obj: FabricObject) => obj.id === path[path.length - 1])[0];
 		targetObjects.forEach((object: FabricObject) => {
 			if (lastObject) {
-				object.setShadow({
+				object.set('shadow', {
 					color: lastObject.stroke,
 				} as fabric.Shadow);
 			} else {
-				object.setShadow({
+				object.set('shadow', {
 					color: object.stroke,
 				} as fabric.Shadow);
 			}
@@ -204,11 +204,11 @@ class NodeHandler {
 					const toIndex = targetObjects.findIndex((obj: FabricObject) => obj.id === toNode.id);
 					if (fromIndex >= 0 && targetObjects[fromIndex] && toIndex >= 0 && targetObjects[toIndex]) {
 						if (lastObject) {
-							object.setShadow({
+							object.set('shadow', {
 								color: lastObject.stroke,
 							} as fabric.Shadow);
 						} else {
-							object.setShadow({
+							object.set('shadow', {
 								color: object.stroke,
 							} as fabric.Shadow);
 						}

@@ -107,6 +107,7 @@ const Link = fabric.util.createClass(fabric.Line, {
 			ctx.lineTo(-5, -5);
 		}
 		ctx.closePath();
+		ctx.lineWidth = this.strokeWidth;
 		ctx.fillStyle = this.stroke;
 		ctx.fill();
 		ctx.restore();

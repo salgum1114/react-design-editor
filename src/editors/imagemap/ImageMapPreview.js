@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Button } from 'antd';
 import classnames from 'classnames';
-
-import Icon from '../../components/icon/Icon';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import Canvas from '../../canvas/Canvas';
+import Icon from '../../components/icon/Icon';
 
 class ImageMapPreview extends Component {
 	static propTypes = {

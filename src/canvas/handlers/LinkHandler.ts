@@ -1,10 +1,9 @@
 import warning from 'warning';
-
-import Handler from './Handler';
 import { CurvedLink } from '../objects';
+import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
-import { LinkObject } from '../objects/Link';
+import Handler from './Handler';
 
 export interface LinkOption {
 	/**
@@ -68,7 +67,7 @@ class LinkHandler {
 		const toPort = { left, top };
 		const fromNode = this.handler.objectMap[nodeId];
 		this.handler.activeLine = new CurvedLink(fromNode, fromPort, null, toPort, {
-			strokeWidth: 2,
+			strokeWidth: 4,
 			fill: '#999999',
 			stroke: '#999999',
 			class: 'line',

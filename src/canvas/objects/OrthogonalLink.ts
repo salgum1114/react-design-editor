@@ -20,6 +20,7 @@ const OrthogonalLink = fabric.util.createClass(Link, {
 	_render(ctx: CanvasRenderingContext2D) {
 		// Drawing orthogonal link
 		const { x1, y1, x2, y2 } = this;
+		ctx.lineWidth = this.strokeWidth;
 		ctx.strokeStyle = this.stroke;
 		const fp = { x: (x1 - x2) / 2, y: (y1 - y2) / 2 };
 		const sp = { x: (x2 - x1) / 2, y: (y2 - y1) / 2 };

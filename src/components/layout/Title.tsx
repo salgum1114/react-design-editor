@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
-import { Button, Menu, Tooltip, Modal } from 'antd';
-import i18next from 'i18next';
-
-import { Flex } from '../flex';
-import Icon from '../icon/Icon';
-import { ShortcutHelp } from '../help';
+import { Button, Menu, Modal, Tooltip } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
+import i18next from 'i18next';
+import React, { Component } from 'react';
+import { Flex } from '../flex';
+import { ShortcutHelp } from '../help';
+import Icon from '../icon/Icon';
 
 interface IProps {
 	onChangeEditor: (param: ClickParam) => void;
@@ -103,12 +102,12 @@ class Title extends Component<IProps> {
 							{i18next.t('workflow.workflow')}
 						</Menu.Item>
 						{/* <Menu.Item key="flow" style={{ color: '#fff' }}>{i18n.t('flow.flow')}</Menu.Item> */}
-						<Menu.Item key="hexgrid" style={{ color: '#fff' }}>
+						{/* <Menu.Item key="hexgrid" style={{ color: '#fff' }}>
 							{i18next.t('hexgrid.hexgrid')}
 						</Menu.Item>
 						<Menu.Item key="fiber" style={{ color: '#fff' }}>
 							{i18next.t('fiber.fiber')}
-						</Menu.Item>
+						</Menu.Item> */}
 					</Menu>
 				</Flex>
 				<Flex flex="1" justifyContent="flex-end">

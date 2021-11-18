@@ -1,54 +1,53 @@
 import { fabric } from 'fabric';
-import warning from 'warning';
 import { union } from 'lodash';
-
+import { uuid } from 'uuidv4';
+import warning from 'warning';
 import {
-	ElementHandler,
-	ImageHandler,
-	ChartHandler,
-	CropHandler,
-	AnimationHandler,
-	ContextmenuHandler,
-	TooltipHandler,
-	ZoomHandler,
-	WorkareaHandler,
-	TransactionHandler,
-	LinkHandler,
 	AlignmentHandler,
-	GuidelineHandler,
-	GridHandler,
-	PortHandler,
-	NodeHandler,
-	EventHandler,
-	DrawingHandler,
-	InteractionHandler,
-	ShortcutHandler,
+	AnimationHandler,
+	ChartHandler,
+	ContextmenuHandler,
+	CropHandler,
 	CustomHandler,
+	DrawingHandler,
+	ElementHandler,
+	EventHandler,
+	GridHandler,
+	GuidelineHandler,
+	ImageHandler,
+	InteractionHandler,
+	LinkHandler,
+	NodeHandler,
+	PortHandler,
+	ShortcutHandler,
+	TooltipHandler,
+	TransactionHandler,
+	WorkareaHandler,
+	ZoomHandler,
 } from '.';
+import CanvasObject from '../CanvasObject';
+import { defaults } from '../constants';
+import { LinkObject } from '../objects/Link';
+import { NodeObject } from '../objects/Node';
+import { PortObject } from '../objects/Port';
 import {
-	FabricObject,
-	FabricImage,
-	WorkareaObject,
-	WorkareaOption,
-	InteractionMode,
 	CanvasOption,
+	FabricCanvas,
+	FabricElement,
+	FabricGroup,
+	FabricImage,
+	FabricObject,
+	FabricObjectOption,
+	FabricObjects,
 	GridOption,
 	GuidelineOption,
+	InteractionMode,
 	KeyEvent,
-	FabricObjectOption,
-	FabricElement,
-	FabricCanvas,
-	FabricGroup,
-	FabricObjects,
+	WorkareaObject,
+	WorkareaOption,
 } from '../utils';
-import CanvasObject from '../CanvasObject';
-import { NodeObject } from '../objects/Node';
-import { TransactionEvent } from './TransactionHandler';
-import { LinkObject } from '../objects/Link';
-import { PortObject } from '../objects/Port';
 import { LinkOption } from './LinkHandler';
-import { defaults } from '../constants';
-import { uuid } from 'uuidv4';
+import { TransactionEvent } from './TransactionHandler';
 
 export interface HandlerCallback {
 	/**
@@ -273,7 +272,7 @@ class Handler implements HandlerOptions {
 	public eventHandler: EventHandler;
 	public drawingHandler: DrawingHandler;
 	public shortcutHandler: ShortcutHandler;
-	public handlers: { [key: string]: CustomHandler };
+	public handlers: { [key: string]: CustomHandler } = {};
 
 	public objectMap: Record<string, FabricObject> = {};
 	public objects: FabricObject[];
@@ -581,7 +580,7 @@ class Handler implements HandlerOptions {
 		if (!activeObject) {
 			return;
 		}
-		activeObject.setShadow(option as fabric.Shadow);
+		activeObject.set('shadow', new fabric.Shadow(option));
 		this.canvas.requestRenderAll();
 		const { onModified } = this;
 		if (onModified) {
@@ -753,7 +752,7 @@ class Handler implements HandlerOptions {
 			this.animationHandler.play(createdObj.id);
 		}
 		if (createdObj.superType === 'node') {
-			createdObj.setShadow({
+			createdObj.set('shadow', {
 				color: createdObj.stroke,
 			} as fabric.Shadow);
 		}
@@ -950,6 +949,11 @@ class Handler implements HandlerOptions {
 				activeSelection.canvas = this.canvas;
 				activeSelection.forEachObject((obj: any) => {
 					obj.set('id', uuid());
+					if (obj.superType === 'node') {
+						obj.set('shadow', {
+							color: obj.stroke,
+						} as fabric.Shadow);
+					}
 					this.canvas.add(obj);
 					this.objects = this.getObjects();
 					if (obj.dblclick) {
@@ -963,6 +967,11 @@ class Handler implements HandlerOptions {
 			} else {
 				if (activeObject.id === clonedObj.id) {
 					clonedObj.set('id', uuid());
+				}
+				if (clonedObj.superType === 'node') {
+					clonedObj.set('shadow', {
+						color: clonedObj.stroke,
+					} as fabric.Shadow);
 				}
 				this.canvas.add(clonedObj);
 				this.objects = this.getObjects();
@@ -1304,12 +1313,12 @@ class Handler implements HandlerOptions {
 		}
 		fabric.util.loadImage(url, source => {
 			if (obj.type !== 'image') {
-				obj.setPatternFill(
-					{
+				obj.set(
+					'fill',
+					new fabric.Pattern({
 						source,
 						repeat: 'repeat',
-					},
-					null,
+					}),
 				);
 				obj.setCoords();
 				this.canvas.renderAll();
@@ -1938,6 +1947,7 @@ class Handler implements HandlerOptions {
 	 */
 	public registerHandler = (name: string, handler: typeof CustomHandler) => {
 		this.handlers[name] = new handler(this);
+		return this.handlers[name];
 	};
 }
 

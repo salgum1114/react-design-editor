@@ -4,6 +4,7 @@ import { extendHex, defineGrid } from 'honeycomb-grid';
 import { uuid } from 'uuidv4';
 import { Canvas, Handler } from '../../canvas';
 import { Content } from '../../components/layout';
+import { CanvasInstance } from '../../canvas/Canvas';
 
 const Hexagon = fabric.util.createClass(fabric.Polygon, {
 	type: 'polygon',
@@ -18,7 +19,7 @@ const Hexagon = fabric.util.createClass(fabric.Polygon, {
 });
 
 const HexGridEditor = () => {
-	const canvasRef = useRef<Canvas>();
+	const canvasRef = useRef<CanvasInstance>();
 	const handleLoad = (handler: Handler, canvas: fabric.Canvas) => {
 		const size = 20;
 		const Hex = extendHex({

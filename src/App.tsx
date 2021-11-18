@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-
 import Title from './components/layout/Title';
 import FlowContainer from './containers/FlowContainer';
 import { FiberEditor, FlowEditor, HexGridEditor, ImageMapEditor, WorkflowEditor } from './editors';

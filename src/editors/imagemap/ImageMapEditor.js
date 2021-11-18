@@ -1,22 +1,20 @@
-import React, { Component } from 'react';
-import { Badge, Button, Popconfirm, Menu } from 'antd';
-import debounce from 'lodash/debounce';
+import { Badge, Button, Menu, Popconfirm } from 'antd';
 import i18n from 'i18next';
-
-import ImageMapFooterToolbar from './ImageMapFooterToolbar';
-import ImageMapItems from './ImageMapItems';
-import ImageMapTitle from './ImageMapTitle';
-import ImageMapHeaderToolbar from './ImageMapHeaderToolbar';
-import ImageMapPreview from './ImageMapPreview';
-import ImageMapConfigurations from './ImageMapConfigurations';
-import SandBox from '../../components/sandbox/SandBox';
-
-import '../../libs/fontawesome-5.2.0/css/all.css';
-import '../../styles/index.less';
-import CommonButton from '../../components/common/CommonButton';
+import debounce from 'lodash/debounce';
+import React, { Component } from 'react';
 import Canvas from '../../canvas/Canvas';
 import { code } from '../../canvas/constants';
+import CommonButton from '../../components/common/CommonButton';
 import { Content } from '../../components/layout';
+import SandBox from '../../components/sandbox/SandBox';
+import '../../libs/fontawesome-5.2.0/css/all.css';
+import '../../styles/index.less';
+import ImageMapConfigurations from './ImageMapConfigurations';
+import ImageMapFooterToolbar from './ImageMapFooterToolbar';
+import ImageMapHeaderToolbar from './ImageMapHeaderToolbar';
+import ImageMapItems from './ImageMapItems';
+import ImageMapPreview from './ImageMapPreview';
+import ImageMapTitle from './ImageMapTitle';
 
 const propertiesToInclude = [
 	'id',

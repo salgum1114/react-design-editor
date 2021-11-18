@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useRef } from 'react';
 import { fabric } from 'fabric';
 import ResizeObserver from 'resize-observer-polyfill';
 import Handler, { HandlerOptions } from './handlers/Handler';
@@ -11,10 +11,15 @@ import '../styles/core/tooltip.less';
 import '../styles/core/contextmenu.less';
 import '../styles/fabricjs/fabricjs.less';
 
+export interface CanvasInstance {
+	handler: Handler;
+	canvas: FabricCanvas;
+	container: HTMLDivElement;
+}
+
 export type CanvasProps = HandlerOptions & {
 	responsive?: boolean;
 	style?: React.CSSProperties;
-	ref?: React.RefAttributes<Handler>;
 };
 
 interface IState {
@@ -22,11 +27,13 @@ interface IState {
 	loaded: boolean;
 }
 
-class Canvas extends Component<CanvasProps, IState> {
+class InternalCanvas extends Component<CanvasProps, IState> implements CanvasInstance {
 	public handler: Handler;
 	public canvas: FabricCanvas;
-	public container = React.createRef<HTMLDivElement>();
+	public container: HTMLDivElement;
+	private containerRef = React.createRef<HTMLDivElement>();
 	private resizeObserver: ResizeObserver;
+
 	static defaultProps: CanvasProps = {
 		id: uuid(),
 		editable: true,
@@ -54,13 +61,14 @@ class Canvas extends Component<CanvasProps, IState> {
 		this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
 		this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
 		this.canvas.renderAll();
+		this.container = this.containerRef.current;
 		this.handler = new Handler({
 			id,
 			width,
 			height,
 			editable,
 			canvas: this.canvas,
-			container: this.container.current,
+			container: this.containerRef.current,
 			canvasOption: mergedCanvasOption,
 			...other,
 		});
@@ -128,7 +136,7 @@ class Canvas extends Component<CanvasProps, IState> {
 				this.handleLoad();
 			}
 		});
-		this.resizeObserver.observe(this.container.current);
+		this.resizeObserver.observe(this.containerRef.current);
 	};
 
 	destroyObserver = () => {
@@ -156,7 +164,7 @@ class Canvas extends Component<CanvasProps, IState> {
 		const { id } = this.state;
 		return (
 			<div
-				ref={this.container}
+				ref={this.containerRef}
 				id={id}
 				className="rde-canvas"
 				style={{ width: '100%', height: '100%', ...style }}
@@ -166,5 +174,15 @@ class Canvas extends Component<CanvasProps, IState> {
 		);
 	}
 }
+
+const Canvas: React.FC<CanvasProps> = React.forwardRef<CanvasInstance, CanvasProps>((props, ref) => {
+	const canvasRef = useRef<InternalCanvas>();
+	React.useImperativeHandle(ref, () => ({
+		handler: canvasRef.current.handler,
+		canvas: canvasRef.current.canvas,
+		container: canvasRef.current.container,
+	}));
+	return <InternalCanvas ref={canvasRef} {...props} />;
+});
 
 export default Canvas;

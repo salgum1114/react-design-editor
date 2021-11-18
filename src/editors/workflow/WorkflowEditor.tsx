@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import i18n from 'i18next';
 import { Popconfirm, message } from 'antd';
 import WorkflowTitle from './WorkflowTitle';
-import Canvas from '../../canvas/Canvas';
+import Canvas, { CanvasInstance } from '../../canvas/Canvas';
 import WorkflowItems from './WorkflowItems';
 import WorkflowConfigurations from './WorkflowConfigurations';
 import WorkflowNodeConfigurations from './WorkflowNodeConfigurations';
@@ -34,7 +34,7 @@ class WorkflowEditor extends Component {
 		editing: false,
 	};
 
-	canvasRef: Canvas;
+	canvasRef: CanvasInstance;
 	nodeConfigurationRef: any;
 	container: any;
 

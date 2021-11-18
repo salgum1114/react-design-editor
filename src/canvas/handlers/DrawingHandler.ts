@@ -1,9 +1,8 @@
 import { fabric } from 'fabric';
-
-import Handler from './Handler';
-import { FabricEvent, FabricObject } from '../utils';
-import { Arrow, Line } from '../objects';
 import { uuid } from 'uuidv4';
+import { Arrow, Line } from '../objects';
+import { FabricEvent, FabricObject } from '../utils';
+import Handler from './Handler';
 
 class DrawingHandler {
 	handler: Handler;
@@ -39,7 +38,7 @@ class DrawingHandler {
 			const { e, absolutePointer } = opt;
 			const { x, y } = absolutePointer;
 			const circle = new fabric.Circle({
-				radius: 3,
+				radius: 1,
 				fill: '#ffffff',
 				stroke: '#333333',
 				strokeWidth: 0.5,
@@ -62,7 +61,7 @@ class DrawingHandler {
 			}
 			const points = [x, y, x, y];
 			const line = new fabric.Line(points, {
-				strokeWidth: 2,
+				strokeWidth: 1,
 				fill: '#999999',
 				stroke: '#999999',
 				originX: 'center',
@@ -136,7 +135,7 @@ class DrawingHandler {
 				points,
 				type: 'polygon',
 				stroke: 'rgba(0, 0, 0, 1)',
-				strokeWidth: 3,
+				strokeWidth: 1,
 				fill: 'rgba(0, 0, 0, 0.25)',
 				opacity: 1,
 				objectCaching: !this.handler.editable,

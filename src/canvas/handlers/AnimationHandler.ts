@@ -1,5 +1,4 @@
 import anime from 'animejs';
-
 import { Handler } from '.';
 import { FabricObject } from '../utils';
 
@@ -168,7 +167,7 @@ class AnimationHandler {
 				fill: obj.originFill,
 				stroke: obj.originStroke,
 				originFill: null,
-				origniStroke: null,
+				originStroke: null,
 			});
 		} else {
 			console.warn('Not supported type.');
@@ -202,16 +201,19 @@ class AnimationHandler {
 				});
 				this.handler.canvas.requestRenderAll();
 			},
-			update: (e: any) => {
+			update: (instance: anime.AnimeInstance) => {
 				if (type === 'flash') {
 					// I don't know why it works. Magic code...
-					const fill = e.animations[0].currentValue;
-					const stroke = e.animations[1].currentValue;
+					const fill = instance.animations[0].currentValue;
+					const stroke = instance.animations[1].currentValue;
 					obj.set('fill', '');
 					obj.set('fill', fill);
 					obj.set('stroke', stroke);
 				} else if (type === 'rotation') {
-					const angle = e.animations[0].currentValue;
+					let angle = instance.animations[0].currentValue as string | number;
+					if (typeof angle === 'string') {
+						angle = parseInt(angle, 10);
+					}
 					obj.rotate(angle);
 					this.handler.canvas.requestRenderAll();
 					return;
