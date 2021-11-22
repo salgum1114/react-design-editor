@@ -41,7 +41,7 @@
 	"peerDependencies": {
 		"animejs": "^3.0.0",
 		"fabric": "^3.4.0",
-		"react": "^16.4.1",
+		"react": "^16.14.0",
 		"react-dom": "^16.14.0",
 		"react-dom-factories": "^1.0.2"
 	},
