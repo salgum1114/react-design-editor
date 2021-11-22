@@ -11,19 +11,24 @@ export interface SvgOption extends FabricObjectOption {
 const Svg = fabric.util.createClass(fabric.Group, {
 	type: 'svg',
 	initialize(option: SvgOption = {}) {
-		const { svg, loadType } = option;
 		this.callSuper('initialize', [], option);
-		this.loadSvg(svg, loadType);
+		this.loadSvg(option);
 	},
 	addSvgElements(objects: FabricObject[], options: any, path: string) {
 		const createdObj = fabric.util.groupSVGElements(objects, options, path) as SvgObject;
 		this.set(options);
 		if (createdObj.getObjects) {
-			(createdObj as FabricGroup).getObjects().forEach(obj => this.add(obj));
+			(createdObj as FabricGroup).getObjects().forEach(obj => {
+				this.add(obj);
+				obj.set('fill', options.fill);
+				obj.set('stroke', options.stroke);
+			});
 		} else {
 			createdObj.set({
 				originX: 'center',
 				originY: 'center',
+				fill: options.fill,
+				stroke: options.stroke,
 			});
 			this.add(createdObj);
 		}
@@ -32,15 +37,16 @@ const Svg = fabric.util.createClass(fabric.Group, {
 			this.canvas.requestRenderAll();
 		}
 	},
-	loadSvg(svg: string, loadType: 'file' | 'svg') {
+	loadSvg(option: SvgOption) {
+		const { svg, loadType, fill, stroke } = option;
 		return new Promise<SvgObject>(resolve => {
 			if (loadType === 'svg') {
 				fabric.loadSVGFromString(svg, (objects, options) => {
-					resolve(this.addSvgElements(objects, options, svg));
+					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, svg));
 				});
 			} else {
 				fabric.loadSVGFromURL(svg, (objects, options) => {
-					resolve(this.addSvgElements(objects, options, svg));
+					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, svg));
 				});
 			}
 		});
