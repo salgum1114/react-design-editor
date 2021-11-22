@@ -13,8 +13,11 @@ const plugins = [
 module.exports = {
 	mode: 'production',
 	entry: {
-		[pkg.name]: ['@babel/polyfill', path.resolve(__dirname, 'src/canvas/index.tsx')],
-		[`${pkg.name}.min`]: ['@babel/polyfill', path.resolve(__dirname, 'src/canvas/index.tsx')],
+		[pkg.name]: ['core-js/stable', path.resolve(__dirname, 'src/canvas/index.tsx')],
+		[`${pkg.name}.min`]: ['core-js/stable', path.resolve(__dirname, 'src/canvas/index.tsx')],
+	},
+	externals: {
+		react: 'react',
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -32,16 +35,34 @@ module.exports = {
 				include: path.resolve(__dirname, 'src'),
 				options: {
 					presets: [
-						['@babel/preset-env', { modules: false }],
+						[
+							'@babel/preset-env',
+							{
+								modules: false,
+								useBuiltIns: 'usage',
+								corejs: 3,
+								targets: { browsers: ['last 5 versions', 'ie >= 11'], node: 'current' },
+							},
+						],
 						'@babel/preset-react',
-						'@babel/preset-typescript',
+						[
+							'@babel/preset-typescript',
+							{
+								isTSX: true,
+								allExtensions: true,
+								allowDeclareFields: true,
+							},
+						],
 					],
 					plugins: [
 						'@babel/plugin-transform-runtime',
-						'@babel/plugin-syntax-dynamic-import',
+						['@babel/plugin-transform-typescript', { allowDeclareFields: true }],
+						['@babel/plugin-proposal-class-properties', { loose: true }],
+						['@babel/plugin-proposal-private-methods', { loose: true }],
 						['@babel/plugin-proposal-decorators', { legacy: true }],
+						['@babel/plugin-proposal-private-property-in-object', { loose: true }],
+						'@babel/plugin-syntax-dynamic-import',
 						'@babel/plugin-syntax-async-generators',
-						['@babel/plugin-proposal-class-properties', { loose: false }],
 						'@babel/plugin-proposal-object-rest-spread',
 						'dynamic-import-webpack',
 					],
@@ -72,17 +93,17 @@ module.exports = {
 				include: /\.min\.js$/,
 				cache: true,
 				parallel: true,
+				sourceMap: false,
 				terserOptions: {
 					warnings: false,
 					compress: {
 						warnings: false,
-						unused: true,
+						unused: true, // tree shaking(export된 모듈 중 사용하지 않는 모듈은 포함하지않음)
 					},
 					ecma: 6,
 					mangle: true,
 					unused: true,
 				},
-				sourceMap: true,
 			}),
 		],
 	},

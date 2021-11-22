@@ -29,18 +29,13 @@ class ImageMapPreview extends Component {
 							display: 'flex',
 							flex: '1',
 							height: '100%',
-							background: 'linear-gradient(to bottom left, #50d6ff, #0d9bff)',
 						}}
 					>
 						<Canvas
 							editable={false}
 							className="rde-canvas"
 							canvasOption={{
-								backgroundColor: 'transparent',
 								perPixelTargetFind: true,
-							}}
-							workareaOption={{
-								backgroundColor: 'transparent',
 							}}
 							keyEvent={{
 								grab: false,
