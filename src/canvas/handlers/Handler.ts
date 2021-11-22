@@ -421,7 +421,9 @@ class Handler implements HandlerOptions {
 			return;
 		}
 		if ((activeObject.type === 'svg' && key === 'fill') || key === 'stroke') {
+			activeObject.set(key, value);
 			(activeObject as FabricGroup)._objects.forEach(obj => obj.set(key, value));
+			activeObject.setCoords();
 		} else {
 			activeObject.set(key, value);
 			activeObject.setCoords();

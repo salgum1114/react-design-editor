@@ -2,7 +2,7 @@ import { Badge, Button, Menu, Popconfirm } from 'antd';
 import i18n from 'i18next';
 import debounce from 'lodash/debounce';
 import React, { Component } from 'react';
-import { Canvas } from '../../../dist/react-design-editor';
+import Canvas from '../../canvas/Canvas';
 import CommonButton from '../../components/common/CommonButton';
 import { Content } from '../../components/layout';
 import SandBox from '../../components/sandbox/SandBox';
