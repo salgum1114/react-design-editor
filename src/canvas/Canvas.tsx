@@ -1,15 +1,14 @@
-import React, { Component, useRef } from 'react';
 import { fabric } from 'fabric';
+import React, { Component, useRef } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
-import Handler, { HandlerOptions } from './handlers/Handler';
-import { FabricCanvas } from './utils';
-import { defaults } from './constants';
 import { uuid } from 'uuidv4';
-
-import '../styles/core/canvas.less';
-import '../styles/core/tooltip.less';
-import '../styles/core/contextmenu.less';
-import '../styles/fabricjs/fabricjs.less';
+import { defaults } from './constants';
+import Handler, { HandlerOptions } from './handlers/Handler';
+import './styles/canvas.less';
+import './styles/contextmenu.less';
+import './styles/fabricjs.less';
+import './styles/tooltip.less';
+import { FabricCanvas } from './utils';
 
 export interface CanvasInstance {
 	handler: Handler;

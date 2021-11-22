@@ -2,7 +2,7 @@ import { Badge, Button, Menu, Popconfirm } from 'antd';
 import i18n from 'i18next';
 import debounce from 'lodash/debounce';
 import React, { Component } from 'react';
-import Canvas from '../../canvas/Canvas';
+import { Canvas } from '../../../dist/react-design-editor';
 import CommonButton from '../../components/common/CommonButton';
 import { Content } from '../../components/layout';
 import SandBox from '../../components/sandbox/SandBox';
@@ -730,7 +730,6 @@ class ImageMapEditor extends Component {
 							this.container = c;
 						}}
 						className="rde-editor-canvas"
-						style={{ background: 'linear-gradient(to bottom left, #50d6ff, #0d9bff)' }}
 					>
 						<Canvas
 							ref={c => {
@@ -756,12 +755,8 @@ class ImageMapEditor extends Component {
 							keyEvent={{
 								transaction: true,
 							}}
-							workareaOption={{
-								backgroundColor: 'transparent',
-							}}
 							canvasOption={{
 								selectionColor: 'rgba(8, 151, 156, 0.3)',
-								backgroundColor: 'transparent',
 							}}
 						/>
 					</div>

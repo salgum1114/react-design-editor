@@ -28,7 +28,7 @@ module.exports = merge(baseConfig, {
 	mode: 'production',
 	entry: {
 		vendor: ['react', 'react-dom', 'lodash', 'fabric', 'antd'],
-		app: ['@babel/polyfill', path.resolve(__dirname, 'src/index.tsx')],
+		app: ['core-js/stable', path.resolve(__dirname, 'src/index.tsx')],
 	},
 	output: {
 		path: path.resolve(__dirname, 'docs'),
@@ -41,17 +41,17 @@ module.exports = merge(baseConfig, {
 			new TerserPlugin({
 				cache: true,
 				parallel: true,
+				sourceMap: false,
 				terserOptions: {
 					warnings: false,
 					compress: {
 						warnings: false,
-						unused: true,
+						unused: true, // tree shaking(export된 모듈 중 사용하지 않는 모듈은 포함하지않음)
 					},
 					ecma: 6,
 					mangle: true,
 					unused: true,
 				},
-				sourceMap: true,
 			}),
 		],
 	},

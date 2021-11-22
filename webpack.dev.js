@@ -11,8 +11,8 @@ module.exports = merge(baseConfig, {
 	mode: 'development',
 	devtool: 'inline-source-map',
 	entry: {
-		bundle: [
-			'@babel/polyfill',
+		app: [
+			'core-js/stable',
 			'react-hot-loader/patch',
 			`webpack-dev-server/client?http://${host}:${devPort}`,
 			'webpack/hot/only-dev-server',
