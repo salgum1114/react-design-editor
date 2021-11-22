@@ -16,7 +16,7 @@ module.exports = merge(baseConfig, {
 			'react-hot-loader/patch',
 			`webpack-dev-server/client?http://${host}:${devPort}`,
 			'webpack/hot/only-dev-server',
-			path.resolve(__dirname, 'src/index.js'),
+			path.resolve(__dirname, 'src/index.tsx'),
 		],
 	},
 	output: {
@@ -43,11 +43,11 @@ module.exports = merge(baseConfig, {
 			},
 		},
 		headers: {
-			'X-Frame-Options': 'sameorigin', // used iframe
+			'X-Frame-Options': 'sameorigin',
 		},
 	},
 	plugins: [
-		new webpack.HotModuleReplacementPlugin(), // HMR을 사용하기 위한 플러그인
+		new webpack.HotModuleReplacementPlugin(),
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
 			title: 'React Design Editor',

@@ -1,184 +1,224 @@
 {
-    "imagemap": {
-        "imagemap": "Image Map",
-        "imagemap-editing-confirm": "The image map contents have been modified. Do you want to do that anyway?",
-        "imagemap-editor": "Image Map Editor",
-        "marker": {
-            "choose-icon": "Choose icon from Fontawesome",
-            "search-icon": "Search {{length}} icons for..."
-        },
-        "link": {
-            "link-enabled": "Link Enabled"
-        },
-        "tooltip": {
-            "tooltip-enabled": "Tooltip Enabled"
-        },
-        "style": {
-            "fill-color": "Fill Color",
-            "stroke-color": "Stroke Color",
-            "stroke-width": "Stroke Width",
-            "rx": "Radius x",
-            "ry": "Radius y"
-        },
-        "shadow": {
-            "shadow-enabled": "Shadow Enabled",
-            "offset-x": "Offset X",
-            "offset-y": "Offset Y"
-        },
-        "animation": {
-            "animation-type": "Animation Type",
-            "none": "None",
-            "fade": "Fade",
-            "bounce": "Bounce",
-            "shake": "Shake",
-            "scaling": "Scaling",
-            "rotation": "Rotation",
-            "flash": "Flash",
-            "auto-play": "Auto Play",
-            "playback": "Playback",
-            "bounce-type": "Bounce Type",
-            "shake-type": "Shake Type"
-        },
-        "trigger": {
-            "trigger-enabled": "Trigger Enabled"
-        },
-        "image": {
-            "image-load-type": "Image Load Type",
-            "file-upload": "File Upload",
-            "image-url": "Image URL"
-        },
-        "svg": {
-            "add-svg": "Add SVG"
-        },
-        "filter": {
-            "grayscale": "Grayscale",
-            "invert": "Invert",
-            "sepia": "Sepia",
-            "brownie": "Brownie",
-            "vintage": "Vintage",
-            "blackwhite": "Black/White",
-            "technicolor": "Technicolor",
-            "polaroid": "Polaroid",
-            "gamma": "Gamma",
-            "gamma-color": "Gamma Color",
-            "brightness": "Brightness",
-            "contrast": "Contrast",
-            "saturation": "Saturation",
-            "sharpen": "Sharpen",
-            "emboss": "Emboss",
-            "hue": "Hue",
-            "noise": "Noise",
-            "pixelate": "Pixelate",
-            "blur": "Blur"
-        },
-        "element": {
-            "mouse-hover-enabled": "Hover enabled"
-        }
-    },
-    "workflow": {
-        "workflow": "Workflow",
-        "workflow-list": "Workflow List",
-        "workflow-editor": "Workflow Editor",
-        "workflow-info": "Workflow Info",
-        "workflow-editing-confirm": "Workflow content has been modified. Do you want to do that anyway?",
-        "node-configuration": "Node Configuration",
-        "variables": "Global Parameters",
-        "variables-add": "Add Global Parameters",
-        "variables-modify": "Modify Global Parameters",
-        "virtual-button-execute-failed": "{{name}} execute failed",
-        "virtual-button-execute-success": "{{name}} execute success",
-        "validate-fields-error": "A node with the wrong setting exists.",
-        "node-name-required": "Please input node name",
-        "node-description-required": "Please input node description"
-    },
-    "action": {
-        "selection": "Selection mode(Q)",
-        "grab": "Grab mode(W or Alt + Drag)",
-        "zoom-in": "Zoom in",
-        "zoom-out": "Zoom out",
-        "one-to-one": "1:1",
-        "fit": "Scale to fit",
-        "preview": "Preview",
-        "canvas-list": "Canvas list",
-        "bring-forward": "Bring forward",
-        "send-backwards": "Send backwards",
-        "bring-to-front": "Bring to front",
-        "send-to-back": "Send to back",
-        "align-left": "Align left",
-        "align-center": "Align center",
-        "align-right": "Align right",
-        "object-group": "Group",
-        "object-ungroup": "Ungroup",
-        "crop": "Crop image",
-        "crop-save": "Save crop image",
-        "crop-cancel": "Cancel crop image",
-        "image-save": "Save Image",
-        "clone": "Clone",
-        "delete": "Delete",
-        "save": "Save",
-        "back": "Back",
-        "upload": "Upload",
-        "download": "Download",
-        "ok": "Ok",
-        "cancel": "Cancel",
-        "search-list": "Search list",
-        "add": "Add",
-        "modify": "Modify",
-        "all-delete": "All delete",
-        "clear": "Clear",
-        "start": "Start",
-        "pause": "Pause",
-        "stop": "Stop",
-        "execute": "Execute",
-        "go-github": "Go Github!!",
-        "go-docs": "Go Documents!!"
-    },
-    "common": {
-        "name": "Name",
-        "description": "Description",
-        "width": "Width",
-        "height": "Height",
-        "icon": "Icon",
-        "locked": "Lock",
-        "visible": "Visible",
-        "left": "Left",
-        "top": "Top",
-        "key": "Key",
-        "type": "Type",
-        "value": "Value",
-        "title": "Title",
-        "file": "File",
-        "image": "Image",
-        "enabled": "Enabled",
-        "angle": "Angle",
-        "state": "State",
-        "url": "URL",
-        "current": "Current",
-        "new": "New",
-        "color": "Color",
-        "blur": "Blur",
-        "loop": "Loop",
-        "delay": "Delay",
-        "duration": "Duration",
-        "offset": "Offset",
-        "horizontal": "Horizontal",
-        "vertical": "Vertical",
-        "opacity": "Opacity",
-        "code": "Code",
-        "layout": "Layout",
-        "fixed": "Fixed",
-        "responsive": "Responsive",
-        "fullscreen": "Fullscreen",
-        "src": "Src",
-        "svg": "SVG"
-    },
-    "color": {
-        "red": "Red",
-        "green": "Green",
-        "blue": "Blue"
-    },
-    "validation": {
-        "enter-property": "Please enter {{arg}}.",
-        "already-property": "Already exist {{arg}}."
-    }
+	"imagemap": {
+		"imagemap": "Image Map",
+		"imagemap-editing-confirm": "The image map contents have been modified. Do you want to do that anyway?",
+		"imagemap-editor": "Image Map Editor",
+		"marker": {
+			"choose-icon": "Choose icon from Fontawesome",
+			"search-icon": "Search {{length}} icons for..."
+		},
+		"link": {
+			"link-enabled": "Link Enabled"
+		},
+		"tooltip": {
+			"tooltip-enabled": "Tooltip Enabled"
+		},
+		"style": {
+			"fill-color": "Fill Color",
+			"stroke-color": "Stroke Color",
+			"stroke-width": "Stroke Width",
+			"rx": "Radius x",
+			"ry": "Radius y"
+		},
+		"shadow": {
+			"shadow-enabled": "Shadow Enabled",
+			"offset-x": "Offset X",
+			"offset-y": "Offset Y"
+		},
+		"animation": {
+			"animation-type": "Animation Type",
+			"none": "None",
+			"fade": "Fade",
+			"bounce": "Bounce",
+			"shake": "Shake",
+			"scaling": "Scaling",
+			"rotation": "Rotation",
+			"flash": "Flash",
+			"auto-play": "Auto Play",
+			"playback": "Playback",
+			"bounce-type": "Bounce Type",
+			"shake-type": "Shake Type"
+		},
+		"trigger": {
+			"trigger-enabled": "Trigger Enabled"
+		},
+		"image": {
+			"image-load-type": "Image Load Type",
+			"file-upload": "File Upload",
+			"image-url": "Image URL"
+		},
+		"svg": {
+			"add-svg": "Add SVG"
+		},
+		"filter": {
+			"grayscale": "Grayscale",
+			"invert": "Invert",
+			"sepia": "Sepia",
+			"brownie": "Brownie",
+			"vintage": "Vintage",
+			"blackwhite": "Black/White",
+			"technicolor": "Technicolor",
+			"polaroid": "Polaroid",
+			"gamma": "Gamma",
+			"gamma-color": "Gamma Color",
+			"brightness": "Brightness",
+			"contrast": "Contrast",
+			"saturation": "Saturation",
+			"sharpen": "Sharpen",
+			"emboss": "Emboss",
+			"hue": "Hue",
+			"noise": "Noise",
+			"pixelate": "Pixelate",
+			"blur": "Blur"
+		},
+		"element": {
+			"mouse-hover-enabled": "Hover enabled"
+		}
+	},
+	"workflow": {
+		"workflow": "Workflow",
+		"workflow-list": "Workflow List",
+		"workflow-editor": "Workflow Editor",
+		"workflow-info": "Workflow Info",
+		"workflow-editing-confirm": "Workflow content has been modified. Do you want to do that anyway?",
+		"node-configuration": "Node Configuration",
+		"variables": "Global Parameters",
+		"variables-add": "Add Global Parameters",
+		"variables-modify": "Modify Global Parameters",
+		"virtual-button-execute-failed": "{{name}} execute failed",
+		"virtual-button-execute-success": "{{name}} execute success",
+		"validate-fields-error": "A node with the wrong setting exists.",
+		"node-name-required": "Please input node name",
+		"node-description-required": "Please input node description"
+	},
+	"flow": {
+		"flow": "플로우",
+		"list": "플로우 목록",
+		"editor": "플로우 에디터",
+		"info": "플로우 정보"
+	},
+	"hexgrid": {
+		"hexgrid": "HexGrid"
+	},
+	"action": {
+		"selection": "Selection mode(Q)",
+		"grab": "Grab mode(W or Alt + Drag)",
+		"zoom-in": "Zoom in",
+		"zoom-out": "Zoom out",
+		"one-to-one": "1:1",
+		"fit": "Scale to fit",
+		"preview": "Preview",
+		"canvas-list": "Canvas list",
+		"bring-forward": "Bring forward",
+		"send-backwards": "Send backwards",
+		"bring-to-front": "Bring to front",
+		"send-to-back": "Send to back",
+		"align-left": "Align left",
+		"align-center": "Align center",
+		"align-right": "Align right",
+		"object-group": "Group",
+		"object-ungroup": "Ungroup",
+		"crop": "Crop image",
+		"crop-save": "Save crop image",
+		"crop-cancel": "Cancel crop image",
+		"image-save": "Save Image",
+		"clone": "Clone",
+		"delete": "Delete",
+		"save": "Save",
+		"back": "Back",
+		"upload": "Upload",
+		"download": "Download",
+		"ok": "Ok",
+		"cancel": "Cancel",
+		"search-list": "Search list",
+		"add": "Add",
+		"modify": "Modify",
+		"all-delete": "All delete",
+		"clear": "Clear",
+		"start": "Start",
+		"pause": "Pause",
+		"stop": "Stop",
+		"execute": "Execute",
+		"go-github": "Go Github!!",
+		"go-docs": "Go Documents!!"
+	},
+	"common": {
+		"name": "Name",
+		"description": "Description",
+		"width": "Width",
+		"height": "Height",
+		"icon": "Icon",
+		"locked": "Lock",
+		"visible": "Visible",
+		"left": "Left",
+		"top": "Top",
+		"key": "Key",
+		"type": "Type",
+		"value": "Value",
+		"title": "Title",
+		"file": "File",
+		"image": "Image",
+		"enabled": "Enabled",
+		"angle": "Angle",
+		"state": "State",
+		"url": "URL",
+		"current": "Current",
+		"new": "New",
+		"color": "Color",
+		"blur": "Blur",
+		"loop": "Loop",
+		"delay": "Delay",
+		"duration": "Duration",
+		"offset": "Offset",
+		"horizontal": "Horizontal",
+		"vertical": "Vertical",
+		"opacity": "Opacity",
+		"code": "Code",
+		"layout": "Layout",
+		"fixed": "Fixed",
+		"responsive": "Responsive",
+		"fullscreen": "Fullscreen",
+		"src": "Src",
+		"svg": "SVG"
+	},
+	"color": {
+		"red": "Red",
+		"green": "Green",
+		"blue": "Blue"
+	},
+	"validation": {
+		"enter-property": "Please enter {{arg}}.",
+		"already-property": "Already exist {{arg}}."
+	},
+	"shortcut": {
+		"q": "Selection",
+		"w": "Grab",
+		"plus": "Zoom In",
+		"minus": "Zoom Out",
+		"h": "Shortcut Help",
+		"escape": "Deselect",
+		"arrow-up": "Move Up",
+		"arrow-down": "Move Down",
+		"arrow-left": "Move Left",
+		"arrow-right": "Move Right",
+		"delete": "Delete",
+		"ctrl-a": "Select All",
+		"ctrl-c": "Copy",
+		"ctrl-v": "Paste",
+		"ctrl-x": "Cut",
+		"ctrl-z": "Undo",
+		"ctrl-y": "Redo",
+		"alt-mouse-left": "Grab",
+		"shfit-mouse-left": "Multi Selection",
+		"mouse-left": "Select",
+		"mouse-right": "Context Memu",
+		"o": "Zoom 1:1",
+		"p": "Zoom Fit"
+	},
+	"placeholder": {
+		"search-node": "Search a node"
+	},
+	"fiber": {
+		"fiber": "FiberCable"
+	}
 }
