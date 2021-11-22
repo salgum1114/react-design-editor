@@ -49,3 +49,15 @@ declare global {
 		adsbygoogle: any;
 	}
 }
+
+declare class MediaElementPlayer {
+	constructor(
+		id: string,
+		options: {
+			pauseOtherPlayers: boolean;
+			videoWidth: string;
+			videoHeight: string;
+			success: (mediaeElement: any, originalNode: any, instance: any) => void;
+		},
+	);
+}

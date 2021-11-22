@@ -42,6 +42,9 @@ class ImageMapPreview extends Component {
 							workareaOption={{
 								backgroundColor: 'transparent',
 							}}
+							keyEvent={{
+								grab: false,
+							}}
 							onLoad={handler => handler.importJSON(objects)}
 							onTooltip={onTooltip}
 							onClick={onClick}
