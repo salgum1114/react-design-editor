@@ -20,16 +20,28 @@ const Svg = fabric.util.createClass(fabric.Group, {
 		if (createdObj.getObjects) {
 			(createdObj as FabricGroup).getObjects().forEach(obj => {
 				this.add(obj);
-				obj.set('fill', options.fill);
-				obj.set('stroke', options.stroke);
+				if (options.fill) {
+					obj.set('fill', options.fill);
+				}
+				if (options.stroke) {
+					obj.set('stroke', options.stroke);
+				}
 			});
 		} else {
 			createdObj.set({
 				originX: 'center',
 				originY: 'center',
-				fill: options.fill,
-				stroke: options.stroke,
 			});
+			if (options.fill) {
+				createdObj.set({
+					fill: options.fill,
+				});
+			}
+			if (options.stroke) {
+				createdObj.set({
+					stroke: options.stroke,
+				});
+			}
 			this.add(createdObj);
 		}
 		this.setCoords();
@@ -39,6 +51,7 @@ const Svg = fabric.util.createClass(fabric.Group, {
 	},
 	loadSvg(option: SvgOption) {
 		const { svg, loadType, fill, stroke } = option;
+		console.log(option);
 		return new Promise<SvgObject>(resolve => {
 			if (loadType === 'svg') {
 				fabric.loadSVGFromString(svg, (objects, options) => {
