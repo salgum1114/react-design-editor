@@ -3,18 +3,6 @@ import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 import { FabricElement, toObject } from '../utils';
 
-declare class MediaElementPlayer {
-	constructor(
-		id: string,
-		options: {
-			pauseOtherPlayers: boolean;
-			videoWidth: string;
-			videoHeight: string;
-			success: (mediaeElement: any, originalNode: any, instance: any) => void;
-		},
-	);
-}
-
 export interface VideoObject extends FabricElement {
 	setSource: (source: string | File) => void;
 	setFile: (file: File) => void;
