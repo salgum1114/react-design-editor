@@ -1,7 +1,6 @@
-import { fabric } from 'fabric';
 import * as echarts from 'echarts';
-
-import { toObject, FabricElement } from '../utils';
+import { fabric } from 'fabric';
+import { FabricElement, toObject } from '../utils';
 
 export interface ChartObject extends FabricElement {
 	setSource: (source: echarts.EChartOption) => void;
@@ -107,6 +106,7 @@ Chart.fromObject = (options: ChartObject, callback: (obj: ChartObject) => any) =
 	return callback(new Chart(options.chartOption, options));
 };
 
+// @ts-ignore
 window.fabric.Chart = Chart;
 
 export default Chart;

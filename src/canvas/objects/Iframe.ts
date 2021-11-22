@@ -1,6 +1,5 @@
 import { fabric } from 'fabric';
-
-import { toObject, FabricElement } from '../utils';
+import { FabricElement, toObject } from '../utils';
 
 export interface IframeObject extends FabricElement {
 	setSource: (source: string) => void;
@@ -74,6 +73,7 @@ Iframe.fromObject = (options: IframeObject, callback: (obj: IframeObject) => any
 	return callback(new Iframe(options.src, options));
 };
 
+// @ts-ignore
 window.fabric.Iframe = Iframe;
 
 export default Iframe;

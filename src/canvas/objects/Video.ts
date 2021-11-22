@@ -1,6 +1,7 @@
 import { fabric } from 'fabric';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
+import { FabricElement, toObject } from '../utils';
 
 declare class MediaElementPlayer {
 	constructor(
@@ -13,8 +14,6 @@ declare class MediaElementPlayer {
 		},
 	);
 }
-
-import { toObject, FabricElement } from '../utils';
 
 export interface VideoObject extends FabricElement {
 	setSource: (source: string | File) => void;
@@ -136,6 +135,7 @@ Video.fromObject = (options: VideoObject, callback: (obj: VideoObject) => any) =
 	return callback(new Video(options.src || options.file, options));
 };
 
+// @ts-ignore
 window.fabric.Video = Video;
 
 export default Video;

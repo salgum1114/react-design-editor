@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
+import { message, Popconfirm } from 'antd';
 import i18n from 'i18next';
-import { Popconfirm, message } from 'antd';
-import WorkflowTitle from './WorkflowTitle';
+import React, { Component } from 'react';
 import Canvas, { CanvasInstance } from '../../canvas/Canvas';
-import WorkflowItems from './WorkflowItems';
-import WorkflowConfigurations from './WorkflowConfigurations';
-import WorkflowNodeConfigurations from './WorkflowNodeConfigurations';
-import WorkflowToolbar from './WorkflowToolbar';
-import Nodes from './node';
-import Links from './link';
-import { getNode, getEllipsis } from './configuration/NodeConfiguration';
+import { CommonButton } from '../../components/common';
+import { Content } from '../../components/layout';
+import { getEllipsis, getNode } from './configuration/NodeConfiguration';
 import { OUT_PORT_TYPE } from './constant/constants';
 import NodeConfigurationError from './error/NodeConfigurationError';
-import { Content } from '../../components/layout';
-import { CommonButton } from '../../components/common';
+import Links from './link';
+import Nodes from './node';
+import WorkflowConfigurations from './WorkflowConfigurations';
+import WorkflowItems from './WorkflowItems';
+import WorkflowNodeConfigurations from './WorkflowNodeConfigurations';
+import WorkflowTitle from './WorkflowTitle';
+import WorkflowToolbar from './WorkflowToolbar';
 
 interface IState {
 	loading: boolean;
@@ -64,6 +64,7 @@ class WorkflowEditor extends Component {
 			}
 			if (target.superType === 'node') {
 				this.canvasRef.handler.select(target);
+				this.canvasRef.handler.nodeHandler.highlightingNode(target);
 			}
 		},
 		onSelect: target => {

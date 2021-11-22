@@ -758,7 +758,7 @@ class EventHandler {
 		if (!Object.keys(keyEvent).length) {
 			return;
 		}
-		const { clipboard } = keyEvent;
+		const { clipboard, grab } = keyEvent;
 		if (this.handler.interactionHandler.isDrawingMode()) {
 			if (this.handler.shortcutHandler.isEscape(e)) {
 				if (this.handler.interactionMode === 'polygon') {
@@ -773,12 +773,12 @@ class EventHandler {
 			}
 			return;
 		}
-		if (this.handler.shortcutHandler.isW(e)) {
+		if (this.handler.shortcutHandler.isW(e) && grab) {
 			this.code = e.code;
 			this.handler.interactionHandler.grab();
 			return;
 		}
-		if (e.altKey && editable) {
+		if (e.altKey && editable && grab) {
 			this.handler.interactionHandler.grab();
 			return;
 		}

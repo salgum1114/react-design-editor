@@ -173,6 +173,12 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
 	 * @type {number}
 	 */
 	rotation?: number;
+	/**
+	 * Whether it can be clicked
+	 *
+	 * @type {boolean}
+	 */
+	clickable?: boolean;
 	[key: string]: any;
 };
 
@@ -385,6 +391,7 @@ export interface KeyEvent {
 	 * @type {boolean}
 	 */
 	cut?: boolean;
+	grab?: boolean;
 }
 
 export type InteractionMode = 'selection' | 'grab' | 'polygon' | 'line' | 'arrow' | 'link' | 'crop';

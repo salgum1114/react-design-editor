@@ -1,7 +1,6 @@
 import { fabric } from 'fabric';
-
+import { FabricEvent, FabricObject, WorkareaObject } from '../utils';
 import Handler from './Handler';
-import { WorkareaObject, FabricObject, FabricEvent } from '../utils';
 
 class GuidelineHandler {
 	handler: Handler;
@@ -27,6 +26,7 @@ class GuidelineHandler {
 	 */
 	public initialize() {
 		if (this.handler.guidelineOption.enabled) {
+			// @ts-ignore
 			this.handler.canvas.on({
 				'before:render': this.beforeRender,
 				'after:render': this.afterRender,

@@ -1,7 +1,6 @@
 import { fabric } from 'fabric';
-
-import Handler from './Handler';
 import { FabricObject, InteractionMode } from '../utils';
+import Handler from './Handler';
 
 type IReturnType = { selectable?: boolean; evented?: boolean } | boolean;
 
@@ -42,7 +41,11 @@ class InteractionHandler {
 					obj.hoverCursor = 'pointer';
 					return;
 				}
-				obj.hoverCursor = 'move';
+				if (this.handler.editable) {
+					obj.hoverCursor = 'move';
+				} else {
+					obj.hoverCursor = 'pointer';
+				}
 				obj.selectable = true;
 				obj.evented = true;
 			}

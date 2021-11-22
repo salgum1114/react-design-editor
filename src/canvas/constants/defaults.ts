@@ -1,4 +1,4 @@
-import { WorkareaObject, FabricObjectOption } from '../utils';
+import { FabricObjectOption, WorkareaObject } from '../utils';
 
 export const canvasOption = {
 	preserveObjectStacking: true,
@@ -20,6 +20,7 @@ export const keyEvent = {
 	transaction: true,
 	zoom: true,
 	cut: true,
+	grab: true,
 };
 
 export const gridOption = {

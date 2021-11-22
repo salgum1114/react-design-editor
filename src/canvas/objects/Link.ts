@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 import { uuid } from 'uuidv4';
 import { FabricObject } from '../utils';
-import { OUT_PORT_TYPE, NodeObject } from './Node';
+import { NodeObject, OUT_PORT_TYPE } from './Node';
 import { PortObject } from './Port';
 
 export interface LinkObject extends FabricObject<fabric.Line> {
@@ -119,6 +119,7 @@ Link.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
 	return callback(new Link(fromNode, fromPort, toNode, toPort, options));
 };
 
+// @ts-ignore
 window.fabric.Link = Link;
 
 export default Link;

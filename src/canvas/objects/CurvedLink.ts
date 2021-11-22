@@ -1,5 +1,4 @@
 import { fabric } from 'fabric';
-
 import Link, { LinkObject } from './Link';
 import { NodeObject } from './Node';
 import { PortObject } from './Port';
@@ -53,6 +52,7 @@ CurvedLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any
 	return callback(new CurvedLink(fromNode, fromPort, toNode, toPort, options));
 };
 
+// @ts-ignore
 window.fabric.CurvedLink = CurvedLink;
 
 export default CurvedLink;

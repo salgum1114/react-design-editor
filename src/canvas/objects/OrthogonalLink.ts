@@ -1,5 +1,4 @@
 import { fabric } from 'fabric';
-
 import Link, { LinkObject } from './Link';
 import { NodeObject } from './Node';
 import { PortObject } from './Port';
@@ -56,6 +55,7 @@ OrthogonalLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) =>
 	return callback(new OrthogonalLink(fromNode, fromPort, toNode, toPort, options));
 };
 
+// @ts-ignore
 window.fabric.OrthogonalLink = OrthogonalLink;
 
 export default OrthogonalLink;

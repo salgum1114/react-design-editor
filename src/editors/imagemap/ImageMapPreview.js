@@ -24,13 +24,23 @@ class ImageMapPreview extends Component {
 						ref={c => {
 							this.container = c;
 						}}
-						style={{ overvlow: 'hidden', display: 'flex', flex: '1', height: '100%' }}
+						style={{
+							overvlow: 'hidden',
+							display: 'flex',
+							flex: '1',
+							height: '100%',
+							background: 'linear-gradient(to bottom left, #50d6ff, #0d9bff)',
+						}}
 					>
 						<Canvas
 							editable={false}
 							className="rde-canvas"
 							canvasOption={{
-								backgroundColor: '#f3f3f3',
+								backgroundColor: 'transparent',
+								perPixelTargetFind: true,
+							}}
+							workareaOption={{
+								backgroundColor: 'transparent',
 							}}
 							onLoad={handler => handler.importJSON(objects)}
 							onTooltip={onTooltip}

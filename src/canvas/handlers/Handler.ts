@@ -416,12 +416,16 @@ class Handler implements HandlerOptions {
 	 * @returns
 	 */
 	public set = (key: keyof FabricObject, value: any) => {
-		const activeObject = this.canvas.getActiveObject() as any;
+		const activeObject = this.canvas.getActiveObject() as FabricObject;
 		if (!activeObject) {
 			return;
 		}
-		activeObject.set(key, value);
-		activeObject.setCoords();
+		if ((activeObject.type === 'svg' && key === 'fill') || key === 'stroke') {
+			(activeObject as FabricGroup)._objects.forEach(obj => obj.set(key, value));
+		} else {
+			activeObject.set(key, value);
+			activeObject.setCoords();
+		}
 		this.canvas.requestRenderAll();
 		const { id, superType, type, player, width, height } = activeObject as any;
 		if (superType === 'element') {

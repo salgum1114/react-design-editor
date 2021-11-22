@@ -1,6 +1,5 @@
 import { fabric } from 'fabric';
-
-import { toObject, FabricElement } from '../utils';
+import { FabricElement, toObject } from '../utils';
 
 export interface Code {
 	html: string;
@@ -96,6 +95,7 @@ Element.fromObject = (options: ElementObject, callback: (obj: ElementObject) => 
 	return callback(new Element(options.code, options));
 };
 
+// @ts-ignore
 window.fabric.Element = Element;
 
 export default Element;
