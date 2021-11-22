@@ -51,7 +51,6 @@ const Svg = fabric.util.createClass(fabric.Group, {
 	},
 	loadSvg(option: SvgOption) {
 		const { svg, loadType, fill, stroke } = option;
-		console.log(option);
 		return new Promise<SvgObject>(resolve => {
 			if (loadType === 'svg') {
 				fabric.loadSVGFromString(svg, (objects, options) => {
