@@ -748,9 +748,6 @@ class ImageMapEditor extends Component {
 							onClick={onClick}
 							onContext={onContext}
 							onTransaction={onTransaction}
-							guidelineOption={{
-								enabled: false,
-							}}
 							keyEvent={{
 								transaction: true,
 							}}

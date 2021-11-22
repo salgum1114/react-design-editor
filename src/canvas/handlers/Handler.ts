@@ -420,14 +420,11 @@ class Handler implements HandlerOptions {
 		if (!activeObject) {
 			return;
 		}
-		if ((activeObject.type === 'svg' && key === 'fill') || key === 'stroke') {
-			activeObject.set(key, value);
+		if (activeObject.type === 'svg' && (key === 'fill' || key === 'stroke')) {
 			(activeObject as FabricGroup)._objects.forEach(obj => obj.set(key, value));
-			activeObject.setCoords();
-		} else {
-			activeObject.set(key, value);
-			activeObject.setCoords();
 		}
+		activeObject.set(key, value);
+		activeObject.setCoords();
 		this.canvas.requestRenderAll();
 		const { id, superType, type, player, width, height } = activeObject as any;
 		if (superType === 'element') {
@@ -505,6 +502,13 @@ class Handler implements HandlerOptions {
 		if (!obj) {
 			return;
 		}
+		if (obj.type === 'svg') {
+			if (key === 'fill') {
+				obj.setFill(value);
+			} else if (key === 'stroke') {
+				obj.setStroke(value);
+			}
+		}
 		obj.set(key, value);
 		obj.setCoords();
 		this.canvas.renderAll();
@@ -552,6 +556,13 @@ class Handler implements HandlerOptions {
 	public setByPartial = (obj: FabricObject, option: FabricObjectOption) => {
 		if (!obj) {
 			return;
+		}
+		if (obj.type === 'svg') {
+			if (option.fill) {
+				obj.setFill(option.fill);
+			} else if (option.stroke) {
+				obj.setStroke(option.stroke);
+			}
 		}
 		obj.set(option);
 		obj.setCoords();

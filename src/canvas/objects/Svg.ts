@@ -63,6 +63,12 @@ const Svg = fabric.util.createClass(fabric.Group, {
 			}
 		});
 	},
+	setFill(value: any) {
+		this.getObjects().forEach((obj: FabricObject) => obj.set('fill', value));
+	},
+	setStroke(value: any) {
+		this.getObjects().forEach((obj: FabricObject) => obj.set('stroke', value));
+	},
 	toObject(propertiesToInclude: string[]) {
 		return toObject(this, propertiesToInclude, {
 			svg: this.get('svg'),
