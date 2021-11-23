@@ -1,8 +1,8 @@
-import ReactDOM from 'react-dom';
 import debounce from 'lodash/debounce';
-
-import Handler from './Handler';
+import ReactDOM from 'react-dom';
 import { FabricObject } from '../utils';
+import Handler from './Handler';
+
 
 class TooltipHandler {
 	handler: Handler;
@@ -54,7 +54,7 @@ class TooltipHandler {
 			let element = target.name as any;
 			const { onTooltip } = this.handler;
 			if (onTooltip) {
-				element = await onTooltip(this.tooltipEl, target);
+				element = await onTooltip(tooltip, target);
 				if (!element) {
 					return;
 				}

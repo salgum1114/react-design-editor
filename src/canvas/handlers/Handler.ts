@@ -1538,22 +1538,21 @@ class Handler implements HandlerOptions {
 		let prevLeft = 0;
 		let prevTop = 0;
 		this.canvas.setBackgroundColor(this.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
-		const workareaExist = json.filter((obj: FabricObjectOption) => obj.id === 'workarea');
+		const workarea = json.find((obj: FabricObjectOption) => obj.id === 'workarea');
 		if (!this.workarea) {
 			this.workareaHandler.initialize();
 		}
-		if (!workareaExist.length) {
-			this.canvas.centerObject(this.workarea);
-			this.workarea.setCoords();
-			prevLeft = this.workarea.left;
-			prevTop = this.workarea.top;
-		} else {
-			const workarea = workareaExist[0];
+		if (workarea) {
 			prevLeft = workarea.left;
 			prevTop = workarea.top;
 			this.workarea.set(workarea);
 			await this.workareaHandler.setImage(workarea.src, true);
 			this.workarea.setCoords();
+		} else {
+			this.canvas.centerObject(this.workarea);
+			this.workarea.setCoords();
+			prevLeft = this.workarea.left;
+			prevTop = this.workarea.top;
 		}
 		json.forEach((obj: FabricObjectOption) => {
 			if (obj.id === 'workarea') {
