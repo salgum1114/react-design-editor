@@ -206,9 +206,14 @@ class AnimationHandler {
 					// I don't know why it works. Magic code...
 					const fill = instance.animations[0].currentValue;
 					const stroke = instance.animations[1].currentValue;
-					obj.set('fill', '');
-					obj.set('fill', fill);
-					obj.set('stroke', stroke);
+					if (obj.type === 'svg') {
+						obj.setFill(fill);
+						obj.setStroke(stroke);
+					} else {
+						obj.set('fill', '');
+						obj.set('fill', fill);
+						obj.set('stroke', stroke);
+					}
 				} else if (type === 'rotation') {
 					let angle = instance.animations[0].currentValue as string | number;
 					if (typeof angle === 'string') {

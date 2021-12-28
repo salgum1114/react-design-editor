@@ -1,7 +1,11 @@
 import { fabric } from 'fabric';
 import { FabricGroup, FabricObject, FabricObjectOption, toObject } from '../utils';
 
-export type SvgObject = FabricGroup | FabricObject;
+export type SvgObject = (FabricGroup | FabricObject) & {
+	loadSvg(option: SvgOption): Promise<SvgObject>;
+	setFill(value: string): SvgObject;
+	setStroke(value: string): SvgObject;
+};
 
 export interface SvgOption extends FabricObjectOption {
 	svg?: string;
@@ -42,12 +46,20 @@ const Svg = fabric.util.createClass(fabric.Group, {
 					stroke: options.stroke,
 				});
 			}
+			if (this._objects?.length) {
+				(this as FabricGroup)._objects.forEach(obj => this.remove(obj));
+			}
 			this.add(createdObj);
 		}
+		this.set({
+			fill: options.fill || 'rgba(0, 0, 0, 1)',
+			stroke: options.stroke || 'rgba(255, 255, 255, 0)',
+		});
 		this.setCoords();
 		if (this.canvas) {
 			this.canvas.requestRenderAll();
 		}
+		return this;
 	},
 	loadSvg(option: SvgOption) {
 		const { svg, loadType, fill, stroke } = option;
@@ -65,9 +77,11 @@ const Svg = fabric.util.createClass(fabric.Group, {
 	},
 	setFill(value: any) {
 		this.getObjects().forEach((obj: FabricObject) => obj.set('fill', value));
+		return this;
 	},
 	setStroke(value: any) {
 		this.getObjects().forEach((obj: FabricObject) => obj.set('stroke', value));
+		return this;
 	},
 	toObject(propertiesToInclude: string[]) {
 		return toObject(this, propertiesToInclude, {

@@ -18,6 +18,7 @@ module.exports = {
 	},
 	externals: {
 		react: 'react',
+		'react-dom': 'react-dom',
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
