@@ -88,9 +88,10 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
 	originAngle?: number;
 	/**
 	 * Original fill color
-	 * @type {(string | fabric.Pattern)}
+	 *
+	 * @type {(string | fabric.Pattern | fabric.Gradient)}
 	 */
-	originFill?: string | fabric.Pattern;
+	originFill?: string | fabric.Pattern | fabric.Gradient;
 	/**
 	 * Original stroke color
 	 * @type {string}

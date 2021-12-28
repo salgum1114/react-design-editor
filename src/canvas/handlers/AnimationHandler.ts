@@ -1,4 +1,5 @@
 import anime from 'animejs';
+import warning from 'warning';
 import { Handler } from '.';
 import { FabricObject } from '../utils';
 
@@ -163,6 +164,16 @@ class AnimationHandler {
 				originAngle: null,
 			});
 		} else if (type === 'flash') {
+			if (obj.type === 'svg') {
+				(obj as fabric.Group)._objects.forEach(child =>
+					this.handler.setByPartial(child, {
+						fill: (child as FabricObject).originFill,
+						stroke: (child as FabricObject).originStroke,
+						originFill: null,
+						originStroke: null,
+					}),
+				);
+			}
 			Object.assign(option, {
 				fill: obj.originFill,
 				stroke: obj.originStroke,
@@ -204,8 +215,10 @@ class AnimationHandler {
 			update: (instance: anime.AnimeInstance) => {
 				if (type === 'flash') {
 					// I don't know why it works. Magic code...
-					const fill = instance.animations[0].currentValue;
-					const stroke = instance.animations[1].currentValue;
+					warning(instance.animations[0], 'instance.animations[0] undefined.');
+					warning(instance.animations[1], 'instance.animations[1] undefined.');
+					const fill = instance.animations[0]?.currentValue;
+					const stroke = instance.animations[1]?.currentValue;
 					if (obj.type === 'svg') {
 						obj.setFill(fill);
 						obj.setStroke(stroke);
@@ -299,6 +312,14 @@ class AnimationHandler {
 			});
 		} else if (type === 'flash') {
 			const { fill = obj.fill, stroke = obj.stroke } = other;
+			if (obj.type === 'svg') {
+				(obj as fabric.Group)._objects.forEach(child =>
+					this.handler.setByPartial(child, {
+						originFill: child.fill,
+						originStroke: child.stroke,
+					}),
+				);
+			}
 			obj.set('originFill', obj.fill as string);
 			obj.set('originStroke', obj.stroke);
 			Object.assign(option, {
