@@ -371,7 +371,7 @@ class EventHandler {
 		if (editable) {
 			if (this.handler.prevTarget && this.handler.prevTarget.superType === 'link') {
 				this.handler.prevTarget.set({
-					stroke: this.handler.prevTarget.originStroke,
+					stroke: this.handler.prevTarget.originStroke || this.handler.prevTarget.stroke,
 				});
 			}
 			if (target && target.type === 'fromPort') {
@@ -397,7 +397,7 @@ class EventHandler {
 			if (this.handler.interactionMode === 'selection') {
 				if (target && target.superType === 'link') {
 					target.set({
-						stroke: target.selectFill || 'green',
+						stroke: target.selectedStroke || 'green',
 					});
 				}
 				this.handler.prevTarget = target;

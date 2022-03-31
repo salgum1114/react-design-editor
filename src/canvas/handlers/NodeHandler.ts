@@ -260,7 +260,7 @@ class NodeHandler {
 						object.animating = false;
 						if (object.superType === 'link') {
 							object.set({
-								stroke: object.originStroke,
+								stroke: object.originStroke || object.stroke,
 							});
 						}
 					},

@@ -26,8 +26,7 @@ const Link = fabric.util.createClass(fabric.Line, {
 	) {
 		options = options || {};
 		const coords = [fromPort.left, fromPort.top, toPort.left, toPort.top];
-		this.callSuper('initialize', coords, options);
-		this.set({
+		Object.assign(options, {
 			strokeWidth: 4,
 			id: options.id || uuid(),
 			originX: 'center',
@@ -46,7 +45,9 @@ const Link = fabric.util.createClass(fabric.Line, {
 			fromPort,
 			toNode,
 			toPort,
+			hoverCursor: 'pointer',
 		});
+		this.callSuper('initialize', coords, options);
 	},
 	setPort(fromNode: NodeObject, fromPort: PortObject, _toNode: NodeObject, toPort: PortObject) {
 		if (fromNode.type === 'BroadcastNode') {
