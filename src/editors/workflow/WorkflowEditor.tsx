@@ -1,6 +1,7 @@
 import { message, Popconfirm } from 'antd';
 import i18n from 'i18next';
 import React, { Component } from 'react';
+import { FabricObject } from '../../canvas';
 import Canvas, { CanvasInstance } from '../../canvas/Canvas';
 import { CommonButton } from '../../components/common';
 import { Content } from '../../components/layout';
@@ -57,14 +58,14 @@ class WorkflowEditor extends Component {
 				zoomRatio: zoom,
 			});
 		},
-		onAdd: target => {
+		onAdd: (target: FabricObject) => {
 			if (target.type === 'activeSelection') {
 				this.canvasHandlers.onSelect(null);
 				return;
 			}
 			if (target.superType === 'node') {
-				this.canvasRef.handler.select(target);
 				this.canvasRef.handler.nodeHandler.highlightingNode(target);
+				this.canvasRef.handler.select(target);
 			}
 		},
 		onSelect: target => {

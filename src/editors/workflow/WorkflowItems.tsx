@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Collapse, Input } from 'antd';
-import i18n from 'i18next';
 import classnames from 'classnames';
-import { NODE_COLORS } from './constant/constants';
-import { getNode } from './configuration/NodeConfiguration';
-import { Canvas } from '../../canvas';
+import i18n from 'i18next';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { uuid } from 'uuidv4';
+import { CanvasInstance } from '../../canvas';
+import { CommonButton, Scrollbar } from '../../components/common';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
-import { CommonButton, Scrollbar } from '../../components/common';
+import { getNode } from './configuration/NodeConfiguration';
+import { NODE_COLORS } from './constant/constants';
 
 interface IProps {
-	canvasRef: Canvas;
+	canvasRef: CanvasInstance;
 	descriptors: any;
 }
 

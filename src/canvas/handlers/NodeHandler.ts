@@ -1,9 +1,8 @@
 import { fabric } from 'fabric';
-
-import Handler from './Handler';
-import { FabricObject } from '../utils';
-import { NodeObject } from '../objects/Node';
 import { LinkObject } from '../objects/Link';
+import { NodeObject } from '../objects/Node';
+import { FabricObject } from '../utils';
+import Handler from './Handler';
 
 class NodeHandler {
 	handler: Handler;
@@ -173,7 +172,7 @@ class NodeHandler {
 	};
 
 	/**
-	 * Highlight node path
+	 * Highlight path by ids
 	 * @param {string[]} [path]
 	 */
 	highlightingByPath = (path?: string[]) => {
@@ -247,14 +246,14 @@ class NodeHandler {
 	 * @param {number} [minBlur=0]
 	 * @param {number} [maxBlur=50]
 	 */
-	highlightingNode = (object: any, duration = 500, minBlur = 0, maxBlur = 50) => {
+	highlightingNode = (object: FabricObject, duration = 500, minBlur = 0, maxBlur = 50) => {
 		const onComplete = () => {
-			if (object.shadow.blur === maxBlur) {
+			if ((object.shadow as fabric.Shadow).blur === maxBlur) {
 				object.animating = true;
 				object.animate('shadow.blur', minBlur, {
 					easing: fabric.util.ease.easeInOutQuad,
 					onChange: (value: number) => {
-						object.shadow.blur = value;
+						(object.shadow as fabric.Shadow).blur = value;
 						this.handler.canvas.requestRenderAll();
 					},
 					onComplete: () => {
@@ -268,12 +267,14 @@ class NodeHandler {
 				});
 			}
 		};
+		console.log(object.shadow);
 		object.animating = true;
 		object.animate('shadow.blur', maxBlur, {
 			easing: fabric.util.ease.easeInOutQuad,
 			duration,
 			onChange: (value: number) => {
-				object.shadow.blur = value;
+				console.log(value);
+				(object.shadow as fabric.Shadow).blur = value;
 				this.handler.canvas.requestRenderAll();
 			},
 			onComplete,
