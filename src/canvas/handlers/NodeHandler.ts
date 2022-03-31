@@ -267,13 +267,11 @@ class NodeHandler {
 				});
 			}
 		};
-		console.log(object.shadow);
 		object.animating = true;
 		object.animate('shadow.blur', maxBlur, {
 			easing: fabric.util.ease.easeInOutQuad,
 			duration,
 			onChange: (value: number) => {
-				console.log(value);
 				(object.shadow as fabric.Shadow).blur = value;
 				this.handler.canvas.requestRenderAll();
 			},
