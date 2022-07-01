@@ -1809,7 +1809,20 @@ class Handler implements HandlerOptions {
 	 * @param {string} [option={ name: 'New Image', format: 'png', quality: 1 }]
 	 */
 	public saveCanvasImage = (option = { name: 'New Image', format: 'png', quality: 1 }) => {
-		const dataUrl = this.canvas.toDataURL(option);
+		// If it's zoomed out/in, the container will also include in the image
+		// hence need to reset the zoom level.
+		this.zoomHandler.zoomOneToOne();
+
+		const { left, top, width, height } = this.workarea;
+		const dataUrl = this.canvas.toDataURL({
+			...option,
+			left,
+			top,
+			width,
+			height,
+			enableRetinaScaling: true,
+		});
+
 		if (dataUrl) {
 			const anchorEl = document.createElement('a');
 			anchorEl.href = dataUrl;
