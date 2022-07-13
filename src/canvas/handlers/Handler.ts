@@ -611,36 +611,50 @@ class Handler implements HandlerOptions {
 	 * @param {(File | string)} [source]
 	 * @returns
 	 */
-	public setImage = (obj: FabricImage, source?: File | string) => {
-		if (!source) {
-			this.loadImage(obj, null);
-			obj.set('file', null);
-			obj.set('src', null);
-			return;
-		}
-		if (source instanceof File) {
-			const reader = new FileReader();
-			reader.onload = () => {
-				this.loadImage(obj, reader.result as string);
-				obj.set('file', source);
+	public setImage = (obj: FabricImage, source?: File | string): Promise<FabricImage> => {
+		return new Promise(resolve => {
+			if (!source) {
+				obj.set('file', null);
 				obj.set('src', null);
-			};
-			reader.readAsDataURL(source);
-		} else {
-			this.loadImage(obj, source);
-			obj.set('file', null);
-			obj.set('src', source);
-		}
+				resolve(
+					obj.setSrc('./images/sample/transparentBg.png', () => this.canvas.renderAll(), {
+						dirty: true,
+					}) as FabricImage,
+				);
+			}
+			if (source instanceof File) {
+				const reader = new FileReader();
+				reader.onload = () => {
+					obj.set('file', source);
+					obj.set('src', null);
+					resolve(
+						obj.setSrc(reader.result as string, () => this.canvas.renderAll(), {
+							dirty: true,
+						}) as FabricImage,
+					);
+				};
+				reader.readAsDataURL(source);
+			} else {
+				obj.set('file', null);
+				obj.set('src', source);
+				resolve(
+					obj.setSrc(source, () => this.canvas.renderAll(), {
+						dirty: true,
+					}) as FabricImage,
+				);
+			}
+		});
 	};
 
 	/**
 	 * Set image by id
 	 * @param {string} id
 	 * @param {*} source
+	 * @returns
 	 */
 	public setImageById = (id: string, source: any) => {
 		const findObject = this.findById(id) as FabricImage;
-		this.setImage(findObject, source);
+		return Promise.resolve(this.setImage(findObject, source));
 	};
 
 	/**
@@ -695,9 +709,10 @@ class Handler implements HandlerOptions {
 	 * @param {FabricObjectOption} obj
 	 * @param {boolean} [centered=true]
 	 * @param {boolean} [loaded=false]
+	 * @param {boolean} [group=false]
 	 * @returns
 	 */
-	public add = (obj: FabricObjectOption, centered = true, loaded = false) => {
+	public add = (obj: FabricObjectOption, centered = true, loaded = false, group = false) => {
 		const { editable, onAdd, gridOption, objectOption } = this;
 		const option: any = {
 			hasControls: editable,
@@ -735,13 +750,12 @@ class Handler implements HandlerOptions {
 		if (obj.type === 'image') {
 			createdObj = this.addImage(newOption);
 		} else if (obj.type === 'group') {
-			// TODO...
-			// Group add function needs to be fixed
-			const objects = this.addGroup(newOption, centered, loaded);
-			const groupOption = Object.assign({}, newOption, { objects, name: 'New Group' });
-			createdObj = this.fabricObjects[obj.type].create(groupOption);
+			createdObj = this.addGroup(newOption);
 		} else {
 			createdObj = this.fabricObjects[obj.type].create(newOption);
+		}
+		if (group) {
+			return createdObj;
 		}
 		this.canvas.add(createdObj);
 		this.objects = this.getObjects();
@@ -793,10 +807,10 @@ class Handler implements HandlerOptions {
 	 * @param {boolean} [loaded=false]
 	 * @returns
 	 */
-	public addGroup = (obj: FabricGroup, centered = true, loaded = false) => {
-		return obj.objects.map(child => {
-			return this.add(child, centered, loaded);
-		});
+	public addGroup = (obj: FabricGroup) => {
+		const { objects = [], ...other } = obj;
+		const _objects = objects.map(child => this.add(child, false, true, true)) as FabricObject[];
+		return new fabric.Group(_objects, other) as FabricGroup;
 	};
 
 	/**
@@ -806,11 +820,11 @@ class Handler implements HandlerOptions {
 	 */
 	public addImage = (obj: FabricImage) => {
 		const { objectOption } = this;
-		const { filters = [], ...otherOption } = obj;
+		const { filters = [], src, file, ...otherOption } = obj;
 		const image = new Image();
-		if (obj.src) {
-			image.src = obj.src;
-		}
+		// if (typeof src === 'string') {
+		// 	image.src = src;
+		// }
 		const createdObj = new fabric.Image(image, {
 			...objectOption,
 			...otherOption,
@@ -818,7 +832,7 @@ class Handler implements HandlerOptions {
 		createdObj.set({
 			filters: this.imageHandler.createFilters(filters),
 		});
-		this.setImage(createdObj, obj.src || obj.file);
+		this.setImage(createdObj, src || file);
 		return createdObj;
 	};
 
@@ -1319,35 +1333,6 @@ class Handler implements HandlerOptions {
 	};
 
 	/**
-	 * Load the image
-	 * @param {FabricImage} obj
-	 * @param {string} src
-	 */
-	public loadImage = (obj: FabricImage, src: string) => {
-		let url = src;
-		if (!url) {
-			url = './images/sample/transparentBg.png';
-		}
-		fabric.util.loadImage(url, source => {
-			if (obj.type !== 'image') {
-				obj.set(
-					'fill',
-					new fabric.Pattern({
-						source,
-						repeat: 'repeat',
-					}),
-				);
-				obj.setCoords();
-				this.canvas.renderAll();
-				return;
-			}
-			obj.setElement(source);
-			obj.setCoords();
-			this.canvas.renderAll();
-		});
-	};
-
-	/**
 	 * Find object by object
 	 * @param {FabricObject} obj
 	 */
@@ -1798,7 +1783,7 @@ class Handler implements HandlerOptions {
 			const anchorEl = document.createElement('a');
 			anchorEl.href = dataUrl;
 			anchorEl.download = `${option.name}.png`;
-			document.body.appendChild(anchorEl); // required for firefox
+			document.body.appendChild(anchorEl);
 			anchorEl.click();
 			anchorEl.remove();
 		}
@@ -1827,7 +1812,7 @@ class Handler implements HandlerOptions {
 			const anchorEl = document.createElement('a');
 			anchorEl.href = dataUrl;
 			anchorEl.download = `${option.name}.png`;
-			document.body.appendChild(anchorEl); // required for firefox
+			document.body.appendChild(anchorEl);
 			anchorEl.click();
 			anchorEl.remove();
 		}

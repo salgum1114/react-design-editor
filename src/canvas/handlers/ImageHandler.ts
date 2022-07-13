@@ -1,6 +1,5 @@
 import { fabric } from 'fabric';
 import isEqual from 'lodash/isEqual';
-
 import Handler from './Handler';
 
 export type GrayscaleModeType = 'average' | 'luminosity' | 'lightness';
@@ -215,7 +214,7 @@ class ImageHandler {
 	 * @param {IFilter[]} filters
 	 */
 	public createFilters = (filters: IFilter[]) => {
-		const createdFilters = filters.reduce((prev, filter) => {
+		return filters.reduce((prev, filter) => {
 			let type = filter.type;
 			if (type.toLowerCase() === 'convolute' && isEqual(filter.matrix, SHARPEN_MATRIX)) {
 				type = 'sharpen';
@@ -231,7 +230,6 @@ class ImageHandler {
 			}
 			return prev;
 		}, []);
-		return createdFilters;
 	};
 
 	/**
