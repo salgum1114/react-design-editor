@@ -1,7 +1,8 @@
 import { fabric } from 'fabric';
-import LogicNode from './LogicNode';
-import { getEllipsis } from '../../configuration/NodeConfiguration';
+import { nanoid } from 'nanoid';
 import { Port } from '../../../../canvas/objects';
+import { getEllipsis } from '../../configuration/NodeConfiguration';
+import LogicNode from './LogicNode';
 
 const SwitchNode = fabric.util.createClass(LogicNode, {
 	initialize(options) {
@@ -117,7 +118,7 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 	},
 	duplicate() {
 		const options = this.toObject();
-		options.id = uuid();
+		options.id = nanoid();
 		options.name = `${options.name}_clone`;
 		const clonedObj = new SwitchNode(options);
 		return clonedObj;

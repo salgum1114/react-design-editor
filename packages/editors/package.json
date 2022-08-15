@@ -1,0 +1,31 @@
+{
+	"name": "@react-design-editor/editors",
+	"version": "1.0.0",
+	"description": "> TODO: description",
+	"keywords": [
+		"react-design-editor"
+	],
+	"author": "Sung Gyun Oh <salgum1112@gmail.com>",
+	"homepage": "https://salgum1114.github.io/react-design-editor/tree/main/packages/editors#readme",
+	"license": "MIT",
+	"source": "src/index.tsx",
+	"main": "lib/index.js",
+	"types": "lib/types/index.d.ts",
+	"files": [
+		"lib"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/salgum1114/react-design-editor.git"
+	},
+	"scripts": {
+		"test": "echo \"Error: run tests from root\" && exit 1"
+	},
+	"bugs": {
+		"url": "https://github.com/salgum1114/react-design-editor/issues"
+	},
+	"dependencies": {
+		"@react-design-editor/canvas": "^1.0.0",
+		"@react-design-editor/components": "^1.0.0"
+	}
+}

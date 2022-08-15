@@ -1,0 +1,11 @@
+{
+	"extends": "../../tsconfig.base",
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./lib/types",
+		"composite": true
+	},
+	"include": ["src/**/*", "types/**/*"],
+	"exclude": ["node_modules", "dist", "lib"],
+	"references": [{ "path": "../canvas" }]
+}

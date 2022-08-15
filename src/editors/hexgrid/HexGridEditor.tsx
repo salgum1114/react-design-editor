@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
 import { fabric } from 'fabric';
-import { extendHex, defineGrid } from 'honeycomb-grid';
-import { uuid } from 'uuidv4';
+import { defineGrid, extendHex } from 'honeycomb-grid';
+import { nanoid } from 'nanoid';
+import React, { useRef } from 'react';
 import { Canvas, Handler } from '../../canvas';
-import { Content } from '../../components/layout';
 import { CanvasInstance } from '../../canvas/Canvas';
+import { Content } from '../../components/layout';
 
 const Hexagon = fabric.util.createClass(fabric.Polygon, {
 	type: 'polygon',
@@ -32,7 +32,7 @@ const HexGridEditor = () => {
 			return corners;
 		});
 		const group = {
-			id: uuid(),
+			id: nanoid(),
 			type: 'group',
 			objects: corners.map(
 				cs =>

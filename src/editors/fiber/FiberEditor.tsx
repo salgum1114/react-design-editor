@@ -1,5 +1,5 @@
+import { nanoid } from 'nanoid';
 import React, { useRef } from 'react';
-import { uuid } from 'uuidv4';
 import { Canvas, FiberHandler } from '../../canvas';
 import { CanvasInstance } from '../../canvas/Canvas';
 import { Content } from '../../components/layout';
@@ -10,7 +10,7 @@ const FiberEditor = () => {
 	const handleLoad = () => {
 		const createdObj = canvasRef.current.handler.add(
 			{
-				id: uuid(),
+				id: nanoid(),
 				type: 'cableNode',
 				coreCount: 27,
 				hasControls: false,

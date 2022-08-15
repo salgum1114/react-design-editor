@@ -1,30 +1,7 @@
 import { fabric } from 'fabric';
 import { union } from 'lodash';
-import { uuid } from 'uuidv4';
+import { nanoid } from 'nanoid';
 import warning from 'warning';
-import {
-	AlignmentHandler,
-	AnimationHandler,
-	ChartHandler,
-	ContextmenuHandler,
-	CropHandler,
-	CustomHandler,
-	DrawingHandler,
-	ElementHandler,
-	EventHandler,
-	GridHandler,
-	GuidelineHandler,
-	ImageHandler,
-	InteractionHandler,
-	LinkHandler,
-	NodeHandler,
-	PortHandler,
-	ShortcutHandler,
-	TooltipHandler,
-	TransactionHandler,
-	WorkareaHandler,
-	ZoomHandler,
-} from '.';
 import CanvasObject from '../CanvasObject';
 import { defaults } from '../constants';
 import { LinkObject } from '../objects/Link';
@@ -46,8 +23,27 @@ import {
 	WorkareaObject,
 	WorkareaOption,
 } from '../utils';
-import { LinkOption } from './LinkHandler';
-import { TransactionEvent } from './TransactionHandler';
+import AlignmentHandler from './AlignmentHandler';
+import AnimationHandler from './AnimationHandler';
+import ChartHandler from './ChartHandler';
+import ContextmenuHandler from './ContextmenuHandler';
+import CropHandler from './CropHandler';
+import CustomHandler from './CustomHandler';
+import DrawingHandler from './DrawingHandler';
+import ElementHandler from './ElementHandler';
+import EventHandler from './EventHandler';
+import GridHandler from './GridHandler';
+import GuidelineHandler from './GuidelineHandler';
+import ImageHandler from './ImageHandler';
+import InteractionHandler from './InteractionHandler';
+import LinkHandler, { LinkOption } from './LinkHandler';
+import NodeHandler from './NodeHandler';
+import PortHandler from './PortHandler';
+import ShortcutHandler from './ShortcutHandler';
+import TooltipHandler from './TooltipHandler';
+import TransactionHandler, { TransactionEvent } from './TransactionHandler';
+import WorkareaHandler from './WorkareaHandler';
+import ZoomHandler from './ZoomHandler';
 
 export interface HandlerCallback {
 	/**
@@ -979,7 +975,7 @@ class Handler implements HandlerOptions {
 				const activeSelection = clonedObj as fabric.ActiveSelection;
 				activeSelection.canvas = this.canvas;
 				activeSelection.forEachObject((obj: any) => {
-					obj.set('id', uuid());
+					obj.set('id', nanoid());
 					if (obj.superType === 'node') {
 						obj.set('shadow', {
 							color: obj.stroke,
@@ -997,7 +993,7 @@ class Handler implements HandlerOptions {
 				activeSelection.setCoords();
 			} else {
 				if (activeObject.id === clonedObj.id) {
-					clonedObj.set('id', uuid());
+					clonedObj.set('id', nanoid());
 				}
 				if (clonedObj.superType === 'node') {
 					clonedObj.set('shadow', {
@@ -1039,7 +1035,7 @@ class Handler implements HandlerOptions {
 				cloned.set({
 					left: cloned.left + grid,
 					top: cloned.top + grid,
-					id: uuid(),
+					id: nanoid(),
 					evented: true,
 				});
 				this.canvas.add(cloned);
@@ -1283,13 +1279,13 @@ class Handler implements HandlerOptions {
 			clonedObj.set({
 				left: clonedObj.left + padding,
 				top: clonedObj.top + padding,
-				id: isCut ? clipboard.id : uuid(),
+				id: isCut ? clipboard.id : nanoid(),
 				evented: true,
 			});
 			if (clonedObj.type === 'activeSelection') {
 				clonedObj.canvas = this.canvas;
 				clonedObj.forEachObject((obj: any) => {
-					obj.set('id', isCut ? obj.id : uuid());
+					obj.set('id', isCut ? obj.id : nanoid());
 					this.canvas.add(obj);
 					if (obj.dblclick) {
 						obj.on('mousedblclick', this.eventHandler.object.mousedblclick);
@@ -1560,7 +1556,7 @@ class Handler implements HandlerOptions {
 				obj.top += diffTop;
 			}
 			if (obj.superType === 'element') {
-				obj.id = uuid();
+				obj.id = nanoid();
 			}
 			this.add(obj, false, true);
 			this.canvas.renderAll();
@@ -1591,7 +1587,7 @@ class Handler implements HandlerOptions {
 		}
 		const group = activeObject.toGroup() as FabricObject<fabric.Group>;
 		group.set({
-			id: uuid(),
+			id: nanoid(),
 			name: 'New group',
 			type: 'group',
 			...this.objectOption,
@@ -1902,6 +1898,7 @@ class Handler implements HandlerOptions {
 			this.workarea.set({
 				...workareaOption,
 			});
+			this.canvas.requestRenderAll();
 		}
 	};
 

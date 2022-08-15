@@ -732,7 +732,7 @@ class EventHandler {
 					//     const { type } = file;
 					//     if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
 					//         const item = {
-					//             id: uuid(),
+					//             id: nanoid(),
 					//             type: 'image',
 					//             file,
 					//             superType: 'image',

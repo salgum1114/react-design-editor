@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
+import { nanoid } from 'nanoid';
 import React, { Component, useRef } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
-import { uuid } from 'uuidv4';
 import { defaults } from './constants';
 import Handler, { HandlerOptions } from './handlers/Handler';
 import './styles/canvas.less';
@@ -34,7 +34,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 	private resizeObserver: ResizeObserver;
 
 	static defaultProps: CanvasProps = {
-		id: uuid(),
+		id: nanoid(),
 		editable: true,
 		zoomEnabled: true,
 		minZoom: 30,
@@ -45,7 +45,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 	};
 
 	state: IState = {
-		id: uuid(),
+		id: nanoid(),
 		loaded: false,
 	};
 

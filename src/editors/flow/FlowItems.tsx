@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
 import { Collapse } from 'antd';
-import { Canvas } from '../../canvas';
-import Descriptors from '../workflow/Descriptors.json';
-import { getNode } from '../workflow/configuration/NodeConfiguration';
+import { nanoid } from 'nanoid';
+import React, { Component } from 'react';
 import { NODE_COLORS } from '../../canvas/objects/Node';
 import Icon from '../../components/icon/Icon';
-import { uuid } from 'uuidv4';
+import { getNode } from '../workflow/configuration/NodeConfiguration';
+import Descriptors from '../workflow/Descriptors.json';
 
 interface IProps {
 	canvas: Canvas;
@@ -72,7 +71,7 @@ class FlowItems extends Component<IProps> {
 	handleAddNode = (descriptor: any, centered = true) => {
 		this.props.canvas.handler.add(
 			Object.assign({}, descriptor, {
-				id: uuid(),
+				id: nanoid(),
 				subType: descriptor.type,
 				type: getNode(descriptor.nodeClazz),
 				configuration: descriptor.defaultConfiguration,

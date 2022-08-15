@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { uuid } from 'uuidv4';
+import { nanoid } from 'nanoid';
 import { Arrow, Line } from '../objects';
 import { FabricEvent, FabricObject } from '../utils';
 import Handler from './Handler';
@@ -52,7 +52,7 @@ class DrawingHandler {
 				hoverCursor: 'pointer',
 			}) as FabricObject<fabric.Circle>;
 			circle.set({
-				id: uuid(),
+				id: nanoid(),
 			});
 			if (!this.handler.pointArray.length) {
 				circle.set({
@@ -118,7 +118,7 @@ class DrawingHandler {
 		},
 		generate: (pointArray: FabricObject<fabric.Circle>[]) => {
 			const points = [] as any[];
-			const id = uuid();
+			const id = nanoid();
 			pointArray.forEach(point => {
 				points.push({
 					x: point.left,
@@ -170,7 +170,7 @@ class DrawingHandler {
 		//         this.handler.pointArray.push(circle);
 		//     });
 		//     const group = [target].concat(this.pointArray);
-		//     this.handler.canvas.add(new fabric.Group(group, { type: 'polygon', id: uuid() }));
+		//     this.handler.canvas.add(new fabric.Group(group, { type: 'polygon', id: nanoid() }));
 		// },
 		// removeResize: () => {
 		//     if (this.handler.pointArray) {
@@ -257,7 +257,7 @@ class DrawingHandler {
 			const { absolutePointer } = opt;
 			const { x, y } = absolutePointer;
 			let points = [] as number[];
-			const id = uuid();
+			const id = nanoid();
 			this.handler.pointArray.forEach(point => {
 				points = points.concat(point.left, point.top, x, y);
 				this.handler.canvas.remove(point);
@@ -346,7 +346,7 @@ class DrawingHandler {
 			});
 			this.handler.canvas.remove(this.handler.activeLine);
 			const option = {
-				id: uuid(),
+				id: nanoid(),
 				points,
 				type: 'arrow',
 				stroke: 'rgba(0, 0, 0, 1)',

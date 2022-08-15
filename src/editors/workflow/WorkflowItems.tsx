@@ -1,9 +1,9 @@
 import { Collapse, Input } from 'antd';
 import classnames from 'classnames';
 import i18n from 'i18next';
+import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { uuid } from 'uuidv4';
 import { CanvasInstance } from '../../canvas';
 import { CommonButton, Scrollbar } from '../../components/common';
 import { Flex } from '../../components/flex';
@@ -71,7 +71,7 @@ class WorkflowItems extends Component<IProps> {
 	handlers = {
 		onAddItem: (item, centered?: boolean) => {
 			const { canvasRef } = this.props;
-			const id = uuid();
+			const id = nanoid();
 			const option = Object.assign({}, item, {
 				id,
 				subType: item.type,

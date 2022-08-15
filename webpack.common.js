@@ -1,12 +1,34 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 module.exports = {
+	name: 'react-design-editor',
+	resolve: {
+		extensions: ['.ts', '.tsx', '.js', '.jsx', '.less'],
+		plugins: [new TsconfigPathsPlugin()],
+	},
+	plugins: [
+		new HtmlWebpackPlugin({
+			filename: 'index.html',
+			title: 'React Design Editor',
+			meta: {
+				description: `React Design Editor has started to developed direct manipulation of editable design tools like Powerpoint, We've developed it with react.js, ant.design, fabric.js`,
+			},
+		}),
+	],
+	optimization: {
+		emitOnErrors: true,
+	},
 	module: {
 		rules: [
 			{
 				test: /\.(js|jsx|tsx|ts)$/,
 				loader: 'babel-loader',
-				include: path.resolve(__dirname, 'src'),
+				include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'packages')],
+				exclude: [/node_modules/],
 				options: {
 					cacheDirectory: true,
 					babelrc: false,
@@ -26,7 +48,6 @@ module.exports = {
 							{
 								isTSX: true,
 								allExtensions: true,
-								allowDeclareFields: true,
 							},
 						],
 					],
@@ -40,16 +61,26 @@ module.exports = {
 						'@babel/plugin-syntax-dynamic-import',
 						'@babel/plugin-syntax-async-generators',
 						'@babel/plugin-proposal-object-rest-spread',
-						'react-hot-loader/babel',
-						'dynamic-import-webpack',
-						['import', { libraryName: 'antd', style: true }],
-					],
+						'@babel/plugin-transform-spread',
+						!isProduction && ['@babel/plugin-transform-react-jsx-source'],
+						!isProduction && 'react-refresh/babel',
+					].filter(Boolean),
 				},
-				exclude: /node_modules/,
 			},
 			{
 				test: /\.(css|less)$/,
-				use: ['style-loader', 'css-loader', 'less-loader'],
+				use: [
+					'style-loader',
+					'css-loader',
+					{
+						loader: 'less-loader',
+						options: {
+							lessOptions: {
+								javascriptEnabled: true,
+							},
+						},
+					},
+				],
 			},
 			{
 				test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
@@ -60,32 +91,6 @@ module.exports = {
 					limit: 10000,
 				},
 			},
-			{
-				test: /\.(js|jsx|tsx|ts)?$/,
-				include: /node_modules/,
-				use: ['react-hot-loader/webpack'],
-			},
 		],
-	},
-	optimization: {
-		splitChunks: {
-			cacheGroups: {
-				vendor: {
-					test: /node_modules/,
-					chunks: 'initial',
-					name: 'vendor',
-					enforce: true,
-				},
-			},
-		},
-		noEmitOnErrors: true,
-	},
-	resolve: {
-		extensions: ['.ts', '.tsx', '.js', 'jsx'],
-	},
-	node: {
-		net: 'empty',
-		fs: 'empty',
-		tls: 'empty',
 	},
 };

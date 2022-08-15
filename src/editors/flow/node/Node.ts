@@ -1,9 +1,9 @@
 import color from 'color';
 import { fabric } from 'fabric';
 import i18next from 'i18next';
-import { uuid } from 'uuidv4';
+import { nanoid } from 'nanoid';
 
-import { FabricObject, CirclePort } from '../../../canvas';
+import { CirclePort, FabricObject } from '../../../canvas';
 import { LinkObject } from '../../../canvas/objects/Link';
 import Port, { PortObject } from '../../../canvas/objects/Port';
 
@@ -123,7 +123,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 		});
 		const node = [rect, icon, this.label, this.errorFlag];
 		const option = Object.assign({}, options, {
-			id: options.id || uuid(),
+			id: options.id || nanoid(),
 			width: 200,
 			height: 40,
 			originX: 'left',
@@ -274,7 +274,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 	},
 	duplicate() {
 		const options = this.toObject();
-		options.id = uuid();
+		options.id = nanoid();
 		options.name = `${options.name}_clone`;
 		return new Node(options);
 	},

@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Collapse, notification, Input, message } from 'antd';
+import { Collapse, Input, message, notification } from 'antd';
 import classnames from 'classnames';
 import i18n from 'i18next';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
+import { nanoid } from 'nanoid';
+import { SVGModal } from '../../components/common';
+import CommonButton from '../../components/common/CommonButton';
+import Scrollbar from '../../components/common/Scrollbar';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
-import Scrollbar from '../../components/common/Scrollbar';
-import CommonButton from '../../components/common/CommonButton';
-import { SVGModal } from '../../components/common';
-import { uuid } from 'uuidv4';
 
 notification.config({
 	top: 80,
@@ -102,7 +102,7 @@ class ImageMapItems extends Component {
 				message.info('Already drawing');
 				return;
 			}
-			const id = uuid();
+			const id = nanoid();
 			const option = Object.assign({}, item.option, { id });
 			if (item.option.superType === 'svg' && item.type === 'default') {
 				this.handlers.onSVGModalVisible(item.option);
@@ -112,7 +112,10 @@ class ImageMapItems extends Component {
 		},
 		onAddSVG: (option, centered) => {
 			const { canvasRef } = this.props;
-			canvasRef.handler.add({ ...option, type: 'svg', superType: 'svg', id: uuid(), name: 'New SVG' }, centered);
+			canvasRef.handler.add(
+				{ ...option, type: 'svg', superType: 'svg', id: nanoid(), name: 'New SVG' },
+				centered,
+			);
 			this.handlers.onSVGModalVisible();
 		},
 		onDrawingItem: item => {
@@ -194,7 +197,7 @@ class ImageMapItems extends Component {
 			if (dt.types.length && dt.types[0] === 'Files') {
 				const { files } = dt;
 				Array.from(files).forEach(file => {
-					file.uid = uuid();
+					file.uid = nanoid();
 					const { type } = file;
 					if (type === 'image/png' || type === 'image/jpeg' || type === 'image/jpg') {
 						const item = {

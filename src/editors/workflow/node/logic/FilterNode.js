@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
-import LogicNode from './LogicNode';
+import { nanoid } from 'nanoid';
 import { Port } from '../../../../canvas/objects';
-import { uuid } from 'uuidv4';
+import LogicNode from './LogicNode';
 
 const FilterNode = fabric.util.createClass(LogicNode, {
 	initialize(options) {
@@ -27,7 +27,7 @@ const FilterNode = fabric.util.createClass(LogicNode, {
 	},
 	duplicate() {
 		const options = this.toObject();
-		options.id = uuid();
+		options.id = nanoid();
 		options.name = `${options.name}_clone`;
 		const clonedObj = new FilterNode(options);
 		return clonedObj;

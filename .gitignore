@@ -8,3 +8,7 @@ lib/
 .vscode/
 docs/
 .DS_Store
+package-lock.json
+
+# lerna
+__tests__

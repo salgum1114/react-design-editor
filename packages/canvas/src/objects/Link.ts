@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { uuid } from 'uuidv4';
+import { nanoid } from 'nanoid';
 import { FabricObject } from '../utils';
 import { NodeObject, OUT_PORT_TYPE } from './Node';
 import { PortObject } from './Port';
@@ -28,7 +28,7 @@ const Link = fabric.util.createClass(fabric.Line, {
 		const coords = [fromPort.left, fromPort.top, toPort.left, toPort.top];
 		Object.assign(options, {
 			strokeWidth: 4,
-			id: options.id || uuid(),
+			id: options.id || nanoid(),
 			originX: 'center',
 			originY: 'center',
 			lockScalingX: true,

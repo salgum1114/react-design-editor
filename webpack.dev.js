@@ -1,10 +1,9 @@
-const webpack = require('webpack');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const baseConfig = require('./webpack.common.js');
 
-const devPort = 4000;
+const port = 4000;
 const host = 'localhost';
 
 module.exports = merge(baseConfig, {
@@ -13,8 +12,7 @@ module.exports = merge(baseConfig, {
 	entry: {
 		app: [
 			'core-js/stable',
-			'react-hot-loader/patch',
-			`webpack-dev-server/client?http://${host}:${devPort}`,
+			`webpack-dev-server/client?http://${host}:${port}`,
 			'webpack/hot/only-dev-server',
 			path.resolve(__dirname, 'src/index.tsx'),
 		],
@@ -26,31 +24,20 @@ module.exports = merge(baseConfig, {
 		chunkFilename: '[id].[hash:16].js',
 	},
 	devServer: {
-		inline: true,
-		port: devPort,
-		contentBase: path.resolve(__dirname, 'public'),
-		hot: true,
-		publicPath: '/',
-		historyApiFallback: true,
+		port,
 		host,
-		proxy: {
-			'/api': {
-				target: 'http://localhost',
-			},
-			'/api/ws': {
-				target: 'ws://localhost',
-				ws: true,
-			},
+		open: true,
+		historyApiFallback: true,
+		static: {
+			publicPath: '/',
+			directory: path.resolve(__dirname, 'public'),
+		},
+		client: {
+			progress: false,
 		},
 		headers: {
 			'X-Frame-Options': 'sameorigin',
 		},
 	},
-	plugins: [
-		new webpack.HotModuleReplacementPlugin(),
-		new HtmlWebpackPlugin({
-			filename: 'index.html',
-			title: 'React Design Editor',
-		}),
-	],
+	plugins: [new ReactRefreshWebpackPlugin()],
 });

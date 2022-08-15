@@ -3,10 +3,10 @@ import React from 'react';
 import { NodeObject } from '../canvas/objects/Node';
 
 export interface IFlowContext {
-	selectedFlowNode: NodeObject;
-	setSelectedFlowNode: (selectedFlowNode: NodeObject) => void;
+	selectedFlowNode?: NodeObject;
+	setSelectedFlowNode?: (selectedFlowNode: NodeObject) => void;
 }
 
-const FlowContext = React.createContext<IFlowContext>(undefined);
+const FlowContext = React.createContext<IFlowContext>({});
 
 export default FlowContext;

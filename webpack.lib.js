@@ -4,12 +4,6 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 const pkg = require('./package.json');
 
-const plugins = [
-	// 로더들에게 옵션을 넣어주는 플러그인
-	new webpack.LoaderOptionsPlugin({
-		minimize: true,
-	}),
-];
 module.exports = {
 	mode: 'production',
 	entry: {
@@ -28,13 +22,27 @@ module.exports = {
 		umdNamedDefine: true,
 		publicPath: './',
 	},
+	plugins: [
+		new webpack.ProgressPlugin(),
+		new webpack.LoaderOptionsPlugin({
+			minimize: true,
+		}),
+		new WorkboxPlugin.GenerateSW({
+			swDest: 'sw.js',
+			skipWaiting: true,
+			clientsClaim: true,
+		}),
+	],
 	module: {
 		rules: [
 			{
 				test: /\.(js|jsx|tsx|ts)$/,
-				loader: 'babel-loader?cacheDirectory',
-				include: path.resolve(__dirname, 'src'),
+				loader: 'babel-loader',
+				include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'packages')],
+				exclude: [/node_modules/],
 				options: {
+					cacheDirectory: true,
+					babelrc: false,
 					presets: [
 						[
 							'@babel/preset-env',
@@ -51,7 +59,6 @@ module.exports = {
 							{
 								isTSX: true,
 								allExtensions: true,
-								allowDeclareFields: true,
 							},
 						],
 					],
@@ -65,23 +72,24 @@ module.exports = {
 						'@babel/plugin-syntax-dynamic-import',
 						'@babel/plugin-syntax-async-generators',
 						'@babel/plugin-proposal-object-rest-spread',
-						'dynamic-import-webpack',
-					],
+						'@babel/plugin-transform-spread',
+					].filter(Boolean),
 				},
-				exclude: /node_modules/,
 			},
 			{
 				test: /\.(css|less)$/,
-				use: ['style-loader', 'css-loader', 'less-loader'],
-			},
-			{
-				test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-				loader: 'url-loader',
-				options: {
-					publicPath: './',
-					name: 'fonts/[hash].[ext]',
-					limit: 10000,
-				},
+				use: [
+					'style-loader',
+					'css-loader',
+					{
+						loader: 'less-loader',
+						options: {
+							lessOptions: {
+								javascriptEnabled: true,
+							},
+						},
+					},
+				],
 			},
 		],
 	},
@@ -89,24 +97,24 @@ module.exports = {
 		extensions: ['.ts', '.tsx', '.js', 'jsx'],
 	},
 	optimization: {
+		minimize: true,
+		splitChunks: {
+			chunks: 'all',
+		},
 		minimizer: [
 			new TerserPlugin({
-				include: /\.min\.js$/,
-				cache: true,
 				parallel: true,
-				sourceMap: false,
 				terserOptions: {
 					warnings: false,
+					sourceMap: false,
 					compress: {
 						warnings: false,
-						unused: true, // tree shaking(export된 모듈 중 사용하지 않는 모듈은 포함하지않음)
+						unused: true,
 					},
-					ecma: 6,
+					ecma: 5,
 					mangle: true,
-					unused: true,
 				},
 			}),
 		],
 	},
-	plugins,
 };

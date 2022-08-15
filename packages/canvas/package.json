@@ -1,0 +1,39 @@
+{
+	"name": "@react-design-editor/canvas",
+	"version": "1.0.0",
+	"description": "> TODO: description",
+	"private": true,
+	"keywords": [
+		"react-design-editor"
+	],
+	"author": "Sung Gyun Oh <salgum1112@gmail.com>",
+	"homepage": "https://salgum1114.github.io/react-design-editor/tree/main/packages/canvas#readme",
+	"license": "MIT",
+	"source": "src/index.tsx",
+	"main": "lib/index.js",
+	"types": "lib/types/index.d.ts",
+	"files": [
+		"lib"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/salgum1114/react-design-editor.git"
+	},
+	"scripts": {
+		"test": "echo \"Error: run tests from root\" && exit 1"
+	},
+	"bugs": {
+		"url": "https://github.com/salgum1114/react-design-editor/issues"
+	},
+	"dependencies": {
+		"fabric": "^5.2.1",
+		"nanoid": "^4.0.0"
+	},
+	"devDependencies": {
+		"@types/fabric": "^4.5.11"
+	},
+	"peerDependencies": {
+		"react": ">=16.8.0",
+		"react-dom": ">=16.8.0"
+	}
+}
