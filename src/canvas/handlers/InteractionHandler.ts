@@ -51,6 +51,7 @@ class InteractionHandler {
 			}
 		});
 		this.handler.canvas.renderAll();
+		this.handler.onInteraction?.('selection');
 	};
 
 	/**
@@ -74,6 +75,7 @@ class InteractionHandler {
 			}
 		});
 		this.handler.canvas.renderAll();
+		this.handler.onInteraction?.('grab');
 	};
 
 	/**
@@ -98,6 +100,7 @@ class InteractionHandler {
 			}
 		});
 		this.handler.canvas.renderAll();
+		this.handler.onInteraction?.(type);
 	};
 
 	public linking = (callback?: (obj: FabricObject) => IReturnType) => {
@@ -123,6 +126,7 @@ class InteractionHandler {
 			}
 		});
 		this.handler.canvas.renderAll();
+		this.handler.onInteraction?.('link');
 	};
 
 	/**
