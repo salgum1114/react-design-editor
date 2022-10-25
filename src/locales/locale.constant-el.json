@@ -1,30 +1,29 @@
 {
 	"imagemap": {
 		"imagemap": "Image Map",
-		"imagemap-editing-confirm": "The image map contents have been modified. Do you want to do that anyway?",
-		"imagemap-editor": "Image Map Editor",
+		"imagemap-editing-confirm": "Τα περιεχόμενα έχουν τροποποιηθεί. Θέλετε να συνεχίσετε;",
+		"imagemap-editor": "Επεξεργασία φωτογραφίας",
 		"marker": {
-			"choose-icon": "Choose icon from Fontawesome",
-			"search-icon": "Search {{length}} icons for..."
+			"choose-icon": "Επιλογή εικονιδίου από Fontawesome",
+			"search-icon": "Αναζήτηση {{length}} εικονιδίων για..."
 		},
 		"link": {
-			"link-enabled": "Link Enabled"
+			"link-enabled": "Σύνδεσμος Ενεργός"
 		},
 		"tooltip": {
-			"tooltip-enabled": "Tooltip Enabled"
+			"tooltip-enabled": "Συμβουλή Ενεργή"
 		},
 		"style": {
-			"fill-color": "Fill Color",
-			"stroke-color": "Stroke Color",
-			"stroke-width": "Stroke Width",
+			"fill-color": "Χρώμα γεμίσματος",
+			"stroke-color": "Χρώμα περιγράμματος",
+			"stroke-width": "Πλάτος περιγράμματος",
 			"rx": "Radius x",
 			"ry": "Radius y"
 		},
 		"shadow": {
-			"title": "Shadow",
-			"shadow-enabled": "Shadow Enabled",
-			"offset-x": "Offset X",
-			"offset-y": "Offset Y"
+			"shadow-enabled": "Σκιά Ενεργή",
+			"offset-x": "Μετατόπιση X",
+			"offset-y": "Μετατόπιση Y"
 		},
 		"animation": {
 			"animation-type": "Animation Type",
@@ -32,8 +31,8 @@
 			"fade": "Fade",
 			"bounce": "Bounce",
 			"shake": "Shake",
-			"scaling": "Scaling",
-			"rotation": "Rotation",
+			"scaling": "Μεγέθυνση",
+			"rotation": "Περιστροφή",
 			"flash": "Flash",
 			"auto-play": "Auto Play",
 			"playback": "Playback",
@@ -45,14 +44,14 @@
 		},
 		"image": {
 			"image-load-type": "Image Load Type",
-			"file-upload": "File Upload",
-			"image-url": "Image URL"
+			"file-upload": "Ανέβασμα εικόνας",
+			"image-url": "URL εικόνας"
 		},
 		"svg": {
-			"add-svg": "Add SVG"
+			"add-svg": "Προσθήκη SVG"
 		},
 		"filter": {
-			"grayscale": "Grayscale",
+			"grayscale": "Τόνοι γκρι",
 			"invert": "Invert",
 			"sepia": "Sepia",
 			"brownie": "Brownie",
@@ -93,10 +92,10 @@
 		"node-description-required": "Please input node description"
 	},
 	"flow": {
-		"flow": "플로우",
-		"list": "플로우 목록",
-		"editor": "플로우 에디터",
-		"info": "플로우 정보"
+		"flow": "Ροή",
+		"list": "Λίστα",
+		"editor": "Επεξεργαστής",
+		"info": "Πληροφορίες"
 	},
 	"hexgrid": {
 		"hexgrid": "HexGrid"
@@ -144,48 +143,48 @@
 		"go-docs": "Go Documents!!"
 	},
 	"common": {
-		"name": "Name",
-		"description": "Description",
-		"width": "Width",
-		"height": "Height",
-		"icon": "Icon",
-		"locked": "Lock",
-		"visible": "Visible",
-		"left": "Left",
-		"top": "Top",
-		"key": "Key",
-		"type": "Type",
-		"value": "Value",
-		"title": "Title",
-		"file": "File",
-		"image": "Image",
-		"enabled": "Enabled",
-		"angle": "Angle",
-		"state": "State",
+		"name": "Όνομα",
+		"description": "Περιγραφή",
+		"width": "Πλάτος",
+		"height": "Ύψος",
+		"icon": "Εικονίδιο",
+		"locked": "Κλειδωμένο",
+		"visible": "Εμφανές",
+		"left": "Δεξιά",
+		"top": "Κορυφή",
+		"key": "Κλειδί",
+		"type": "Τύπος",
+		"value": "Τιμή",
+		"title": "Τίτλος",
+		"file": "Αρχείο",
+		"image": "Εικόνα",
+		"enabled": "Ενεργό",
+		"angle": "Γωνία",
+		"state": "Κατάσταση",
 		"url": "URL",
-		"current": "Current",
-		"new": "New",
-		"color": "Color",
+		"current": "Τρέχον",
+		"new": "Νέο",
+		"color": "Χρώμα",
 		"blur": "Blur",
 		"loop": "Loop",
-		"delay": "Delay",
-		"duration": "Duration",
+		"delay": "Καθυστέρηση",
+		"duration": "Διάρκεια",
 		"offset": "Offset",
-		"horizontal": "Horizontal",
-		"vertical": "Vertical",
-		"opacity": "Opacity",
-		"code": "Code",
-		"layout": "Layout",
-		"fixed": "Fixed",
-		"responsive": "Responsive",
-		"fullscreen": "Fullscreen",
+		"horizontal": "Οριζόντιο",
+		"vertical": "Κάθετο",
+		"opacity": "Διαφάνεια",
+		"code": "Κώδικας",
+		"layout": "Διάταξη",
+		"fixed": "Σταθερό",
+		"responsive": "Προσαρμοσμένο",
+		"fullscreen": "Πλήρης οθόνη",
 		"src": "Src",
 		"svg": "SVG"
 	},
 	"color": {
-		"red": "Red",
-		"green": "Green",
-		"blue": "Blue"
+		"red": "Κόκκινο",
+		"green": "Πράσινο",
+		"blue": "Μπλε"
 	},
 	"validation": {
 		"enter-property": "Please enter {{arg}}.",
@@ -221,5 +220,18 @@
 	},
 	"fiber": {
 		"fiber": "FiberCable"
+	},
+	"properties": {
+		"Map": "Χάρτης",
+		"General": "Γενικά",
+		"Image": "Εικόνα",
+		"Filter": "Φίλτρο",
+		"Link": "Σύνδεσμος",
+		"Tooltip": "Συμβουλή",
+		"Style": "Στυλ",
+		"Shadow": "Σκιά",
+		"Animation": "Κίνηση",
+		"Trigger": "Έναυσμα",
+		"User_Property": "Ιδιότητα χρήστη"
 	}
 }

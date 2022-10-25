@@ -1818,6 +1818,116 @@ class Handler implements HandlerOptions {
 		}
 	};
 
+	public saveCanvasSVG = async (option = { name: 'New Image', format: 'svg' }) => {
+		/*
+		const dataUrl = this.canvas.toSVG();
+		// console.log(this.canvas.toSVG());
+		if (dataUrl) {
+			const anchorEl = document.createElement('a');
+			anchorEl.href = 'data:image/svg+xml;utf8,' + encodeURIComponent(dataUrl);
+			anchorEl.download = `${option.name}.svg`;
+			document.body.appendChild(anchorEl); // required for firefox
+			anchorEl.click();
+			anchorEl.remove();
+		}
+		*/
+		
+		const newCanvas = await this.cloneCanvas(this.objects);
+		
+		const dataUrl = newCanvas.toSVG();
+		if (dataUrl) {
+			const anchorEl = document.createElement('a');
+			anchorEl.href = 'data:image/svg+xml;utf8,' + encodeURIComponent(dataUrl);
+			anchorEl.download = `${option.name}.svg`;
+			document.body.appendChild(anchorEl); // required for firefox
+			anchorEl.click();
+			anchorEl.remove();
+		}
+		// return 'data:image/svg+xml;utf8,' + encodeURIComponent(this.canvas.toSVG());
+		//const mPDFcanvas = createCanvas(800, 800, 'pdf');
+		
+		//this.canvas[utils.implSymbol]._canvas = mPDFcanvas;
+		//var stream = fabric.util.getNodeCanvas(this.canvas.lowerCanvasEl).createPDFStream();
+		//var stream = this.canvas.createPDFStream();
+		//var fCanvas = this.canvas;
+		//var stream = mPDFcanvas.createPDFStream().pipe(fCanvas);
+	}
+
+	private cloneCanvas = async (objects: any) => {
+		const newCanvasElement = document.createElement('canvas');
+		const newCanvas = new fabric.Canvas(newCanvasElement);
+		const workarea = this.workarea;
+		newCanvas.width = workarea.width + 20;
+		newCanvas.height = workarea.height + 20;
+		
+		
+		for await (const object of objects){
+			console.log(object.type);
+			if (typeof object.cloneable !== 'undefined' && !object.cloneable) {
+				console.log('not cloneable', object);
+			}
+			
+			let cloned = fabric.util.object.clone(object);
+			if (cloned.superType === 'node') {
+				cloned = cloned.duplicate();
+			}
+			cloned.set({
+				left: cloned.left - workarea.left + 10,
+				top: cloned.top - workarea.top + 10,
+				id: uuid(),
+				evented: true,
+				globalCompositeOperation: 'source-over'
+			});
+			// if(cloned.type==='image'){
+			// 	await cloned.fromObject(cloned,true);
+			// }
+			newCanvas.add(cloned);
+			newCanvas.renderAll();
+			//newCanvas.renderAll();
+		}
+		let rect = new fabric.Rect({width: workarea.width, height: workarea.height, top: 10, left:10, stroke: '#eee', strokeWidth: 1, fill: 'rgba(255,255,255,0)' }) 
+		newCanvas.add(rect);
+		newCanvas.renderAll();
+		// let selection = new fabric.ActiveSelection(newCanvas.getObjects(), { canvas:newCanvas });
+		// var sizeObj = this.resizer(newCanvas,selection);
+		// selection.scaleToHeight(sizeObj.height);
+		// selection.center();
+	//newCanvas.renderAll();
+		return newCanvas;
+	}
+	private resizer = (canvas: FabricCanvas, imageObj:FabricObject) => {
+		var imageAspectRatio = imageObj.width / imageObj.height;
+		var canvasAspectRatio = canvas.width / canvas.height;
+		var renderableHeight, renderableWidth, xStart, yStart;
+	
+		// If image's aspect ratio is less than canvas's we fit on height
+		// and place the image centrally along width
+		if (imageAspectRatio < canvasAspectRatio) {
+		  renderableHeight = canvas.height;
+		  renderableWidth = imageObj.width * (renderableHeight / imageObj.height);
+		  xStart = (canvas.width - renderableWidth) / 2;
+		  yStart = 0;
+		}
+	
+		// If image's aspect ratio is greater than canvas's we fit on width
+		// and place the image centrally along height
+		else if (imageAspectRatio > canvasAspectRatio) {
+		  renderableWidth = canvas.width
+		  renderableHeight = imageObj.height * (renderableWidth / imageObj.width);
+		  xStart = 0;
+		  yStart = (canvas.height - renderableHeight) / 2;
+		}
+	
+		// Happy path - keep aspect ratio
+		else {
+		  renderableHeight = canvas.height;
+		  renderableWidth = canvas.width;
+		  xStart = 0;
+		  yStart = 0;
+		}
+		return { x: xStart, y: yStart, width: renderableWidth, height: renderableHeight }
+	  }
+
 	/**
 	 * Sets "angle" of an instance with centered rotation
 	 *

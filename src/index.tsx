@@ -3,6 +3,7 @@ import ReactDom from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
 import { LocaleProvider } from 'antd';
 import koKR from 'antd/lib/locale-provider/ko_KR';
+import elGR from 'antd/lib/locale-provider/el_GR';
 import enUS from 'antd/lib/locale-provider/en_US';
 import App from './App';
 import { register } from './serviceWorker';
@@ -12,6 +13,8 @@ import { i18nClient } from './i18n';
 const antResources = {
 	ko: koKR,
 	'ko-KR': koKR,
+	el: elGR,
+	'el-GR': elGR,
 	en: enUS,
 	'en-US': enUS,
 };

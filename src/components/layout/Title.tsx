@@ -46,7 +46,7 @@ class Title extends Component<IProps> {
 				alignItems="center"
 			>
 				<Flex style={{ marginLeft: 8 }} flex="0 1 auto">
-					<span style={{ color: '#fff', fontSize: 24, fontWeight: 500 }}>React Design Editor</span>
+					<span style={{ color: '#fff', fontSize: 24, fontWeight: 500 }}>Orasi Design Editor</span>
 					<Tooltip title={i18next.t('action.go-github')} overlayStyle={{ fontSize: 16 }}>
 						<Button
 							className="rde-action-btn"

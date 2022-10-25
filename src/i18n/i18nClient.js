@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import { translation, translationKo } from '../locales';
+import { translation, translationKo, translationEl } from '../locales';
 
 /**
  * Client Side Load
@@ -10,10 +10,10 @@ const i18nClient = i18n
 	.use(LanguageDetector)
 	.init({
 		load: 'all',
-		whitelist: ['en', 'en-US', 'ko', 'ko-KR'],
+		whitelist: ['en', 'en-US', 'el', 'el-GR'],
 		nonExplicitWhitelist: false,
-		lngs: ['en-US', 'ko-KR'],
-		fallbackLng: 'en-US',
+		lngs: ['en-US', 'el'],
+		fallbackLng: 'el',
 		interpolation: {
 			escapeValue: false, // not needed for react!!
 		},
@@ -28,6 +28,12 @@ const i18nClient = i18n
 			},
 			'en-US': {
 				'locale.constant': translation,
+			},
+			el: {
+				'locale.constant': translationEl,
+			},
+			'el-GR': {
+				'locale.constant': translationEl,
 			},
 			ko: {
 				'locale.constant': translationKo,

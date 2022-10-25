@@ -5,6 +5,7 @@ import { Form, Collapse, List } from 'antd';
 import PropertyDefinition from './PropertyDefinition';
 import Scrollbar from '../../../components/common/Scrollbar';
 import { Flex } from '../../../components/flex';
+import i18n from 'i18next';
 
 const { Panel } = Collapse;
 
@@ -34,7 +35,12 @@ class NodeProperties extends Component {
 								return (
 									<Panel
 										key={key}
-										header={PropertyDefinition[selectedItem.type][key].title}
+										header={i18n.t(
+											`properties.${PropertyDefinition[selectedItem.type][key].title.replace(
+												/\s/g,
+												'_',
+											)}`,
+										)}
 										showArrow={showArrow}
 									>
 										{PropertyDefinition[selectedItem.type][key].component.render(
