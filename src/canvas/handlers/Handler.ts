@@ -1796,9 +1796,13 @@ class Handler implements HandlerOptions {
 	public saveCanvasImage = (option = { name: 'New Image', format: 'png', quality: 1 }) => {
 		// If it's zoomed out/in, the container will also include in the image
 		// hence need to reset the zoom level.
-		this.zoomHandler.zoomOneToOne();
-
-		const { left, top, width, height } = this.workarea;
+		let { left, top, width, height, scaleX, scaleY } = this.workarea;
+		width = Math.ceil(width * scaleX);
+		height = Math.ceil(height * scaleY);
+		// cachedVT is used to reset the viewportTransform after the image is saved.
+		const cachedVT = this.canvas.viewportTransform;
+		// reset the viewportTransform to default (no zoom)
+		this.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
 		const dataUrl = this.canvas.toDataURL({
 			...option,
 			left,
@@ -1816,6 +1820,8 @@ class Handler implements HandlerOptions {
 			anchorEl.click();
 			anchorEl.remove();
 		}
+		// reset the viewportTransform to previous value.
+		this.canvas.viewportTransform = cachedVT;
 	};
 
 	/**
