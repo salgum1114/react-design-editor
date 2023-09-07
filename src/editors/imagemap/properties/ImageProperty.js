@@ -1,9 +1,9 @@
-import React from 'react';
 import { Form, Radio } from 'antd';
 import i18n from 'i18next';
+import React from 'react';
 
-import UrlModal from '../../../components/common/UrlModal';
 import FileUpload from '../../../components/common/FileUpload';
+import UrlModal from '../../../components/common/UrlModal';
 
 export default {
 	render(canvasRef, form, data) {
@@ -34,7 +34,7 @@ export default {
 								},
 							],
 							initialValue: data.file,
-						})(<FileUpload accept="image/*" />)}
+						})(<FileUpload accept="image/*" limit={100} />)}
 					</Form.Item>
 				) : (
 					<Form.Item>

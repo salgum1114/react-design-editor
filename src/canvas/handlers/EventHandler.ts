@@ -337,9 +337,9 @@ class EventHandler {
 		const delta = event.e.deltaY;
 		let zoomRatio = this.handler.canvas.getZoom();
 		if (delta > 0) {
-			zoomRatio -= 0.05;
+			zoomRatio -= this.handler.zoomStep;
 		} else {
-			zoomRatio += 0.05;
+			zoomRatio += this.handler.zoomStep;
 		}
 		this.handler.zoomHandler.zoomToPoint(
 			new fabric.Point(this.handler.canvas.getWidth() / 2, this.handler.canvas.getHeight() / 2),

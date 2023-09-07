@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import { Icon, Upload, message } from 'antd';
 import PropTypes from 'prop-types';
-import { Upload, Icon } from 'antd';
+import React, { Component } from 'react';
 
 const { Dragger } = Upload;
 

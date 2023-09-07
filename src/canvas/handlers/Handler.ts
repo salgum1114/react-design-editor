@@ -3,27 +3,27 @@ import { union } from 'lodash';
 import { uuid } from 'uuidv4';
 import warning from 'warning';
 import {
-	AlignmentHandler,
-	AnimationHandler,
-	ChartHandler,
-	ContextmenuHandler,
-	CropHandler,
-	CustomHandler,
-	DrawingHandler,
-	ElementHandler,
-	EventHandler,
-	GridHandler,
-	GuidelineHandler,
-	ImageHandler,
-	InteractionHandler,
-	LinkHandler,
-	NodeHandler,
-	PortHandler,
-	ShortcutHandler,
-	TooltipHandler,
-	TransactionHandler,
-	WorkareaHandler,
-	ZoomHandler,
+    AlignmentHandler,
+    AnimationHandler,
+    ChartHandler,
+    ContextmenuHandler,
+    CropHandler,
+    CustomHandler,
+    DrawingHandler,
+    ElementHandler,
+    EventHandler,
+    GridHandler,
+    GuidelineHandler,
+    ImageHandler,
+    InteractionHandler,
+    LinkHandler,
+    NodeHandler,
+    PortHandler,
+    ShortcutHandler,
+    TooltipHandler,
+    TransactionHandler,
+    WorkareaHandler,
+    ZoomHandler,
 } from '.';
 import CanvasObject from '../CanvasObject';
 import { defaults } from '../constants';
@@ -31,20 +31,20 @@ import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
 import {
-	CanvasOption,
-	FabricCanvas,
-	FabricElement,
-	FabricGroup,
-	FabricImage,
-	FabricObject,
-	FabricObjectOption,
-	FabricObjects,
-	GridOption,
-	GuidelineOption,
-	InteractionMode,
-	KeyEvent,
-	WorkareaObject,
-	WorkareaOption,
+    CanvasOption,
+    FabricCanvas,
+    FabricElement,
+    FabricGroup,
+    FabricImage,
+    FabricObject,
+    FabricObjectOption,
+    FabricObjects,
+    GridOption,
+    GuidelineOption,
+    InteractionMode,
+    KeyEvent,
+    WorkareaObject,
+    WorkareaOption,
 } from '../utils';
 import { LinkOption } from './LinkHandler';
 import { TransactionEvent } from './TransactionHandler';
@@ -152,6 +152,11 @@ export interface HandlerOption {
 	 */
 	maxZoom?: number;
 	/**
+	 * Zoom ratio step
+	 * @type {number}
+	 */
+	zoomStep?: number;
+	/**
 	 * Workarea option
 	 * @type {WorkareaOption}
 	 */
@@ -226,6 +231,7 @@ class Handler implements HandlerOptions {
 	public interactionMode: InteractionMode;
 	public minZoom: number;
 	public maxZoom: number;
+	public zoomStep: number = 0.05;
 	public propertiesToInclude?: string[] = defaults.propertiesToInclude;
 	public workareaOption?: WorkareaOption = defaults.workareaOption;
 	public canvasOption?: CanvasOption = defaults.canvasOption;
@@ -323,6 +329,7 @@ class Handler implements HandlerOptions {
 		this.interactionMode = options.interactionMode;
 		this.minZoom = options.minZoom;
 		this.maxZoom = options.maxZoom;
+		this.zoomStep = options.zoomStep || 0.05;
 		this.zoomEnabled = options.zoomEnabled;
 		this.width = options.width;
 		this.height = options.height;
@@ -370,7 +377,7 @@ class Handler implements HandlerOptions {
 		this.animationHandler = new AnimationHandler(this);
 		this.contextmenuHandler = new ContextmenuHandler(this);
 		this.tooltipHandler = new TooltipHandler(this);
-		this.zoomHandler = new ZoomHandler(this);
+		this.zoomHandler = new ZoomHandler(this, this.zoomStep);
 		this.interactionHandler = new InteractionHandler(this);
 		this.transactionHandler = new TransactionHandler(this);
 		this.gridHandler = new GridHandler(this);

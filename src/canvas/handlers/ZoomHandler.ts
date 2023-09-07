@@ -1,14 +1,16 @@
 import { fabric } from 'fabric';
 
-import Handler from './Handler';
 import { VideoObject } from '../objects/Video';
 import { FabricObject } from '../utils';
+import Handler from './Handler';
 
 class ZoomHandler {
 	handler?: Handler;
+	private _zoomStep?: number;
 
-	constructor(handler: Handler) {
+	constructor(handler: Handler, zoomStep: number = 0.05) {
 		this.handler = handler;
+		this._zoomStep = zoomStep;
 	}
 
 	/**
@@ -83,7 +85,7 @@ class ZoomHandler {
 	 */
 	public zoomIn = () => {
 		let zoomRatio = this.handler.canvas.getZoom();
-		zoomRatio += 0.05;
+		zoomRatio += this._zoomStep;
 		const center = this.handler.canvas.getCenter();
 		this.zoomToPoint(new fabric.Point(center.left, center.top), zoomRatio);
 	};
@@ -94,7 +96,7 @@ class ZoomHandler {
 	 */
 	public zoomOut = () => {
 		let zoomRatio = this.handler.canvas.getZoom();
-		zoomRatio -= 0.05;
+		zoomRatio -= this._zoomStep;
 		const center = this.handler.canvas.getCenter();
 		this.zoomToPoint(new fabric.Point(center.left, center.top), zoomRatio);
 	};

@@ -356,11 +356,6 @@ class ImageMapEditor extends Component {
 		},
 		onTooltip: (ref, target) => {
 			const value = Math.random() * 10 + 1;
-			const { animations, styles } = this.state;
-			// const { code } = target.trigger;
-			// const compile = SandBox.compile(code);
-			// const result = compile(value, animations, styles, target.userProperty);
-			// console.log(result);
 			return (
 				<div>
 					<div>
@@ -735,7 +730,7 @@ class ImageMapEditor extends Component {
 								this.canvasRef = c;
 							}}
 							className="rde-canvas"
-							minZoom={30}
+							minZoom={1}
 							maxZoom={500}
 							objectOption={defaultOption}
 							propertiesToInclude={propertiesToInclude}
