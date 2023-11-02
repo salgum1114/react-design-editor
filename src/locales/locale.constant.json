@@ -122,6 +122,7 @@
 		"crop-save": "Save crop image",
 		"crop-cancel": "Cancel crop image",
 		"image-save": "Save Image",
+		"canvas-save": "Save Canvas",
 		"clone": "Clone",
 		"delete": "Delete",
 		"save": "Save",
