@@ -108,21 +108,15 @@ class FlowItems extends Component<IProps> {
 		);
 	};
 
-	renderItems = (descriptors: WorkflowDescriptor[]) => {
-		return (
-			<div className="flow-editor-items-wrapper">
-				{descriptors.map(descriptor => <RenderItem descriptor={descriptor} handleAddNode={this.handleAddNode} />)}
-			</div>
-		);
-	};
-
 	render() {
 		return (
 			<div className="flow-editor-items">
 				<Collapse defaultActiveKey={Object.keys(Descriptors)}>
 					{Object.keys(Descriptors).map(key => (
 						<Collapse.Panel key={key} header={key} showArrow={false}>
-							{this.renderItems(Descriptors[key])}
+							<div className="flow-editor-items-wrapper">
+								{Descriptors[key].map(descriptor => <RenderItem descriptor={descriptor} handleAddNode={this.handleAddNode} />)}
+							</div>
 						</Collapse.Panel>
 					))}
 				</Collapse>
