@@ -10,7 +10,7 @@ interface IState {
 	activeEditor?: EditorType;
 }
 
-class App extends Component<any, IState> {
+class App extends Component<IState> {
 	state: IState = {
 		activeEditor: 'imagemap',
 	};
