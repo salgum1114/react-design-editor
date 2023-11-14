@@ -12,6 +12,30 @@ interface IProps {
 	canvas: Canvas;
 }
 
+interface RenderItemProps {
+	descriptor: WorkflowDescriptor;
+	handleAddNode: (descriptor: WorkflowDescriptor, centered: boolean) => void
+}
+
+const RenderItem = ({descriptor, handleAddNode}: RenderItemProps) => {
+	return(
+		<div
+			key={descriptor.nodeClazz}
+			className="flow-editor-items-node"
+			draggable={true}
+			onClick={() => handleAddNode(descriptor, true)}
+		>
+			<div className="flow-editor-items-node-icon">
+				<Icon
+					name={descriptor.icon && descriptor.icon.length ? descriptor.icon : 'image'}
+					color={NODE_COLORS[descriptor.type].fill}
+				/>
+			</div>
+			<div className="flow-editor-items-node-name">{descriptor.name}</div>
+		</div>
+	);
+}
+
 class FlowItems extends Component<IProps> {
 	attachEventListener = canvasRef => {
 		this.props.canvas.canvas.wrapperEl.addEventListener('dragenter', this.handleDragEnter, false);
@@ -87,26 +111,7 @@ class FlowItems extends Component<IProps> {
 	renderItems = (descriptors: WorkflowDescriptor[]) => {
 		return (
 			<div className="flow-editor-items-wrapper">
-				{descriptors.map(descriptor => this.renderItem(descriptor))}
-			</div>
-		);
-	};
-
-	renderItem = (descriptor: WorkflowDescriptor) => {
-		return (
-			<div
-				key={descriptor.nodeClazz}
-				className="flow-editor-items-node"
-				draggable={true}
-				onClick={() => this.handleAddNode(descriptor)}
-			>
-				<div className="flow-editor-items-node-icon">
-					<Icon
-						name={descriptor.icon && descriptor.icon.length ? descriptor.icon : 'image'}
-						color={NODE_COLORS[descriptor.type].fill}
-					/>
-				</div>
-				<div className="flow-editor-items-node-name">{descriptor.name}</div>
+				{descriptors.map(descriptor => <RenderItem descriptor={descriptor} handleAddNode={this.handleAddNode} />)}
 			</div>
 		);
 	};
