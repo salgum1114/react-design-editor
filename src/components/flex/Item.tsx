@@ -22,7 +22,7 @@ const Item: React.SFC<ItemProps> = props => {
 			flex,
 		},
 		style,
-	) as any;
+	) as ItemProps;
 	return (
 		<div
 			style={Object.keys(newStyle).reduce((prev, key) => {
