@@ -6,6 +6,7 @@ import { getNode } from '../workflow/configuration/NodeConfiguration';
 import { NODE_COLORS } from '../../canvas/objects/Node';
 import Icon from '../../components/icon/Icon';
 import { uuid } from 'uuidv4';
+import { WorkflowDescriptor } from '../workflow/workflowDescriptors';
 
 interface IProps {
 	canvas: Canvas;
@@ -69,7 +70,7 @@ class FlowItems extends Component<IProps> {
 		e.target.classList.remove('dragging');
 	};
 
-	handleAddNode = (descriptor: any, centered = true) => {
+	handleAddNode = (descriptor: WorkflowDescriptor, centered = true) => {
 		this.props.canvas.handler.add(
 			Object.assign({}, descriptor, {
 				id: uuid(),
@@ -83,7 +84,7 @@ class FlowItems extends Component<IProps> {
 		);
 	};
 
-	renderItems = (descriptors: any[]) => {
+	renderItems = (descriptors: WorkflowDescriptor[]) => {
 		return (
 			<div className="flow-editor-items-wrapper">
 				{descriptors.map(descriptor => this.renderItem(descriptor))}
@@ -91,7 +92,7 @@ class FlowItems extends Component<IProps> {
 		);
 	};
 
-	renderItem = (descriptor: any) => {
+	renderItem = (descriptor: WorkflowDescriptor) => {
 		return (
 			<div
 				key={descriptor.nodeClazz}
