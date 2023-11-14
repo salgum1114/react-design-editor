@@ -56,7 +56,7 @@ class Flex extends Component<BoxProps> {
 				flex,
 			},
 			style,
-		) as any;
+		) as BoxProps;
 		return (
 			<div
 				style={Object.keys(newStyle).reduce((prev, key) => {
