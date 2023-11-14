@@ -37,7 +37,7 @@ class WorkflowEditor extends Component {
 
 	canvasRef: CanvasInstance;
 	nodeConfigurationRef: any;
-	container: any;
+	container: HTMLDivElement | null;
 
 	componentDidMount() {
 		import('./Descriptors.json').then(descriptors => {
