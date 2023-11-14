@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Item from './Item';
 
-export interface BoxProps extends React.HTMLAttributes<any> {
+export interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
 	display?: 'flex' | 'inline-flex';
 	flexDirection?: 'column-reverse' | 'column' | 'row-reverse' | 'row';
 	flexWrap?: 'nowrap' | 'wrap-reverse' | 'wrap';
