@@ -19,6 +19,21 @@ const initSelectedVar = {
 	value: null,
 };
 
+const GetComponentByType = props => {
+	switch (props.type) {
+		case 'text':
+			return <Input />;
+		case 'number':
+			return <InputNumber />;
+		case 'boolean':
+			return <Switch />;
+		case 'json':
+			return <InputJson onValidate={props.handlers.onValidate} />;
+		default:
+			return <Input />;
+	}
+};
+
 class WorkflowGlobalParameters extends Component<IProps> {
 	state = {
 		types: ['text', 'number', 'boolean', 'json'],
@@ -27,21 +42,6 @@ class WorkflowGlobalParameters extends Component<IProps> {
 		visible: false,
 		isEdit: false,
 		errors: null,
-	};
-
-	getComponentByType = type => {
-		switch (type) {
-			case 'text':
-				return <Input />;
-			case 'number':
-				return <InputNumber />;
-			case 'boolean':
-				return <Switch />;
-			case 'json':
-				return <InputJson onValidate={this.handlers.onValidate} />;
-			default:
-				return <Input />;
-		}
 	};
 
 	getType = variable => {
@@ -282,7 +282,7 @@ class WorkflowGlobalParameters extends Component<IProps> {
 							initialValue: selectedVar.value,
 							rules,
 							valuePropName: selectedVar.type === 'boolean' ? 'checked' : 'value',
-						})(this.getComponentByType(selectedVar.type))}
+						})(<GetComponentByType item={selectedVar.type} handlers={this.handlers}/>)}
 					</Form.Item>
 				</Modal>
 			</WorkflowSiderContainer>
