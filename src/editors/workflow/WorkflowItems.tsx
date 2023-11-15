@@ -16,6 +16,30 @@ interface IProps {
 	descriptors: any;
 }
 
+const RenderItems = props => (
+	<Flex flexWrap="wrap" flexDirection="column" style={{ width: '100%' }}>
+		{props.items.map(item => (
+			<div
+				key={item.name}
+				draggable={true}
+				onClick={e => props.handlers.onAddItem(item)}
+				onDragStart={e => props.events.onDragStart(e, item)}
+				onDragEnd={e => props.events.onDragEnd(e, item)}
+				className="rde-editor-items-item"
+				style={{ justifyContent: props.collapse ? 'center' : null }}
+			>
+				<span className="rde-editor-items-item-icon">
+					<Icon
+						name={item.icon && item.icon.length ? item.icon : 'image'}
+						color={NODE_COLORS[item.type].fill}
+					/>
+				</span>
+				{props.collapse ? null : <span className="rde-editor-items-item-text">{item.name}</span>}
+			</div>
+		))}
+	</Flex>
+);
+
 class WorkflowItems extends Component<IProps> {
 	static propTypes = {
 		canvasRef: PropTypes.any,
@@ -168,30 +192,6 @@ class WorkflowItems extends Component<IProps> {
 		canvasRef.canvas.wrapperEl.removeEventListener('drop', this.events.onDrop);
 	};
 
-	renderItems = items => (
-		<Flex flexWrap="wrap" flexDirection="column" style={{ width: '100%' }}>
-			{items.map(item => (
-				<div
-					key={item.name}
-					draggable={true}
-					onClick={e => this.handlers.onAddItem(item)}
-					onDragStart={e => this.events.onDragStart(e, item)}
-					onDragEnd={e => this.events.onDragEnd(e, item)}
-					className="rde-editor-items-item"
-					style={{ justifyContent: this.state.collapse ? 'center' : null }}
-				>
-					<span className="rde-editor-items-item-icon">
-						<Icon
-							name={item.icon && item.icon.length ? item.icon : 'image'}
-							color={NODE_COLORS[item.type].fill}
-						/>
-					</span>
-					{this.state.collapse ? null : <span className="rde-editor-items-item-text">{item.name}</span>}
-				</div>
-			))}
-		</Flex>
-	);
-
 	render() {
 		const { descriptors } = this.props;
 		const { activeKey, filteredDescriptors, collapse, textSearch } = this.state;
@@ -222,7 +222,7 @@ class WorkflowItems extends Component<IProps> {
 					<Scrollbar>
 						<Flex flex="1" style={{ overflowY: 'hidden' }}>
 							{textSearch.length ? (
-								this.renderItems(filteredDescriptors)
+								<RenderItems items={filteredDescriptors} handlers={this.handlers} events={this.events} collpase={this.state.collapse} />
 							) : (
 								<Collapse
 									style={{ width: '100%' }}
@@ -236,7 +236,7 @@ class WorkflowItems extends Component<IProps> {
 											header={collapse ? '' : key}
 											showArrow={!collapse}
 										>
-											{this.renderItems(descriptors[key])}
+											<RenderItems items={descriptors[key]} handlers={this.handlers} events={this.events} collpase={this.state.collapse}/>
 										</Collapse.Panel>
 									))}
 								</Collapse>
