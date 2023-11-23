@@ -1,21 +1,21 @@
-import React, { useRef, useContext, useState, useEffect } from 'react';
 import color from 'color';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { FlowItems, FlowSettings, FlowToolbar } from '.';
-import { Canvas } from '../../canvas';
-import { FlowContext } from '../../contexts';
+import { Canvas, CanvasInstance } from '../../canvas';
 import { NodeObject } from '../../canvas/objects/Node';
-import Nodes from './node';
-import Links from './link';
-import Descriptors from '../workflow/Descriptors.json';
 import { Content } from '../../components/layout';
+import { FlowContext } from '../../contexts';
+import Descriptors from '../workflow/Descriptors.json';
+import Links from './link';
+import Nodes from './node';
 
 import './style/index.less';
 
 const nodes = Nodes(Descriptors);
 
 const FlowEditor = () => {
-	const canvasRef = useRef<Canvas>();
+	const canvasRef = useRef<CanvasInstance>();
 	const { setSelectedFlowNode } = useContext(FlowContext);
 	const [loading, setLoading] = useState(true);
 	useEffect(() => {

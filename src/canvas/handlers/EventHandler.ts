@@ -680,6 +680,7 @@ class EventHandler {
 								const createdObj = this.handler.add(obj, false, true);
 								this.handler.canvas.setActiveObject(createdObj as FabricObject);
 								this.handler.canvas.requestRenderAll();
+								this.handler.onAdd?.(createdObj);
 							} else {
 								const nodes = [] as any[];
 								const targets = [] as any[];
@@ -707,6 +708,7 @@ class EventHandler {
 								});
 								this.handler.canvas.setActiveObject(activeSelection);
 								this.handler.canvas.requestRenderAll();
+								this.handler.onAdd?.(activeSelection);
 							}
 							if (!this.handler.transactionHandler.active) {
 								this.handler.transactionHandler.save('paste');
