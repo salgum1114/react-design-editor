@@ -293,7 +293,7 @@ class WorkareaHandler {
 					this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
 					canvas.renderAll();
 					resolve(workarea);
-				});
+				}, { crossOrigin: 'anonymous' });
 			});
 		};
 		if (!source) {

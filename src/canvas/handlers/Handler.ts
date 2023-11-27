@@ -647,6 +647,7 @@ class Handler implements HandlerOptions {
 				resolve(
 					obj.setSrc(source, () => this.canvas.renderAll(), {
 						dirty: true,
+                        crossOrigin: "anonymous"
 					}) as FabricImage,
 				);
 			}
