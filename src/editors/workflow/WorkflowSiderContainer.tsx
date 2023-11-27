@@ -12,42 +12,44 @@ interface IProps {
 	contentStyle?: React.CSSProperties;
 }
 
+class SomeProps {
+	children?
+	title?
+	content?
+	icon?
+	extra?
+	titleStyle? 
+	contentStyle?
+}
+
 class WorkflowSiderContainer extends Component<IProps> {
-	static propTypes = {
-		children: PropTypes.any,
-		title: PropTypes.string,
-		icon: PropTypes.string,
-		content: PropTypes.any,
-		extra: PropTypes.any,
-		titleStyle: PropTypes.object,
-		contentStyle: PropTypes.object,
-	};
+	static propType;
 
 	render() {
-		const { children, title, content, icon, extra, titleStyle, contentStyle } = this.props;
+		const attributes: SomeProps = this.props;
 		return (
 			<Flex flexDirection="column" style={{ height: '100%' }}>
-				<Flex style={Object.assign({}, { background: '#f5f4f3', height: '40px' }, titleStyle)}>
+				<Flex style={Object.assign({}, { background: '#f5f4f3', height: '40px' }, attributes.titleStyle)}>
 					<Flex
 						flex="1"
 						justifyContent="flex-start"
 						alignItems="center"
 						style={{ marginLeft: '8px', color: '#4d5360' }}
 					>
-						<Icon name={icon} style={{ marginRight: 8 }} />
-						<h4 style={{ marginBottom: 0 }}>{title}</h4>
+						<Icon name={attributes.icon} style={{ marginRight: 8 }} />
+						<h4 style={{ marginBottom: 0 }}>{attributes.title}</h4>
 					</Flex>
-					{extra ? (
+					{attributes.extra ? (
 						<Flex justifyContent="flex-end" alignItems="center">
-							{extra}
+							{attributes.extra}
 						</Flex>
 					) : null}
 				</Flex>
 				<Flex
 					flexDirection="column"
-					style={Object.assign({}, { height: '100%', margin: '8px 16px' }, contentStyle)}
+					style={Object.assign({}, { height: '100%', margin: '8px 16px' }, attributes.contentStyle)}
 				>
-					{children || content}
+					{attributes.children || attributes.content}
 				</Flex>
 			</Flex>
 		);
