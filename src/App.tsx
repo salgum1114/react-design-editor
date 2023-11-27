@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import Title from './components/layout/Title';
+import TitleBar from './components/layout/TitleBar';
 import FlowContainer from './containers/FlowContainer';
 import { FiberEditor, FlowEditor, HexGridEditor, ImageMapEditor, WorkflowEditor } from './editors';
 
@@ -63,7 +63,7 @@ class App extends Component<IState> {
 					<script async={true} src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
 				</Helmet>
 				<div className="rde-title">
-					<Title onChangeEditor={this.handleChangeEditor} currentEditor={activeEditor} />
+					<TitleBar onChangeEditor={this.handleChangeEditor} currentEditor={activeEditor} />
 				</div>
 				<FlowContainer>
 					<div className="rde-content">{this.renderEditor(activeEditor)}</div>
