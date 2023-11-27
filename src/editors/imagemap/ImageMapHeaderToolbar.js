@@ -140,7 +140,7 @@ class ImageMapHeaderToolbar extends Component {
 						disabled={isCropping}
 						onClick={() => canvasRef.handler?.saveImage()}
 						icon="image"
-						tooltipTitle={i18n.t('action.image-save')}
+						tooltipTitle={i18n.t('action.canvas-save')}
 					/>
 					<CommonButton
 						className="rde-action-btn"
