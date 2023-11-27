@@ -16,12 +16,7 @@ interface IProps {
 }
 
 class WorkflowConfigurations extends Component<IProps> {
-	static propTypes = {
-		canvasRef: PropTypes.any,
-		selectedItem: PropTypes.object,
-		workflow: PropTypes.object,
-		onChange: PropTypes.func,
-	};
+	static propTypes;
 
 	state = {
 		collapse: false,
@@ -42,32 +37,30 @@ class WorkflowConfigurations extends Component<IProps> {
 	};
 
 	render() {
-		const { canvasRef, selectedItem, workflow, onChange } = this.props;
-		const { collapse, activeKey } = this.state;
 		const className = classnames('rde-editor-configurations', {
-			minimize: collapse,
+			minimize: this.state.collapse,
 		});
 		return (
 			<div className={className}>
 				<CommonButton
 					className="rde-action-btn"
 					shape="circle"
-					icon={collapse ? 'angle-double-left' : 'angle-double-right'}
+					icon={this.state.collapse ? 'angle-double-left' : 'angle-double-right'}
 					onClick={this.handlers.onCollapse}
 					style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
 				/>
 				<Tabs
 					tabPosition="right"
-					activeKey={activeKey}
+					activeKey={this.state.activeKey}
 					onChange={this.handlers.onChange}
 					style={{ height: '100%' }}
 					tabBarStyle={{ marginTop: 60 }}
 				>
 					<Tabs.TabPane tab={<Icon name="cog" />} key="info">
-						<WorkflowInfo workflow={workflow} onChange={onChange} />
+						<WorkflowInfo workflow={this.props.workflow} onChange={this.props.onChange} />
 					</Tabs.TabPane>
 					<Tabs.TabPane tab={<Icon name="globe" />} key="variables">
-						<WorkflowGlobalParameters workflow={workflow} onChange={onChange} />
+						<WorkflowGlobalParameters workflow={this.props.workflow} onChange={this.props.onChange} />
 					</Tabs.TabPane>
 				</Tabs>
 			</div>
