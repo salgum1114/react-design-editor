@@ -133,33 +133,30 @@ class Styles extends Component {
 	};
 
 	render() {
-		const { styles } = this.props;
-		const { visible, style, validateTitle } = this.state;
-		const { onOk, onCancel, onAdd, onEdit, onDelete, onClear, onChange, onValid } = this.handlers;
 		return (
 			<Form>
 				<Flex flexDirection="column">
 					<Flex justifyContent="flex-end" style={{ padding: 8 }}>
-						<Button className="rde-action-btn" shape="circle" onClick={onAdd}>
+						<Button className="rde-action-btn" shape="circle" onClick={this.handlers.onAdd}>
 							<Icon name="plus" />
 						</Button>
-						<Button className="rde-action-btn" shape="circle" onClick={onClear}>
+						<Button className="rde-action-btn" shape="circle" onClick={this.handlers.onClear}>
 							<Icon name="times" />
 						</Button>
 						<StyleModal
 							ref={c => {
 								this.modalRef = c;
 							}}
-							validateTitle={validateTitle}
-							visible={visible}
-							onOk={onOk}
-							style={style}
-							onCancel={onCancel}
-							onChange={onChange}
-							onValid={onValid}
+							validateTitle={this.state.validateTitle}
+							visible={this.state.visible}
+							onOk={this.handlers.onOk}
+							style={this.state.style}
+							onCancel={this.handlers.onCancel}
+							onChange={this.handlers.onChange}
+							onValid={this.handlers.onValid}
 						/>
 					</Flex>
-					<StyleList styles={styles} onEdit={onEdit} onDelete={onDelete} />
+					<StyleList styles={this.props.styles} onEdit={this.handlers.onEdit} onDelete={this.handlers.onDelete} />
 				</Flex>
 			</Form>
 		);
