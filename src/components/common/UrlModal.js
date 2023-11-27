@@ -4,6 +4,7 @@ import { Form, Modal, Button, Input } from 'antd';
 import i18n from 'i18next';
 
 import Icon from '../icon/Icon';
+import { UrlModalLabel } from './UrlModalLabel';
 
 class UrlModal extends Component {
 	handlers = {
@@ -56,17 +57,11 @@ class UrlModal extends Component {
 	}
 
 	render() {
-		const { onOk, onCancel, onClick } = this.handlers;
 		const { form } = this.props;
 		const { getFieldDecorator } = form;
 		const { url, visible } = this.state;
 		const label = (
-			<React.Fragment>
-				<span style={{ marginRight: 8 }}>{i18n.t('common.url')}</span>
-				<Button onClick={onClick} shape="circle" className="rde-action-btn">
-					<Icon name="edit" />
-				</Button>
-			</React.Fragment>
+			<UrlModalLabel onclick={this.handlers.onClick}/>
 		);
 		return (
 			<React.Fragment>
@@ -81,7 +76,7 @@ class UrlModal extends Component {
 						initialValue: url || '',
 					})(<span style={{ wordBreak: 'break-all' }}>{url}</span>)}
 				</Form.Item>
-				<Modal onCancel={onCancel} onOk={onOk} visible={visible}>
+				<Modal onCancel={this.handlers.onCancel} onOk={this.handlers.onOk} visible={visible}>
 					<Form.Item label={i18n.t('common.url')} colon={false}>
 						<Input
 							defaultValue={url}
