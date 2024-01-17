@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import i18n from 'i18next';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-import { Flex } from '../../components/flex';
-import ImageMapList from './ImageMapList';
 import { CommonButton } from '../../components/common';
+import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
+import ImageMapList from './ImageMapList';
 
 class ImageMapHeaderToolbar extends Component {
 	static propTypes = {
@@ -79,6 +79,14 @@ class ImageMapHeaderToolbar extends Component {
 						onClick={() => canvasRef.handler?.alignmentHandler.center()}
 						icon="align-center"
 						tooltipTitle={i18n.t('action.align-center')}
+					/>
+					<CommonButton
+						className="rde-action-btn"
+						shape="circle"
+						disabled={isCropping}
+						onClick={() => canvasRef.handler?.alignmentHandler.middle()}
+						icon="align-center"
+						tooltipTitle={i18n.t('action.align-middle')}
 					/>
 					<CommonButton
 						className="rde-action-btn"

@@ -115,6 +115,7 @@
 		"send-to-back": "맨 뒤로 보내기",
 		"align-left": "왼쪽으로 정렬",
 		"align-center": "가운데로 정렬",
+		"align-middle": "중앙으로 정렬",
 		"align-right": "오른쪽으로 정렬",
 		"object-group": "그룹",
 		"object-ungroup": "그룹 해제",
