@@ -52,8 +52,8 @@ const Svg = fabric.util.createClass(fabric.Group, {
 			this.add(createdObj);
 		}
 		this.set({
-			fill: options.fill || 'rgba(0, 0, 0, 1)',
-			stroke: options.stroke || 'rgba(255, 255, 255, 0)',
+			fill: options.fill,
+			stroke: options.stroke,
 		});
 		this.setCoords();
 		if (this.canvas) {

@@ -1,33 +1,37 @@
 import { fabric } from 'fabric';
 import 'gifler';
 
-const Gif = fabric.util.createClass(fabric.Object, {
+const Gif = fabric.util.createClass(fabric.Image, {
 	type: 'gif',
 	superType: 'image',
 	gifCanvas: null,
+	gifler: undefined,
 	isStarted: false,
 	initialize(options: any) {
 		options = options || {};
-		this.callSuper('initialize', options);
 		this.gifCanvas = document.createElement('canvas');
+		this.callSuper('initialize', this.gifCanvas, options);
 	},
 	drawFrame(ctx: CanvasRenderingContext2D, frame: any) {
 		// update canvas size
 		this.gifCanvas.width = frame.width;
 		this.gifCanvas.height = frame.height;
 		// update canvas that we are using for fabric.js
-		ctx.drawImage(frame.buffer, -frame.width / 2, -frame.height / 2, frame.width, frame.height);
+		ctx.drawImage(frame.buffer, 0, 0);
+		this.canvas?.renderAll();
 	},
 	_render(ctx: CanvasRenderingContext2D) {
 		this.callSuper('_render', ctx);
+		this.dirty = true;
 		if (!this.isStarted) {
 			this.isStarted = true;
-			window
+			this.gifler = window
 				// @ts-ignore
-				.gifler('./images/sample/earth.gif')
-				.frames(this.gifCanvas, (_c: CanvasRenderingContext2D, frame: any) => {
+				.gifler('https://themadcreator.github.io/gifler/assets/gif/nyan.gif')
+				// .gifler('./images/sample/earth.gif')
+				.frames(this.gifCanvas, (context: CanvasRenderingContext2D, frame: any) => {
 					this.isStarted = true;
-					this.drawFrame(ctx, frame);
+					this.drawFrame(context, frame);
 				});
 		}
 	},

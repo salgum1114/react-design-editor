@@ -1,14 +1,15 @@
 import { fabric } from 'fabric';
 import throttle from 'lodash/throttle';
 
-import Handler from './Handler';
-import { FabricObject } from '../utils';
-import { NodeObject } from '../objects/Node';
 import { LinkObject } from '../objects/Link';
+import { NodeObject } from '../objects/Node';
+import { FabricObject } from '../utils';
+import Handler from './Handler';
 
 export type TransactionType =
 	| 'add'
 	| 'remove'
+	| 'modified'
 	| 'moved'
 	| 'scaled'
 	| 'rotated'
