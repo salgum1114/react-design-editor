@@ -26,22 +26,14 @@ module.exports = merge(baseConfig, {
 		chunkFilename: '[id].[hash:16].js',
 	},
 	devServer: {
-		inline: true,
 		port: devPort,
-		contentBase: path.resolve(__dirname, 'public'),
-		hot: true,
-		publicPath: '/',
-		historyApiFallback: true,
 		host,
-		proxy: {
-			'/api': {
-				target: 'http://localhost',
-			},
-			'/api/ws': {
-				target: 'ws://localhost',
-				ws: true,
-			},
+		static: {
+			publicPath: '/',
+			directory: path.resolve(__dirname, 'public'),
+			watch: false,
 		},
+		historyApiFallback: true,
 		headers: {
 			'X-Frame-Options': 'sameorigin',
 		},
