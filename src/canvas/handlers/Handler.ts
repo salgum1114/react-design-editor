@@ -30,6 +30,7 @@ import { defaults } from '../constants';
 import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
+import { SvgObject } from '../objects/Svg';
 import {
 	CanvasOption,
 	FabricCanvas,
@@ -616,17 +617,36 @@ class Handler implements HandlerOptions {
 	 * Set the image
 	 * @param {FabricImage} obj
 	 * @param {(File | string)} [source]
+	 * @param {boolean} [keepSize]
 	 * @returns
 	 */
-	public setImage = (obj: FabricImage, source?: File | string): Promise<FabricImage> => {
+	public setImage = (
+		obj: FabricImage,
+		source?: File | string,
+		keepSize?: boolean,
+		options?: fabric.IImageOptions,
+	): Promise<FabricImage> => {
+		const { height, scaleY } = obj;
+		const renderCallbaack = (imgObj: FabricImage, src: string) => {
+			if (keepSize) {
+				const scale = (height * scaleY) / imgObj.height;
+				imgObj.set({ scaleY: scale, scaleX: scale, src });
+			}
+			this.canvas.requestRenderAll();
+		};
 		return new Promise(resolve => {
 			if (!source) {
 				obj.set('file', null);
 				obj.set('src', null);
 				resolve(
-					obj.setSrc('./images/sample/transparentBg.png', () => this.canvas.renderAll(), {
-						dirty: true,
-					}) as FabricImage,
+					obj.setSrc(
+						'./images/sample/transparentBg.png',
+						(imgObj: FabricImage) => renderCallbaack(imgObj, null),
+						{
+							dirty: true,
+							...options,
+						},
+					) as FabricImage,
 				);
 			}
 			if (source instanceof File) {
@@ -635,9 +655,14 @@ class Handler implements HandlerOptions {
 					obj.set('file', source);
 					obj.set('src', null);
 					resolve(
-						obj.setSrc(reader.result as string, () => this.canvas.renderAll(), {
-							dirty: true,
-						}) as FabricImage,
+						obj.setSrc(
+							reader.result as string,
+							(imgObj: FabricImage) => renderCallbaack(imgObj, reader.result as string),
+							{
+								dirty: true,
+								...options,
+							},
+						) as FabricImage,
 					);
 				};
 				reader.readAsDataURL(source);
@@ -645,9 +670,10 @@ class Handler implements HandlerOptions {
 				obj.set('file', null);
 				obj.set('src', source);
 				resolve(
-					obj.setSrc(source, () => this.canvas.renderAll(), {
+					obj.setSrc(source, (imgObj: FabricImage) => renderCallbaack(imgObj, source), {
 						dirty: true,
 						crossOrigin: 'anonymous',
+						...options,
 					}) as FabricImage,
 				);
 			}
@@ -660,9 +686,38 @@ class Handler implements HandlerOptions {
 	 * @param {*} source
 	 * @returns
 	 */
-	public setImageById = (id: string, source: any) => {
+	public setImageById = (id: string, source: any, keepSize?: boolean) => {
 		const findObject = this.findById(id) as FabricImage;
-		return Promise.resolve(this.setImage(findObject, source));
+		return Promise.resolve(this.setImage(findObject, source, keepSize));
+	};
+
+	/**
+	 * Set Svg
+	 *
+	 * @param {SvgObject} obj
+	 * @param {(File | string)} [source]
+	 * @param {boolean} [setSvg]
+	 * @param {boolean} [keepSize]
+	 */
+	public setSvg = (
+		obj: SvgObject,
+		source?: File | string,
+		isPath?: boolean,
+		keepSize?: boolean,
+	): Promise<SvgObject> => {
+		return new Promise(resolve => {
+			if (!source) {
+				resolve(obj.loadSvg({ src: './images/sample/chiller.svg', loadType: 'file', keepSize }));
+			}
+			if (source instanceof File) {
+				const reader = new FileReader();
+				reader.readAsDataURL(source);
+				reader.onload = () =>
+					resolve(obj.loadSvg({ src: reader.result as string, loadType: 'file', keepSize }));
+			} else {
+				resolve(obj.loadSvg({ src: source, loadType: isPath ? 'svg' : 'file', keepSize }));
+			}
+		});
 	};
 
 	/**

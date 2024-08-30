@@ -192,11 +192,13 @@ class ImageMapEditor extends Component {
 				});
 				return;
 			}
-			if (changedKey === 'file' || changedKey === 'src' || changedKey === 'code') {
+			if (changedKey === 'file' || changedKey === 'src' || changedKey === 'code' || changedKey === 'svg') {
 				if (selectedItem.type === 'image') {
-					this.canvasRef.handler.setImageById(selectedItem.id, changedValue);
+					this.canvasRef.handler.setImageById(selectedItem.id, changedValue, true);
 				} else if (selectedItem.superType === 'element') {
 					this.canvasRef.handler.elementHandler.setById(selectedItem.id, changedValue);
+				} else if (selectedItem.superType === 'svg') {
+					this.canvasRef.handler.setSvg(selectedItem, changedValue);
 				}
 				return;
 			}
@@ -331,7 +333,11 @@ class ImageMapEditor extends Component {
 				}
 				return;
 			}
-			this.canvasRef.handler.set(changedKey, changedValue);
+			if (selectedItem.type === 'svg' && changedKey === 'fill') {
+				selectedItem.setFill(changedValue);
+			} else {
+				this.canvasRef.handler.set(changedKey, changedValue);
+			}
 		},
 		onChangeWokarea: (changedKey, changedValue, allValues) => {
 			if (changedKey === 'layout') {

@@ -1,20 +1,21 @@
-import MarkerProperty from './MarkerProperty';
-import GeneralProperty from './GeneralProperty';
-import StyleProperty from './StyleProperty';
-import TooltipProperty from './TooltipProperty';
-import ImageProperty from './ImageProperty';
-import TextProperty from './TextProperty';
-import MapProperty from './MapProperty';
-import LinkProperty from './LinkProperty';
-import VideoProperty from './VideoProperty';
-import ElementProperty from './ElementProperty';
-import IframeProperty from './IframeProperty';
 import AnimationProperty from './AnimationProperty';
-import ShadowProperty from './ShadowProperty';
-import UserProperty from './UserProperty';
-import TriggerProperty from './TriggerProperty';
-import ImageFilterProperty from './ImageFilterProperty';
 import ChartProperty from './ChartProperty';
+import ElementProperty from './ElementProperty';
+import GeneralProperty from './GeneralProperty';
+import IframeProperty from './IframeProperty';
+import ImageFilterProperty from './ImageFilterProperty';
+import ImageProperty from './ImageProperty';
+import LinkProperty from './LinkProperty';
+import MapProperty from './MapProperty';
+import MarkerProperty from './MarkerProperty';
+import ShadowProperty from './ShadowProperty';
+import StyleProperty from './StyleProperty';
+import SvgProperty from './SvgProperty';
+import TextProperty from './TextProperty';
+import TooltipProperty from './TooltipProperty';
+import TriggerProperty from './TriggerProperty';
+import UserProperty from './UserProperty';
+import VideoProperty from './VideoProperty';
 
 export default {
 	map: {
@@ -393,6 +394,10 @@ export default {
 		general: {
 			title: 'General',
 			component: GeneralProperty,
+		},
+		svg: {
+			title: 'SVG',
+			component: SvgProperty,
 		},
 		link: {
 			title: 'Link',

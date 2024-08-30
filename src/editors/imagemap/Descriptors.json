@@ -259,7 +259,8 @@
 				"type": "svg",
 				"superType": "svg",
 				"name": "New SVG",
-				"loadType": "svg"
+				"loadType": "file",
+				"src": "./images/sample/chiller.svg"
 			}
 		}
 	]

@@ -3,13 +3,14 @@ import { FabricGroup, FabricObject, FabricObjectOption, toObject } from '../util
 
 export type SvgObject = (FabricGroup | FabricObject) & {
 	loadSvg(option: SvgOption): Promise<SvgObject>;
-	setFill(value: string): SvgObject;
-	setStroke(value: string): SvgObject;
+	setFill(value: string, filter?: (obj: FabricObject) => boolean): SvgObject;
+	setStroke(value: string, filter?: (obj: FabricObject) => boolean): SvgObject;
 };
 
 export interface SvgOption extends FabricObjectOption {
-	svg?: string;
+	src?: string;
 	loadType?: 'file' | 'svg';
+	keepSize?: boolean;
 }
 
 const Svg = fabric.util.createClass(fabric.Group, {
@@ -18,9 +19,16 @@ const Svg = fabric.util.createClass(fabric.Group, {
 		this.callSuper('initialize', [], option);
 		this.loadSvg(option);
 	},
-	addSvgElements(objects: FabricObject[], options: any, path: string) {
-		const createdObj = fabric.util.groupSVGElements(objects, options, path) as SvgObject;
-		this.set(options);
+	addSvgElements(objects: FabricObject[], options: SvgOption) {
+		const createdObj = fabric.util.groupSVGElements(objects, options) as SvgObject;
+		const { height, scaleY } = this;
+		const scale = height ? (height * scaleY) / createdObj.height : createdObj.scaleY;
+		this.set({ ...options, scaleX: scale, scaleY: scale });
+		if (this._objects?.length) {
+			(this as FabricGroup).getObjects().forEach(obj => {
+				this.remove(obj);
+			});
+		}
 		if (createdObj.getObjects) {
 			(createdObj as FabricGroup).getObjects().forEach(obj => {
 				this.add(obj);
@@ -51,10 +59,6 @@ const Svg = fabric.util.createClass(fabric.Group, {
 			}
 			this.add(createdObj);
 		}
-		this.set({
-			fill: options.fill,
-			stroke: options.stroke,
-		});
 		this.setCoords();
 		if (this.canvas) {
 			this.canvas.requestRenderAll();
@@ -62,25 +66,31 @@ const Svg = fabric.util.createClass(fabric.Group, {
 		return this;
 	},
 	loadSvg(option: SvgOption) {
-		const { svg, loadType, fill, stroke } = option;
+		const { src, loadType, fill, stroke } = option;
 		return new Promise<SvgObject>(resolve => {
 			if (loadType === 'svg') {
-				fabric.loadSVGFromString(svg, (objects, options) => {
-					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, svg));
+				fabric.loadSVGFromString(src, (objects, options) => {
+					resolve(this.addSvgElements(objects, { ...options, fill, stroke }));
 				});
 			} else {
-				fabric.loadSVGFromURL(svg, (objects, options) => {
-					resolve(this.addSvgElements(objects, { ...options, fill, stroke }, svg));
+				fabric.loadSVGFromURL(src, (objects, options) => {
+					resolve(this.addSvgElements(objects, { ...options, fill, stroke }));
 				});
 			}
 		});
 	},
-	setFill(value: any) {
-		this.getObjects().forEach((obj: FabricObject) => obj.set('fill', value));
+	setFill(value: any, filter: (obj: FabricObject) => boolean = () => true) {
+		this.getObjects()
+			.filter(filter)
+			.forEach((obj: FabricObject) => obj.set('fill', value));
+		this.canvas.requestRenderAll();
 		return this;
 	},
-	setStroke(value: any) {
-		this.getObjects().forEach((obj: FabricObject) => obj.set('stroke', value));
+	setStroke(value: any, filter: (obj: FabricObject) => boolean = () => true) {
+		this.getObjects()
+			.filter(filter)
+			.forEach((obj: FabricObject) => obj.set('stroke', value));
+		this.canvas.requestRenderAll();
 		return this;
 	},
 	toObject(propertiesToInclude: string[]) {
