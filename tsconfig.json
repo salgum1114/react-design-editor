@@ -4,6 +4,7 @@
 		"noUnusedParameters": true,
 		"noImplicitReturns": true,
 		"noImplicitAny": true,
+		"declaration": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"strictNullChecks": false,
@@ -12,13 +13,14 @@
 		"resolveJsonModule": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
-		"declaration": true,
+		"useDefineForClassFields": false,
+		"allowJs": true,
 		"jsx": "react",
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"target": "esnext",
 		"outDir": "lib",
-		"lib": ["dom", "esnext"]
+		"lib": ["dom", "esnext", "ESNext.String"]
 	},
 	"include": ["src/canvas/index.tsx", "src/canvas/global.d.ts"],
 	"exclude": ["node_modules", "dist", "lib"]
