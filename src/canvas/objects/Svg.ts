@@ -95,7 +95,7 @@ const Svg = fabric.util.createClass(fabric.Group, {
 	},
 	toObject(propertiesToInclude: string[]) {
 		return toObject(this, propertiesToInclude, {
-			svg: this.get('svg'),
+			src: this.get('src'),
 			loadType: this.get('loadType'),
 		});
 	},
