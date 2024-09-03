@@ -617,7 +617,8 @@ class Handler implements HandlerOptions {
 	 * Set the image
 	 * @param {FabricImage} obj
 	 * @param {(File | string)} [source]
-	 * @param {boolean} [keepSize]
+	 * @param {boolean} [keepSize] Keep size of previous Image
+	 * @param {fabric.IImageOptions} [options]
 	 * @returns
 	 */
 	public setImage = (
@@ -684,6 +685,7 @@ class Handler implements HandlerOptions {
 	 * Set image by id
 	 * @param {string} id
 	 * @param {*} source
+	 * @param {boolean} [keepSize] Keep size of previous Image
 	 * @returns
 	 */
 	public setImageById = (id: string, source: any, keepSize?: boolean) => {
@@ -696,14 +698,14 @@ class Handler implements HandlerOptions {
 	 *
 	 * @param {SvgObject} obj
 	 * @param {(File | string)} [source]
-	 * @param {boolean} [setSvg]
-	 * @param {boolean} [keepSize]
+	 * @param {boolean} [keepSize] Keep size of previous SVG
+	 * @param {boolean} [xmlString] XML string
 	 */
 	public setSvg = (
 		obj: SvgObject,
 		source?: File | string,
-		isPath?: boolean,
 		keepSize?: boolean,
+		xmlString?: boolean,
 	): Promise<SvgObject> => {
 		return new Promise(resolve => {
 			if (!source) {
@@ -715,7 +717,7 @@ class Handler implements HandlerOptions {
 				reader.onload = () =>
 					resolve(obj.loadSvg({ src: reader.result as string, loadType: 'file', keepSize }));
 			} else {
-				resolve(obj.loadSvg({ src: source, loadType: isPath ? 'svg' : 'file', keepSize }));
+				resolve(obj.loadSvg({ src: source, loadType: xmlString ? 'svg' : 'file', keepSize }));
 			}
 		});
 	};
