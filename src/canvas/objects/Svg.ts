@@ -9,6 +9,12 @@ export type SvgObject = (FabricGroup | FabricObject) & {
 
 export interface SvgOption extends FabricObjectOption {
 	src?: string;
+	/**
+	 *
+	 * @deprecated
+	 * @type {*}
+	 */
+	svg?: any;
 	loadType?: 'file' | 'svg';
 	keepSize?: boolean;
 }
@@ -66,14 +72,14 @@ const Svg = fabric.util.createClass(fabric.Group, {
 		return this;
 	},
 	loadSvg(option: SvgOption) {
-		const { src, loadType, fill, stroke } = option;
+		const { src, svg, loadType, fill, stroke } = option;
 		return new Promise<SvgObject>(resolve => {
 			if (loadType === 'svg') {
-				fabric.loadSVGFromString(src, (objects, options) => {
+				fabric.loadSVGFromString(svg || src, (objects, options) => {
 					resolve(this.addSvgElements(objects, { ...options, fill, stroke }));
 				});
 			} else {
-				fabric.loadSVGFromURL(src, (objects, options) => {
+				fabric.loadSVGFromURL(svg || src, (objects, options) => {
 					resolve(this.addSvgElements(objects, { ...options, fill, stroke }));
 				});
 			}
