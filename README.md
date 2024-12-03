@@ -37,12 +37,19 @@ Try it out today - the project is being continually developed to support a varie
 
 Run `npm install react-design-editor` or `yarn add react-design-editor`
 
+
+
 # Getting Started
 
 1. Clone this Project with `git clone https://github.com/salgum1114/react-design-editor.git`
 2. Install dependencies with `npm install` or `yarn`
 3. Run the App with `npm start` or `yarn start`
 4. Open your web browser to `http://localhost:4000`
+
+# Ask AI
+
+[React Design Editor](https://codeparrot.ai/oracle?owner=salgum1114&repo=react-design-editor) AI will help you understand this repository better. 
+
 
 # Screenshots
 
