@@ -1200,6 +1200,7 @@ class Handler implements HandlerOptions {
 								type: obj.type,
 								nodeClazz: obj.nodeClazz,
 								configuration: obj.configuration,
+								descriptor: obj.descriptor,
 								properties: {
 									left: activeObject.left + activeObject.width / 2 + obj.left || 0,
 									top: activeObject.top + activeObject.height / 2 + obj.top || 0,
@@ -1224,6 +1225,7 @@ class Handler implements HandlerOptions {
 							type: cloned.type,
 							nodeClazz: cloned.nodeClazz,
 							configuration: cloned.configuration,
+							descriptor: cloned.descriptor,
 							properties: {
 								left: cloned.left || 0,
 								top: cloned.top || 0,
