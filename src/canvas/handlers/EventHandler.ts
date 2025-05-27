@@ -478,7 +478,7 @@ class EventHandler {
 		} else if (this.handler.interactionMode === 'link') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
 				const pointer = this.handler.canvas.getPointer(event.e);
-				this.handler.activeLine.set({ x2: pointer.x, y2: pointer.y });
+				this.handler.activeLine.update(this.handler.activeLine.fromNode, { left: pointer.x, top: pointer.y });
 			}
 			this.handler.canvas.requestRenderAll();
 		}

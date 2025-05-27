@@ -8,8 +8,11 @@ export { default as Gif } from './Gif';
 export { default as Iframe } from './Iframe';
 export { default as Line } from './Line';
 export { default as Link } from './Link';
+export { default as NewLink } from './NewLink';
+export type { LinkedNodePropeties } from './NewLink';
 export { default as Node } from './Node';
 export { default as OrthogonalLink } from './OrthogonalLink';
 export { default as Port } from './Port';
 export { default as Svg } from './Svg';
 export { default as Video } from './Video';
+

@@ -848,9 +848,7 @@ class Handler implements HandlerOptions {
 			this.animationHandler.play(createdObj.id);
 		}
 		if (createdObj.superType === 'node') {
-			createdObj.set('shadow', {
-				color: createdObj.stroke,
-			} as fabric.Shadow);
+			createdObj.set('shadow', { color: createdObj.stroke } as fabric.Shadow);
 		}
 		if (gridOption.enabled) {
 			this.gridHandler.setCoords(createdObj);

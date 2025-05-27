@@ -2,21 +2,22 @@ import { fabric } from 'fabric';
 
 import {
 	Arrow,
-	Gif,
 	Chart,
-	Element,
-	Iframe,
-	Video,
-	Node,
-	Link,
-	CurvedLink,
-	OrthogonalLink,
-	Line,
 	Cube,
+	CurvedLink,
+	Element,
+	Gif,
+	Iframe,
+	Line,
+	Link,
+	NewLink,
+	Node,
+	OrthogonalLink,
+	Video,
 } from './objects';
-import { FabricObject } from './utils';
 import { Code } from './objects/Element';
 import Svg, { SvgOption } from './objects/Svg';
+import { FabricObject } from './utils';
 
 export interface ObjectSchema {
 	create: (...option: any) => fabric.Object;
@@ -108,6 +109,9 @@ const CanvasObject: CanvasObjectSchema = {
 	},
 	link: {
 		create: (fromNode, fromPort, toNode, toPort, option) => new Link(fromNode, fromPort, toNode, toPort, option),
+	},
+	newLink: {
+		create: (fromNode, fromPort, toNode, toPort, option) => new NewLink(fromNode, fromPort, toNode, toPort, option),
 	},
 	curvedLink: {
 		create: (fromNode, fromPort, toNode, toPort, option) =>

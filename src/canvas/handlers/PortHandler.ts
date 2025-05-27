@@ -1,6 +1,6 @@
-import Handler from './Handler';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
+import Handler from './Handler';
 
 class PortHandler {
 	handler?: Handler;
@@ -100,14 +100,16 @@ class PortHandler {
 				left: target.left + target.width / 2,
 				top: target.top,
 			};
-			target.toPort.set({
-				...toCoords,
-			});
+			target.toPort.set({ ...toCoords });
 			target.toPort.setCoords();
 			if (target.toPort.links.length) {
 				target.toPort.links.forEach(link => {
 					const fromPort = link.fromNode.fromPort.filter(port => port.id === link.fromPort.id)[0];
-					this.handler.linkHandler.setCoords(fromPort.left, fromPort.top, toCoords.left, toCoords.top, link);
+					this.handler.linkHandler.setCoords(
+						{ left: fromPort.left, top: fromPort.top },
+						{ left: toCoords.left, top: toCoords.top },
+						link,
+					);
 				});
 			}
 		}
@@ -119,18 +121,13 @@ class PortHandler {
 			target.fromPort.forEach(port => {
 				const left = port.leftDiff ? fromCoords.left + port.leftDiff : fromCoords.left;
 				const top = port.topDiff ? fromCoords.top + port.topDiff : fromCoords.top;
-				port.set({
-					left,
-					top,
-				});
+				port.set({ left, top });
 				port.setCoords();
 				if (port.links.length) {
 					port.links.forEach(link => {
 						this.handler.linkHandler.setCoords(
-							left,
-							top,
-							link.toNode.toPort.left,
-							link.toNode.toPort.top,
+							{ left, top },
+							{ left: link.toNode.toPort.left, top: link.toNode.toPort.top },
 							link,
 						);
 					});

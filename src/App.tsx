@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet';
 import Title from './components/layout/Title';
 import FlowContainer from './containers/FlowContainer';
@@ -10,9 +10,9 @@ interface IState {
 	activeEditor?: EditorType;
 }
 
-class App extends Component<any, IState> {
+class App extends React.Component<any, IState> {
 	state: IState = {
-		activeEditor: 'imagemap',
+		activeEditor: 'workflow',
 	};
 
 	handleChangeEditor = ({ key }) => {

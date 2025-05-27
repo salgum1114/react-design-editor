@@ -1,5 +1,5 @@
 import warning from 'warning';
-import { CurvedLink } from '../objects';
+import { LinkedNodePropeties, NewLink } from '../objects';
 import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
@@ -66,7 +66,7 @@ class LinkHandler {
 		const fromPort = { left, top, id };
 		const toPort = { left, top };
 		const fromNode = this.handler.objectMap[nodeId];
-		this.handler.activeLine = new CurvedLink(fromNode, fromPort, null, toPort, {
+		this.handler.activeLine = new NewLink(fromNode, fromPort, { left: fromPort.left, top: fromPort.top }, toPort, {
 			strokeWidth: 4,
 			fill: '#999999',
 			stroke: '#999999',
@@ -112,7 +112,8 @@ class LinkHandler {
 			return;
 		}
 		const link = {
-			type: 'curvedLink',
+			type: 'newLink',
+			// type: 'curvedLink',
 			fromNodeId: this.handler.activeLine.fromNode.id,
 			fromPortId: this.handler.activeLine.fromPort.id,
 			toNodeId: port.nodeId,
@@ -163,15 +164,27 @@ class LinkHandler {
 	 * @param {number} y2
 	 * @param {LinkObject} link
 	 */
-	setCoords = (x1: number, y1: number, x2: number, y2: number, link: LinkObject) => {
-		link.set({
-			x1,
-			y1,
-			x2,
-			y2,
-		});
+	setCoords = (from: LinkedNodePropeties, to: LinkedNodePropeties, link: LinkObject) => {
+		link.update(from, to);
 		link.setCoords();
 	};
+	// /**
+	//  * Set coordinate of link
+	//  * @param {number} x1
+	//  * @param {number} y1
+	//  * @param {number} x2
+	//  * @param {number} y2
+	//  * @param {LinkObject} link
+	//  */
+	// setCoords = (x1: number, y1: number, x2: number, y2: number, link: LinkObject) => {
+	// 	link.set({
+	// 		x1,
+	// 		y1,
+	// 		x2,
+	// 		y2,
+	// 	});
+	// 	link.setCoords();
+	// };
 
 	/**
 	 * When the link is deleted, linked FromNode delete
