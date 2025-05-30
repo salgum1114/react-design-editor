@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
 import { Button } from 'antd';
-import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import i18n from 'i18next';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { CanvasInstance, LinkObject, NodeObject } from '../../canvas';
 import { code } from '../../canvas/constants';
-import { Canvas } from '../../canvas';
 import { CommonButton } from '../../components/common';
 
 interface IProps {
-	canvasRef?: Canvas;
-	zoomRatio?: number;
+	canvasRef: CanvasInstance;
+	zoomRatio: number;
 	debugEnabled?: boolean;
 	setDebugEnabled?: any;
 }
@@ -84,7 +85,7 @@ class WorkflowToolbar extends Component<IProps> {
 		const zoomValue = parseInt((zoomRatio * 100).toFixed(2), 10);
 		return (
 			<React.Fragment>
-				<div className="rde-editor-toolbar-interaction">
+				<div className={clsx('rde-editor-toolbar', 'interaction')}>
 					<Button.Group>
 						<CommonButton
 							type={interactionMode === 'selection' ? 'primary' : 'default'}
@@ -106,7 +107,7 @@ class WorkflowToolbar extends Component<IProps> {
 						/>
 					</Button.Group>
 				</div>
-				<div className="rde-editor-toolbar-zoom">
+				<div className={clsx('rde-editor-toolbar', 'zoom')}>
 					<Button.Group>
 						<CommonButton
 							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
@@ -131,6 +132,25 @@ class WorkflowToolbar extends Component<IProps> {
 							}}
 							icon="search-minus"
 							tooltipTitle={i18n.t('action.zoom-out')}
+						/>
+					</Button.Group>
+				</div>
+				<div className={clsx('rde-editor-toolbar', 'layout')}>
+					<Button.Group>
+						<CommonButton
+							icon="bezier-curve"
+							tooltipTitle={i18n.t('action.run-layout')}
+							onClick={() =>
+								canvasRef.handler.layoutHandler.runLayout({
+									type: 'dagre',
+									nodes: canvasRef.handler
+										.getObjects()
+										.filter(obj => obj.superType === 'node') as NodeObject[],
+									links: canvasRef.handler
+										.getObjects()
+										.filter(obj => obj.superType === 'link') as LinkObject[],
+								})
+							}
 						/>
 					</Button.Group>
 				</div>

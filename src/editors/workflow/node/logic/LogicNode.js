@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 
-import { NODE_COLORS } from '../../constant/constants';
 import { Node } from '../../../../canvas/objects';
+import { NODE_COLORS } from '../../constant/constants';
 
 const LogicNode = fabric.util.createClass(Node, {
 	initialize(options) {

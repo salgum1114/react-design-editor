@@ -2,7 +2,7 @@ import { fabric } from 'fabric';
 
 import { VideoObject } from '../objects/Video';
 import { FabricObject } from '../utils';
-import Handler from './Handler';
+import type Handler from './Handler';
 
 class ZoomHandler {
 	handler?: Handler;

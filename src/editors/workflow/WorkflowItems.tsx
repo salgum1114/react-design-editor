@@ -2,8 +2,8 @@ import { Collapse, Input } from 'antd';
 import classnames from 'classnames';
 import i18n from 'i18next';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import { uuid } from 'uuidv4';
+import React from 'react';
+import { v4 as uuid } from 'uuid';
 import { CanvasInstance } from '../../canvas';
 import { CommonButton, Scrollbar } from '../../components/common';
 import { Flex } from '../../components/flex';
@@ -13,10 +13,10 @@ import { NODE_COLORS } from './constant/constants';
 
 interface IProps {
 	canvasRef: CanvasInstance;
-	descriptors: any;
+	descriptors: any[];
 }
 
-class WorkflowItems extends Component<IProps> {
+class WorkflowItems extends React.Component<IProps> {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		descriptors: PropTypes.object,
@@ -178,7 +178,7 @@ class WorkflowItems extends Component<IProps> {
 					onDragStart={e => this.events.onDragStart(e, item)}
 					onDragEnd={e => this.events.onDragEnd(e, item)}
 					className="rde-editor-items-item"
-					style={{ justifyContent: this.state.collapse ? 'center' : null }}
+					style={{ justifyContent: this.state.collapse ? 'center' : undefined }}
 				>
 					<span className="rde-editor-items-item-icon">
 						<Icon

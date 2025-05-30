@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import { Arrow, Line } from '../objects';
 import { FabricEvent, FabricObject } from '../utils';
 import Handler from './Handler';

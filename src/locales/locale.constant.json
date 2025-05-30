@@ -141,7 +141,8 @@
 		"stop": "Stop",
 		"execute": "Execute",
 		"go-github": "Go Github!!",
-		"go-docs": "Go Documents!!"
+		"go-docs": "Go Documents!!",
+		"run-layout": "Auto layout"
 	},
 	"common": {
 		"name": "Name",

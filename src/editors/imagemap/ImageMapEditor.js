@@ -91,14 +91,7 @@ class ImageMapEditor extends Component {
 	componentDidMount() {
 		this.showLoading(true);
 		import('./Descriptors.json').then(descriptors => {
-			this.setState(
-				{
-					descriptors,
-				},
-				() => {
-					this.showLoading(false);
-				},
-			);
+			this.setState({ descriptors: descriptors.default }, () => this.showLoading(false));
 		});
 		this.setState({
 			selectedItem: null,

@@ -142,7 +142,8 @@
 		"execute": "실행",
 		"go-github": "Github로 이동!!",
 		"go-docs": "Documents로 이동!!",
-		"shortcut-help": "단축키"
+		"shortcut-help": "단축키",
+		"run-layout": "레이아웃 정렬"
 	},
 	"common": {
 		"name": "Name",

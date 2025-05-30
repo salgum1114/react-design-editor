@@ -1,7 +1,8 @@
-import React, { useRef } from 'react';
-import { uuid } from 'uuidv4';
-import { Canvas, FiberHandler } from '../../canvas';
+import { useRef } from 'react';
+import { v4 as uuid } from 'uuid';
+import { Canvas } from '../../canvas';
 import { CanvasInstance } from '../../canvas/Canvas';
+import FiberHandler from '../../canvas/handlers/FiberHandler';
 import { Content } from '../../components/layout';
 import { CableSectionNode } from './node';
 

@@ -1,9 +1,9 @@
 import color from 'color';
 import { fabric } from 'fabric';
 import i18next from 'i18next';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 
-import { FabricObject, CirclePort } from '../../../canvas';
+import { CirclePort, FabricObject } from '../../../canvas';
 import { LinkObject } from '../../../canvas/objects/Link';
 import Port, { PortObject } from '../../../canvas/objects/Port';
 

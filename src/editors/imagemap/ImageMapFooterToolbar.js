@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Button, Switch, Tooltip } from 'antd';
 import i18n from 'i18next';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-import CommonButton from '../../components/common/CommonButton';
 import { code } from '../../canvas/constants';
+import CommonButton from '../../components/common/CommonButton';
 
 class ImageMapFooterToolbar extends Component {
 	static propTypes = {

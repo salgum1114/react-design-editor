@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
-import LogicNode from './LogicNode';
-import { getEllipsis } from '../../configuration/NodeConfiguration';
 import { Port } from '../../../../canvas/objects';
+import { getEllipsis } from '../../configuration/NodeConfiguration';
+import LogicNode from './LogicNode';
 
 const SwitchNode = fabric.util.createClass(LogicNode, {
 	initialize(options) {

@@ -2,9 +2,8 @@ import { Collapse, Input, message, notification } from 'antd';
 import classnames from 'classnames';
 import i18n from 'i18next';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-
-import { uuid } from 'uuidv4';
+import React from 'react';
+import { v4 as uuid } from 'uuid';
 import CommonButton from '../../components/common/CommonButton';
 import Scrollbar from '../../components/common/Scrollbar';
 import { Flex } from '../../components/flex';
@@ -15,7 +14,7 @@ notification.config({
 	duration: 2,
 });
 
-class ImageMapItems extends Component {
+class ImageMapItems extends React.Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		descriptors: PropTypes.object,

@@ -4,7 +4,7 @@ import { code } from '../constants';
 import { NodeObject } from '../objects/Node';
 import { VideoObject } from '../objects/Video';
 import { FabricEvent, FabricObject } from '../utils';
-import Handler from './Handler';
+import type Handler from './Handler';
 
 /**
  * Event Handler Class
@@ -370,8 +370,11 @@ class EventHandler {
 		const { target } = event;
 		if (editable) {
 			if (this.handler.prevTarget && this.handler.prevTarget.superType === 'link') {
-				this.handler.prevTarget.set({
+				this.handler.prevTarget.line.set({
 					stroke: this.handler.prevTarget.originStroke || this.handler.prevTarget.stroke,
+				});
+				this.handler.prevTarget.arrow.set({
+					fill: this.handler.prevTarget.originStroke || this.handler.prevTarget.stroke,
 				});
 			}
 			if (target && target.type === 'fromPort') {
@@ -396,9 +399,8 @@ class EventHandler {
 			this.handler.guidelineHandler.zoom = this.handler.canvas.getZoom();
 			if (this.handler.interactionMode === 'selection') {
 				if (target && target.superType === 'link') {
-					target.set({
-						stroke: target.selectedStroke || 'green',
-					});
+					target.line.set({ stroke: target.selectedStroke || 'green' });
+					target.arrow.set({ fill: target.selectedStroke || 'green' });
 				}
 				this.handler.prevTarget = target;
 				return;
@@ -478,7 +480,7 @@ class EventHandler {
 		} else if (this.handler.interactionMode === 'link') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
 				const pointer = this.handler.canvas.getPointer(event.e);
-				this.handler.activeLine.update(this.handler.activeLine.fromNode, { left: pointer.x, top: pointer.y });
+				this.handler.activeLine.update(this.handler.activeLine.fromPort, { left: pointer.x, top: pointer.y });
 			}
 			this.handler.canvas.requestRenderAll();
 		}

@@ -1,5 +1,4 @@
-const webpack = require('webpack');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const baseConfig = require('./webpack.common.js');
@@ -13,7 +12,6 @@ module.exports = merge(baseConfig, {
 	entry: {
 		app: [
 			'core-js/stable',
-			'react-hot-loader/patch',
 			`webpack-dev-server/client?http://${host}:${devPort}`,
 			'webpack/hot/only-dev-server',
 			path.resolve(__dirname, 'src/index.tsx'),
@@ -22,24 +20,19 @@ module.exports = merge(baseConfig, {
 	output: {
 		path: path.resolve(__dirname, 'public'),
 		publicPath: '/',
-		filename: '[name].[hash:16].js',
-		chunkFilename: '[id].[hash:16].js',
+		filename: '[name].[contenthash].js',
 	},
 	devServer: {
 		port: devPort,
 		host,
 		static: {
-			publicPath: '/',
-			directory: path.resolve(__dirname, 'public'),
-			watch: false,
+			directory: path.join(__dirname, 'public'),
 		},
 		historyApiFallback: true,
-		headers: {
-			'X-Frame-Options': 'sameorigin',
-		},
+		headers: { 'X-Frame-Options': 'sameorigin' },
+		hot: true,
 	},
 	plugins: [
-		new webpack.HotModuleReplacementPlugin(),
 		new HtmlWebpackPlugin({
 			filename: 'index.html',
 			title: 'React Design Editor',

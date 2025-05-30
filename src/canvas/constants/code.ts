@@ -1,6 +1,7 @@
 export const ESCAPE = 'Escape';
 export const DELETE = 'Delete';
 export const BACKSPACE = 'Backspace';
+export const SPACE = 'Space';
 export const EQUAL = 'Equal';
 export const MINUS = 'Minus';
 export const KEY_A = 'KeyA';

@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
 import { Collapse } from 'antd';
-import { Canvas } from '../../canvas';
-import Descriptors from '../workflow/Descriptors.json';
-import { getNode } from '../workflow/configuration/NodeConfiguration';
+import { Component } from 'react';
+import { v4 as uuid } from 'uuid';
 import { NODE_COLORS } from '../../canvas/objects/Node';
 import Icon from '../../components/icon/Icon';
-import { uuid } from 'uuidv4';
+import Descriptors from '../workflow/Descriptors.json';
+import { getNode } from '../workflow/configuration/NodeConfiguration';
 
 interface IProps {
 	canvas: Canvas;

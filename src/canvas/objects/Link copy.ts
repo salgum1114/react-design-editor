@@ -1,6 +1,6 @@
 import { fabric } from 'fabric';
 import { svgPathProperties } from 'svg-path-properties';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import { FabricObject } from '../utils';
 import { NodeObject, OUT_PORT_TYPE } from './Node';
 import { PortObject } from './Port';
@@ -12,7 +12,7 @@ export interface LinkedNodePropeties {
 	height?: number;
 }
 
-export interface NewLinkObject extends FabricObject<fabric.Path> {
+export interface LinkObject extends FabricObject<fabric.Path> {
 	fromNode?: NodeObject;
 	toNode?: NodeObject;
 	fromPort?: PortObject;
@@ -20,24 +20,24 @@ export interface NewLinkObject extends FabricObject<fabric.Path> {
 	fromPortIndex?: number;
 	setPort?: (fromNode: NodeObject, fromPort: PortObject, toNode: NodeObject, toPort: PortObject) => void;
 	setPortEnabled?: (node: NodeObject, port: PortObject, enabled: boolean) => void;
+	update?: (fromPort: Partial<PortObject>, toPort: Partial<PortObject>) => void;
 }
 
-const NewLink = fabric.util.createClass(fabric.Group, {
-	type: 'newLink',
+const Link = fabric.util.createClass(fabric.Group, {
+	type: 'link',
 	superType: 'link',
 	initialize(
 		fromNode: Partial<NodeObject>,
 		fromPort: Partial<PortObject>,
 		toNode: Partial<NodeObject>,
 		toPort: Partial<PortObject>,
-		options: Partial<NewLinkObject>,
+		options: Partial<LinkObject>,
 	) {
-		options = options || {};
-		const { line, arrow } = this.draw(fromNode, toNode);
+		const { left, top, activeLine, ...other } = options || {};
+		const { line, arrow } = this.draw(fromPort, toPort, options);
 		this.line = line;
 		this.arrow = arrow;
-		Object.assign(options, {
-			strokeWidth: 4,
+		Object.assign(other, {
 			id: options.id || uuid(),
 			originX: 'center',
 			originY: 'center',
@@ -58,7 +58,7 @@ const NewLink = fabric.util.createClass(fabric.Group, {
 			hoverCursor: 'pointer',
 			objectCaching: false,
 		});
-		this.callSuper('initialize', [line, arrow], options);
+		this.callSuper('initialize', [line, arrow], other);
 	},
 	setPort(fromNode: NodeObject, fromPort: PortObject, _toNode: NodeObject, toPort: PortObject) {
 		if (fromNode.type === 'BroadcastNode') {
@@ -75,20 +75,15 @@ const NewLink = fabric.util.createClass(fabric.Group, {
 			if (node.toPort.id === port.id) {
 				return;
 			}
-			port.links.forEach((link, index) => {
-				link.set({ fromPort: port, fromPortIndex: index });
-			});
+			port.links.forEach((link, index) => link.set({ fromPort: port, fromPortIndex: index }));
 			node.set({ configuration: { outputCount: port.links.length } });
 		}
 	},
 	/**
 	 * fabric.Path용 setPath 헬퍼 (FabricJS v4.6.0)
-	 * @param {fabric.Path} pathObj - 업데이트할 fabric.Path 객체
 	 * @param {string} pathStr - 새로운 SVG path 문자열
-	 * @param {fabric.Canvas} canvas - 소속된 fabric.Canvas 객체
 	 */
 	parsePath(pathStr: string) {
-		// 임시 Path 객체 생성해서 파싱된 path 배열 추출
 		const tempPathObj = new fabric.Path(pathStr);
 		return tempPathObj.path;
 	},
@@ -102,60 +97,53 @@ const NewLink = fabric.util.createClass(fabric.Group, {
 			case 'T':
 				return { x: width ? left + width / 2 : left, y: top };
 			case 'B':
-				return { x: width ? left + width / 2 : left, y: height ? top + height : top };
+				return { x: left, y: top };
 			default:
 				return { x: 0, y: 0 };
 		}
 	},
-	draw(from: LinkedNodePropeties, to: LinkedNodePropeties) {
-		const { path, midX, midY, angle } = this.calculateEdgePath(from, to);
-
+	draw(fromPort: PortObject, toPort: PortObject, options: any = {}) {
+		const { strokeWidth = 4, stroke = '#999' } = options;
+		const { path, midX, midY, angle } = this.calculatePath(fromPort, toPort);
 		const line = new fabric.Path(path, {
-			stroke: 'blue',
+			strokeWidth: strokeWidth || 4,
 			fill: '',
+			originX: 'center',
+			originY: 'center',
+			stroke: stroke || '#999',
 			selectable: false,
 			evented: false,
-			strokeWidth: 3,
 			strokeLineJoin: 'round',
 			objectCaching: false,
 		});
-
 		const arrow = new fabric.Triangle({
 			left: midX,
 			top: midY,
 			originX: 'center',
 			originY: 'center',
 			angle: angle,
-			width: 15,
-			height: 15,
-			fill: 'blue',
+			width: 13,
+			height: 13,
+			fill: stroke,
 			selectable: false,
 			evented: false,
-			objectCaching: false,
 		});
-
-		// line.sendToBack();
-		// arrow.sendToBack();
-
 		return { line, arrow };
 	},
-	update(from: LinkedNodePropeties, to: LinkedNodePropeties) {
-		const { path, midX, midY, angle } = this.calculateEdgePath(from, to);
-		this.line.set({ path: this.parsePath(path) });
+	update(fromPort: Partial<PortObject>, toPort: Partial<PortObject>) {
+		const { path, midX, midY, angle } = this.calculatePath(fromPort, toPort);
+		this.line.set({ path: this.parsePath(path), dirty: true, originX: 'center', originY: 'center' });
 		this.line.setCoords();
-		this.arrow.set({
-			left: midX,
-			top: midY,
-			angle: angle,
-		});
+		this.arrow.set({ left: midX, top: midY, angle: angle });
 		this.arrow.setCoords();
+		this.setCoords();
+		this.canvas.requestRenderAll();
 	},
-	calculateEdgePath(from: LinkedNodePropeties, to: LinkedNodePropeties) {
-		const p1 = this.getPortPosition(from, 'B');
-		const p2 = this.getPortPosition(to, 'T');
-
-		const width = 120;
-		const height = 60;
+	calculatePath(fromPort: Partial<PortObject>, toPort: Partial<PortObject>) {
+		const p1 = this.getPortPosition(fromPort, 'B');
+		const p2 = this.getPortPosition(toPort, 'T');
+		const width = this.fromNode?.width || 120;
+		const height = this.fromNode?.height || 60;
 		const offset = 80;
 		let x1 = p1.x;
 		let y1 = p1.y;
@@ -165,10 +153,12 @@ const NewLink = fabric.util.createClass(fabric.Group, {
 		let y3 = p2.y - height / 2;
 		let x4 = p2.x;
 		let y4 = p2.y;
-		const useCurve = p2.y > p1.y;
+		const useCurve = p2.y >= p1.y;
 		let path;
 		if (useCurve) {
-			path = `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y + 40}, ${p2.x} ${p2.y - 40}, ${p2.x} ${p2.y}`;
+			path = `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y + 40}, ${p2.x} ${p1.y === p2.y ? p2.y : p2.y - 40}, ${p2.x} ${
+				p2.y
+			}`;
 		} else {
 			const baseRadius = 10;
 			const dx = p1.x - p2.x;
@@ -176,7 +166,6 @@ const NewLink = fabric.util.createClass(fabric.Group, {
 			const distance = Math.abs(width - dx);
 			let ratio = Math.min(1, distance / offset);
 			let radius = baseRadius * ratio;
-
 			path = [
 				`M ${x1} ${y1}`,
 				`L ${x2} ${y2 - baseRadius}`,
@@ -190,27 +179,19 @@ const NewLink = fabric.util.createClass(fabric.Group, {
 				`L ${x4} ${y4}`,
 			].join(' ');
 		}
-
-		let midX = x3;
-		let midY = (y3 + y2) / 2;
+		let midX = x3 - this.left;
+		let midY = (y3 + y2) / 2 - this.top;
 		let angle = 0;
 		if (useCurve) {
-			// svg-path-properties 객체 생성
 			const properties = new svgPathProperties(path);
-
-			// 전체 길이
 			const totalLength = properties.getTotalLength();
-			// 중간 점 좌표
-			const midPoint = properties.getPointAtLength(totalLength / 2);
-			// 접선 각도 계산 (중간 위치에서 앞뒤 좌표 차이로)
-			const delta = 1; // 미세 구간
+			const delta = 1;
 			const ahead = properties.getPointAtLength(totalLength / 2 + delta);
 			const behind = properties.getPointAtLength(totalLength / 2 - delta);
-
 			const dx = ahead.x - behind.x;
 			const dy = ahead.y - behind.y;
-			midX = midPoint.x;
-			midY = midPoint.y;
+			midX = (p1.x + p2.x) / 2 - this.left;
+			midY = (p1.y + p2.y) / 2 - this.top;
 			angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
 		}
 		return { path, midX, midY, angle };
@@ -229,12 +210,12 @@ const NewLink = fabric.util.createClass(fabric.Group, {
 	},
 });
 
-NewLink.fromObject = (options: NewLinkObject, callback: (obj: NewLinkObject) => any) => {
+Link.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
 	const { fromNode, fromPort, toNode, toPort } = options;
-	return callback(new NewLink(fromNode, fromPort, toNode, toPort, options));
+	return callback(new Link(fromNode, fromPort, toNode, toPort, options));
 };
 
 // @ts-ignore
-window.fabric.NewLink = NewLink;
+window.fabric.Link = Link;
 
-export default NewLink;
+export default Link;

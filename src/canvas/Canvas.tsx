@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 import React, { Component, useRef } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import { defaults } from './constants';
 import Handler, { HandlerOptions } from './handlers/Handler';
 import './styles/canvas.less';

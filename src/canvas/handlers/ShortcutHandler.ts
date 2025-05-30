@@ -1,6 +1,6 @@
-import Handler from './Handler';
-import { KeyEvent } from '../utils';
 import { code } from '../constants';
+import { KeyEvent } from '../utils';
+import Handler from './Handler';
 
 /**
  * Shortcut Handler Class

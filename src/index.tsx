@@ -1,13 +1,12 @@
+import { LocaleProvider } from 'antd';
+import enUS from 'antd/lib/locale-provider/en_US';
+import koKR from 'antd/lib/locale-provider/ko_KR';
+import i18next from 'i18next';
 import React from 'react';
 import ReactDom from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
-import { LocaleProvider } from 'antd';
-import koKR from 'antd/lib/locale-provider/ko_KR';
-import enUS from 'antd/lib/locale-provider/en_US';
 import App from './App';
-import { register } from './serviceWorker';
-import i18next from 'i18next';
 import { i18nClient } from './i18n';
+import { register } from './serviceWorker';
 
 const antResources = {
 	ko: koKR,
@@ -20,14 +19,13 @@ const root = document.createElement('div');
 root.id = 'root';
 document.body.appendChild(root);
 
-const render = Component => {
-	const rootElement = document.getElementById('root');
+const rootElement = document.getElementById('root');
+
+const render = (Component: React.ElementType) => {
 	ReactDom.render(
-		<AppContainer>
-			<LocaleProvider locale={antResources[i18next.language]}>
-				<Component />
-			</LocaleProvider>
-		</AppContainer>,
+		<LocaleProvider locale={antResources[i18next.language]}>
+			<Component />
+		</LocaleProvider>,
 		rootElement,
 	);
 };
@@ -37,9 +35,3 @@ i18nClient();
 render(App);
 
 register();
-
-if (module.hot) {
-	module.hot.accept('./App', () => {
-		render(App);
-	});
-}

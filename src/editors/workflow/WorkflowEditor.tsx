@@ -1,6 +1,6 @@
 import { message, Popconfirm } from 'antd';
 import i18n from 'i18next';
-import React, { Component } from 'react';
+import React from 'react';
 import { FabricObject } from '../../canvas';
 import Canvas, { CanvasInstance } from '../../canvas/Canvas';
 import { CommonButton } from '../../components/common';
@@ -25,7 +25,7 @@ interface IState {
 	editing: boolean;
 }
 
-class WorkflowEditor extends Component {
+class WorkflowEditor extends React.Component {
 	state: IState = {
 		loading: true,
 		zoomRatio: 1,
@@ -41,22 +41,13 @@ class WorkflowEditor extends Component {
 
 	componentDidMount() {
 		import('./Descriptors.json').then(descriptors => {
-			this.setState(
-				{
-					descriptors,
-				},
-				() => {
-					this.hideLoading();
-				},
-			);
+			this.setState({ descriptors: descriptors.default }, () => this.hideLoading());
 		});
 	}
 
 	canvasHandlers = {
 		onZoom: zoom => {
-			this.setState({
-				zoomRatio: zoom,
-			});
+			this.setState({ zoomRatio: zoom });
 		},
 		onAdd: (target: FabricObject) => {
 			if (target.type === 'activeSelection') {
@@ -91,14 +82,9 @@ class WorkflowEditor extends Component {
 				});
 				return;
 			}
-			this.setState(
-				{
-					selectedItem: null,
-				},
-				() => {
-					this.canvasRef.handler.nodeHandler.deselect();
-				},
-			);
+			this.setState({ selectedItem: null }, () => {
+				this.canvasRef.handler.nodeHandler.deselect();
+			});
 		},
 		onRemove: () => {
 			if (!this.state.editing) {
@@ -136,7 +122,7 @@ class WorkflowEditor extends Component {
 							fromNodeId: link.fromNode,
 							fromPortId: link.fromPort,
 							toNodeId: link.toNode,
-							type: 'curvedLink',
+							type: 'link',
 							superType: 'link',
 							left: link.properties ? link.properties.left : 0,
 							top: link.properties ? link.properties.top : 0,
@@ -390,7 +376,7 @@ class WorkflowEditor extends Component {
 							onChange={onChange}
 						/>
 					</div>
-					<div className="rde-editor-toolbar">
+					<div className="rde-editor-toolbar-container">
 						<WorkflowToolbar canvasRef={this.canvasRef} zoomRatio={zoomRatio} />
 					</div>
 				</div>

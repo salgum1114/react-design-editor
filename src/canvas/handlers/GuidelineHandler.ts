@@ -1,6 +1,6 @@
 import { fabric } from 'fabric';
 import { FabricEvent, FabricObject, WorkareaObject } from '../utils';
-import Handler from './Handler';
+import type Handler from './Handler';
 
 class GuidelineHandler {
 	handler: Handler;

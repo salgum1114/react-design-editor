@@ -1,8 +1,7 @@
 import { fabric } from 'fabric';
-import color from 'color';
-import LogicNode from './LogicNode';
+import { v4 as uuid } from 'uuid';
 import { Port } from '../../../../canvas/objects';
-import { uuid } from 'uuidv4';
+import LogicNode from './LogicNode';
 
 const FilterNode = fabric.util.createClass(LogicNode, {
 	initialize(options) {

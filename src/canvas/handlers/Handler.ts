@@ -1,33 +1,10 @@
 import { fabric } from 'fabric';
 import { union } from 'lodash';
-import { uuid } from 'uuidv4';
+import { v4 as uuid } from 'uuid';
 import warning from 'warning';
-import {
-	AlignmentHandler,
-	AnimationHandler,
-	ChartHandler,
-	ContextmenuHandler,
-	CropHandler,
-	CustomHandler,
-	DrawingHandler,
-	ElementHandler,
-	EventHandler,
-	GridHandler,
-	GuidelineHandler,
-	ImageHandler,
-	InteractionHandler,
-	LinkHandler,
-	NodeHandler,
-	PortHandler,
-	ShortcutHandler,
-	TooltipHandler,
-	TransactionHandler,
-	WorkareaHandler,
-	ZoomHandler,
-} from '.';
 import CanvasObject from '../CanvasObject';
 import { defaults } from '../constants';
-import { LinkObject } from '../objects/Link';
+import { LinkObject } from '../objects';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
 import { SvgObject } from '../objects/Svg';
@@ -47,8 +24,28 @@ import {
 	WorkareaObject,
 	WorkareaOption,
 } from '../utils';
-import { LinkOption } from './LinkHandler';
-import { TransactionEvent } from './TransactionHandler';
+import AlignmentHandler from './AlignmentHandler';
+import AnimationHandler from './AnimationHandler';
+import ChartHandler from './ChartHandler';
+import ContextmenuHandler from './ContextmenuHandler';
+import CropHandler from './CropHandler';
+import CustomHandler from './CustomHandler';
+import DrawingHandler from './DrawingHandler';
+import ElementHandler from './ElementHandler';
+import EventHandler from './EventHandler';
+import GridHandler from './GridHandler';
+import GuidelineHandler from './GuidelineHandler';
+import ImageHandler from './ImageHandler';
+import InteractionHandler from './InteractionHandler';
+import LayoutHandler from './LayoutHandler';
+import LinkHandler, { LinkOption } from './LinkHandler';
+import NodeHandler from './NodeHandler';
+import PortHandler from './PortHandler';
+import ShortcutHandler from './ShortcutHandler';
+import TooltipHandler from './TooltipHandler';
+import TransactionHandler, { TransactionEvent } from './TransactionHandler';
+import WorkareaHandler from './WorkareaHandler';
+import ZoomHandler from './ZoomHandler';
 
 export interface HandlerCallback {
 	/**
@@ -279,6 +276,7 @@ class Handler implements HandlerOptions {
 	public eventHandler: EventHandler;
 	public drawingHandler: DrawingHandler;
 	public shortcutHandler: ShortcutHandler;
+	public layoutHandler: LayoutHandler;
 	public handlers: { [key: string]: CustomHandler } = {};
 
 	public objectMap: Record<string, FabricObject> = {};
@@ -390,6 +388,7 @@ class Handler implements HandlerOptions {
 		this.eventHandler = new EventHandler(this);
 		this.drawingHandler = new DrawingHandler(this);
 		this.shortcutHandler = new ShortcutHandler(this);
+		this.layoutHandler = new LayoutHandler(this);
 	};
 
 	/**
@@ -399,8 +398,6 @@ class Handler implements HandlerOptions {
 	public getObjects = (): FabricObject[] => {
 		const objects = this.canvas.getObjects().filter((obj: FabricObject) => {
 			if (obj.id === 'workarea') {
-				return false;
-			} else if (obj.id === 'grid') {
 				return false;
 			} else if (obj.superType === 'port') {
 				return false;
@@ -1789,7 +1786,7 @@ class Handler implements HandlerOptions {
 		} else {
 			this.canvas.discardActiveObject();
 			this.canvas.getObjects().forEach((obj: any) => {
-				if (obj.id === 'grid' || obj.id === 'workarea') {
+				if (obj.id === 'workarea') {
 					return;
 				}
 				this.canvas.remove(obj);
@@ -1922,7 +1919,7 @@ class Handler implements HandlerOptions {
 	 */
 	public setCanvasOption = (canvasOption: CanvasOption) => {
 		this.canvasOption = Object.assign({}, this.canvasOption, canvasOption);
-		this.canvas.setBackgroundColor(canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
+		this.canvas.setBackgroundColor('blue', this.canvas.renderAll.bind(this.canvas));
 		if (typeof canvasOption.width !== 'undefined' && typeof canvasOption.height !== 'undefined') {
 			if (this.eventHandler) {
 				this.eventHandler.resize(canvasOption.width, canvasOption.height);

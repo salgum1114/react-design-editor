@@ -1,6 +1,5 @@
 import warning from 'warning';
-import { LinkedNodePropeties, NewLink } from '../objects';
-import { LinkObject } from '../objects/Link';
+import { Link, LinkObject } from '../objects';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
 import Handler from './Handler';
@@ -58,15 +57,13 @@ class LinkHandler {
 			return;
 		}
 		this.port = port;
-		this.port.set({
-			fill: port.selectFill,
-		});
+		this.port.set({ fill: port.selectFill });
 		this.handler.interactionHandler.linking();
 		const { left, top, nodeId, id } = port;
 		const fromPort = { left, top, id };
 		const toPort = { left, top };
 		const fromNode = this.handler.objectMap[nodeId];
-		this.handler.activeLine = new NewLink(fromNode, fromPort, { left: fromPort.left, top: fromPort.top }, toPort, {
+		this.handler.activeLine = new Link(fromNode, fromPort, toPort, toPort, {
 			strokeWidth: 4,
 			fill: '#999999',
 			stroke: '#999999',
@@ -86,9 +83,7 @@ class LinkHandler {
 	 */
 	finish = (link?: LinkObject) => {
 		if (!link) {
-			this.port.set({
-				fill: this.port.originFill,
-			});
+			this.port.set({ fill: this.port.originFill });
 		}
 		this.handler.interactionHandler.selection();
 		this.handler.canvas.remove(this.handler.activeLine);
@@ -111,16 +106,14 @@ class LinkHandler {
 		if (this.isSameNode(port)) {
 			return;
 		}
-		const link = {
-			type: 'newLink',
-			// type: 'curvedLink',
+		const link = this.create({
+			type: 'link',
 			fromNodeId: this.handler.activeLine.fromNode.id,
 			fromPortId: this.handler.activeLine.fromPort.id,
 			toNodeId: port.nodeId,
 			toPortId: port.id,
-		};
-		const createdLink = this.create(link);
-		this.finish(createdLink);
+		});
+		this.finish(link);
 		// TODO...
 		// Save transactions unconditionally
 		if (!this.handler.transactionHandler.active) {
@@ -130,61 +123,32 @@ class LinkHandler {
 
 	/**
 	 * Add link in Canvas
-	 * @param {LinkOption} link
+	 * @param {LinkOption} option
 	 * @param {boolean} [loaded=false]
 	 * @returns
 	 */
-	create = (link: LinkOption, loaded = false) => {
-		const fromNode = this.handler.objectMap[link.fromNodeId] as NodeObject;
-		const fromPort = fromNode.fromPort.filter(port => port.id === link.fromPortId || !port.id)[0];
-		const toNode = this.handler.objectMap[link.toNodeId] as NodeObject;
+	create = (option: LinkOption, loaded = false) => {
+		const fromNode = this.handler.objectMap[option.fromNodeId] as NodeObject;
+		const fromPort = fromNode.fromPort.filter(port => port.id === option.fromPortId || !port.id)[0];
+		const toNode = this.handler.objectMap[option.toNodeId] as NodeObject;
 		const { toPort } = toNode;
-		const createdObj = this.handler.fabricObjects[link.type].create(fromNode, fromPort, toNode, toPort, {
-			...link,
+		const link = this.handler.fabricObjects[option.type].create(fromNode, fromPort, toNode, toPort, {
+			...option,
 		}) as LinkObject;
-		this.handler.canvas.add(createdObj);
+		this.handler.canvas.add(link);
 		this.handler.objects = this.handler.getObjects();
 		const { editable } = this.handler;
 		if (this.handler.onAdd && editable && !loaded) {
-			this.handler.onAdd(createdObj);
+			this.handler.onAdd(link);
 		}
 		this.handler.canvas.renderAll();
-		createdObj.setPort(fromNode, fromPort, toNode, toPort);
+		link.setPort(fromNode, fromPort, toNode, toPort);
 		this.handler.portHandler.setCoords(fromNode);
 		this.handler.portHandler.setCoords(toNode);
 		this.handler.canvas.requestRenderAll();
-		return createdObj;
+		this.handler.canvas.sendToBack(link);
+		return link;
 	};
-
-	/**
-	 * Set coordinate of link
-	 * @param {number} x1
-	 * @param {number} y1
-	 * @param {number} x2
-	 * @param {number} y2
-	 * @param {LinkObject} link
-	 */
-	setCoords = (from: LinkedNodePropeties, to: LinkedNodePropeties, link: LinkObject) => {
-		link.update(from, to);
-		link.setCoords();
-	};
-	// /**
-	//  * Set coordinate of link
-	//  * @param {number} x1
-	//  * @param {number} y1
-	//  * @param {number} x2
-	//  * @param {number} y2
-	//  * @param {LinkObject} link
-	//  */
-	// setCoords = (x1: number, y1: number, x2: number, y2: number, link: LinkObject) => {
-	// 	link.set({
-	// 		x1,
-	// 		y1,
-	// 		x2,
-	// 		y2,
-	// 	});
-	// 	link.setCoords();
-	// };
 
 	/**
 	 * When the link is deleted, linked FromNode delete

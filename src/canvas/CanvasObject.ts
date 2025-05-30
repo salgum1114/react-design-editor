@@ -9,8 +9,8 @@ import {
 	Gif,
 	Iframe,
 	Line,
+	LineLink,
 	Link,
-	NewLink,
 	Node,
 	OrthogonalLink,
 	Video,
@@ -107,11 +107,12 @@ const CanvasObject: CanvasObjectSchema = {
 	node: {
 		create: (option: any) => new Node(option),
 	},
+	lineLink: {
+		create: (fromNode, fromPort, toNode, toPort, option) =>
+			new LineLink(fromNode, fromPort, toNode, toPort, option),
+	},
 	link: {
 		create: (fromNode, fromPort, toNode, toPort, option) => new Link(fromNode, fromPort, toNode, toPort, option),
-	},
-	newLink: {
-		create: (fromNode, fromPort, toNode, toPort, option) => new NewLink(fromNode, fromPort, toNode, toPort, option),
 	},
 	curvedLink: {
 		create: (fromNode, fromPort, toNode, toPort, option) =>
