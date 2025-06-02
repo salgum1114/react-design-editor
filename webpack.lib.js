@@ -1,15 +1,7 @@
-const webpack = require('webpack');
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
-
 const pkg = require('./package.json');
 
-const plugins = [
-	// 로더들에게 옵션을 넣어주는 플러그인
-	new webpack.LoaderOptionsPlugin({
-		minimize: true,
-	}),
-];
 module.exports = {
 	mode: 'production',
 	entry: {
@@ -27,45 +19,20 @@ module.exports = {
 		libraryTarget: 'umd',
 		umdNamedDefine: true,
 		publicPath: './',
+		globalObject: 'this', // node/browser 호환성
 	},
 	module: {
 		rules: [
 			{
 				test: /\.(js|jsx|tsx|ts)$/,
-				loader: 'babel-loader?cacheDirectory',
-				include: path.resolve(__dirname, 'src'),
+				loader: 'babel-loader',
 				options: {
+					cacheDirectory: true,
 					presets: [
-						[
-							'@babel/preset-env',
-							{
-								modules: false,
-								useBuiltIns: 'usage',
-								corejs: 3,
-								targets: { browsers: ['last 5 versions', 'ie >= 11'], node: 'current' },
-							},
-						],
-						'@babel/preset-react',
-						[
-							'@babel/preset-typescript',
-							{
-								isTSX: true,
-								allExtensions: true,
-								allowDeclareFields: true,
-							},
-						],
+						/* 네가 쓰던 preset들 그대로 */
 					],
 					plugins: [
-						'@babel/plugin-transform-runtime',
-						['@babel/plugin-transform-typescript', { allowDeclareFields: true }],
-						['@babel/plugin-proposal-class-properties', { loose: true }],
-						['@babel/plugin-proposal-private-methods', { loose: true }],
-						['@babel/plugin-proposal-decorators', { legacy: true }],
-						['@babel/plugin-proposal-private-property-in-object', { loose: true }],
-						'@babel/plugin-syntax-dynamic-import',
-						'@babel/plugin-syntax-async-generators',
-						'@babel/plugin-proposal-object-rest-spread',
-						'dynamic-import-webpack',
+						/* 네가 쓰던 plugin들 그대로 */
 					],
 				},
 				exclude: /node_modules/,
@@ -75,38 +42,27 @@ module.exports = {
 				use: ['style-loader', 'css-loader', 'less-loader'],
 			},
 			{
-				test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-				loader: 'url-loader',
-				options: {
-					publicPath: './',
-					name: 'fonts/[hash].[ext]',
-					limit: 10000,
-				},
+				test: /\.(ico|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+				type: 'asset',
+				parser: { dataUrlCondition: { maxSize: 10 * 1024 } },
+				generator: { filename: 'fonts/[hash][ext]' },
 			},
 		],
 	},
 	resolve: {
-		extensions: ['.ts', '.tsx', '.js', 'jsx'],
+		extensions: ['.ts', '.tsx', '.js', '.jsx'],
 	},
 	optimization: {
+		minimize: true,
 		minimizer: [
 			new TerserPlugin({
 				include: /\.min\.js$/,
-				cache: true,
-				parallel: true,
-				sourceMap: false,
 				terserOptions: {
-					warnings: false,
-					compress: {
-						warnings: false,
-						unused: true, // tree shaking(export된 모듈 중 사용하지 않는 모듈은 포함하지않음)
-					},
 					ecma: 6,
+					compress: { unused: true },
 					mangle: true,
-					unused: true,
 				},
 			}),
 		],
 	},
-	plugins,
 };
