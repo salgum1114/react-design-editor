@@ -28,11 +28,34 @@ module.exports = {
 				loader: 'babel-loader',
 				options: {
 					cacheDirectory: true,
+					babelrc: false,
 					presets: [
-						/* 네가 쓰던 preset들 그대로 */
+						[
+							'@babel/preset-env',
+							{
+								modules: false,
+								useBuiltIns: 'usage',
+								corejs: 3,
+								targets: { browsers: ['last 5 versions', 'ie >= 11'], node: 'current' },
+							},
+						],
+						'@babel/preset-react',
+						[
+							'@babel/preset-typescript',
+							{
+								isTSX: true,
+								allExtensions: true,
+								allowDeclareFields: true,
+							},
+						],
 					],
 					plugins: [
-						/* 네가 쓰던 plugin들 그대로 */
+						'@babel/plugin-transform-runtime',
+						['@babel/plugin-proposal-class-properties', { loose: true }],
+						['@babel/plugin-proposal-private-methods', { loose: true }],
+						['@babel/plugin-proposal-private-property-in-object', { loose: true }],
+						['@babel/plugin-proposal-decorators', { legacy: true }],
+						['import', { libraryName: 'antd', style: true }],
 					],
 				},
 				exclude: /node_modules/,
