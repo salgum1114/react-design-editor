@@ -7,7 +7,6 @@ const baseConfig = require('./webpack.common.js');
 module.exports = merge(baseConfig, {
 	mode: 'production',
 	entry: {
-		vendor: ['react', 'react-dom', 'lodash', 'fabric', 'antd'],
 		app: ['core-js/stable', path.resolve(__dirname, 'src/index.tsx')],
 	},
 	output: {

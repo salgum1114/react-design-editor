@@ -58,8 +58,7 @@ module.exports = {
 				vendor: {
 					test: /node_modules/,
 					chunks: 'initial',
-					name: 'vendor',
-					enforce: true,
+					name: 'vendors',
 				},
 			},
 		},
