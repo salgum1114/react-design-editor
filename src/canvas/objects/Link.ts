@@ -38,6 +38,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 		this.fromPort = fromPort;
 		this.toNode = toNode;
 		this.toPort = toPort;
+		console.log(options);
 		const { line, arrow } = this.draw(fromPort, toPort, options);
 		this.line = line;
 		this.arrow = arrow;
@@ -82,6 +83,10 @@ const Link = fabric.util.createClass(fabric.Group, {
 			port.links.forEach((link, index) => link.set({ fromPort: port, fromPortIndex: index }));
 			node.set({ configuration: { outputCount: port.links.length } });
 		}
+	},
+	setColor(color: string) {
+		this.line.set({ stroke: color });
+		this.arrow.set({ fill: color });
 	},
 	/**
 	 * fabric.Path용 setPath 헬퍼 (FabricJS v4.6.0)
@@ -158,7 +163,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 		const p2 = this.getPortPosition(toPort, 'T');
 		const width = this.fromNode?.width || 200;
 		const height = this.fromNode?.height || 40;
-		const offset = 80;
+		const offset = 40;
 		let x1 = p1.x;
 		let y1 = p1.y;
 		let x2 = x1;
@@ -167,7 +172,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 		let y3 = p2.y - height / 2;
 		let x4 = p2.x;
 		let y4 = p2.y;
-		const useCurve = p2.y >= p1.y;
+		const useCurve = p2.y > p1.y;
 		const diff = x3 - (x2 - width);
 		let path;
 		if (useCurve) {
@@ -218,8 +223,10 @@ const Link = fabric.util.createClass(fabric.Group, {
 			superType: this.get('superType'),
 			configuration: this.get('configuration'),
 			fromNode: this.get('fromNode'),
+			fromNodeId: this.get('fromNodeId'),
 			fromPort: this.get('fromPort'),
 			toNode: this.get('toNode'),
+			toNodeId: this.get('toNodeId'),
 			toPort: this.get('toPort'),
 		});
 	},

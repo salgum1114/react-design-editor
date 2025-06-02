@@ -142,7 +142,7 @@ class WorkflowToolbar extends Component<IProps> {
 							tooltipTitle={i18n.t('action.run-layout')}
 							onClick={() =>
 								canvasRef.handler.layoutHandler.runLayout({
-									type: 'dagre',
+									type: 'elk',
 									nodes: canvasRef.handler
 										.getObjects()
 										.filter(obj => obj.superType === 'node') as NodeObject[],

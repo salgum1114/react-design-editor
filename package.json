@@ -54,6 +54,7 @@
 		"clsx": "^2.1.1",
 		"color": "^3.1.2",
 		"echarts": "^4.7.0",
+		"elkjs": "^0.10.0",
 		"fabric": "^4.6.0",
 		"gifler": "^0.1.0",
 		"honeycomb-grid": "^3.1.7",

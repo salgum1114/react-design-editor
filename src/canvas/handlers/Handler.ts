@@ -407,7 +407,7 @@ class Handler implements HandlerOptions {
 			return true;
 		}) as FabricObject[];
 		if (objects.length) {
-			objects.forEach(obj => (this.objectMap[obj.id] = obj));
+			this.objectMap = objects.reduce((p, c) => Object.assign(p, { [c.id]: c }), {});
 		} else {
 			this.objectMap = {};
 		}
@@ -1174,7 +1174,7 @@ class Handler implements HandlerOptions {
 											const linkTarget = {
 												fromNodeIndex: index,
 												fromPortId: port.id,
-												type: 'curvedLink',
+												type: 'link',
 												superType: 'link',
 											} as any;
 											const findIndex = activeSelection
@@ -1314,7 +1314,7 @@ class Handler implements HandlerOptions {
 						const { fromNode, fromPort, toNodeIndex } = linkObject;
 						const toNode = objects[toNodeIndex];
 						const link = {
-							type: 'curvedLink',
+							type: 'link',
 							fromNodeId: fromNode,
 							fromPortId: fromPort,
 							toNodeId: toNode.id,

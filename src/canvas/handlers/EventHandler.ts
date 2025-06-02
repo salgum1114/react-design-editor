@@ -370,12 +370,7 @@ class EventHandler {
 		const { target } = event;
 		if (editable) {
 			if (this.handler.prevTarget && this.handler.prevTarget.superType === 'link') {
-				this.handler.prevTarget.line.set({
-					stroke: this.handler.prevTarget.originStroke || this.handler.prevTarget.stroke,
-				});
-				this.handler.prevTarget.arrow.set({
-					fill: this.handler.prevTarget.originStroke || this.handler.prevTarget.stroke,
-				});
+                this.handler.prevTarget.setColor(this.handler.prevTarget.originStroke || this.handler.prevTarget.stroke)
 			}
 			if (target && target.type === 'fromPort') {
 				this.handler.linkHandler.init(target);

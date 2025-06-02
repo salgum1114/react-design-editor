@@ -1,7 +1,6 @@
 import { fabric } from 'fabric';
 import throttle from 'lodash/throttle';
 
-import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
 import { FabricObject } from '../utils';
 import Handler from './Handler';
@@ -140,6 +139,7 @@ class TransactionHandler {
 	 */
 	public replay = (transaction: TransactionEvent) => {
 		const objects = JSON.parse(transaction.json) as FabricObject[];
+		console.log(objects);
 		this.state = objects;
 		this.active = true;
 		this.handler.canvas.renderOnAddRemove = false;
@@ -151,26 +151,21 @@ class TransactionHandler {
 				enlivenObjects.forEach(obj => {
 					const targetIndex = this.handler.canvas._objects.length;
 					if (obj.superType === 'node') {
-						this.handler.canvas.insertAt(obj, targetIndex, false);
-						this.handler.portHandler.create(obj as NodeObject);
+						const node = obj as NodeObject;
+						this.handler.canvas.insertAt(node, targetIndex, false);
+						this.handler.portHandler.create(node);
+						this.handler.portHandler.setCoords(node);
 					} else if (obj.superType === 'link') {
-						const link = obj as LinkObject;
-						this.handler.objects = this.handler.getObjects();
-						this.handler.linkHandler.create({
-							type: 'curvedLink',
-							fromNodeId: link.fromNode?.id,
-							fromPortId: link.fromPort?.id,
-							toNodeId: link.toNode?.id,
-							toPortId: link.toPort?.id,
-						});
+						this.handler.canvas.insertAt(obj, targetIndex, false);
 					} else {
 						this.handler.canvas.insertAt(obj, targetIndex, false);
 					}
 				});
+				this.handler.objects = this.handler.getObjects();
+				1;
 				this.handler.canvas.renderOnAddRemove = true;
 				this.active = false;
 				this.handler.canvas.renderAll();
-				this.handler.objects = this.handler.getObjects();
 				if (this.handler.onTransaction) {
 					this.handler.onTransaction(transaction);
 				}
