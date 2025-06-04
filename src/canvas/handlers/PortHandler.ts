@@ -106,7 +106,6 @@ class PortHandler {
 				port.set({ left, top });
 				port.setCoords();
 				if (port.links.length) {
-					console.log(port.links);
 					port.links.forEach(link => {
 						link.update({ left, top }, { left: link.toNode.toPort.left, top: link.toNode.toPort.top });
 					});

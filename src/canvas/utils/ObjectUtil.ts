@@ -405,7 +405,6 @@ export interface FabricEvent<T extends any = Event> extends Omit<fabric.IEvent, 
 	isClick?: boolean;
 	pointer?: fabric.Point;
 	absolutePointer?: fabric.Point;
-	transform?: { corner: string; original: FabricObject; originX: string; originY: string; width: number };
 }
 
 export type FabricObjects = {

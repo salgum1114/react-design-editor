@@ -38,7 +38,6 @@ const Link = fabric.util.createClass(fabric.Group, {
 		this.fromPort = fromPort;
 		this.toNode = toNode;
 		this.toPort = toPort;
-		console.log(options);
 		const { line, arrow } = this.draw(fromPort, toPort, options);
 		this.line = line;
 		this.arrow = arrow;

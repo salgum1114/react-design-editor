@@ -1,17 +1,19 @@
 {
 	"name": "react-design-editor",
-	"version": "0.0.62",
+	"version": "0.0.69",
 	"description": "Design Editor Tools with React.js + ant.design + fabric.js",
-	"main": "dist/react-design-editor.min.js",
-	"typings": "lib/index.d.ts",
+	"main": "dist/react-design-editor.cjs.js",
+	"module": "dist/react-design-editor.es.js",
+	"unpkg": "dist/react-design-editor.umd.js",
+	"typings": "dist/types/index.d.ts",
 	"files": [
-		"dist",
-		"lib"
+		"dist"
 	],
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "npm run clean && webpack --node-env production --config webpack.prod.js && typedoc",
-		"build:lib": "npm run tsc && webpack --node-env production --config webpack.lib.js",
+		"build:lib": "npm run clean && vite build && tsc --project tsconfig.build.json",
+		"build:types": "vite build && npm run build:types",
 		"start": "npm install && npm run start:dev",
 		"start:dev": "webpack serve --config webpack.dev.js",
 		"serve": "http-server docs -p 4001",
@@ -19,7 +21,7 @@
 		"deploy": "npm run build:lib && npm publish",
 		"lint": "npm run tsc",
 		"clean": "node scripts/clean",
-		"tsc": "tsc",
+		"tsc": "tsc --project tsconfig.build.json",
 		"typedoc": "typedoc"
 	},
 	"repository": {
@@ -103,6 +105,8 @@
 		"@types/webpack-env": "^1.16.0",
 		"@typescript-eslint/eslint-plugin": "^8.33.0",
 		"@typescript-eslint/parser": "^8.33.0",
+		"@vitejs/plugin-react": "^4.5.0",
+		"ajv": "^8.17.1",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^8.1.0",
 		"babel-plugin-dynamic-import-webpack": "^1.1.0",
@@ -133,6 +137,8 @@
 		"typedoc": "^0.17.4",
 		"typescript": "^4.7.4",
 		"url-loader": "^4.1.0",
+		"vite": "^6.3.5",
+		"vite-plugin-dts": "^4.5.4",
 		"webpack": "^5.99.9",
 		"webpack-cli": "^5.1.4",
 		"webpack-dev-server": "^5.2.1",

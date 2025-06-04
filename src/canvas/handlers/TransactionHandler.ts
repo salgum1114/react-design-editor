@@ -139,7 +139,6 @@ class TransactionHandler {
 	 */
 	public replay = (transaction: TransactionEvent) => {
 		const objects = JSON.parse(transaction.json) as FabricObject[];
-		console.log(objects);
 		this.state = objects;
 		this.active = true;
 		this.handler.canvas.renderOnAddRemove = false;

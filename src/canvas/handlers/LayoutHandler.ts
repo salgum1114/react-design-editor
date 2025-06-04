@@ -13,15 +13,15 @@ export interface LayoutOptions {
 }
 
 export default class LayoutHandler extends AbstractHandler {
-	public runLayout(options: LayoutOptions) {
+	public async runLayout(options: LayoutOptions) {
 		const { type } = options;
 		if (!type) {
 			return;
 		}
 		if (type === 'dagre') {
-			this.dagre(options);
+			await this.dagre(options);
 		} else if (type === 'elk') {
-			this.elk(options);
+			await this.elk(options);
 		}
 	}
 
