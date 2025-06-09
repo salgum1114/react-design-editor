@@ -2,13 +2,11 @@ import { fabric } from 'fabric';
 
 import { NodeObject } from '../objects/Node';
 import { FabricObject } from '../utils';
-import type Handler from './Handler';
+import AbstractHandler from './AbstractHandler';
 
-class GridHandler {
-	handler?: Handler;
-
-	constructor(handler: Handler) {
-		this.handler = handler;
+class GridHandler extends AbstractHandler {
+	constructor(handler: any) {
+		super(handler);
 		this.initialize();
 	}
 
@@ -83,9 +81,7 @@ class GridHandler {
 	 * @returns
 	 */
 	public setCoords = (target: FabricObject | fabric.ActiveSelection) => {
-		const {
-			gridOption: { enabled, grid, snapToGrid },
-		} = this.handler;
+		const { enabled, grid, snapToGrid } = this.handler.gridOption;
 		if (enabled && grid && snapToGrid) {
 			if (target.type === 'activeSelection') {
 				const activeSelection = target as fabric.ActiveSelection;

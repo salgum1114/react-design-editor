@@ -129,7 +129,7 @@ class LinkHandler {
 	 */
 	create = (option: LinkOption, loaded = false) => {
 		const fromNode = this.handler.objectMap[option.fromNodeId] as NodeObject;
-		const fromPort = fromNode.fromPort.filter(port => port.id === option.fromPortId || !port.id)[0];
+		const fromPort = fromNode?.fromPort.filter(port => port.id === option.fromPortId || !port.id)[0];
 		const toNode = this.handler.objectMap[option.toNodeId] as NodeObject;
 		const { toPort } = toNode;
 		const link = this.handler.fabricObjects[option.type].create(fromNode, fromPort, toNode, toPort, {

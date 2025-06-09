@@ -604,10 +604,7 @@ class Handler implements HandlerOptions {
 		}
 		activeObject.set('shadow', new fabric.Shadow(option));
 		this.canvas.requestRenderAll();
-		const { onModified } = this;
-		if (onModified) {
-			onModified(activeObject);
-		}
+		this.onModified?.(activeObject);
 	};
 
 	/**

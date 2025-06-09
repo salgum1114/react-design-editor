@@ -12,7 +12,7 @@ interface IState {
 
 class App extends React.Component<any, IState> {
 	state: IState = {
-		activeEditor: 'imagemap',
+		activeEditor: 'workflow',
 	};
 
 	handleChangeEditor = ({ key }) => {

@@ -6,6 +6,7 @@ const baseConfig = require('./webpack.common.js');
 const devPort = 4000;
 const host = 'localhost';
 
+/** @type {import('webpack').Configuration} */
 module.exports = merge(baseConfig, {
 	mode: 'development',
 	devtool: 'inline-source-map',

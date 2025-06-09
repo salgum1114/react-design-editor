@@ -129,16 +129,12 @@ class PortHandler {
 		}
 		this.handler.canvas.remove(target.toPort);
 		if (target.toPort) {
-			target.toPort.links.forEach(link => {
-				this.handler.linkHandler.remove(link, 'from');
-			});
+			target.toPort.links.forEach(link => this.handler.linkHandler.remove(link, 'from'));
 		}
 		if (target.fromPort) {
 			target.fromPort.forEach((port: any) => {
 				if (port.links.length) {
-					port.links.forEach((link: any) => {
-						this.handler.linkHandler.remove(link, 'to');
-					});
+					port.links.forEach((link: any) => this.handler.linkHandler.remove(link, 'to'));
 				}
 			});
 		}

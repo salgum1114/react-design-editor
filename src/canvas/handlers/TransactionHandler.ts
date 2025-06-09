@@ -1,9 +1,9 @@
 import { fabric } from 'fabric';
+import sortBy from 'lodash/sortBy';
 import throttle from 'lodash/throttle';
-
 import { NodeObject } from '../objects/Node';
 import { FabricObject } from '../utils';
-import Handler from './Handler';
+import AbstractHandler from './AbstractHandler';
 
 export type TransactionType =
 	| 'add'
@@ -21,7 +21,8 @@ export type TransactionType =
 	| 'sendBackwards'
 	| 'sendToBack'
 	| 'redo'
-	| 'undo';
+	| 'undo'
+	| 'layout';
 
 export interface TransactionTransform {
 	scaleX?: number;
@@ -42,15 +43,15 @@ export interface TransactionEvent {
 	type: TransactionType;
 }
 
-class TransactionHandler {
-	handler: Handler;
+class TransactionHandler extends AbstractHandler {
+	private readonly MAX_HISTORY_SIZE = 20;
+	private currentObjects: FabricObject[] = [];
 	redos: TransactionEvent[];
 	undos: TransactionEvent[];
 	active: boolean = false;
-	state: FabricObject[] = [];
 
-	constructor(handler: Handler) {
-		this.handler = handler;
+	constructor(handler: any) {
+		super(handler);
 		this.initialize();
 	}
 
@@ -58,10 +59,10 @@ class TransactionHandler {
 	 * Initialize transaction handler
 	 *
 	 */
-	public initialize = () => {
+	protected initialize = () => {
 		this.redos = [];
 		this.undos = [];
-		this.state = [];
+		this.currentObjects = [];
 		this.active = false;
 	};
 
@@ -69,32 +70,34 @@ class TransactionHandler {
 	 * Save transaction
 	 *
 	 * @param {TransactionType} type
-	 * @param {*} [canvasJSON]
-	 * @param {boolean} [isWorkarea=true]
 	 */
-	public save = (type: TransactionType, canvasJSON?: any, _isWorkarea: boolean = true) => {
+	public save = (type: TransactionType) => {
 		if (!this.handler.keyEvent.transaction) {
 			return;
 		}
 		try {
-			if (this.state) {
-				const json = JSON.stringify(this.state);
-				this.redos = [];
-				this.undos.push({
-					type,
-					json,
-				});
+			const json = JSON.stringify(this.currentObjects);
+			this.redos = [];
+			this.undos.push({ type, json });
+			if (this.undos.length > this.MAX_HISTORY_SIZE) {
+				this.undos.shift();
 			}
-			const { objects }: { objects: FabricObject[] } =
-				canvasJSON || this.handler.canvas.toJSON(this.handler.propertiesToInclude);
-			this.state = objects.filter(obj => {
-				if (obj.id === 'workarea') {
-					return false;
-				} else if (obj.superType === 'port') {
-					return false;
+			const objects = this.handler.canvas.toJSON(this.handler.propertiesToInclude).objects.map(obj => {
+				const target = obj as FabricObject;
+				if (target.superType === 'node' || target.superType === 'link') {
+					return {
+						...target,
+						shadow: { ...(target.shadow as fabric.Shadow), blur: 0 },
+						fill: target.originFill,
+						stroke: target.originStroke,
+					};
 				}
-				return true;
-			});
+				return obj;
+			}) as FabricObject[];
+			this.currentObjects = sortBy(
+				objects.filter(obj => obj.id !== 'workarea' && obj.superType !== 'port'),
+				obj => (obj.superType === 'link' ? 1 : 0),
+			);
 		} catch (error) {
 			console.error(error);
 		}
@@ -109,11 +112,15 @@ class TransactionHandler {
 		if (!undo) {
 			return;
 		}
-		this.redos.push({
-			type: 'redo',
-			json: JSON.stringify(this.state),
-		});
-		this.replay(undo);
+		try {
+			this.redos.push({
+				type: 'redo',
+				json: JSON.stringify(this.currentObjects),
+			});
+			this.replay(undo);
+		} catch (error) {
+			console.error('[TransactionHandler] Undo failed:', error);
+		}
 	}, 100);
 
 	/**
@@ -125,11 +132,15 @@ class TransactionHandler {
 		if (!redo) {
 			return;
 		}
-		this.undos.push({
-			type: 'undo',
-			json: JSON.stringify(this.state),
-		});
-		this.replay(redo);
+		try {
+			this.undos.push({
+				type: 'undo',
+				json: JSON.stringify(this.currentObjects),
+			});
+			this.replay(redo);
+		} catch (error) {
+			console.error('[TransactionHandler] Redo failed:', error);
+		}
 	}, 100);
 
 	/**
@@ -138,40 +149,49 @@ class TransactionHandler {
 	 * @param {TransactionEvent} transaction
 	 */
 	public replay = (transaction: TransactionEvent) => {
-		const objects = JSON.parse(transaction.json) as FabricObject[];
-		this.state = objects;
-		this.active = true;
-		this.handler.canvas.renderOnAddRemove = false;
-		this.handler.clear();
-		this.handler.canvas.discardActiveObject();
-		fabric.util.enlivenObjects(
-			objects,
-			(enlivenObjects: FabricObject[]) => {
-				enlivenObjects.forEach(obj => {
-					const targetIndex = this.handler.canvas._objects.length;
-					if (obj.superType === 'node') {
-						const node = obj as NodeObject;
-						this.handler.canvas.insertAt(node, targetIndex, false);
-						this.handler.portHandler.create(node);
-						this.handler.portHandler.setCoords(node);
-					} else if (obj.superType === 'link') {
-						this.handler.canvas.insertAt(obj, targetIndex, false);
-					} else {
-						this.handler.canvas.insertAt(obj, targetIndex, false);
-					}
-				});
-				this.handler.objects = this.handler.getObjects();
-				1;
-				this.handler.canvas.renderOnAddRemove = true;
-				this.active = false;
-				this.handler.canvas.renderAll();
-				if (this.handler.onTransaction) {
-					this.handler.onTransaction(transaction);
-				}
-			},
-			null,
-		);
+		try {
+			this.currentObjects = JSON.parse(transaction.json) as FabricObject[];
+			this.active = true;
+			this.handler.canvas.renderOnAddRemove = false;
+			this.handler.clear();
+			this.handler.canvas.discardActiveObject();
+			fabric.util.enlivenObjects(
+				this.currentObjects,
+				(enlivenObjects: FabricObject[]) => {
+					enlivenObjects.forEach(obj => {
+						const targetIndex = this.handler.canvas._objects.length;
+						if (obj.superType === 'node') {
+							const node = obj as NodeObject;
+							this.handler.canvas.insertAt(node, targetIndex, false);
+							this.handler.portHandler.create(node);
+						} else if (obj.superType === 'link') {
+							this.handler.objects = this.handler.getObjects();
+							this.handler.linkHandler.create({
+								type: 'link',
+								fromNodeId: obj.fromNode?.id,
+								fromPortId: obj.fromPort?.id,
+								toNodeId: obj.toNode?.id,
+								toPortId: obj.toPort?.id,
+							});
+						} else {
+							this.handler.canvas.insertAt(obj, targetIndex, false);
+						}
+					});
+					this.active = false;
+					this.handler.canvas.renderOnAddRemove = true;
+					this.handler.canvas.renderAll();
+					this.handler.objects = this.handler.getObjects();
+					this.handler.onTransaction?.(transaction);
+				},
+				null,
+			);
+		} catch (error) {
+			console.error(error);
+		}
 	};
+
+	public canUndo = () => this.undos.length > 0;
+	public canRedo = () => this.redos.length > 0;
 }
 
 export default TransactionHandler;

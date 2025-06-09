@@ -4,9 +4,15 @@ import { getEllipsis } from '../../configuration/NodeConfiguration';
 import LogicNode from './LogicNode';
 
 const SwitchNode = fabric.util.createClass(LogicNode, {
+	portWidth: 40,
+	defaultRouteLength: 3,
 	initialize(options) {
 		options = options || {};
-		options.left += 20;
+		const routeLength = options.configuration.routes.length;
+		if (options.configuration.routes.length > 2) {
+			// ex) 40 + ((4 - 3) * 80) = 120 / 2 = 60
+			options.left += (this.portWidth + (routeLength - this.defaultRouteLength) * (this.portWidth * 2)) / 2;
+		}
 		this.callSuper('initialize', options);
 	},
 	createFromPort(x, y) {

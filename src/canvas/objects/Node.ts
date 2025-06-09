@@ -256,17 +256,11 @@ const Node = fabric.util.createClass(fabric.Group, {
 		return this.singlePort(portOption);
 	},
 	setErrors(errors: any) {
-		this.set({
-			errors,
-		});
+		this.set({ errors });
 		if (errors) {
-			this.errorFlag.set({
-				visible: true,
-			});
+			this.errorFlag.set({ visible: true });
 		} else {
-			this.errorFlag.set({
-				visible: false,
-			});
+			this.errorFlag.set({ visible: false });
 		}
 	},
 	duplicate() {
@@ -285,6 +279,7 @@ Node.fromObject = (options: NodeObject, callback: (obj: NodeObject) => any) => {
 };
 
 // @ts-ignore
+
 window.fabric.FromPort = Port;
 
 // @ts-ignore

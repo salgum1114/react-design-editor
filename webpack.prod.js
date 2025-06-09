@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const baseConfig = require('./webpack.common.js');
 
+/** @type {import('webpack').Configuration} */
 module.exports = merge(baseConfig, {
 	mode: 'production',
 	entry: {

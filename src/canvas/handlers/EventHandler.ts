@@ -4,20 +4,19 @@ import { code } from '../constants';
 import { NodeObject } from '../objects/Node';
 import { VideoObject } from '../objects/Video';
 import { FabricEvent, FabricObject } from '../utils';
-import type Handler from './Handler';
+import AbstractHandler from './AbstractHandler';
 
 /**
  * Event Handler Class
  * @author salgum1114
  * @class EventHandler
  */
-class EventHandler {
-	handler: Handler;
+class EventHandler extends AbstractHandler {
 	code: string;
 	panning: boolean;
 
-	constructor(handler: Handler) {
-		this.handler = handler;
+	constructor(handler: any) {
+		super(handler);
 		this.initialize();
 	}
 
@@ -120,10 +119,7 @@ class EventHandler {
 		mousedown: (opt: FabricEvent) => {
 			const { target } = opt;
 			if (target && target.link && target.link.enabled) {
-				const { onClick } = this.handler;
-				if (onClick) {
-					onClick(this.handler.canvas, target);
-				}
+				this.handler.onClick?.(this.handler.canvas, target);
 			}
 		},
 		/**
@@ -133,10 +129,7 @@ class EventHandler {
 		mousedblclick: (opt: FabricEvent) => {
 			const { target } = opt;
 			if (target) {
-				const { onDblClick } = this.handler;
-				if (onDblClick) {
-					onDblClick(this.handler.canvas, target);
-				}
+				this.handler.onDblClick?.(this.handler.canvas, target);
 			}
 		},
 	};
@@ -155,10 +148,7 @@ class EventHandler {
 		if (target.type === 'circle' && target.parentId) {
 			return;
 		}
-		const { onModified } = this.handler;
-		if (onModified) {
-			onModified(target);
-		}
+		this.handler.onModified?.(target);
 	};
 
 	/**
@@ -370,7 +360,9 @@ class EventHandler {
 		const { target } = event;
 		if (editable) {
 			if (this.handler.prevTarget && this.handler.prevTarget.superType === 'link') {
-                this.handler.prevTarget.setColor(this.handler.prevTarget.originStroke || this.handler.prevTarget.stroke)
+				this.handler.prevTarget.setColor(
+					this.handler.prevTarget.originStroke || this.handler.prevTarget.stroke,
+				);
 			}
 			if (target && target.type === 'fromPort') {
 				this.handler.linkHandler.init(target);

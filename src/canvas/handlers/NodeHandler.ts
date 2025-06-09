@@ -2,13 +2,21 @@ import { fabric } from 'fabric';
 import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
 import { FabricObject } from '../utils';
-import Handler from './Handler';
+import AbstractHandler from './AbstractHandler';
 
-class NodeHandler {
-	handler: Handler;
-	constructor(handler: Handler) {
-		this.handler = handler;
-	}
+class NodeHandler extends AbstractHandler {
+	public create = (options: Partial<NodeObject>, loaded?: boolean) => {
+		const createdObj = this.handler.fabricObjects[options.type].create(options) as NodeObject;
+		createdObj.set('shadow', { color: createdObj.stroke } as fabric.Shadow);
+		this.canvas.add(createdObj);
+		if (createdObj.iconButton) {
+			this.canvas.add(createdObj.iconButton);
+		}
+		this.handler.portHandler.create(createdObj);
+		if (this.handler.editable && !loaded) {
+			this.handler.onAdd?.(createdObj);
+		}
+	};
 
 	/**
 	 * Get the node path by target object
@@ -63,9 +71,7 @@ class NodeHandler {
 					if (fromIndex >= 0 && targetObjects[fromIndex] && toIndex >= 0 && targetObjects[toIndex]) {
 						object.set({
 							opacity: 1,
-							shadow: {
-								color: object.stroke,
-							},
+							shadow: { color: object.stroke },
 						});
 						this.highlightingNode(object, 300);
 						this.handler.canvas.requestRenderAll();
@@ -73,46 +79,28 @@ class NodeHandler {
 					}
 				}
 			}
-			object.set({
-				opacity: 0.2,
-			});
+			object.set({ opacity: 0.2 });
 			if (object.superType === 'node') {
 				if (object.toPort) {
-					object.toPort.set({
-						opacity: 0.2,
-					});
+					object.toPort.set({ opacity: 0.2 });
 				}
-				object.fromPort.forEach((port: any) => {
-					port.set({
-						opacity: 0.2,
-					});
-				});
+				object.fromPort.forEach((port: any) => port.set({ opacity: 0.2 }));
 			}
 			if (!object.animating) {
-				object.set('shadow', {
-					blur: 0,
-				});
+				object.set('shadow', { blur: 0 });
 			}
 		});
 		targetObjects.forEach((object: any) => {
 			object.set({
 				opacity: 1,
-				shadow: {
-					color: object.stroke,
-				},
+				shadow: { color: object.stroke },
 			});
 			this.highlightingNode(object, 300);
 			if (object.toPort) {
-				object.toPort.set({
-					opacity: 1,
-				});
+				object.toPort.set({ opacity: 1 });
 			}
 			if (object.fromPort) {
-				object.fromPort.forEach((port: any) => {
-					port.set({
-						opacity: 1,
-					});
-				});
+				object.fromPort.forEach((port: any) => port.set({ opacity: 1 }));
 			}
 		});
 		this.handler.canvas.requestRenderAll();
@@ -125,17 +113,12 @@ class NodeHandler {
 	selectById = (id: string) => {
 		this.handler.objects.forEach((object: FabricObject) => {
 			if (id === object.id) {
-				object.set('shadow', {
-					color: object.stroke,
-					blur: 50,
-				} as fabric.Shadow);
+				object.set('shadow', { color: object.stroke, blur: 50 } as fabric.Shadow);
 				return;
 			} else if (id === object.nodeId) {
 				return;
 			}
-			object.set('shadow', {
-				blur: 0,
-			} as fabric.Shadow);
+			object.set('shadow', { blur: 0 } as fabric.Shadow);
 		});
 		this.handler.canvas.requestRenderAll();
 	};
@@ -145,27 +128,17 @@ class NodeHandler {
 	 */
 	deselect = () => {
 		this.handler.objects.forEach((object: FabricObject) => {
-			object.set({
-				opacity: 1,
-			});
+			object.set({ opacity: 1 });
 			if (object.superType === 'node') {
 				const node = object as NodeObject;
 				if (node.toPort) {
-					node.toPort.set({
-						opacity: 1,
-					});
+					node.toPort.set({ opacity: 1 });
 				}
-				node.fromPort.forEach(port => {
-					port.set({
-						opacity: 1,
-					});
-				});
+				node.fromPort.forEach(port => port.set({ opacity: 1 }));
 			}
 			if (!object.animating) {
 				const node = object as FabricObject;
-				node.set('shadow', {
-					blur: 0,
-				} as fabric.Shadow);
+				node.set('shadow', { blur: 0 } as fabric.Shadow);
 			}
 		});
 		this.handler.canvas.renderAll();
@@ -184,13 +157,9 @@ class NodeHandler {
 		const lastObject = targetObjects.filter((obj: FabricObject) => obj.id === path[path.length - 1])[0];
 		targetObjects.forEach((object: FabricObject) => {
 			if (lastObject) {
-				object.set('shadow', {
-					color: lastObject.stroke,
-				} as fabric.Shadow);
+				object.set('shadow', { color: lastObject.stroke } as fabric.Shadow);
 			} else {
-				object.set('shadow', {
-					color: object.stroke,
-				} as fabric.Shadow);
+				object.set('shadow', { color: object.stroke } as fabric.Shadow);
 			}
 			this.highlightingNode(object);
 			this.handler.canvas.requestRenderAll();
@@ -203,13 +172,9 @@ class NodeHandler {
 					const toIndex = targetObjects.findIndex((obj: FabricObject) => obj.id === toNode.id);
 					if (fromIndex >= 0 && targetObjects[fromIndex] && toIndex >= 0 && targetObjects[toIndex]) {
 						if (lastObject) {
-							object.set('shadow', {
-								color: lastObject.stroke,
-							} as fabric.Shadow);
+							object.set('shadow', { color: lastObject.stroke } as fabric.Shadow);
 						} else {
-							object.set('shadow', {
-								color: object.stroke,
-							} as fabric.Shadow);
+							object.set('shadow', { color: object.stroke } as fabric.Shadow);
 						}
 						this.highlightingNode(object);
 						this.highlightingLink(object, lastObject);

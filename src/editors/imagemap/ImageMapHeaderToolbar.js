@@ -1,13 +1,13 @@
 import i18n from 'i18next';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 
 import { CommonButton } from '../../components/common';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import ImageMapList from './ImageMapList';
 
-class ImageMapHeaderToolbar extends Component {
+class ImageMapHeaderToolbar extends React.Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		selectedItem: PropTypes.object,
@@ -170,7 +170,7 @@ class ImageMapHeaderToolbar extends Component {
 				<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-history">
 					<CommonButton
 						className="rde-action-btn"
-						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.undos.length)}
+						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.canUndo())}
 						onClick={() => canvasRef.handler?.transactionHandler.undo()}
 					>
 						<Icon name="undo-alt" style={{ marginRight: 8 }} />
@@ -178,7 +178,7 @@ class ImageMapHeaderToolbar extends Component {
 					</CommonButton>
 					<CommonButton
 						className="rde-action-btn"
-						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.redos.length)}
+						disabled={isCropping || (canvasRef && !canvasRef.handler?.transactionHandler.canRedo())}
 						onClick={() => canvasRef.handler?.transactionHandler.redo()}
 					>
 						Redo

@@ -58,6 +58,7 @@ class WorkflowEditor extends React.Component {
 				this.canvasRef.handler.nodeHandler.highlightingNode(target);
 				this.canvasRef.handler.select(target);
 			}
+			this.canvasRef.handler.objects.forEach(obj => console.log(obj.type, obj.fromObject));
 		},
 		onSelect: target => {
 			this.nodeConfigurationRef.props.form.validateFields(err => {
@@ -238,13 +239,13 @@ class WorkflowEditor extends React.Component {
 						configurationList.concat(['name']),
 					);
 					if (Object.values(errors.configuration).filter(error => error).length || errors.name) {
-						selectedItem.setErrors(true);
+						selectedItem?.setErrors(true);
 					} else {
-						selectedItem.setErrors(false);
+						selectedItem?.setErrors(false);
 					}
 					this.canvasRef.canvas.renderAll();
 				}, 0);
-				const configuration = Object.assign({}, selectedItem.configuration, changedValues.configuration);
+				const configuration = Object.assign({}, selectedItem?.configuration, changedValues.configuration);
 				this.canvasRef.handler.setObject({
 					configuration,
 					name: allValues.name,

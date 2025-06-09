@@ -11,6 +11,7 @@ import SwitchNode from './logic/SwitchNode';
 import VirtualButtonNode from './trigger/VirtualButtonNode';
 
 const defaultOption = {
+	superType: 'node',
 	fill: 'rgba(0, 0, 0, 0.3)',
 	stroke: 'rgba(255, 255, 255, 0)',
 	borderColor: 'rgba(0, 0, 0, 1)',

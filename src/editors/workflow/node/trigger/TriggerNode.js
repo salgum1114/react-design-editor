@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 
-import { NODE_COLORS } from '../../constant/constants';
 import { Node } from '../../../../canvas/objects';
+import { NODE_COLORS } from '../../constant/constants';
 
 const TriggerNode = fabric.util.createClass(Node, {
 	initialize(options) {
@@ -16,6 +16,7 @@ const TriggerNode = fabric.util.createClass(Node, {
 });
 
 TriggerNode.fromObject = (options, callback) => {
+	console.log(options);
 	return callback(new TriggerNode(options));
 };
 

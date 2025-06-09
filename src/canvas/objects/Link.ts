@@ -18,6 +18,7 @@ export interface LinkObject extends FabricObject<fabric.Path> {
 	fromPort?: PortObject;
 	toPort?: PortObject;
 	fromPortIndex?: number;
+	isPointNear?: (pointer: fabric.Point, link: LinkObject, tolerance?: number) => boolean;
 	setPort?: (fromNode: NodeObject, fromPort: PortObject, toNode: NodeObject, toPort: PortObject) => void;
 	setPortEnabled?: (node: NodeObject, port: PortObject, enabled: boolean) => void;
 	update?: (fromPort: Partial<PortObject>, toPort: Partial<PortObject>) => void;
@@ -214,6 +215,23 @@ const Link = fabric.util.createClass(fabric.Group, {
 			angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
 		}
 		return { path, midX, midY, angle };
+	},
+	isPointNear(pointer: fabric.Point, link: LinkObject, tolerance = 5) {
+		const line = link.line as fabric.Path;
+		if (!line || !line.path) return false;
+		const properties = new svgPathProperties((line.path as any[]).map(cmd => cmd.join(' ')).join(' '));
+		const length = properties.getTotalLength();
+
+		const steps = Math.floor(length / 5); // 5px 간격 샘플링
+		for (let i = 0; i <= steps; i++) {
+			const pointOnPath = properties.getPointAtLength((i / steps) * length);
+			const dx = pointer.x - pointOnPath.x;
+			const dy = pointer.y - pointOnPath.y;
+			if (Math.sqrt(dx * dx + dy * dy) <= tolerance) {
+				return true;
+			}
+		}
+		return false;
 	},
 	toObject() {
 		return fabric.util.object.extend(this.callSuper('toObject'), {
