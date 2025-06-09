@@ -70,7 +70,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">TransactionHandler</span>
+						<a href="abstracthandler.html" class="tsd-signature-type">AbstractHandler</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">TransactionHandler</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -81,17 +86,19 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="transactionhandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="transactionhandler.html#max_history_size" class="tsd-kind-icon">MAX_<wbr>HISTORY_<wbr>SIZE</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#active" class="tsd-kind-icon">active</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#handler" class="tsd-kind-icon">handler</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="transactionhandler.html#canvas" class="tsd-kind-icon">canvas</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="transactionhandler.html#currentobjects" class="tsd-kind-icon">current<wbr>Objects</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="transactionhandler.html#handler" class="tsd-kind-icon">handler</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#redo" class="tsd-kind-icon">redo</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#redos" class="tsd-kind-icon">redos</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#state" class="tsd-kind-icon">state</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#undo" class="tsd-kind-icon">undo</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#undos" class="tsd-kind-icon">undos</a></li>
 							</ul>
@@ -99,7 +106,9 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#initialize" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#canredo" class="tsd-kind-icon">can<wbr>Redo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#canundo" class="tsd-kind-icon">can<wbr>Undo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-external"><a href="transactionhandler.html#initialize" class="tsd-kind-icon">initialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#replay" class="tsd-kind-icon">replay</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#save" class="tsd-kind-icon">save</a></li>
 							</ul>
@@ -109,23 +118,24 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Transaction<wbr>Handler<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="handler.html" class="tsd-signature-type">Handler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="transactionhandler.html" class="tsd-signature-type">TransactionHandler</a></li>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Transaction<wbr>Handler<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="transactionhandler.html" class="tsd-signature-type">TransactionHandler</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Overrides <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L50">src/canvas/handlers/TransactionHandler.ts:50</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L51">src/canvas/handlers/TransactionHandler.ts:51</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>handler: <a href="handler.html" class="tsd-signature-type">Handler</a></h5>
+									<h5>handler: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="transactionhandler.html" class="tsd-signature-type">TransactionHandler</a></h4>
@@ -135,33 +145,65 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="max_history_size" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> MAX_<wbr>HISTORY_<wbr>SIZE</h3>
+					<div class="tsd-signature tsd-kind-icon">MAX_<wbr>HISTORY_<wbr>SIZE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">20</span><span class="tsd-signature-symbol"> = 20</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L47">src/canvas/handlers/TransactionHandler.ts:47</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="active" class="tsd-anchor"></a>
 					<h3>active</h3>
 					<div class="tsd-signature tsd-kind-icon">active<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L49">src/canvas/handlers/TransactionHandler.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L51">src/canvas/handlers/TransactionHandler.ts:51</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="handler" class="tsd-anchor"></a>
-					<h3>handler</h3>
-					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="handler.html" class="tsd-signature-type">Handler</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
+					<a name="canvas" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> canvas</h3>
+					<div class="tsd-signature tsd-kind-icon">canvas<span class="tsd-signature-symbol">:</span> <a href="../globals.html#fabriccanvas" class="tsd-signature-type">FabricCanvas</a></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#canvas">canvas</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/AbstractHandler.ts#L6">src/canvas/handlers/AbstractHandler.ts:6</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="currentobjects" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> current<wbr>Objects</h3>
+					<div class="tsd-signature tsd-kind-icon">current<wbr>Objects<span class="tsd-signature-symbol">:</span> <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L46">src/canvas/handlers/TransactionHandler.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L48">src/canvas/handlers/TransactionHandler.ts:48</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
+					<a name="handler" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> handler</h3>
+					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="handler.html" class="tsd-signature-type">Handler</a></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#handler">handler</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/AbstractHandler.ts#L5">src/canvas/handlers/AbstractHandler.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="redo" class="tsd-anchor"></a>
 					<h3>redo</h3>
-					<div class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFunc</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = throttle(() &#x3D;&gt; {const redo &#x3D; this.redos.pop();if (!redo) {return;}this.undos.push({type: &#x27;undo&#x27;,json: JSON.stringify(this.state),});this.replay(redo);}, 100)</span></div>
+					<div class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFuncLeading</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = throttle(() &#x3D;&gt; {const redo &#x3D; this.redos.pop();if (!redo) {return;}try {this.undos.push({type: &#x27;undo&#x27;,json: JSON.stringify(this.currentObjects),});this.replay(redo);} catch (error) {console.error(&#x27;[TransactionHandler] Redo failed:&#x27;, error);}}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L123">src/canvas/handlers/TransactionHandler.ts:123</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L130">src/canvas/handlers/TransactionHandler.ts:130</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -176,27 +218,17 @@
 					<div class="tsd-signature tsd-kind-icon">redos<span class="tsd-signature-symbol">:</span> <a href="../interfaces/transactionevent.html" class="tsd-signature-type">TransactionEvent</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L47">src/canvas/handlers/TransactionHandler.ts:47</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="state" class="tsd-anchor"></a>
-					<h3>state</h3>
-					<div class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">:</span> <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L50">src/canvas/handlers/TransactionHandler.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L49">src/canvas/handlers/TransactionHandler.ts:49</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="undo" class="tsd-anchor"></a>
 					<h3>undo</h3>
-					<div class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFunc</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = throttle(() &#x3D;&gt; {const undo &#x3D; this.undos.pop();if (!undo) {return;}this.redos.push({type: &#x27;redo&#x27;,json: JSON.stringify(this.state),});this.replay(undo);}, 100)</span></div>
+					<div class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFuncLeading</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = throttle(() &#x3D;&gt; {const undo &#x3D; this.undos.pop();if (!undo) {return;}try {this.redos.push({type: &#x27;redo&#x27;,json: JSON.stringify(this.currentObjects),});this.replay(undo);} catch (error) {console.error(&#x27;[TransactionHandler] Undo failed:&#x27;, error);}}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L107">src/canvas/handlers/TransactionHandler.ts:107</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L110">src/canvas/handlers/TransactionHandler.ts:110</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -211,7 +243,7 @@
 					<div class="tsd-signature tsd-kind-icon">undos<span class="tsd-signature-symbol">:</span> <a href="../interfaces/transactionevent.html" class="tsd-signature-type">TransactionEvent</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L48">src/canvas/handlers/TransactionHandler.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L50">src/canvas/handlers/TransactionHandler.ts:50</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -219,16 +251,51 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="initialize" class="tsd-anchor"></a>
-					<h3>initialize</h3>
+					<a name="canredo" class="tsd-anchor"></a>
+					<h3>can<wbr>Redo</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Redo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L61">src/canvas/handlers/TransactionHandler.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L194">src/canvas/handlers/TransactionHandler.ts:194</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<a name="canundo" class="tsd-anchor"></a>
+					<h3>can<wbr>Undo</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">can<wbr>Undo<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L193">src/canvas/handlers/TransactionHandler.ts:193</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-external">
+					<a name="initialize" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> initialize</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#initialize">initialize</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L62">src/canvas/handlers/TransactionHandler.ts:62</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -250,7 +317,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L140">src/canvas/handlers/TransactionHandler.ts:140</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L151">src/canvas/handlers/TransactionHandler.ts:151</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -276,13 +343,13 @@
 					<a name="save" class="tsd-anchor"></a>
 					<h3>save</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">save<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a>, canvasJSON<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, _isWorkarea<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">save<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/TransactionHandler.ts#L75">src/canvas/handlers/TransactionHandler.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/TransactionHandler.ts#L74">src/canvas/handlers/TransactionHandler.ts:74</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -294,12 +361,10 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>type: <a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> canvasJSON: <span class="tsd-signature-type">any</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> _isWorkarea: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<div class="lead">
+										</div>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -323,13 +388,22 @@
 					<li class="current tsd-kind-class tsd-is-external">
 						<a href="transactionhandler.html" class="tsd-kind-icon">Transaction<wbr>Handler</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 								<a href="transactionhandler.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="transactionhandler.html#max_history_size" class="tsd-kind-icon">MAX_<wbr>HISTORY_<wbr>SIZE</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#active" class="tsd-kind-icon">active</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
+								<a href="transactionhandler.html#canvas" class="tsd-kind-icon">canvas</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="transactionhandler.html#currentobjects" class="tsd-kind-icon">current<wbr>Objects</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 								<a href="transactionhandler.html#handler" class="tsd-kind-icon">handler</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
@@ -339,15 +413,18 @@
 								<a href="transactionhandler.html#redos" class="tsd-kind-icon">redos</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="transactionhandler.html#state" class="tsd-kind-icon">state</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#undo" class="tsd-kind-icon">undo</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#undos" class="tsd-kind-icon">undos</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="transactionhandler.html#canredo" class="tsd-kind-icon">can<wbr>Redo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+								<a href="transactionhandler.html#canundo" class="tsd-kind-icon">can<wbr>Undo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-external">
 								<a href="transactionhandler.html#initialize" class="tsd-kind-icon">initialize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">

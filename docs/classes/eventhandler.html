@@ -82,7 +82,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">EventHandler</span>
+						<a href="abstracthandler.html" class="tsd-signature-type">AbstractHandler</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">EventHandler</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -93,14 +98,15 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="eventhandler.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="eventhandler.html#canvas" class="tsd-kind-icon">canvas</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#code" class="tsd-kind-icon">code</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#handler" class="tsd-kind-icon">handler</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="eventhandler.html#handler" class="tsd-kind-icon">handler</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#panning" class="tsd-kind-icon">panning</a></li>
 							</ul>
 						</section>
@@ -110,7 +116,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#arrowmoving" class="tsd-kind-icon">arrowmoving</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#contextmenu" class="tsd-kind-icon">contextmenu</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#destroy" class="tsd-kind-icon">destroy</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#initialize" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external"><a href="eventhandler.html#initialize" class="tsd-kind-icon">initialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#keydown" class="tsd-kind-icon">keydown</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#keyup" class="tsd-kind-icon">keyup</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="eventhandler.html#modified" class="tsd-kind-icon">modified</a></li>
@@ -142,23 +148,24 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Constructors</h2>
-				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
-					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Event<wbr>Handler<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="handler.html" class="tsd-signature-type">Handler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="eventhandler.html" class="tsd-signature-type">EventHandler</a></li>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Event<wbr>Handler<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="eventhandler.html" class="tsd-signature-type">EventHandler</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Overrides <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L17">src/canvas/handlers/EventHandler.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L16">src/canvas/handlers/EventHandler.ts:16</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>handler: <a href="handler.html" class="tsd-signature-type">Handler</a></h5>
+									<h5>handler: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="eventhandler.html" class="tsd-signature-type">EventHandler</a></h4>
@@ -168,23 +175,35 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
+					<a name="canvas" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> canvas</h3>
+					<div class="tsd-signature tsd-kind-icon">canvas<span class="tsd-signature-symbol">:</span> <a href="../globals.html#fabriccanvas" class="tsd-signature-type">FabricCanvas</a></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#canvas">canvas</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/AbstractHandler.ts#L6">src/canvas/handlers/AbstractHandler.ts:6</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="code" class="tsd-anchor"></a>
 					<h3>code</h3>
 					<div class="tsd-signature tsd-kind-icon">code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L16">src/canvas/handlers/EventHandler.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L15">src/canvas/handlers/EventHandler.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 					<a name="handler" class="tsd-anchor"></a>
-					<h3>handler</h3>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> handler</h3>
 					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="handler.html" class="tsd-signature-type">Handler</a></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#handler">handler</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L15">src/canvas/handlers/EventHandler.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/AbstractHandler.ts#L5">src/canvas/handlers/AbstractHandler.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -194,7 +213,7 @@
 					<div class="tsd-signature tsd-kind-icon">panning<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L17">src/canvas/handlers/EventHandler.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L16">src/canvas/handlers/EventHandler.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -211,7 +230,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L290">src/canvas/handlers/EventHandler.ts:290</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L280">src/canvas/handlers/EventHandler.ts:280</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -239,7 +258,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L856">src/canvas/handlers/EventHandler.ts:856</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L848">src/canvas/handlers/EventHandler.ts:848</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -271,7 +290,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L71">src/canvas/handlers/EventHandler.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L70">src/canvas/handlers/EventHandler.ts:70</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -283,17 +302,18 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 					<a name="initialize" class="tsd-anchor"></a>
 					<h3>initialize</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 						<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Overrides <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#initialize">initialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L28">src/canvas/handlers/EventHandler.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L27">src/canvas/handlers/EventHandler.ts:27</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -315,7 +335,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L755">src/canvas/handlers/EventHandler.ts:755</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L747">src/canvas/handlers/EventHandler.ts:747</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -347,7 +367,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L842">src/canvas/handlers/EventHandler.ts:842</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L834">src/canvas/handlers/EventHandler.ts:834</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -375,7 +395,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L150">src/canvas/handlers/EventHandler.ts:150</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L143">src/canvas/handlers/EventHandler.ts:143</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -403,7 +423,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L358">src/canvas/handlers/EventHandler.ts:358</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L348">src/canvas/handlers/EventHandler.ts:348</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -431,7 +451,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L431">src/canvas/handlers/EventHandler.ts:431</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L423">src/canvas/handlers/EventHandler.ts:423</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -459,7 +479,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L524">src/canvas/handlers/EventHandler.ts:524</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L516">src/canvas/handlers/EventHandler.ts:516</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -491,7 +511,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L491">src/canvas/handlers/EventHandler.ts:491</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L483">src/canvas/handlers/EventHandler.ts:483</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -519,7 +539,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L331">src/canvas/handlers/EventHandler.ts:331</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L321">src/canvas/handlers/EventHandler.ts:321</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -547,7 +567,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L209">src/canvas/handlers/EventHandler.ts:209</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L199">src/canvas/handlers/EventHandler.ts:199</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -579,7 +599,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L170">src/canvas/handlers/EventHandler.ts:170</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L160">src/canvas/handlers/EventHandler.ts:160</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -607,7 +627,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L873">src/canvas/handlers/EventHandler.ts:873</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L865">src/canvas/handlers/EventHandler.ts:865</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -639,7 +659,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L646">src/canvas/handlers/EventHandler.ts:646</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L638">src/canvas/handlers/EventHandler.ts:638</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -667,7 +687,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L556">src/canvas/handlers/EventHandler.ts:556</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L548">src/canvas/handlers/EventHandler.ts:548</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -698,7 +718,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L278">src/canvas/handlers/EventHandler.ts:278</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L268">src/canvas/handlers/EventHandler.ts:268</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -726,7 +746,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L263">src/canvas/handlers/EventHandler.ts:263</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L253">src/canvas/handlers/EventHandler.ts:253</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -758,7 +778,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L252">src/canvas/handlers/EventHandler.ts:252</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L242">src/canvas/handlers/EventHandler.ts:242</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -786,7 +806,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L227">src/canvas/handlers/EventHandler.ts:227</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L217">src/canvas/handlers/EventHandler.ts:217</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -818,7 +838,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L536">src/canvas/handlers/EventHandler.ts:536</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L528">src/canvas/handlers/EventHandler.ts:528</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -849,7 +869,7 @@
 					<div class="tsd-signature tsd-kind-icon">object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L115">src/canvas/handlers/EventHandler.ts:115</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L114">src/canvas/handlers/EventHandler.ts:114</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -867,7 +887,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L133">src/canvas/handlers/EventHandler.ts:133</a></li>
+										<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L129">src/canvas/handlers/EventHandler.ts:129</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -899,7 +919,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/d8564fd/src/canvas/handlers/EventHandler.ts#L120">src/canvas/handlers/EventHandler.ts:120</a></li>
+										<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/9b224be/src/canvas/handlers/EventHandler.ts#L119">src/canvas/handlers/EventHandler.ts:119</a></li>
 									</ul>
 								</aside>
 								<div class="tsd-comment tsd-typography">
@@ -939,13 +959,16 @@
 					<li class="current tsd-kind-class tsd-is-external">
 						<a href="eventhandler.html" class="tsd-kind-icon">Event<wbr>Handler</a>
 						<ul>
-							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 								<a href="eventhandler.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
+								<a href="eventhandler.html#canvas" class="tsd-kind-icon">canvas</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="eventhandler.html#code" class="tsd-kind-icon">code</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 								<a href="eventhandler.html#handler" class="tsd-kind-icon">handler</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
@@ -960,7 +983,7 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="eventhandler.html#destroy" class="tsd-kind-icon">destroy</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
 								<a href="eventhandler.html#initialize" class="tsd-kind-icon">initialize</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
