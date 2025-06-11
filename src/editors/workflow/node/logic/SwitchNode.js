@@ -9,9 +9,11 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 	initialize(options) {
 		options = options || {};
 		const routeLength = options.configuration.routes.length;
-		if (options.configuration.routes.length > 2) {
+		if (routeLength > 2) {
 			// ex) 40 + ((4 - 3) * 80) = 120 / 2 = 60
-			options.left += (this.portWidth + (routeLength - this.defaultRouteLength) * (this.portWidth * 2)) / 2;
+			options.left =
+				(options.left ?? 0) +
+				(this.portWidth + (routeLength - this.defaultRouteLength) * (this.portWidth * 2)) / 2;
 		}
 		this.callSuper('initialize', options);
 	},
@@ -57,17 +59,18 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 			const rect = new fabric.Rect({
 				width: 80,
 				height: 40,
-				fill: 'rgba(0, 0, 0, 0.2)',
-				originFill: 'rgba(0, 0, 0, 0.2)',
+				fill: '#1a1b25',
+				originFill: '#1a1b25',
 				hoverFill: 'green',
+				stroke: '#87878c',
 				rx: 7,
 				ry: 7,
 			});
 			const label = new fabric.Text(getEllipsis(outPort, 7), {
 				fontSize: 18,
 				lineHeight: 2,
-				fontFamily: 'polestar',
-				fill: 'rgba(255, 255, 255, 0.8)',
+				fontFamily: 'Noto Sans',
+				fill: '#fff',
 			});
 			let coords;
 			if (isEven) {
@@ -85,7 +88,7 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 				top: y + 20,
 				leftDiff: coords.leftDiff,
 				topDiff: 20,
-				fill: 'rgba(0, 0, 0, 0.1)',
+				fill: '#1a1b25',
 				originX: 'center',
 				originY: 'center',
 			});
@@ -130,7 +133,7 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 	},
 });
 
-SwitchNode.fromObject = function(options, callback) {
+SwitchNode.fromObject = function (options, callback) {
 	return callback(new SwitchNode(options));
 };
 

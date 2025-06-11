@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 import { v4 as uuid } from 'uuid';
+import { FabricEvent, FabricObject } from '../models';
 import { Arrow, Line } from '../objects';
-import { FabricEvent, FabricObject } from '../utils';
 import Handler from './Handler';
 
 class DrawingHandler {

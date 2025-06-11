@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import isEmpty from 'lodash/isEmpty';
+import { Col, Form, Input, InputNumber, Select, Switch, Tooltip } from 'antd';
 import i18n from 'i18next';
-import { Form, Input, Select, InputNumber, Switch, Col, Tooltip } from 'antd';
-import Configuration from './index';
-import { Canvas } from '../../../canvas';
+import isEmpty from 'lodash/isEmpty';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { CanvasInstance } from '../../../canvas';
 import { InputJson, InputScript, InputTemplate } from '../../../components/common';
 import Icon from '../../../components/icon/Icon';
+import Configuration from './index';
 
 export const getNode = nodeClazz => {
 	const classPath = nodeClazz.split('.');
@@ -22,20 +22,20 @@ export const getEllipsis = (text, length) => {
 				? text.substring(0, 8).concat('...')
 				: text
 			: text.length > 15
-			? text.substring(0, 15).concat('...')
-			: text;
+				? text.substring(0, 15).concat('...')
+				: text;
 	}
 	return /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text)
 		? text.length > length / 2
 			? text.substring(0, length / 2).concat('...')
 			: text
 		: text.length > length
-		? text.substring(0, length).concat('...')
-		: text;
+			? text.substring(0, length).concat('...')
+			: text;
 };
 
 interface IProps {
-	canvasRef?: Canvas;
+	canvasRef?: CanvasInstance;
 	selectedItem?: any;
 	form?: any;
 	workflow?: any;
@@ -65,19 +65,8 @@ export default class NodeConfiguration extends Component<IProps> {
 
 	getForm(form, configuration, key, formConfig) {
 		let component = null;
-		const {
-			disabled,
-			icon,
-			extra,
-			help,
-			description,
-			span,
-			max,
-			min,
-			placeholder,
-			valuePropName,
-			required,
-		} = formConfig;
+		const { disabled, icon, extra, help, description, span, max, min, placeholder, valuePropName, required } =
+			formConfig;
 		let initialValue = configuration[key] || formConfig.default;
 		let rules = required
 			? [{ required: true, message: i18n.t('validation.enter-property', { arg: formConfig.label }) }]

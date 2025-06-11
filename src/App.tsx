@@ -2,9 +2,9 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import Title from './components/layout/Title';
 import FlowContainer from './containers/FlowContainer';
-import { FiberEditor, FlowEditor, HexGridEditor, ImageMapEditor, WorkflowEditor } from './editors';
+import { FiberEditor, HexGridEditor, ImageMapEditor, WorkflowEditor } from './editors';
 
-type EditorType = 'imagemap' | 'workflow' | 'flow' | 'hexgrid' | 'fiber';
+type EditorType = 'imagemap' | 'workflow' | 'hexgrid' | 'fiber';
 
 interface IState {
 	activeEditor?: EditorType;
@@ -12,7 +12,7 @@ interface IState {
 
 class App extends React.Component<any, IState> {
 	state: IState = {
-		activeEditor: 'workflow',
+		activeEditor: 'imagemap',
 	};
 
 	handleChangeEditor = ({ key }) => {
@@ -27,8 +27,6 @@ class App extends React.Component<any, IState> {
 				return <ImageMapEditor />;
 			case 'workflow':
 				return <WorkflowEditor />;
-			case 'flow':
-				return <FlowEditor />;
 			case 'hexgrid':
 				return <HexGridEditor />;
 			case 'fiber':

@@ -5,7 +5,7 @@ import { FabricObject } from '../../canvas';
 import Canvas, { CanvasInstance } from '../../canvas/Canvas';
 import { CommonButton } from '../../components/common';
 import { Content } from '../../components/layout';
-import { getEllipsis, getNode } from './configuration/NodeConfiguration';
+import { getNode } from './configuration/NodeConfiguration';
 import { OUT_PORT_TYPE } from './constant/constants';
 import NodeConfigurationError from './error/NodeConfigurationError';
 import Links from './link';
@@ -58,7 +58,6 @@ class WorkflowEditor extends React.Component {
 				this.canvasRef.handler.nodeHandler.highlightingNode(target);
 				this.canvasRef.handler.select(target);
 			}
-			this.canvasRef.handler.objects.forEach(obj => console.log(obj.type, obj.fromObject));
 		},
 		onSelect: target => {
 			this.nodeConfigurationRef.props.form.validateFields(err => {
@@ -78,9 +77,7 @@ class WorkflowEditor extends React.Component {
 				target.superType !== 'link' &&
 				target.superType !== 'port'
 			) {
-				this.setState({
-					selectedItem: target,
-				});
+				this.setState({ selectedItem: target });
 				return;
 			}
 			this.setState({ selectedItem: null }, () => {
@@ -105,7 +102,7 @@ class WorkflowEditor extends React.Component {
 				this.showLoading();
 				const reader = new FileReader();
 				reader.onload = e => {
-					const result = JSON.parse(e.target.result as string);
+					const result = JSON.parse(e.target!.result as string);
 					this.setState({
 						workflow: result,
 					});
@@ -251,9 +248,7 @@ class WorkflowEditor extends React.Component {
 					name: allValues.name,
 					description: allValues.description,
 				});
-				selectedItem.label.set({
-					text: getEllipsis(allValues.name, 18),
-				});
+				selectedItem.setName(allValues.name);
 				if (selectedItem.descriptor.outPortType === OUT_PORT_TYPE.DYNAMIC) {
 					this.canvasRef.handler.portHandler.recreate(selectedItem);
 				}
@@ -333,7 +328,11 @@ class WorkflowEditor extends React.Component {
 		const title = <WorkflowTitle title={titleContent} action={action} />;
 		const content = (
 			<div className="rde-editor">
-				<WorkflowItems canvasRef={this.canvasRef} descriptors={descriptors} />
+				<WorkflowItems
+					instance={this.canvasRef}
+					selectedItem={this.state.selectedItem}
+					descriptors={descriptors}
+				/>
 				<div
 					ref={c => {
 						this.container = c;
@@ -345,17 +344,25 @@ class WorkflowEditor extends React.Component {
 							this.canvasRef = c;
 						}}
 						className="rde-canvas"
+						canvasOption={{ backgroundColor: '#1B1B1B' }}
 						fabricObjects={{ ...nodes, ...Links }}
 						workareaOption={{
 							width: 0,
 							height: 0,
 						}}
-						gridOption={{ enabled: true, grid: 20, snapToGrid: true }}
+						gridOption={{
+							enabled: true,
+							grid: 20,
+							snapToGrid: true,
+							type: 'dot',
+							dotColor: '#848484',
+						}}
 						activeSelectionOption={{
 							hasControls: false,
 							hasBorders: false,
 							perPixelTargetFind: true,
 						}}
+						linkOption={{ stroke: '#c2c8d6', strokeWidth: 2 }}
 						minZoom={50}
 						maxZoom={150}
 						onZoom={onZoom}

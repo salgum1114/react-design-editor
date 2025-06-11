@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { FabricEvent, FabricObject, WorkareaObject } from '../utils';
+import { FabricEvent, FabricObject, WorkareaObject } from '../models';
 import type Handler from './Handler';
 
 class GuidelineHandler {

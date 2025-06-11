@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 import { svgPathProperties } from 'svg-path-properties';
 import { v4 as uuid } from 'uuid';
-import { FabricObject } from '../utils';
+import { FabricObject } from '../models';
 import { NodeObject, OUT_PORT_TYPE } from './Node';
 import { PortObject } from './Port';
 
@@ -18,7 +18,7 @@ export interface LinkObject extends FabricObject<fabric.Path> {
 	fromPort?: PortObject;
 	toPort?: PortObject;
 	fromPortIndex?: number;
-	isPointNear?: (pointer: fabric.Point, link: LinkObject, tolerance?: number) => boolean;
+	isPointNear: (pointer: fabric.Point, tolerance?: number) => boolean;
 	setPort?: (fromNode: NodeObject, fromPort: PortObject, toNode: NodeObject, toPort: PortObject) => void;
 	setPortEnabled?: (node: NodeObject, port: PortObject, enabled: boolean) => void;
 	update?: (fromPort: Partial<PortObject>, toPort: Partial<PortObject>) => void;
@@ -112,14 +112,14 @@ const Link = fabric.util.createClass(fabric.Group, {
 		}
 	},
 	draw(fromPort: PortObject, toPort: PortObject, options: any = {}) {
-		const { strokeWidth = 4, stroke = '#999' } = options;
+		const { strokeWidth = 2, stroke } = options;
 		const { path, midX, midY, angle } = this.calculatePath(fromPort, toPort);
 		const line = new fabric.Path(path, {
-			strokeWidth: strokeWidth || 4,
+			strokeWidth: strokeWidth || 2,
 			fill: '',
 			originX: 'center',
 			originY: 'center',
-			stroke: stroke || '#999',
+			stroke,
 			selectable: false,
 			evented: false,
 			strokeLineJoin: 'round',
@@ -131,8 +131,8 @@ const Link = fabric.util.createClass(fabric.Group, {
 			originX: 'center',
 			originY: 'center',
 			angle: angle,
-			width: 13,
-			height: 13,
+			width: 9,
+			height: 9,
 			fill: stroke,
 			selectable: false,
 			evented: false,
@@ -143,11 +143,11 @@ const Link = fabric.util.createClass(fabric.Group, {
 		const { path, midX, midY, angle } = this.calculatePath(fromPort, toPort);
 		this.removeWithUpdate(this.line);
 		this.line = new fabric.Path(path, {
-			strokeWidth: this.strokeWidth || 4,
+			strokeWidth: 2,
 			fill: '',
 			originX: 'center',
 			originY: 'center',
-			stroke: this.stroke || '#999',
+			stroke: this.stroke,
 			selectable: false,
 			evented: false,
 			strokeLineJoin: 'round',
@@ -202,9 +202,9 @@ const Link = fabric.util.createClass(fabric.Group, {
 		let midX = x3;
 		let midY = (y3 + y2) / 2;
 		let angle = 0;
+		const properties = new svgPathProperties(path);
+		const totalLength = properties.getTotalLength();
 		if (useCurve) {
-			const properties = new svgPathProperties(path);
-			const totalLength = properties.getTotalLength();
 			const delta = 1;
 			const ahead = properties.getPointAtLength(totalLength / 2 + delta);
 			const behind = properties.getPointAtLength(totalLength / 2 - delta);
@@ -214,19 +214,21 @@ const Link = fabric.util.createClass(fabric.Group, {
 			midY = (p1.y + p2.y) / 2;
 			angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
 		}
+		this.pathProperties = properties;
+		this.samplePoints = [];
+		const length = properties.getTotalLength();
+		const steps = Math.floor(length / 5);
+		for (let i = 0; i <= steps; i++) {
+			const pt = properties.getPointAtLength((i / steps) * length);
+			this.samplePoints.push(pt);
+		}
 		return { path, midX, midY, angle };
 	},
-	isPointNear(pointer: fabric.Point, link: LinkObject, tolerance = 5) {
-		const line = link.line as fabric.Path;
-		if (!line || !line.path) return false;
-		const properties = new svgPathProperties((line.path as any[]).map(cmd => cmd.join(' ')).join(' '));
-		const length = properties.getTotalLength();
-
-		const steps = Math.floor(length / 5); // 5px 간격 샘플링
-		for (let i = 0; i <= steps; i++) {
-			const pointOnPath = properties.getPointAtLength((i / steps) * length);
-			const dx = pointer.x - pointOnPath.x;
-			const dy = pointer.y - pointOnPath.y;
+	isPointNear(pointer: fabric.Point, tolerance = 5) {
+		if (!this.samplePoints) return false;
+		for (const pt of this.samplePoints) {
+			const dx = pointer.x - pt.x;
+			const dy = pointer.y - pt.y;
 			if (Math.sqrt(dx * dx + dy * dy) <= tolerance) {
 				return true;
 			}

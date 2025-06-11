@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
+import { FabricObject } from '../models';
 import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
-import { FabricObject } from '../utils';
 import AbstractHandler from './AbstractHandler';
 
 class NodeHandler extends AbstractHandler {

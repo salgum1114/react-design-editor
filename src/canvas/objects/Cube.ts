@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { FabricObject } from '../utils';
+import { FabricObject } from '../models';
 
 export interface CubeObject extends FabricObject {}
 

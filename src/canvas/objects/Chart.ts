@@ -1,6 +1,7 @@
 import * as echarts from 'echarts';
 import { fabric } from 'fabric';
-import { FabricElement, toObject } from '../utils';
+import { FabricElement } from '../models';
+import { toObject } from '../utils';
 
 export interface ChartObject extends FabricElement {
 	setSource: (source: echarts.EChartOption) => void;

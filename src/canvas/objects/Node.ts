@@ -1,28 +1,9 @@
 import { fabric } from 'fabric';
-import i18next from 'i18next';
 import { v4 as uuid } from 'uuid';
-import { FabricObject } from '../utils';
+import { FabricObject } from '../models';
+import { fitTextToRect } from '../utils';
 import { LinkObject } from './Link';
 import Port, { PortObject } from './Port';
-
-export const NODE_COLORS = {
-	TRIGGER: {
-		fill: '#48C9B0',
-		border: '#1ABC9C',
-	},
-	LOGIC: {
-		fill: '#AF7AC5',
-		border: '#9B59B6',
-	},
-	DATA: {
-		fill: '#5DADE2',
-		border: '#3498DB',
-	},
-	ACTION: {
-		fill: '#F5B041',
-		border: 'rgb(243, 156, 18)',
-	},
-};
 
 export const OUT_PORT_TYPE = {
 	SINGLE: 'SINGLE',
@@ -31,34 +12,6 @@ export const OUT_PORT_TYPE = {
 	BROADCAST: 'BROADCAST',
 	NONE: 'NONE',
 };
-
-export const DESCRIPTIONS = {
-	script: i18next.t('common.name'),
-	template: i18next.t('common.name'),
-	json: i18next.t('common.name'),
-	cron: i18next.t('common.name'),
-};
-
-export const getEllipsis = (text: string, length: number) => {
-	if (!length) {
-		return /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text)
-			? text.length > 8
-				? text.substring(0, 8).concat('...')
-				: text
-			: text.length > 15
-			? text.substring(0, 15).concat('...')
-			: text;
-	}
-	return /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text)
-		? text.length > length / 2
-			? text.substring(0, length / 2).concat('...')
-			: text
-		: text.length > length
-		? text.substring(0, length).concat('...')
-		: text;
-};
-
-export type NodeType = 'TRIGGER' | 'LOGIC' | 'DATA' | 'ACTION';
 
 export interface NodeObject extends FabricObject<fabric.Group> {
 	errorFlag?: fabric.IText;
@@ -79,6 +32,7 @@ export interface NodeObject extends FabricObject<fabric.Group> {
 	dynamicPort?: (portOption: Partial<PortObject>) => PortObject[];
 	broadcastPort?: (portOption: Partial<PortObject>) => PortObject[];
 	setErrors?: (errors: any) => void;
+	setName?: (name: string) => void;
 	duplicate?: () => NodeObject;
 }
 
@@ -91,32 +45,38 @@ const Node = fabric.util.createClass(fabric.Group, {
 			fontFamily: 'Font Awesome 5 Free',
 			fontWeight: 900,
 			fontSize: 20,
-			fill: 'rgba(255, 255, 255, 0.8)',
+			fill: options.color || '#fff',
 		});
-		let name = 'Default Node';
+		let name = options.name || 'Default Node';
+		let fontSize = options.fontSize || 16;
+		const fontFamily = options.fontFamily || 'Noto Sans';
 		if (options.name) {
-			name = getEllipsis(options.name, 18);
+			const canvas = document.createElement('canvas');
+			const ctx = canvas.getContext('2d');
+			const { text, fontSize: size } = fitTextToRect(ctx!, options.name, fontSize, fontFamily, 150, 32);
+			name = text;
+			fontSize = size;
 		}
 		this.label = new fabric.Text(name || 'Default Node', {
-			fontSize: 16,
-			fontFamily: 'polestar',
-			fontWeight: 500,
-			fill: 'rgba(255, 255, 255, 0.8)',
+			fontSize,
+			fontFamily,
+			fontWeight: 400,
+			fill: '#fff',
 		});
 		const rect = new fabric.Rect({
 			rx: 10,
 			ry: 10,
 			width: 200,
 			height: 40,
-			fill: options.fill || 'rgba(0, 0, 0, 0.3)',
-			stroke: options.stroke || 'rgba(0, 0, 0, 0)',
+			fill: options.fill,
+			stroke: options.stroke,
 			strokeWidth: 2,
 		});
 		this.errorFlag = new fabric.IText('\uf071', {
 			fontFamily: 'Font Awesome 5 Free',
 			fontWeight: 900,
 			fontSize: 14,
-			fill: 'rgba(255, 0, 0, 0.8)',
+			fill: 'red',
 			visible: options.errors,
 		});
 		const node = [rect, icon, this.label, this.errorFlag];
@@ -128,11 +88,14 @@ const Node = fabric.util.createClass(fabric.Group, {
 			originY: 'top',
 			hasRotatingPoint: false,
 			hasControls: false,
+			fontSize,
+			fontFamily,
+			color: options.color,
 		});
 		this.callSuper('initialize', node, option);
 		icon.set({
-			top: icon.top + 10,
-			left: icon.left + 10,
+			top: icon.top! + 10,
+			left: icon.left! + 10,
 		});
 		this.label.set({
 			top: this.label.top + this.label.height / 2 + 4,
@@ -149,6 +112,9 @@ const Node = fabric.util.createClass(fabric.Group, {
 			id: this.get('id'),
 			name: this.get('name'),
 			icon: this.get('icon'),
+			color: this.get('color'),
+			fontSize: this.get('fontSize'),
+			fontFamily: this.get('fontFamily'),
 			description: this.get('description'),
 			superType: this.get('superType'),
 			configuration: this.get('configuration'),
@@ -164,7 +130,6 @@ const Node = fabric.util.createClass(fabric.Group, {
 		});
 	},
 	defaultPortOption() {
-		const { type }: { type: NodeType } = this.descriptor as any;
 		return {
 			nodeId: this.id,
 			hasBorders: false,
@@ -176,13 +141,13 @@ const Node = fabric.util.createClass(fabric.Group, {
 			lockScalingX: true,
 			lockScalingY: true,
 			superType: 'port',
-			originFill: 'rgba(0, 0, 0, 0.1)',
-			hoverFill: 'rgba(0, 0, 0, 0.1)',
-			selectFill: 'rgba(0, 0, 0, 0.1)',
-			fill: 'rgba(0, 0, 0, 0.1)',
+			originFill: this.fill,
+			hoverFill: this.fill,
+			selectFill: this.fill,
+			fill: this.fill,
 			hoverCursor: 'pointer',
 			strokeWidth: 2,
-			stroke: this.descriptor ? NODE_COLORS[type].border : 'rgba(0, 0, 0, 1)',
+			stroke: this.stroke,
 			width: 10,
 			height: 10,
 			links: [] as LinkObject[],
@@ -262,6 +227,16 @@ const Node = fabric.util.createClass(fabric.Group, {
 		} else {
 			this.errorFlag.set({ visible: false });
 		}
+	},
+	setName(name: string) {
+		const context = this.canvas.getContext('2d');
+		const { text, fontSize, height } = fitTextToRect(context, name, this.fontSize, this.fontFamily, 150, 32);
+		this.label.set({
+			fontSize,
+			text,
+			// -19 magic constant
+			top: this.height > 60 ? -height / 2 - 19 : -height / 2,
+		});
 	},
 	duplicate() {
 		const options = this.toObject();

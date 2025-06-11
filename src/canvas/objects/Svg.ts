@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
-import { FabricGroup, FabricObject, FabricObjectOption, toObject } from '../utils';
+import { FabricGroup, FabricObject, FabricObjectOption } from '../models';
+import { toObject } from '../utils';
 
 export type SvgObject = (FabricGroup | FabricObject) & {
 	loadSvg(option: SvgOption): Promise<SvgObject>;

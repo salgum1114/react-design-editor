@@ -5,5 +5,15 @@
 	"trailingComma": "all",
 	"tabWidth": 4,
 	"useTabs": true,
-	"arrowParens": "avoid"
+	"arrowParens": "avoid",
+	"overrides": [
+		{
+			"files": ["*.yml", "*.yaml"],
+			"options": {
+				"singleQuote": true,
+				"tabWidth": 2,
+				"useTabs": false
+			}
+		}
+	]
 }

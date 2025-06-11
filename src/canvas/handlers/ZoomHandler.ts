@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 
+import { FabricObject } from '../models';
 import { VideoObject } from '../objects/Video';
-import { FabricObject } from '../utils';
 import type Handler from './Handler';
 
 class ZoomHandler {

@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
-import { FabricElement, toObject } from '../utils';
+import { FabricElement } from '../models';
+import { toObject } from '../utils';
 
 export interface IframeObject extends FabricElement {
 	setSource: (source: string) => void;

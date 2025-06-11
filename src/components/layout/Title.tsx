@@ -1,7 +1,7 @@
 import { Button, Menu, Modal, Tooltip } from 'antd';
 import { ClickParam } from 'antd/lib/menu';
 import i18next from 'i18next';
-import React, { Component } from 'react';
+import React from 'react';
 import { Flex } from '../flex';
 import { ShortcutHelp } from '../help';
 import Icon from '../icon/Icon';
@@ -11,7 +11,7 @@ interface IProps {
 	currentEditor: string;
 }
 
-class Title extends Component<IProps> {
+class Title extends React.Component<IProps> {
 	state = {
 		visible: false,
 	};

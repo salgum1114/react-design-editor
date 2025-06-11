@@ -1,7 +1,7 @@
 import anime from 'animejs';
 import warning from 'warning';
 import { Handler } from '.';
-import { FabricObject } from '../utils';
+import { FabricObject } from '../models';
 
 class AnimationHandler {
 	handler: Handler;

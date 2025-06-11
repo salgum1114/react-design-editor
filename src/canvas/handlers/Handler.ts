@@ -4,10 +4,6 @@ import { v4 as uuid } from 'uuid';
 import warning from 'warning';
 import CanvasObject from '../CanvasObject';
 import { defaults } from '../constants';
-import { LinkObject } from '../objects';
-import { NodeObject } from '../objects/Node';
-import { PortObject } from '../objects/Port';
-import { SvgObject } from '../objects/Svg';
 import {
 	CanvasOption,
 	FabricCanvas,
@@ -23,7 +19,11 @@ import {
 	KeyEvent,
 	WorkareaObject,
 	WorkareaOption,
-} from '../utils';
+} from '../models';
+import { LinkObject } from '../objects';
+import { NodeObject } from '../objects/Node';
+import { PortObject } from '../objects/Port';
+import { SvgObject } from '../objects/Svg';
 import AlignmentHandler from './AlignmentHandler';
 import AnimationHandler from './AnimationHandler';
 import ChartHandler from './ChartHandler';
@@ -174,6 +174,7 @@ export interface HandlerOption {
 	 * @type {FabricObjectOption}
 	 */
 	objectOption?: FabricObjectOption;
+	linkOption?: FabricObjectOption;
 	/**
 	 * Guideline option
 	 * @type {GuidelineOption}
@@ -235,6 +236,7 @@ class Handler implements HandlerOptions {
 	public canvasOption?: CanvasOption = defaults.canvasOption;
 	public gridOption?: GridOption = defaults.gridOption;
 	public objectOption?: FabricObjectOption = defaults.objectOption;
+	public linkOption?: FabricObjectOption;
 	public guidelineOption?: GuidelineOption = defaults.guidelineOption;
 	public keyEvent?: KeyEvent = defaults.keyEvent;
 	public activeSelectionOption?: Partial<FabricObjectOption<fabric.ActiveSelection>> = defaults.activeSelectionOption;
@@ -338,6 +340,7 @@ class Handler implements HandlerOptions {
 		this.setCanvasOption(options.canvasOption);
 		this.setGridOption(options.gridOption);
 		this.setObjectOption(options.objectOption);
+		this.setLinkOption(options.linkOption);
 		this.setFabricObjects(options.fabricObjects);
 		this.setGuidelineOption(options.guidelineOption);
 		this.setActiveSelectionOption(options.activeSelectionOption);
@@ -771,8 +774,8 @@ class Handler implements HandlerOptions {
 	 * @param {boolean} [group=false]
 	 * @returns
 	 */
-	public add = (obj: FabricObjectOption, centered = true, loaded = false, group = false) => {
-		const { editable, onAdd, gridOption, objectOption } = this;
+	public add = (obj: FabricObjectOption, centered = true, loaded = false, group = false, transaction = true) => {
+		const { editable, gridOption, objectOption, onAdd } = this;
 		const option: any = {
 			hasControls: editable,
 			hasBorders: editable,
@@ -847,7 +850,7 @@ class Handler implements HandlerOptions {
 		if (gridOption.enabled) {
 			this.gridHandler.setCoords(createdObj);
 		}
-		if (!this.transactionHandler.active && !loaded) {
+		if (!this.transactionHandler.active && !loaded && transaction) {
 			this.transactionHandler.save('add');
 		}
 		if (onAdd && editable && !loaded) {
@@ -1223,6 +1226,7 @@ class Handler implements HandlerOptions {
 								top: cloned.top || 0,
 								iconName: cloned.descriptor.icon,
 							},
+							color: cloned.color,
 						};
 						const objects = [node];
 						this.copyToClipboard(JSON.stringify(objects, null, '\t'));
@@ -1625,6 +1629,9 @@ class Handler implements HandlerOptions {
 			this.canvas.renderAll();
 		});
 		this.objects = this.getObjects();
+		if (this.keyEvent.transaction) {
+			this.transactionHandler.setDefaultObjects(this.objects);
+		}
 		if (callback) {
 			callback(this.canvas);
 		}
@@ -1916,7 +1923,7 @@ class Handler implements HandlerOptions {
 	 */
 	public setCanvasOption = (canvasOption: CanvasOption) => {
 		this.canvasOption = Object.assign({}, this.canvasOption, canvasOption);
-		this.canvas.setBackgroundColor('blue', this.canvas.renderAll.bind(this.canvas));
+		this.canvas.setBackgroundColor(canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
 		if (typeof canvasOption.width !== 'undefined' && typeof canvasOption.height !== 'undefined') {
 			if (this.eventHandler) {
 				this.eventHandler.resize(canvasOption.width, canvasOption.height);
@@ -1998,6 +2005,10 @@ class Handler implements HandlerOptions {
 	 */
 	public setObjectOption = (objectOption: FabricObjectOption) => {
 		this.objectOption = Object.assign({}, this.objectOption, objectOption);
+	};
+
+	public setLinkOption = (option: FabricObjectOption) => {
+		this.linkOption = Object.assign({}, this.linkOption, option);
 	};
 
 	/**

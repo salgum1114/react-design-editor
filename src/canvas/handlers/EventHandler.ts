@@ -1,9 +1,9 @@
 import anime from 'animejs';
 import { fabric } from 'fabric';
 import { code } from '../constants';
+import { FabricEvent, FabricObject } from '../models';
 import { NodeObject } from '../objects/Node';
 import { VideoObject } from '../objects/Video';
-import { FabricEvent, FabricObject } from '../utils';
 import AbstractHandler from './AbstractHandler';
 
 /**

@@ -4,11 +4,11 @@ import ResizeObserver from 'resize-observer-polyfill';
 import { v4 as uuid } from 'uuid';
 import { defaults } from './constants';
 import Handler, { HandlerOptions } from './handlers/Handler';
+import { FabricCanvas } from './models';
 import './styles/canvas.less';
 import './styles/contextmenu.less';
 import './styles/fabricjs.less';
 import './styles/tooltip.less';
-import { FabricCanvas } from './utils';
 
 export interface CanvasInstance {
 	handler: Handler;
@@ -110,6 +110,9 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 		}
 		if (JSON.stringify(this.props.objectOption) !== JSON.stringify(prevProps.objectOption)) {
 			this.handler.setObjectOption(this.props.objectOption);
+		}
+		if (JSON.stringify(this.props.linkOption) !== JSON.stringify(prevProps.linkOption)) {
+			this.handler.setLinkOption(this.props.linkOption);
 		}
 		if (JSON.stringify(this.props.gridOption) !== JSON.stringify(prevProps.gridOption)) {
 			this.handler.setGridOption(this.props.gridOption);

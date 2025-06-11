@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { FabricObject, InteractionMode } from '../utils';
+import { FabricObject, InteractionMode } from '../models';
 import Handler from './Handler';
 
 type IReturnType = { selectable?: boolean; evented?: boolean } | boolean;

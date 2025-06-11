@@ -1,10 +1,11 @@
 import { Collapse, Input } from 'antd';
 import classnames from 'classnames';
+import { fabric } from 'fabric';
 import i18n from 'i18next';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
-import { CanvasInstance } from '../../canvas';
+import { CanvasInstance, FabricObject, LinkObject, NodeObject } from '../../canvas';
 import { CommonButton, Scrollbar } from '../../components/common';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
@@ -12,8 +13,9 @@ import { getNode } from './configuration/NodeConfiguration';
 import { NODE_COLORS } from './constant/constants';
 
 interface IProps {
-	canvasRef: CanvasInstance;
+	instance: CanvasInstance;
 	descriptors: any[];
+	selectedItem?: FabricObject;
 }
 
 class WorkflowItems extends React.Component<IProps> {
@@ -30,11 +32,13 @@ class WorkflowItems extends React.Component<IProps> {
 		filteredDescriptors: [],
 	};
 
-	item: any;
+	private item: any;
+	private intersectedLink?: LinkObject;
+	private links: LinkObject[] = [];
 
 	componentDidMount() {
-		const { canvasRef } = this.props;
-		this.waitForCanvasRender(canvasRef);
+		const { instance } = this.props;
+		this.waitForCanvasRender(instance);
 	}
 
 	UNSAFE_componentWillReceiveProps(nextProps) {
@@ -64,13 +68,13 @@ class WorkflowItems extends React.Component<IProps> {
 	}
 
 	componentWillUnmount() {
-		const { canvasRef } = this.props;
-		this.detachEventListener(canvasRef);
+		const { instance } = this.props;
+		this.detachEventListener(instance);
 	}
 
 	handlers = {
-		onAddItem: (item, centered?: boolean) => {
-			const { canvasRef } = this.props;
+		addItem: (item, centered?: boolean) => {
+			const { instance } = this.props;
 			const id = uuid();
 			const option = Object.assign({}, item, {
 				id,
@@ -79,8 +83,82 @@ class WorkflowItems extends React.Component<IProps> {
 				type: getNode(item.nodeClazz),
 				configuration: item.defaultConfiguration,
 				description: '',
+				color: NODE_COLORS[item.type].fill,
 			});
-			canvasRef.handler.add(option, centered);
+			instance.handler
+				.getObjects()
+				.filter(obj => obj.type === 'link')
+				.forEach(link => {
+					link.setColor(link.originStroke || '#999');
+					link.set({ strokeDashArray: undefined });
+					instance.canvas.requestRenderAll();
+				});
+			if (this.intersectedLink) {
+				const createdNode = instance.handler.add(option, false, false, false, false);
+				if (this.intersectedLink?.fromNode && this.intersectedLink?.toNode) {
+					instance.handler.linkHandler.create({
+						type: 'link',
+						fromNodeId: this.intersectedLink.fromNodeId,
+						fromPortId: this.intersectedLink.fromPortId,
+						toNodeId: createdNode.id,
+					});
+					instance.handler.linkHandler.create({
+						type: 'link',
+						fromNodeId: createdNode.id,
+						fromPortId: createdNode.fromPort?.[0].id,
+						toNodeId: this.intersectedLink.toNodeId,
+					});
+					instance.handler.linkHandler.remove(this.intersectedLink);
+				}
+			} else {
+				const selectedNode = this.props.selectedItem as NodeObject;
+				const unusedFromPort = selectedNode?.fromPort
+					? selectedNode?.fromPort?.find(port => !port.links!.length)
+					: undefined;
+				if (item.type !== 'TRIGGER' && unusedFromPort) {
+					const createdNode = !centered
+						? instance.handler.add(option, false, false, false, false)
+						: instance.handler.add(
+								{ ...option, left: selectedNode.left, top: selectedNode.top },
+								false,
+								false,
+								false,
+								false,
+							);
+					instance.handler.linkHandler.create({
+						type: 'link',
+						fromNodeId: selectedNode.id,
+						fromPortId: unusedFromPort.id,
+						toNodeId: createdNode.id,
+					});
+					if (centered) {
+						createdNode.set({
+							left: selectedNode.left! + (selectedNode.width! - createdNode.width) / 2,
+							top: selectedNode.height! + selectedNode.top! + 40,
+						});
+						instance.handler.portHandler.setCoords(createdNode as any);
+						instance.handler.zoomHandler.zoomToCenterWithObject(createdNode);
+					}
+				} else {
+					const createdNode = instance.handler.add(option, false, false, false, false);
+					if (centered) {
+						createdNode.set({
+							left:
+								(instance.canvas.getWidth() / 2 - instance.canvas.viewportTransform![4]) /
+								instance.canvas.getZoom(),
+							top:
+								(instance.canvas.getHeight() / 2 - instance.canvas.viewportTransform![5]) /
+								instance.canvas.getZoom(),
+						});
+						instance.handler.portHandler.setCoords(createdNode as any);
+						instance.handler.zoomHandler.zoomToCenterWithObject(createdNode);
+						createdNode.setCoords();
+					}
+				}
+			}
+			this.intersectedLink = undefined;
+			instance.handler.transactionHandler.save('add');
+			instance.canvas.requestRenderAll();
 		},
 		onChangeActiveKey: activeKey => {
 			this.setState({
@@ -109,12 +187,31 @@ class WorkflowItems extends React.Component<IProps> {
 			this.item = item;
 			const { target } = e;
 			target.classList.add('dragging');
+			this.links = this.props.instance.handler.getObjects().filter(obj => obj.type === 'link') as LinkObject[];
 		},
 		onDragOver: e => {
 			if (e.preventDefault) {
 				e.preventDefault();
 			}
 			e.dataTransfer.dropEffect = 'copy';
+			if (this.item?.type !== 'TRIGGER') {
+				const pointer = this.props.instance.canvas.getPointer(e);
+				this.links.forEach(link => {
+					const isIntersecting = link.isPointNear(new fabric.Point(pointer.x, pointer.y), 20);
+					if (isIntersecting) {
+						this.intersectedLink = link;
+						link.setColor(link.selectedStroke || 'green');
+						link.line.set({ strokeDashArray: [4, 4] });
+					} else {
+						if (this.intersectedLink?.id === link.id) {
+							this.intersectedLink = undefined;
+						}
+						link.setColor(link.originStroke || '#999');
+						link.line.set({ strokeDashArray: undefined });
+					}
+					this.props.instance.canvas.requestRenderAll();
+				});
+			}
 			return false;
 		},
 		onDragEnter: e => {
@@ -135,7 +232,7 @@ class WorkflowItems extends React.Component<IProps> {
 			}
 			const { layerX, layerY } = e;
 			const option = Object.assign({}, this.item, { left: layerX, top: layerY });
-			this.handlers.onAddItem(option, false);
+			this.handlers.addItem(option, false);
 			return false;
 		},
 		onDragEnd: (e: any, item?: any) => {
@@ -150,8 +247,8 @@ class WorkflowItems extends React.Component<IProps> {
 				this.attachEventListener(canvas);
 				return;
 			}
-			const { canvasRef } = this.props;
-			this.waitForCanvasRender(canvasRef);
+			const { instance } = this.props;
+			this.waitForCanvasRender(instance);
 		}, 5);
 	};
 
@@ -175,7 +272,7 @@ class WorkflowItems extends React.Component<IProps> {
 				<div
 					key={item.name}
 					draggable={true}
-					onClick={e => this.handlers.onAddItem(item)}
+					onClick={e => this.handlers.addItem(item, true)}
 					onDragStart={e => this.events.onDragStart(e, item)}
 					onDragEnd={e => this.events.onDragEnd(e, item)}
 					className="rde-editor-items-item"

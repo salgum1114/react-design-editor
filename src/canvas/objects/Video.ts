@@ -1,7 +1,8 @@
 import { fabric } from 'fabric';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
-import { FabricElement, toObject } from '../utils';
+import { FabricElement } from '../models';
+import { toObject } from '../utils';
 
 export interface VideoObject extends FabricElement {
 	setSource: (source: string | File) => void;

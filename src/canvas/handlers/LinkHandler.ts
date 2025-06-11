@@ -64,9 +64,8 @@ class LinkHandler {
 		const toPort = { left, top };
 		const fromNode = this.handler.objectMap[nodeId];
 		this.handler.activeLine = new Link(fromNode, fromPort, toPort, toPort, {
-			strokeWidth: 4,
-			fill: '#999999',
-			stroke: '#999999',
+			strokeWidth: this.handler.linkOption?.strokeWidth || 2,
+			stroke: this.handler.linkOption?.stroke || '#000',
 			class: 'line',
 			originX: 'center',
 			originY: 'center',

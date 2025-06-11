@@ -1,8 +1,8 @@
 import { fabric } from 'fabric';
 import sortBy from 'lodash/sortBy';
 import throttle from 'lodash/throttle';
+import { FabricObject } from '../models';
 import { NodeObject } from '../objects/Node';
-import { FabricObject } from '../utils';
 import AbstractHandler from './AbstractHandler';
 
 export type TransactionType =
@@ -44,7 +44,7 @@ export interface TransactionEvent {
 }
 
 class TransactionHandler extends AbstractHandler {
-	private readonly MAX_HISTORY_SIZE = 20;
+	private readonly MAX_HISTORY_SIZE = 30;
 	private currentObjects: FabricObject[] = [];
 	redos: TransactionEvent[];
 	undos: TransactionEvent[];
@@ -64,6 +64,19 @@ class TransactionHandler extends AbstractHandler {
 		this.undos = [];
 		this.currentObjects = [];
 		this.active = false;
+	};
+
+	private sortObjects = (objects: FabricObject[]) => {
+		return sortBy(
+			objects.filter(obj => obj.id !== 'workarea' && obj.superType !== 'port'),
+			obj => (obj.superType === 'link' ? 1 : 0),
+		);
+	};
+
+	public setDefaultObjects = (objects: FabricObject[]) => {
+		this.undos = [];
+		this.redos = [];
+		this.currentObjects = this.sortObjects(objects);
 	};
 
 	/**
@@ -88,16 +101,11 @@ class TransactionHandler extends AbstractHandler {
 					return {
 						...target,
 						shadow: { ...(target.shadow as fabric.Shadow), blur: 0 },
-						fill: target.originFill,
-						stroke: target.originStroke,
 					};
 				}
 				return obj;
 			}) as FabricObject[];
-			this.currentObjects = sortBy(
-				objects.filter(obj => obj.id !== 'workarea' && obj.superType !== 'port'),
-				obj => (obj.superType === 'link' ? 1 : 0),
-			);
+			this.currentObjects = this.sortObjects(objects);
 		} catch (error) {
 			console.error(error);
 		}

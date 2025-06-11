@@ -2,7 +2,7 @@
 	"root": true,
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
-		"project": "./tsconfig.json"
+		"project": "./tsconfig.json",
 	},
 	"plugins": ["@typescript-eslint"],
 	"extends": [
@@ -11,11 +11,12 @@
 		"airbnb/hooks",
 		"eslint:recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
-		"plugin:@typescript-eslint/recommended"
+		"plugin:@typescript-eslint/recommended",
+		"plugin:prettier/recommended",
 	],
 	"env": {
 		"browser": true,
-		"node": true
+		"node": true,
 	},
 	"rules": {
 		"indent": "off",
@@ -38,6 +39,6 @@
 		"@typescript-eslint/indent": "off",
 		"@typescript-eslint/no-explicit-any": "off",
 		"@typescript-eslint/no-shadow": "off",
-		"@typescript-eslint/ban-ts-comment": "off"
-	}
+		"@typescript-eslint/ban-ts-comment": "off",
+	},
 }

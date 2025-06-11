@@ -12,9 +12,9 @@ import VirtualButtonNode from './trigger/VirtualButtonNode';
 
 const defaultOption = {
 	superType: 'node',
-	fill: 'rgba(0, 0, 0, 0.3)',
-	stroke: 'rgba(255, 255, 255, 0)',
-	borderColor: 'rgba(0, 0, 0, 1)',
+	fill: '#282828',
+	stroke: '#c2c8d6',
+	borderColor: '#2d7cfa',
 	borderScaleFactor: 1.5,
 	deletable: true,
 	cloneable: true,

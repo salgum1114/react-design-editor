@@ -1,5 +1,4 @@
-import { fabric } from 'fabric';
-import { IFilter } from '../handlers/ImageHandler';
+import { IFilter } from '../handlers';
 
 export type AnimationType = 'fade' | 'bounce' | 'shake' | 'scaling' | 'rotation' | 'flash' | 'custom' | 'none';
 
@@ -302,6 +301,7 @@ export interface CanvasOption extends fabric.ICanvasOptions {
 }
 
 export interface GridOption {
+	type?: 'line' | 'dot';
 	/**
 	 * Whether should be enabled
 	 * @type {boolean}
@@ -329,6 +329,7 @@ export interface GridOption {
 	 * @type {string}
 	 */
 	borderColor?: string;
+	dotColor?: string;
 }
 
 export interface GuidelineOption {
@@ -412,21 +413,3 @@ export type FabricObjects = {
 		create: (...args: any) => FabricObject;
 	};
 };
-
-/**
- * toObject util
- * @param {*} obj
- * @param {string[]} propertiesToInclude
- * @param {{ [key: string]: any }} [properties]
- */
-export const toObject = (obj: any, propertiesToInclude: string[], properties?: { [key: string]: any }) =>
-	fabric.util.object.extend(
-		obj.callSuper('toObject'),
-		propertiesToInclude.reduce(
-			(prev, property) =>
-				Object.assign(prev, {
-					[property]: obj.get(property),
-				}),
-			Object.assign({}, properties),
-		),
-	);

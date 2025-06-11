@@ -1,7 +1,7 @@
 import { fabric } from 'fabric';
 
 import { Handler } from '.';
-import { WorkareaLayout, WorkareaObject, FabricImage } from '../utils';
+import { FabricImage, WorkareaLayout, WorkareaObject } from '../models';
 import { VideoObject } from '../objects/Video';
 
 class WorkareaHandler {
@@ -230,70 +230,74 @@ class WorkareaHandler {
 		}
 		const imageFromUrl = async (src: string) => {
 			return new Promise<WorkareaObject>(resolve => {
-				fabric.Image.fromURL(src, (img: any) => {
-					let width = canvas.getWidth();
-					let height = canvas.getHeight();
-					if (workarea.layout === 'fixed') {
-						width = workarea.width * workarea.scaleX;
-						height = workarea.height * workarea.scaleY;
-					}
-					let scaleX = 1;
-					let scaleY = 1;
-					if (img._element) {
-						scaleX = width / img.width;
-						scaleY = height / img.height;
-						img.set({
-							originX: 'left',
-							originY: 'top',
-							scaleX,
-							scaleY,
-						});
-						workarea.set({
-							...img,
-							isElement: true,
-							selectable: false,
-						});
-					} else {
-						workarea.setElement(new Image());
-						workarea.set({
-							width,
-							height,
-							scaleX,
-							scaleY,
-							isElement: false,
-							selectable: false,
-						});
-					}
-					canvas.centerObject(workarea);
-					if (editable && !loaded) {
-						const { layout } = workarea;
-						canvas.getObjects().forEach(obj => {
-							const { id, player } = obj as VideoObject;
-							if (id !== 'workarea') {
-								scaleX = layout === 'fullscreen' ? scaleX : obj.scaleX;
-								scaleY = layout === 'fullscreen' ? scaleY : obj.scaleY;
-								const el = this.handler.elementHandler.findById(id);
-								this.handler.elementHandler.setSize(el, obj);
-								if (player) {
-									const objWidth = obj.width * scaleX;
-									const objHeight = obj.height * scaleY;
-									player.setPlayerSize(objWidth, objHeight);
+				fabric.Image.fromURL(
+					src,
+					(img: any) => {
+						let width = canvas.getWidth();
+						let height = canvas.getHeight();
+						if (workarea.layout === 'fixed') {
+							width = workarea.width * workarea.scaleX;
+							height = workarea.height * workarea.scaleY;
+						}
+						let scaleX = 1;
+						let scaleY = 1;
+						if (img._element) {
+							scaleX = width / img.width;
+							scaleY = height / img.height;
+							img.set({
+								originX: 'left',
+								originY: 'top',
+								scaleX,
+								scaleY,
+							});
+							workarea.set({
+								...img,
+								isElement: true,
+								selectable: false,
+							});
+						} else {
+							workarea.setElement(new Image());
+							workarea.set({
+								width,
+								height,
+								scaleX,
+								scaleY,
+								isElement: false,
+								selectable: false,
+							});
+						}
+						canvas.centerObject(workarea);
+						if (editable && !loaded) {
+							const { layout } = workarea;
+							canvas.getObjects().forEach(obj => {
+								const { id, player } = obj as VideoObject;
+								if (id !== 'workarea') {
+									scaleX = layout === 'fullscreen' ? scaleX : obj.scaleX;
+									scaleY = layout === 'fullscreen' ? scaleY : obj.scaleY;
+									const el = this.handler.elementHandler.findById(id);
+									this.handler.elementHandler.setSize(el, obj);
+									if (player) {
+										const objWidth = obj.width * scaleX;
+										const objHeight = obj.height * scaleY;
+										player.setPlayerSize(objWidth, objHeight);
+									}
+									obj.set({
+										scaleX,
+										scaleY,
+									});
+									obj.setCoords();
 								}
-								obj.set({
-									scaleX,
-									scaleY,
-								});
-								obj.setCoords();
-							}
-						});
-					}
-					const center = canvas.getCenter();
-					const zoom = loaded || workarea.layout === 'fullscreen' ? 1 : this.handler.canvas.getZoom();
-					canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-					this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
-					canvas.renderAll();
-					resolve(workarea);
-				}, { crossOrigin: 'anonymous' });
+							});
+						}
+						const center = canvas.getCenter();
+						const zoom = loaded || workarea.layout === 'fullscreen' ? 1 : this.handler.canvas.getZoom();
+						canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+						this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
+						canvas.renderAll();
+						resolve(workarea);
+					},
+					{ crossOrigin: 'anonymous' },
+				);
 			});
 		};
 		if (!source) {

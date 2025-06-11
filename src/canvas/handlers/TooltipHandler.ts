@@ -1,8 +1,7 @@
 import debounce from 'lodash/debounce';
 import ReactDOM from 'react-dom';
-import { FabricObject } from '../utils';
+import { FabricObject } from '../models';
 import Handler from './Handler';
-
 
 class TooltipHandler {
 	handler: Handler;

@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
 
+import { FabricObject } from './models';
 import {
 	Arrow,
 	Chart,
@@ -17,7 +18,6 @@ import {
 } from './objects';
 import { Code } from './objects/Element';
 import Svg, { SvgOption } from './objects/Svg';
-import { FabricObject } from './utils';
 
 export interface ObjectSchema {
 	create: (...option: any) => fabric.Object;

@@ -1,6 +1,6 @@
-import { FabricObjectOption, WorkareaObject } from '../utils';
+import { CanvasOption, FabricObjectOption, GridOption, WorkareaObject } from '../models';
 
-export const canvasOption = {
+export const canvasOption: CanvasOption = {
 	preserveObjectStacking: true,
 	width: 300,
 	height: 150,
@@ -23,7 +23,8 @@ export const keyEvent = {
 	grab: true,
 };
 
-export const gridOption = {
+export const gridOption: GridOption = {
+	type: 'line',
 	enabled: false,
 	grid: 10,
 	snapToGrid: false,
