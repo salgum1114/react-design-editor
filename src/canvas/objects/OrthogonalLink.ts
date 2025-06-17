@@ -31,6 +31,13 @@ const OrthogonalLink = fabric.util.createClass(Link, {
 		ctx.lineTo(sp.x, sp.y);
 		ctx.stroke();
 		ctx.save();
+		if (this.fromNode.descriptor?.outPortType === 'STATIC' || this.fromNode.outPortType === 'STATIC') {
+			ctx.font = '12px flomon-icon';
+			ctx.fillStyle = this.fromNode.fromPort.filter(
+				(port: PortObject) => port.id === this.fromPort.id,
+			)[0].originFill;
+			ctx.fillText(this.fromPort.id.toUpperCase(), (fp.x + sp.x) / 2 + 10, (fp.y + sp.y) / 2 - 10);
+		}
 		const xDiff = this.x2 - this.x1;
 		const yDiff = this.y2 - this.y1;
 		const angle = Math.atan2(yDiff, xDiff);

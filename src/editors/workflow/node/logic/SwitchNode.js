@@ -59,10 +59,10 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 			const rect = new fabric.Rect({
 				width: 80,
 				height: 40,
-				fill: '#1a1b25',
-				originFill: '#1a1b25',
+				fill: '#2c2d3a',
+				originFill: '#2c2d3a',
 				hoverFill: 'green',
-				stroke: '#87878c',
+				stroke: '#909298',
 				rx: 7,
 				ry: 7,
 			});
@@ -88,7 +88,7 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 				top: y + 20,
 				leftDiff: coords.leftDiff,
 				topDiff: 20,
-				fill: '#1a1b25',
+				fill: '#2c2d3a',
 				originX: 'center',
 				originY: 'center',
 			});

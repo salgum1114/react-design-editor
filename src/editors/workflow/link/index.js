@@ -2,9 +2,9 @@ import { CurvedLink, Link, OrthogonalLink } from '../../../canvas/objects';
 
 const defaultOption = {
 	fill: 'rgba(0, 0, 0, 0)',
-	stroke: '#c2c8d6',
+	stroke: '#c3c9d5',
 	strokeWidth: 4,
-	originStroke: '#c2c8d6',
+	originStroke: '#c3c9d5',
 	action: {
 		enabled: false,
 	},

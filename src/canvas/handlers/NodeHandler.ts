@@ -224,9 +224,7 @@ class NodeHandler extends AbstractHandler {
 					onComplete: () => {
 						object.animating = false;
 						if (object.superType === 'link') {
-							object.set({
-								stroke: object.originStroke || object.stroke,
-							});
+							object.set({ stroke: object.originStroke || object.stroke });
 						}
 					},
 				});

@@ -344,7 +344,7 @@ class WorkflowEditor extends React.Component {
 							this.canvasRef = c;
 						}}
 						className="rde-canvas"
-						canvasOption={{ backgroundColor: '#1B1B1B' }}
+						canvasOption={{ backgroundColor: '#2d2e2e' }}
 						fabricObjects={{ ...nodes, ...Links }}
 						workareaOption={{
 							width: 0,
@@ -362,8 +362,8 @@ class WorkflowEditor extends React.Component {
 							hasBorders: false,
 							perPixelTargetFind: true,
 						}}
-						linkOption={{ stroke: '#c2c8d6', strokeWidth: 2 }}
-						minZoom={50}
+						linkOption={{ stroke: '#c3c9d5', strokeWidth: 2 }}
+						minZoom={30}
 						maxZoom={150}
 						onZoom={onZoom}
 						onSelect={onSelect}

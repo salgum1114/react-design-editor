@@ -13,9 +13,7 @@
 			},
 			"inEnabled": false,
 			"outPortType": "SINGLE",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": "clock"
 		},
 		{
@@ -29,9 +27,7 @@
 			},
 			"inEnabled": false,
 			"outPortType": "SINGLE",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": "dot-circle"
 		}
 	],
@@ -47,9 +43,7 @@
 			},
 			"inEnabled": true,
 			"outPortType": "BROADCAST",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": "sitemap"
 		},
 		{
@@ -63,9 +57,7 @@
 			},
 			"inEnabled": true,
 			"outPortType": "SINGLE",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": "pause"
 		},
 		{
@@ -79,10 +71,7 @@
 			},
 			"inEnabled": true,
 			"outPortType": "STATIC",
-			"outPorts": [
-				"true",
-				"false"
-			],
+			"outPorts": ["false", "true"],
 			"icon": "filter"
 		},
 		{
@@ -96,9 +85,7 @@
 			},
 			"inEnabled": true,
 			"outPortType": "SINGLE",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": "superscript"
 		},
 		{
@@ -108,18 +95,12 @@
 			"nodeClazz": "SwitchNode",
 			"configClazz": "SwitchNodeConfiguration",
 			"defaultConfiguration": {
-				"routes": [
-					"normal",
-					"warning",
-					"error"
-				],
+				"routes": ["normal", "warning", "error"],
 				"jsScript": "if(message.payload.measurement.temperature > message.vars.threshold2) {\nreturn 'error';\n} else if(message.payload.measurement.temperature > message.vars.threshold1) {\nreturn 'warning';\n} else {\nreturn 'normal';\n}"
 			},
 			"inEnabled": true,
 			"outPortType": "DYNAMIC",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": "random"
 		}
 	],
@@ -136,9 +117,7 @@
 			},
 			"inEnabled": true,
 			"outPortType": "SINGLE",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": ""
 		},
 		{
@@ -154,9 +133,7 @@
 			},
 			"inEnabled": true,
 			"outPortType": "SINGLE",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": ""
 		}
 	],
@@ -173,9 +150,7 @@
 			},
 			"inEnabled": true,
 			"outPortType": "SINGLE",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": "bug"
 		},
 		{
@@ -192,9 +167,7 @@
 			},
 			"inEnabled": true,
 			"outPortType": "SINGLE",
-			"outPorts": [
-				""
-			],
+			"outPorts": [""],
 			"icon": "envelope"
 		}
 	]

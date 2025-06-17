@@ -10,17 +10,22 @@ const FilterNode = fabric.util.createClass(LogicNode, {
 	},
 	createFromPort(left, top) {
 		this.fromPort = this.descriptor.outPorts.map((outPort, i) => {
+			const fill = i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)';
 			return new Port({
 				id: outPort,
 				type: 'fromPort',
-				left: i === 0 ? left - 20 : left + 20,
+				left: i === 0 ? left - 40 : left + 40,
 				top,
-				leftDiff: i === 0 ? -20 : 20,
+				leftDiff: i === 0 ? -40 : 40,
 				...this.fromPortOption(),
-				fill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
-				originFill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
-				hoverFill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
-				selectFill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
+				fill,
+				originFill: fill,
+				hoverFill: fill,
+				selectFill: fill,
+				label: outPort,
+				color: fill,
+				fontSize: 14,
+				fontFamily: 'Noto Sans',
 			});
 		});
 		return this.fromPort;
@@ -34,7 +39,7 @@ const FilterNode = fabric.util.createClass(LogicNode, {
 	},
 });
 
-FilterNode.fromObject = function(options, callback) {
+FilterNode.fromObject = function (options, callback) {
 	return callback(new FilterNode(options));
 };
 
