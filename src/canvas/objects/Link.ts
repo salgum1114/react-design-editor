@@ -66,7 +66,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 		this.callSuper('initialize', [line, arrow], other);
 	},
 	setPort(fromNode: NodeObject, fromPort: PortObject, _toNode: NodeObject, toPort: PortObject) {
-		if (fromNode.type === 'BroadcastNode') {
+		if (fromNode.outPortType === 'BROADCAST') {
 			fromPort = fromNode.fromPort[0];
 		}
 		fromPort.links.push(this);
@@ -80,6 +80,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 			if (node.toPort.id === port.id) {
 				return;
 			}
+			console.log(port.links);
 			port.links.forEach((link, index) => link.set({ fromPort: port, fromPortIndex: index }));
 			node.set({ configuration: { outputCount: port.links.length } });
 		}
@@ -161,6 +162,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 	calculatePath(fromPort: Partial<PortObject>, toPort: Partial<PortObject>) {
 		const p1 = this.getPortPosition(fromPort, 'B');
 		const p2 = this.getPortPosition(toPort, 'T');
+		// console.log(p1, p2);
 		const width = this.fromNode?.width || 200;
 		const height = this.fromNode?.height || 40;
 		const offset = 40;
@@ -176,7 +178,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 		const diff = x3 - (x2 - width);
 		let path;
 		if (useCurve) {
-			path = `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y + 40}, ${p2.x} ${p1.y === p2.y ? p2.y : p2.y - 40}, ${p2.x} ${
+			path = `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y + offset}, ${p2.x} ${p1.y === p2.y ? p2.y : p2.y - offset}, ${p2.x} ${
 				p2.y
 			}`;
 		} else {
@@ -186,18 +188,40 @@ const Link = fabric.util.createClass(fabric.Group, {
 			const distance = Math.abs(width - diff - dx);
 			let ratio = Math.min(1, distance / offset);
 			let radius = baseRadius * ratio;
-			path = [
-				`M ${x1} ${y1}`,
-				`L ${x2} ${y2 - baseRadius}`,
-				`Q ${x2} ${y2} ${x2 - baseRadius} ${y2}`,
-				`L ${x3 + baseRadius} ${y2}`,
-				`Q ${x3} ${y2} ${x3} ${y2 - baseRadius}`,
-				`L ${x3} ${y3 + radius}`,
-				`Q ${x3} ${y3} ${isUpward ? x3 - radius : x3 + radius} ${y3}`,
-				`L ${isUpward ? x4 + radius : x4 - radius} ${y3}`,
-				`Q ${x4} ${y3} ${x4} ${y3 + radius}`,
-				`L ${x4} ${y4}`,
-			].join(' ');
+			if (this.onlyLeft) {
+				path = [
+					`M ${x1} ${y1}`,
+					`L ${x2} ${y2 - baseRadius}`,
+					`Q ${x2} ${y2} ${x2 - baseRadius} ${y2}`,
+					`L ${x3 + baseRadius} ${y2}`,
+					`Q ${x3} ${y2} ${x3} ${y2 - baseRadius}`,
+					`L ${x3} ${y3 + radius}`,
+					`Q ${x3} ${y3} ${isUpward ? x3 - radius : x3 + radius} ${y3}`,
+					`L ${isUpward ? x4 + radius : x4 - radius} ${y3}`,
+					`Q ${x4} ${y3} ${x4} ${y3 + radius}`,
+					`L ${x4} ${y4}`,
+				].join(' ');
+			} else {
+				const nodeCenterGap =
+					this.fromNode?.left + this.fromNode?.width / 2 - (this.toNode?.left + this.toNode?.width / 2);
+				const gap = isNaN(nodeCenterGap) ? x1 - x4 : nodeCenterGap;
+				const isNegativeShift = gap <= 0;
+				if (!isNegativeShift) {
+					x3 = this.fromNode.left + this.fromNode.width + offset;
+				}
+				path = [
+					`M ${x1} ${y1}`,
+					`L ${x2} ${y2 - baseRadius}`,
+					`Q ${x2} ${y2} ${isNegativeShift ? x2 - baseRadius : x2 + baseRadius} ${y2}`,
+					`L ${isNegativeShift ? x3 + baseRadius : x3 - baseRadius} ${y2}`,
+					`Q ${x3} ${y2} ${x3} ${y2 - baseRadius}`,
+					`L ${x3} ${y3 + baseRadius}`,
+					`Q ${x3} ${y3} ${isNegativeShift ? x3 + baseRadius : x3 - baseRadius} ${y3}`,
+					`L ${isNegativeShift ? x4 - baseRadius : x4 + baseRadius} ${y3}`,
+					`Q ${x4} ${y3} ${x4} ${y3 + baseRadius}`,
+					`L ${x4} ${y4}`,
+				].join(' ');
+			}
 		}
 		let midX = x3;
 		let midY = (y3 + y2) / 2;

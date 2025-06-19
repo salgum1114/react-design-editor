@@ -181,7 +181,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 		if (this.descriptor.outPortType === OUT_PORT_TYPE.BROADCAST) {
 			this.fromPort = this.broadcastPort({ ...this.fromPortOption(), left, top });
 		} else if (this.descriptor.outPortType === OUT_PORT_TYPE.STATIC) {
-			this.fromPort = this.staticPort({ ...this.fromPortOption(), left, top });
+			this.fromPort = this.staticPort(left, top);
 		} else if (this.descriptor.outPortType === OUT_PORT_TYPE.DYNAMIC) {
 			this.fromPort = this.dynamicPort({ ...this.fromPortOption(), left, top });
 		} else if (this.descriptor.outPortType === OUT_PORT_TYPE.NONE) {
@@ -199,18 +199,24 @@ const Node = fabric.util.createClass(fabric.Group, {
 		});
 		return [fromPort];
 	},
-	staticPort(portOption: any) {
-		return this.descriptor.outPorts.map((outPort: any, i: number) => {
+	staticPort(left: number, top: number) {
+		return this.descriptor.outPorts.map((outPort: string, i: number) => {
+			const fill = i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)';
 			return new Port({
 				id: outPort,
 				type: 'fromPort',
-				...portOption,
-				left: i === 0 ? portOption.left - 20 : portOption.left + 20,
-				top: portOption.top,
-				leftDiff: i === 0 ? -20 : 20,
-				fill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
-				originFill: i === 0 ? 'rgba(0, 255, 0, 0.3)' : 'rgba(255, 0, 0, 0.3)',
-				hoverFill: i === 0 ? 'rgba(0, 255, 0, 1)' : 'rgba(255, 0, 0, 1)',
+				left: i === 0 ? left - 40 : left + 40,
+				top,
+				leftDiff: i === 0 ? -40 : 40,
+				...this.fromPortOption(),
+				fill,
+				originFill: fill,
+				hoverFill: fill,
+				selectFill: fill,
+				label: outPort,
+				color: fill,
+				fontSize: 14,
+				fontFamily: 'Noto Sans',
 			});
 		});
 	},

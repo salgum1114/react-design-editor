@@ -6,10 +6,10 @@ import {
 	FlowEnvType,
 	FlowNodeClass,
 	FlowNodeType,
-	IFlowNodeDescriptor,
 	getFlowColors,
 	getFlowColorsByType,
 	getNodeClass,
+	IFlowNodeDescriptor,
 } from '@flomon-ui/models';
 import { extractDefaultsJsonSchema, parseBoolean, sessionStorage, simpleid } from '@flomon-ui/utils';
 import { Collapse, Input, Popover } from 'antd';
@@ -19,7 +19,7 @@ import { fabric } from 'fabric';
 import memoize from 'lodash/memoize';
 import React, { Component } from 'react';
 import { CanvasInstance, LinkObject } from 'react-design-editor';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { AppRootState } from '../../reducers';
 
 const mapStateToProps = (state: AppRootState) => ({
@@ -171,12 +171,15 @@ class FlowItems extends Component<IProps, IState> {
 						.toLowerCase()
 						.includes(search) || descriptor.name.toLowerCase().includes(search),
 			)
-			.reduce((prev, curr) => {
-				if (prev[curr.type]) {
-					return Object.assign(prev, { [curr.type]: prev[curr.type].concat(curr) });
-				}
-				return Object.assign(prev, { [curr.type]: [curr] });
-			}, {} as { [key: string]: IFlowNodeDescriptor[] });
+			.reduce(
+				(prev, curr) => {
+					if (prev[curr.type]) {
+						return Object.assign(prev, { [curr.type]: prev[curr.type].concat(curr) });
+					}
+					return Object.assign(prev, { [curr.type]: [curr] });
+				},
+				{} as { [key: string]: IFlowNodeDescriptor[] },
+			);
 	};
 
 	filteredNode = (descriptor: IFlowNodeDescriptor) => {
@@ -220,7 +223,7 @@ class FlowItems extends Component<IProps, IState> {
 						? {
 								customNodeId: descriptor.customNodeId,
 								userInput: extractDefaultsJsonSchema(descriptor.inputSchema),
-						  }
+							}
 						: {}),
 				description: '',
 				name: descriptor.customNodeId ? descriptor.name : i18next.t(`flow.node-title.${type}`),
@@ -265,7 +268,7 @@ class FlowItems extends Component<IProps, IState> {
 								false,
 								false,
 								false,
-						  );
+							);
 					instance.handler.linkHandler.create({
 						type: 'link',
 						fromNodeId: selectedNode.id,

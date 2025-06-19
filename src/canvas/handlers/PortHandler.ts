@@ -119,7 +119,6 @@ class PortHandler {
 	 * @param {NodeObject} target
 	 */
 	recreate = (target: NodeObject) => {
-		console.log('recreate');
 		const { fromPort, toPort } = target;
 		const ports = target.ports as PortObject[];
 		if (ports) {
