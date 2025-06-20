@@ -80,7 +80,7 @@ export interface HandlerCallback {
 	/**
 	 * When modified object, Called function
 	 */
-	onModified?: (target: FabricObject) => void;
+	onModified?: (target: Partial<FabricObject>) => void;
 	/**
 	 * When select object, Called function
 	 *
@@ -251,7 +251,7 @@ class Handler implements HandlerOptions {
 	public onZoom?: (zoomRatio: number) => void;
 	public onClick?: (canvas: FabricCanvas, target: FabricObject) => void;
 	public onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
-	public onModified?: (target: FabricObject) => void;
+	public onModified?: (target: Partial<FabricObject>) => void;
 	public onSelect?: (target: FabricObject) => void;
 	public onRemove?: (target: FabricObject) => void;
 	public onTransaction?: (transaction: TransactionEvent) => void;
@@ -908,6 +908,7 @@ class Handler implements HandlerOptions {
 			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('remove');
 			}
+			this.onRemove?.(this.prevTarget);
 			return;
 		}
 		if (!activeObject) {
@@ -983,10 +984,7 @@ class Handler implements HandlerOptions {
 			this.transactionHandler.save('remove');
 		}
 		this.objects = this.getObjects();
-		const { onRemove } = this;
-		if (onRemove) {
-			onRemove(activeObject);
-		}
+		this.onRemove?.(activeObject);
 	};
 
 	/**

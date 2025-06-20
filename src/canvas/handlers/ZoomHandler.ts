@@ -2,14 +2,14 @@ import { fabric } from 'fabric';
 
 import { FabricObject } from '../models';
 import { VideoObject } from '../objects/Video';
+import AbstractHandler from './AbstractHandler';
 import type Handler from './Handler';
 
-class ZoomHandler {
-	handler?: Handler;
+class ZoomHandler extends AbstractHandler {
 	private _zoomStep?: number;
 
 	constructor(handler: Handler, zoomStep: number = 0.05) {
-		this.handler = handler;
+		super(handler);
 		this._zoomStep = zoomStep;
 	}
 
@@ -148,6 +148,16 @@ class ZoomHandler {
 			return;
 		}
 		this.zoomToCenterWithObject(activeObject, zoomFit);
+	};
+
+	public zoomToFitWithObject = () => {
+		this.canvas.discardActiveObject();
+		const activeSelection = new fabric.ActiveSelection(this.handler.getObjects());
+		if (activeSelection.getObjects().length) {
+			this.canvas.setActiveObject(activeSelection);
+			this.handler.zoomHandler.zoomToCenter(true);
+			this.canvas.discardActiveObject();
+		}
 	};
 }
 

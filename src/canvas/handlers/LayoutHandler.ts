@@ -23,9 +23,10 @@ export default class LayoutHandler extends AbstractHandler {
 		} else if (type === 'elk') {
 			await this.elk(options);
 		}
-		if (this.handler.keyEvent.transaction) {
+		if (this.handler.keyEvent.transaction && this.handler.transactionHandler.active) {
 			this.handler.transactionHandler.save('layout');
 		}
+		this.handler.onModified?.({ type: 'runLayout' });
 	}
 
 	private async elk(options: LayoutOptions) {
@@ -64,7 +65,7 @@ export default class LayoutHandler extends AbstractHandler {
 													'elk.port.side': 'NORTH',
 												},
 											},
-									  ]
+										]
 									: [],
 							)
 					: [
@@ -74,7 +75,7 @@ export default class LayoutHandler extends AbstractHandler {
 									'elk.port.side': 'NORTH',
 								},
 							},
-					  ],
+						],
 			})),
 			edges: links.map(link => ({
 				id: `${link.fromNode?.id}_${link.toNode?.id}`,
@@ -94,7 +95,7 @@ export default class LayoutHandler extends AbstractHandler {
 			node.setCoords();
 			this.handler.portHandler.setCoords(node);
 		});
-		this.handler.canvas.renderAll();
+		this.canvas.renderAll();
 	}
 
 	private dagre(options: LayoutOptions) {
@@ -120,6 +121,6 @@ export default class LayoutHandler extends AbstractHandler {
 			this.handler.portHandler.setCoords(node);
 		});
 
-		this.handler.canvas.renderAll();
+		this.canvas.renderAll();
 	}
 }

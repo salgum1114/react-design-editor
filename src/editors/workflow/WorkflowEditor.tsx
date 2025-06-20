@@ -89,7 +89,7 @@ class WorkflowEditor extends React.Component {
 				this.changeEditing(true);
 			}
 		},
-		onModified: () => {
+		onModified: target => {
 			if (!this.state.editing) {
 				this.changeEditing(true);
 			}
@@ -386,7 +386,7 @@ class WorkflowEditor extends React.Component {
 						/>
 					</div>
 					<div className="rde-editor-toolbar-container">
-						<WorkflowToolbar canvasRef={this.canvasRef} zoomRatio={zoomRatio} />
+						<WorkflowToolbar instance={this.canvasRef} zoomRatio={zoomRatio} />
 					</div>
 				</div>
 				<WorkflowConfigurations

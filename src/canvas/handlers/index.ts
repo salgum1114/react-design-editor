@@ -21,3 +21,4 @@ export type {
 	TintFilter,
 	ValuesOf,
 } from './ImageHandler';
+export type { LayoutDirection, LayoutOptions, LayoutType } from './LayoutHandler';

@@ -27,7 +27,7 @@ class EventHandler extends AbstractHandler {
 	public initialize() {
 		if (this.handler.editable) {
 			// @ts-ignore
-			this.handler.canvas.on({
+			this.canvas.on({
 				'object:modified': this.modified,
 				'object:scaling': this.scaling,
 				'object:scaled': this.scaled,
@@ -45,7 +45,7 @@ class EventHandler extends AbstractHandler {
 			});
 		} else {
 			// @ts-ignore
-			this.handler.canvas.on({
+			this.canvas.on({
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
 				'mouse:out': this.mouseout,
@@ -53,11 +53,11 @@ class EventHandler extends AbstractHandler {
 				'mouse:wheel': this.mousewheel,
 			});
 		}
-		this.handler.canvas.wrapperEl.tabIndex = 1000;
-		this.handler.canvas.wrapperEl.addEventListener('keydown', this.keydown, false);
-		this.handler.canvas.wrapperEl.addEventListener('keyup', this.keyup, false);
-		this.handler.canvas.wrapperEl.addEventListener('mousedown', this.onmousedown, false);
-		this.handler.canvas.wrapperEl.addEventListener('contextmenu', this.contextmenu, false);
+		this.canvas.wrapperEl.tabIndex = 1000;
+		this.canvas.wrapperEl.addEventListener('keydown', this.keydown, false);
+		this.canvas.wrapperEl.addEventListener('keyup', this.keyup, false);
+		this.canvas.wrapperEl.addEventListener('mousedown', this.onmousedown, false);
+		this.canvas.wrapperEl.addEventListener('contextmenu', this.contextmenu, false);
 		if (this.handler.keyEvent.clipboard) {
 			document.addEventListener('paste', this.paste, false);
 		}
@@ -69,7 +69,7 @@ class EventHandler extends AbstractHandler {
 	 */
 	public destroy = () => {
 		if (this.handler.editable) {
-			this.handler.canvas.off({
+			this.canvas.off({
 				'object:modified': this.modified,
 				'object:scaling': this.scaling,
 				'object:moving': this.moving,
@@ -84,7 +84,7 @@ class EventHandler extends AbstractHandler {
 				'selection:updated': this.selection,
 			});
 		} else {
-			this.handler.canvas.off({
+			this.canvas.off({
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
 				'mouse:out': this.mouseout,
@@ -98,12 +98,12 @@ class EventHandler extends AbstractHandler {
 				}
 			});
 		}
-		this.handler.canvas.wrapperEl.removeEventListener('keydown', this.keydown);
-		this.handler.canvas.wrapperEl.removeEventListener('keyup', this.keyup);
-		this.handler.canvas.wrapperEl.removeEventListener('mousedown', this.onmousedown);
-		this.handler.canvas.wrapperEl.removeEventListener('contextmenu', this.contextmenu);
+		this.canvas.wrapperEl.removeEventListener('keydown', this.keydown);
+		this.canvas.wrapperEl.removeEventListener('keyup', this.keyup);
+		this.canvas.wrapperEl.removeEventListener('mousedown', this.onmousedown);
+		this.canvas.wrapperEl.removeEventListener('contextmenu', this.contextmenu);
 		if (this.handler.keyEvent.clipboard) {
-			this.handler.canvas.wrapperEl.removeEventListener('paste', this.paste);
+			this.canvas.wrapperEl.removeEventListener('paste', this.paste);
 		}
 	};
 
@@ -119,7 +119,7 @@ class EventHandler extends AbstractHandler {
 		mousedown: (opt: FabricEvent) => {
 			const { target } = opt;
 			if (target && target.link && target.link.enabled) {
-				this.handler.onClick?.(this.handler.canvas, target);
+				this.handler.onClick?.(this.canvas, target);
 			}
 		},
 		/**
@@ -129,7 +129,7 @@ class EventHandler extends AbstractHandler {
 		mousedblclick: (opt: FabricEvent) => {
 			const { target } = opt;
 			if (target) {
-				this.handler.onDblClick?.(this.handler.canvas, target);
+				this.handler.onDblClick?.(this.canvas, target);
 			}
 		},
 	};
@@ -278,7 +278,7 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public arrowmoving = (e: KeyboardEvent) => {
-		const activeObject = this.handler.canvas.getActiveObject() as FabricObject;
+		const activeObject = this.canvas.getActiveObject() as FabricObject;
 		if (!activeObject) {
 			return false;
 		}
@@ -288,22 +288,22 @@ class EventHandler extends AbstractHandler {
 		if (e.code === code.ARROW_UP) {
 			activeObject.set('top', activeObject.top - 2);
 			activeObject.setCoords();
-			this.handler.canvas.renderAll();
+			this.canvas.renderAll();
 			return true;
 		} else if (e.code === code.ARROW_DOWN) {
 			activeObject.set('top', activeObject.top + 2);
 			activeObject.setCoords();
-			this.handler.canvas.renderAll();
+			this.canvas.renderAll();
 			return true;
 		} else if (e.code === code.ARROW_LEFT) {
 			activeObject.set('left', activeObject.left - 2);
 			activeObject.setCoords();
-			this.handler.canvas.renderAll();
+			this.canvas.renderAll();
 			return true;
 		} else if (e.code === code.ARROW_RIGHT) {
 			activeObject.set('left', activeObject.left + 2);
 			activeObject.setCoords();
-			this.handler.canvas.renderAll();
+			this.canvas.renderAll();
 			return true;
 		}
 		if (this.handler.onModified) {
@@ -325,14 +325,14 @@ class EventHandler extends AbstractHandler {
 			return;
 		}
 		const delta = event.e.deltaY;
-		let zoomRatio = this.handler.canvas.getZoom();
+		let zoomRatio = this.canvas.getZoom();
 		if (delta > 0) {
 			zoomRatio -= this.handler.zoomStep;
 		} else {
 			zoomRatio += this.handler.zoomStep;
 		}
 		this.handler.zoomHandler.zoomToPoint(
-			new fabric.Point(this.handler.canvas.getWidth() / 2, this.handler.canvas.getHeight() / 2),
+			new fabric.Point(this.canvas.getWidth() / 2, this.canvas.getHeight() / 2),
 			zoomRatio,
 		);
 		event.e.preventDefault();
@@ -382,8 +382,8 @@ class EventHandler extends AbstractHandler {
 				this.handler.linkHandler.generate(toPort);
 				return;
 			}
-			this.handler.guidelineHandler.viewportTransform = this.handler.canvas.viewportTransform;
-			this.handler.guidelineHandler.zoom = this.handler.canvas.getZoom();
+			this.handler.guidelineHandler.viewportTransform = this.canvas.viewportTransform;
+			this.handler.guidelineHandler.zoom = this.canvas.getZoom();
 			if (this.handler.interactionMode === 'selection') {
 				if (target && target.superType === 'link') {
 					target.line.set({ stroke: target.selectedStroke || 'green' });
@@ -424,7 +424,7 @@ class EventHandler extends AbstractHandler {
 		const event = opt as FabricEvent<MouseEvent>;
 		if (this.handler.interactionMode === 'grab' && this.panning) {
 			this.handler.interactionHandler.moving(event.e);
-			this.handler.canvas.requestRenderAll();
+			this.canvas.requestRenderAll();
 		}
 		if (!this.handler.editable && event.target) {
 			if (event.target.superType === 'element') {
@@ -440,7 +440,7 @@ class EventHandler extends AbstractHandler {
 		}
 		if (this.handler.interactionMode === 'polygon') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
-				const pointer = this.handler.canvas.getPointer(event.e);
+				const pointer = this.canvas.getPointer(event.e);
 				this.handler.activeLine.set({ x2: pointer.x, y2: pointer.y });
 				const points = this.handler.activeShape.get('points');
 				points[this.handler.pointArray.length] = {
@@ -450,26 +450,26 @@ class EventHandler extends AbstractHandler {
 				this.handler.activeShape.set({
 					points,
 				});
-				this.handler.canvas.requestRenderAll();
+				this.canvas.requestRenderAll();
 			}
 		} else if (this.handler.interactionMode === 'line') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
-				const pointer = this.handler.canvas.getPointer(event.e);
+				const pointer = this.canvas.getPointer(event.e);
 				this.handler.activeLine.set({ x2: pointer.x, y2: pointer.y });
 			}
-			this.handler.canvas.requestRenderAll();
+			this.canvas.requestRenderAll();
 		} else if (this.handler.interactionMode === 'arrow') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
-				const pointer = this.handler.canvas.getPointer(event.e);
+				const pointer = this.canvas.getPointer(event.e);
 				this.handler.activeLine.set({ x2: pointer.x, y2: pointer.y });
 			}
-			this.handler.canvas.requestRenderAll();
+			this.canvas.requestRenderAll();
 		} else if (this.handler.interactionMode === 'link') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
-				const pointer = this.handler.canvas.getPointer(event.e);
+				const pointer = this.canvas.getPointer(event.e);
 				this.handler.activeLine.update(this.handler.activeLine.fromPort, { left: pointer.x, top: pointer.y });
 			}
-			this.handler.canvas.requestRenderAll();
+			this.canvas.requestRenderAll();
 		}
 		return;
 	};
@@ -490,22 +490,22 @@ class EventHandler extends AbstractHandler {
 		if (this.handler.interactionMode === 'selection') {
 			if (target && e.shiftKey && target.superType === 'node') {
 				const node = target as NodeObject;
-				this.handler.canvas.discardActiveObject();
+				this.canvas.discardActiveObject();
 				const nodes = [] as NodeObject[];
 				this.handler.nodeHandler.getNodePath(node, nodes);
 				const activeSelection = new fabric.ActiveSelection(nodes, {
-					canvas: this.handler.canvas,
+					canvas: this.canvas,
 					...this.handler.activeSelectionOption,
 				});
-				this.handler.canvas.setActiveObject(activeSelection);
-				this.handler.canvas.requestRenderAll();
+				this.canvas.setActiveObject(activeSelection);
+				this.canvas.requestRenderAll();
 			}
 		}
 		if (this.handler.editable && this.handler.guidelineOption.enabled) {
 			this.handler.guidelineHandler.verticalLines.length = 0;
 			this.handler.guidelineHandler.horizontalLines.length = 0;
 		}
-		this.handler.canvas.renderAll();
+		this.canvas.renderAll();
 	};
 
 	/**
@@ -546,10 +546,10 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public resize = (nextWidth: number, nextHeight: number) => {
-		this.handler.canvas.setWidth(nextWidth).setHeight(nextHeight);
-		this.handler.canvas.setBackgroundColor(
+		this.canvas.setWidth(nextWidth).setHeight(nextHeight);
+		this.canvas.setBackgroundColor(
 			this.handler.canvasOption.backgroundColor,
-			this.handler.canvas.renderAll.bind(this.handler.canvas),
+			this.canvas.renderAll.bind(this.canvas),
 		);
 		if (!this.handler.workarea) {
 			return;
@@ -559,12 +559,12 @@ class EventHandler extends AbstractHandler {
 		this.handler.width = nextWidth;
 		this.handler.height = nextHeight;
 		if (this.handler.workarea.layout === 'fixed') {
-			this.handler.canvas.centerObject(this.handler.workarea);
+			this.canvas.centerObject(this.handler.workarea);
 			this.handler.workarea.setCoords();
 			if (this.handler.gridOption.enabled) {
 				return;
 			}
-			this.handler.canvas.getObjects().forEach((obj: FabricObject) => {
+			this.canvas.getObjects().forEach((obj: FabricObject) => {
 				if (obj.id !== 'workarea') {
 					const left = obj.left + diffWidth;
 					const top = obj.top + diffHeight;
@@ -581,14 +581,14 @@ class EventHandler extends AbstractHandler {
 					}
 				}
 			});
-			this.handler.canvas.requestRenderAll();
+			this.canvas.requestRenderAll();
 			return;
 		}
 		if (this.handler.workarea.layout === 'responsive') {
 			const { scaleX } = this.handler.workareaHandler.calculateScale();
-			const center = this.handler.canvas.getCenter();
+			const center = this.canvas.getCenter();
 			const deltaPoint = new fabric.Point(diffWidth, diffHeight);
-			this.handler.canvas.relativePan(deltaPoint);
+			this.canvas.relativePan(deltaPoint);
 			this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
 			return;
 		}
@@ -600,7 +600,7 @@ class EventHandler extends AbstractHandler {
 			scaleX,
 			scaleY,
 		});
-		this.handler.canvas.getObjects().forEach((obj: any) => {
+		this.canvas.getObjects().forEach((obj: any) => {
 			const { id } = obj;
 			if (obj.id !== 'workarea') {
 				const left = obj.left * diffScaleX;
@@ -626,7 +626,7 @@ class EventHandler extends AbstractHandler {
 				}
 			}
 		});
-		this.handler.canvas.renderAll();
+		this.canvas.renderAll();
 	};
 
 	/**
@@ -636,7 +636,7 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public paste = async (e: ClipboardEvent) => {
-		if (this.handler.canvas.wrapperEl !== document.activeElement) {
+		if (this.canvas.wrapperEl !== document.activeElement) {
 			return false;
 		}
 		if (e.preventDefault) {
@@ -667,8 +667,8 @@ class EventHandler extends AbstractHandler {
 								obj.left = obj.properties.left + padding;
 								obj.top = obj.properties.top + padding;
 								const createdObj = this.handler.add(obj, false, true);
-								this.handler.canvas.setActiveObject(createdObj as FabricObject);
-								this.handler.canvas.requestRenderAll();
+								this.canvas.setActiveObject(createdObj as FabricObject);
+								this.canvas.requestRenderAll();
 								this.handler.onAdd?.(createdObj);
 							} else {
 								const nodes = [] as any[];
@@ -692,11 +692,11 @@ class EventHandler extends AbstractHandler {
 									}
 								});
 								const activeSelection = new fabric.ActiveSelection(nodes.length ? nodes : targets, {
-									canvas: this.handler.canvas,
+									canvas: this.canvas,
 									...this.handler.activeSelectionOption,
 								});
-								this.handler.canvas.setActiveObject(activeSelection);
-								this.handler.canvas.requestRenderAll();
+								this.canvas.setActiveObject(activeSelection);
+								this.canvas.requestRenderAll();
 								this.handler.onAdd?.(activeSelection);
 							}
 							if (!this.handler.transactionHandler.active) {
@@ -775,12 +775,12 @@ class EventHandler extends AbstractHandler {
 		}
 		if (this.handler.shortcutHandler.isEscape(e)) {
 			if (this.handler.interactionMode === 'selection') {
-				this.handler.canvas.discardActiveObject();
-				this.handler.canvas.renderAll();
+				this.canvas.discardActiveObject();
+				this.canvas.renderAll();
 			}
 			this.handler.tooltipHandler.hide();
 		}
-		if (this.handler.canvas.wrapperEl !== document.activeElement) {
+		if (this.canvas.wrapperEl !== document.activeElement) {
 			return;
 		}
 		if (editable) {
@@ -849,7 +849,7 @@ class EventHandler extends AbstractHandler {
 		e.preventDefault();
 		const { editable, onContext } = this.handler;
 		if (editable && onContext) {
-			const target = this.handler.canvas.findTarget(e, false) as FabricObject;
+			const target = this.canvas.findTarget(e, false) as FabricObject;
 			if (target && target.type !== 'activeSelection') {
 				this.handler.select(target);
 			}
