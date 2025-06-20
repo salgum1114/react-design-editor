@@ -24,31 +24,37 @@ class NodeHandler extends AbstractHandler {
 	 * @param {NodeObject[]} [nodes=[]]
 	 * @param {string} [direction='init']
 	 */
-	getNodePath = (target: NodeObject, nodes: NodeObject[] = [], direction = 'init') => {
-		if (target) {
-			if (direction === 'to' || direction === 'init') {
-				if (target.toPort) {
-					target.toPort.links.forEach(link => {
-						if (link.fromNode) {
-							nodes.push(link.fromNode);
-							this.getNodePath(link.fromNode, nodes, 'to');
-						}
-					});
-				}
-				if (direction === 'init') {
-					nodes.push(target);
-				}
-			}
-			if (direction === 'from' || direction === 'init') {
-				target.fromPort.forEach(port => {
-					port.links.forEach(link => {
-						if (link.toNode) {
-							nodes.push(link.toNode);
-							this.getNodePath(link.toNode, nodes, 'from');
-						}
-					});
+	getNodePath = (
+		target: NodeObject,
+		nodes: NodeObject[] = [],
+		direction: 'to' | 'from' | 'init' = 'init',
+		visited = new Set<NodeObject>(),
+	) => {
+		if (!target || visited.has(target)) return;
+		visited.add(target);
+		if (direction === 'to' || direction === 'init') {
+			if (target.toPort) {
+				target.toPort.links.forEach(link => {
+					if (link.fromNode && !visited.has(link.fromNode)) {
+						nodes.push(link.fromNode);
+						this.getNodePath(link.fromNode, nodes, 'to', visited);
+					}
 				});
 			}
+			if (direction === 'init') {
+				nodes.push(target);
+			}
+		}
+
+		if (direction === 'from' || direction === 'init') {
+			target.fromPort.forEach(port => {
+				port.links.forEach(link => {
+					if (link.toNode && !visited.has(link.toNode)) {
+						nodes.push(link.toNode);
+						this.getNodePath(link.toNode, nodes, 'from', visited);
+					}
+				});
+			});
 		}
 	};
 

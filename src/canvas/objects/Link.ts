@@ -80,7 +80,6 @@ const Link = fabric.util.createClass(fabric.Group, {
 			if (node.toPort.id === port.id) {
 				return;
 			}
-			console.log(port.links);
 			port.links.forEach((link, index) => link.set({ fromPort: port, fromPortIndex: index }));
 			node.set({ configuration: { outputCount: port.links.length } });
 		}
@@ -162,15 +161,18 @@ const Link = fabric.util.createClass(fabric.Group, {
 	calculatePath(fromPort: Partial<PortObject>, toPort: Partial<PortObject>) {
 		const p1 = this.getPortPosition(fromPort, 'B');
 		const p2 = this.getPortPosition(toPort, 'T');
-		// console.log(p1, p2);
 		const width = this.fromNode?.width || 200;
 		const height = this.fromNode?.height || 40;
 		const offset = 40;
+		const fromGroup = this.fromNode.group;
+		const toGroup = this.toNode.group;
+		const fromNodeLeft = this.fromNode.left + (fromGroup ? fromGroup.left + fromGroup.width / 2 : 0);
+		const toNodeLeft = this.toNode.left + (toGroup ? toGroup.left + toGroup.width / 2 : 0);
 		let x1 = p1.x;
 		let y1 = p1.y;
 		let x2 = x1;
 		let y2 = y1 + height / 2;
-		let x3 = x2 - fromPort.left + this.fromNode.left - offset;
+		let x3 = x2 - fromPort.left + fromNodeLeft - offset;
 		let y3 = p2.y - height / 2;
 		let x4 = p2.x;
 		let y4 = p2.y;
@@ -202,12 +204,11 @@ const Link = fabric.util.createClass(fabric.Group, {
 					`L ${x4} ${y4}`,
 				].join(' ');
 			} else {
-				const nodeCenterGap =
-					this.fromNode?.left + this.fromNode?.width / 2 - (this.toNode?.left + this.toNode?.width / 2);
+				const nodeCenterGap = fromNodeLeft + this.fromNode?.width / 2 - (toNodeLeft + this.toNode?.width / 2);
 				const gap = isNaN(nodeCenterGap) ? x1 - x4 : nodeCenterGap;
 				const isNegativeShift = gap <= 0;
 				if (!isNegativeShift) {
-					x3 = this.fromNode.left + this.fromNode.width + offset;
+					x3 = fromNodeLeft + this.fromNode.width + offset;
 				}
 				path = [
 					`M ${x1} ${y1}`,

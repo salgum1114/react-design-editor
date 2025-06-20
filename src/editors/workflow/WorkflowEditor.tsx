@@ -371,6 +371,7 @@ class WorkflowEditor extends React.Component {
 						onRemove={onRemove}
 						onModified={onModified}
 						keyEvent={{ move: false, transaction: true, clipboard: true }}
+						guidelineOption={{ enabled: false }}
 					/>
 					<div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
 						<WorkflowNodeConfigurations
