@@ -24,7 +24,7 @@ class EventHandler extends AbstractHandler {
 	 * Attch event on document
 	 *
 	 */
-	public initialize() {
+	protected initialize() {
 		if (this.handler.editable) {
 			// @ts-ignore
 			this.canvas.on({
@@ -39,6 +39,7 @@ class EventHandler extends AbstractHandler {
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
 				'mouse:up': this.mouseup,
+				'mouse:over': this.mouseover,
 				'selection:cleared': this.selection,
 				'selection:created': this.selection,
 				'selection:updated': this.selection,
@@ -319,24 +320,38 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public mousewheel = (opt: FabricEvent) => {
-		const event = opt as FabricEvent<WheelEvent>;
+		const event = opt.e as WheelEvent;
 		const { zoomEnabled } = this.handler;
-		if (!zoomEnabled) {
-			return;
-		}
-		const delta = event.e.deltaY;
-		let zoomRatio = this.canvas.getZoom();
-		if (delta > 0) {
-			zoomRatio -= this.handler.zoomStep;
+		if (event.ctrlKey) {
+			if (!zoomEnabled) {
+				return;
+			}
+			const delta = event.deltaY;
+			let zoomRatio = this.canvas.getZoom();
+			if (delta > 0) {
+				zoomRatio -= this.handler.zoomStep;
+			} else {
+				zoomRatio += this.handler.zoomStep;
+			}
+			this.handler.zoomHandler.zoomToPoint(
+				new fabric.Point(this.canvas.getWidth() / 2, this.canvas.getHeight() / 2),
+				zoomRatio,
+			);
 		} else {
-			zoomRatio += this.handler.zoomStep;
+			const deltaY = event.deltaY / 2;
+			const [scaleX, skewY, skewX, scaleY, panX, panY] = this.canvas.viewportTransform;
+			this.canvas.setViewportTransform([
+				scaleX,
+				skewY,
+				skewX,
+				scaleY,
+				event.shiftKey ? panX - deltaY : panX,
+				event.shiftKey ? panY : panY - deltaY,
+			]);
 		}
-		this.handler.zoomHandler.zoomToPoint(
-			new fabric.Point(this.canvas.getWidth() / 2, this.canvas.getHeight() / 2),
-			zoomRatio,
-		);
-		event.e.preventDefault();
-		event.e.stopPropagation();
+		this.canvas.requestRenderAll();
+		event.preventDefault();
+		event.stopPropagation();
 	};
 
 	/**
@@ -346,9 +361,9 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public mousedown = (opt: FabricEvent) => {
-		const event = opt as FabricEvent<MouseEvent>;
+		const { e: event, target } = opt as FabricEvent<MouseEvent>;
 		const { editable } = this.handler;
-		if (event.e.altKey && editable && !this.handler.interactionHandler.isDrawingMode()) {
+		if (event.altKey && editable && !this.handler.interactionHandler.isDrawingMode()) {
 			this.handler.interactionHandler.grab();
 			this.panning = true;
 			return;
@@ -357,7 +372,6 @@ class EventHandler extends AbstractHandler {
 			this.panning = true;
 			return;
 		}
-		const { target } = event;
 		if (editable) {
 			if (this.handler.prevTarget && this.handler.prevTarget.superType === 'link') {
 				this.handler.prevTarget.setColor(
@@ -396,19 +410,19 @@ class EventHandler extends AbstractHandler {
 				if (target && this.handler.pointArray.length && target.id === this.handler.pointArray[0].id) {
 					this.handler.drawingHandler.polygon.generate(this.handler.pointArray);
 				} else {
-					this.handler.drawingHandler.polygon.addPoint(event);
+					this.handler.drawingHandler.polygon.addPoint(opt);
 				}
 			} else if (this.handler.interactionMode === 'line') {
 				if (this.handler.pointArray.length && this.handler.activeLine) {
-					this.handler.drawingHandler.line.generate(event);
+					this.handler.drawingHandler.line.generate(opt);
 				} else {
-					this.handler.drawingHandler.line.addPoint(event);
+					this.handler.drawingHandler.line.addPoint(opt);
 				}
 			} else if (this.handler.interactionMode === 'arrow') {
 				if (this.handler.pointArray.length && this.handler.activeLine) {
-					this.handler.drawingHandler.arrow.generate(event);
+					this.handler.drawingHandler.arrow.generate(opt);
 				} else {
-					this.handler.drawingHandler.arrow.addPoint(event);
+					this.handler.drawingHandler.arrow.addPoint(opt);
 				}
 			}
 		}
@@ -506,6 +520,16 @@ class EventHandler extends AbstractHandler {
 			this.handler.guidelineHandler.horizontalLines.length = 0;
 		}
 		this.canvas.renderAll();
+	};
+
+	/**
+	 * Mouse over event on canvas
+	 *
+	 * @param {FabricEvent<MouseEvent>} opt
+	 * @returns
+	 */
+	public mouseover = (opt: FabricEvent) => {
+		console.log(opt);
 	};
 
 	/**
@@ -769,7 +793,7 @@ class EventHandler extends AbstractHandler {
 			this.handler.interactionHandler.grab();
 			return;
 		}
-		if (e.altKey && editable && grab) {
+		if ((this.handler.shortcutHandler.isSpace(e) || e.altKey) && editable && grab) {
 			this.handler.interactionHandler.grab();
 			return;
 		}

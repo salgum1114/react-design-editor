@@ -165,6 +165,15 @@ class ShortcutHandler {
 	public isCtrlX = (e: KeyboardEvent) => {
 		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_X && this.keyEvent.cut;
 	};
+
+	/**
+	 * Whether keydown
+	 *Space
+	 * @param {KeyboardEvent} e
+	 */
+	public isSpace = (e: KeyboardEvent) => {
+		return e.code === code.SPACE;
+	};
 }
 
 export default ShortcutHandler;
