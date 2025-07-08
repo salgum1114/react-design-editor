@@ -96,6 +96,7 @@ class WorkflowItems extends React.Component<IProps> {
 			if (this.intersectedLink) {
 				const createdNode = instance.handler.add(option, false, false, false, false);
 				if (this.intersectedLink?.fromNode && this.intersectedLink?.toNode) {
+					instance.handler.linkHandler.remove(this.intersectedLink);
 					instance.handler.linkHandler.create({
 						type: 'link',
 						fromNodeId: this.intersectedLink.fromNodeId,
@@ -108,13 +109,15 @@ class WorkflowItems extends React.Component<IProps> {
 						fromPortId: createdNode.fromPort?.[0].id,
 						toNodeId: this.intersectedLink.toNodeId,
 					});
-					instance.handler.linkHandler.remove(this.intersectedLink);
 				}
 			} else {
 				const selectedNode = this.props.selectedItem as NodeObject;
-				const unusedFromPort = selectedNode?.fromPort
-					? selectedNode?.fromPort?.find(port => !port.links!.length)
-					: undefined;
+				const unusedFromPort =
+					selectedNode?.type === 'BroadcastNode'
+						? selectedNode.fromPort![0]
+						: selectedNode?.fromPort
+							? selectedNode?.fromPort?.find(port => !port.links!.length)
+							: undefined;
 				if (item.type !== 'TRIGGER' && unusedFromPort) {
 					const createdNode = !centered
 						? instance.handler.add(option, false, false, false, false)

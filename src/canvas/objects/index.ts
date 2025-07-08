@@ -4,6 +4,7 @@ export { default as CirclePort } from './CirclePort';
 export { default as Cube } from './Cube';
 export { default as CurvedLink } from './CurvedLink';
 export { default as Element } from './Element';
+export { default as FromPort } from './FromPort';
 export { default as Gif } from './Gif';
 export { default as Iframe } from './Iframe';
 export { default as Line } from './Line';
@@ -16,5 +17,5 @@ export { default as OrthogonalLink } from './OrthogonalLink';
 export { default as Port } from './Port';
 export type { PortObject } from './Port';
 export { default as Svg } from './Svg';
+export { default as ToPort } from './ToPort';
 export { default as Video } from './Video';
-

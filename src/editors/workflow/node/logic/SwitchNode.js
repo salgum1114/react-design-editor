@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { Port } from '../../../../canvas/objects';
+import { FromPort } from '../../../../canvas/objects';
 import { getEllipsis } from '../../configuration/NodeConfiguration';
 import LogicNode from './LogicNode';
 
@@ -62,14 +62,15 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 				fill: '#2c2d3a',
 				originFill: '#2c2d3a',
 				hoverFill: 'green',
-				stroke: '#909298',
+				stroke: '#5f646b',
 				rx: 7,
 				ry: 7,
 			});
 			const label = new fabric.Text(getEllipsis(outPort, 7), {
-				fontSize: 18,
-				lineHeight: 2,
+				fontSize: 16,
 				fontFamily: 'Noto Sans',
+				fontWeight: 400,
+				lineHeight: 2,
 				fill: '#fff',
 			});
 			let coords;
@@ -109,11 +110,10 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 			} else {
 				coords = calcOdd(port, i);
 			}
-			port.fromPort = new Port({
+			port.fromPort = new FromPort({
 				id: port.id,
 				type: 'fromPort',
 				left: coords.left,
-				angle: 180,
 				top: y + port.height,
 				leftDiff: coords.leftDiff,
 				width: 10,

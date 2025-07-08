@@ -140,7 +140,7 @@ class NodeHandler extends AbstractHandler {
 				if (node.toPort) {
 					node.toPort.set({ opacity: 1 });
 				}
-				node.fromPort.forEach(port => port.set({ opacity: 1 }));
+				// node.fromPort.forEach(port => port.set({ opacity: 1 }));
 			}
 			if (!object.animating) {
 				const node = object as FabricObject;

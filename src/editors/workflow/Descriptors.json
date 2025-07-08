@@ -28,7 +28,8 @@
 			"inEnabled": false,
 			"outPortType": "SINGLE",
 			"outPorts": [""],
-			"icon": "dot-circle"
+			"icon": "dot-circle",
+			"actionButton": true
 		}
 	],
 	"LOGIC": [

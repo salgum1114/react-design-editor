@@ -9,9 +9,12 @@ export interface PortObject extends FabricObject<fabric.Rect> {
 	enabled?: boolean;
 	hoverFill?: string;
 	selectFill?: string;
+	connected?: boolean;
+	setPosition?: (left: number, top: number) => void;
+	setConnected?: (connected?: boolean) => void;
 }
 
-const Port = fabric.util.createClass(fabric.Rect, {
+const Port = fabric.util.createClass(fabric.Circle, {
 	type: 'port',
 	superType: 'port',
 	initialize(options: any) {

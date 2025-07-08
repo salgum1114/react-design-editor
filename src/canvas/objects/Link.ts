@@ -96,8 +96,8 @@ const Link = fabric.util.createClass(fabric.Group, {
 		const tempPathObj = new fabric.Path(pathStr);
 		return tempPathObj.path;
 	},
-	getPortPosition(node: NodeObject, direction: string) {
-		const { left, top, width, height } = node || {};
+	getPortPosition(port: Partial<PortObject>, direction: string) {
+		const { left, top, width, height } = port || {};
 		switch (direction) {
 			case 'R':
 				return { x: left + width, y: top + height / 2 };
@@ -106,7 +106,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 			case 'T':
 				return { x: width ? left + width / 2 : left, y: top };
 			case 'B':
-				return { x: left, y: top };
+				return { x: left + width / 2, y: top + height };
 			default:
 				return { x: 0, y: 0 };
 		}
@@ -161,8 +161,10 @@ const Link = fabric.util.createClass(fabric.Group, {
 	calculatePath(fromPort: Partial<PortObject>, toPort: Partial<PortObject>) {
 		const p1 = this.getPortPosition(fromPort, 'B');
 		const p2 = this.getPortPosition(toPort, 'T');
-		const width = this.fromNode?.width || 200;
-		const height = this.fromNode?.height || 40;
+		const width = this.fromNode?.width || 240;
+		const height = this.fromNode?.height || 60;
+		const curvedOffset = Math.floor(p1.x) === Math.floor(p2.x) ? 0 : 40;
+		console.log(p1.x, p2.x);
 		const offset = 40;
 		const fromGroup = this.fromNode.group;
 		const toGroup = this.toNode.group;
@@ -180,7 +182,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 		const diff = x3 - (x2 - width);
 		let path;
 		if (useCurve) {
-			path = `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y + offset}, ${p2.x} ${p1.y === p2.y ? p2.y : p2.y - offset}, ${p2.x} ${
+			path = `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y + curvedOffset}, ${p2.x} ${p1.y === p2.y ? p2.y : p2.y - curvedOffset}, ${p2.x} ${
 				p2.y
 			}`;
 		} else {

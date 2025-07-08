@@ -71,7 +71,7 @@ export interface HandlerCallback {
 	 * When clicked object, Called function
 	 *
 	 */
-	onClick?: (canvas: FabricCanvas, target: FabricObject) => void;
+	onClick?: (canvas: FabricCanvas, target: FabricObject, actionTarget?: FabricObject) => void;
 	/**
 	 * When double clicked object, Called function
 	 *
@@ -249,7 +249,7 @@ class Handler implements HandlerOptions {
 	public onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject) => Promise<any>;
 	public onTooltip?: (el: HTMLDivElement, target?: FabricObject) => Promise<any>;
 	public onZoom?: (zoomRatio: number) => void;
-	public onClick?: (canvas: FabricCanvas, target: FabricObject) => void;
+	public onClick?: (canvas: FabricCanvas, target: FabricObject, actionTarget?: FabricObject) => void;
 	public onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
 	public onModified?: (target: Partial<FabricObject>) => void;
 	public onSelect?: (target: FabricObject) => void;

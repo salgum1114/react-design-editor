@@ -59,11 +59,10 @@ class LinkHandler {
 		this.port = port;
 		this.port.set({ fill: port.selectFill });
 		this.handler.interactionHandler.linking();
-		const { left, top, nodeId, id } = port;
-		const fromPort = { left, top, id };
+		const { left, top } = port;
 		const toPort = { left, top };
-		const fromNode = this.handler.objectMap[nodeId];
-		this.handler.activeLine = new Link(fromNode, fromPort, toPort, toPort, {
+		const fromNode = this.handler.objectMap[this.port.nodeId];
+		this.handler.activeLine = new Link(fromNode, this.port, toPort, toPort, {
 			strokeWidth: this.handler.linkOption?.strokeWidth || 2,
 			stroke: this.handler.linkOption?.stroke || '#000',
 			class: 'line',
@@ -142,6 +141,8 @@ class LinkHandler {
 		}
 		this.handler.canvas.renderAll();
 		link.setPort(fromNode, fromPort, toNode, toPort);
+		fromPort.setConnected?.(true);
+		toPort.setConnected?.(true);
 		this.handler.portHandler.setCoords(fromNode);
 		this.handler.portHandler.setCoords(toNode);
 		this.handler.canvas.requestRenderAll();
@@ -169,6 +170,8 @@ class LinkHandler {
 				}
 			}
 			link.setPortEnabled(link.fromNode, link.fromPort, true);
+			link.fromPort.setConnected?.(false);
+			this.handler.portHandler.setCoords(link.fromNode);
 		}
 	};
 
@@ -189,7 +192,11 @@ class LinkHandler {
 			if (index > -1) {
 				link.toNode.toPort.links.splice(index, 1);
 			}
-			link.setPortEnabled(link.toNode, link.toNode.toPort, true);
+			if (!link.toPort.links.length) {
+				link.setPortEnabled(link.toNode, link.toNode.toPort, true);
+				link.toPort.setConnected?.(false);
+				this.handler.portHandler.setCoords(link.toNode);
+			}
 		}
 	};
 

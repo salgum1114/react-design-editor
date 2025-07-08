@@ -1,12 +1,10 @@
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
-import Handler from './Handler';
+import AbstractHandler from './AbstractHandler';
 
-class PortHandler {
-	handler?: Handler;
-
-	constructor(handler: Handler) {
-		this.handler = handler;
+class PortHandler extends AbstractHandler {
+	constructor(handler: any) {
+		super(handler);
 	}
 
 	/**
@@ -35,7 +33,7 @@ class PortHandler {
 				}
 			});
 			toPort.on('mouseout', () => {
-				toPort.set({ fill: toPort.originFill });
+				toPort.set({ fill: toPort.connected ? toPort.connectedFill : toPort.originFill });
 				this.handler.canvas.renderAll();
 			});
 			this.handler.canvas.add(toPort);
@@ -50,21 +48,27 @@ class PortHandler {
 						if (this.handler.interactionMode !== 'link') {
 							if (port.enabled) {
 								if (this.handler.activeLine) {
-									port.set({ fill: 'red' });
+									port.set({ fill: port.disabledFill });
 									this.handler.canvas.renderAll();
 									return;
 								}
-								port.set({ fill: 'green' });
+								port.set({ fill: port.enabledFill });
 								this.handler.canvas.renderAll();
 								return;
 							}
-							port.set({ fill: 'red' });
+							port.set({ fill: port.disabledFill });
 							this.handler.canvas.renderAll();
 						}
 					});
 					port.on('mouseout', () => {
 						if (this.handler.interactionMode !== 'link') {
-							port.set({ fill: port.enabled ? port.originFill : port.hoverFill });
+							port.set({
+								fill: port.connected
+									? port.connectedFill
+									: port.enabled
+										? port.originFill
+										: port.hoverFill,
+							});
 						}
 						this.handler.canvas.renderAll();
 					});
@@ -86,12 +90,23 @@ class PortHandler {
 				left: target.left + target.width / 2,
 				top: target.top,
 			};
-			target.toPort.set({ ...toCoords });
+			target.toPort.setPosition(toCoords.left, toCoords.top);
 			target.toPort.setCoords();
 			if (target.toPort.links.length) {
 				target.toPort.links.forEach(link => {
 					const fromPort = link.fromNode.fromPort.filter(port => port.id === link.fromPort.id)[0];
-					link.update({ left: fromPort.left, top: fromPort.top }, { left: toCoords.left, top: toCoords.top });
+					link.update(
+						{
+							left: fromPort.left,
+							top: fromPort.top,
+							width: fromPort.width,
+							height: fromPort.height,
+						},
+						{
+							left: toCoords.left,
+							top: toCoords.top - (target.toPort.connected ? 0 : target.toPort.height),
+						},
+					);
 				});
 			}
 		}
@@ -103,11 +118,22 @@ class PortHandler {
 			target.fromPort.forEach(port => {
 				const left = port.leftDiff ? fromCoords.left + port.leftDiff : fromCoords.left;
 				const top = port.topDiff ? fromCoords.top + port.topDiff : fromCoords.top;
-				port.set({ left, top });
+				port.setPosition(left, top);
 				port.setCoords();
 				if (port.links.length) {
 					port.links.forEach(link => {
-						link.update({ left, top }, { left: link.toNode.toPort.left, top: link.toNode.toPort.top });
+						link.update(
+							{
+								left: left - (port.connected ? port.width / 2 : 0),
+								top: top - (port.connected ? port.height / 2 : 0),
+								width: port.width,
+								height: port.height,
+							},
+							{
+								left: link.toNode.toPort.left + link.toNode.toPort.width / 2,
+								top: link.toNode.toPort.top,
+							},
+						);
 					});
 				}
 			});

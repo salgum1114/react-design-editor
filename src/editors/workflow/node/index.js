@@ -12,9 +12,8 @@ import VirtualButtonNode from './trigger/VirtualButtonNode';
 
 const defaultOption = {
 	superType: 'node',
-	fill: '#414244',
-	// fill: '#282828',
-	stroke: '#c2c8d6',
+	fill: '#20262e',
+	stroke: '#5f646b',
 	borderColor: '#2d7cfa',
 	borderScaleFactor: 1.5,
 	deletable: true,

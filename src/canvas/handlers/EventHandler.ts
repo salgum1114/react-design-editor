@@ -14,6 +14,7 @@ import AbstractHandler from './AbstractHandler';
 class EventHandler extends AbstractHandler {
 	code: string;
 	panning: boolean;
+	currentTarget: FabricObject;
 
 	constructor(handler: any) {
 		super(handler);
@@ -39,7 +40,7 @@ class EventHandler extends AbstractHandler {
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
 				'mouse:up': this.mouseup,
-				'mouse:over': this.mouseover,
+				'mouse:out': this.mouseout,
 				'selection:cleared': this.selection,
 				'selection:created': this.selection,
 				'selection:updated': this.selection,
@@ -80,6 +81,7 @@ class EventHandler extends AbstractHandler {
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
 				'mouse:up': this.mouseup,
+				'mouse:out': this.mouseout,
 				'selection:cleared': this.selection,
 				'selection:created': this.selection,
 				'selection:updated': this.selection,
@@ -119,6 +121,7 @@ class EventHandler extends AbstractHandler {
 		 */
 		mousedown: (opt: FabricEvent) => {
 			const { target } = opt;
+			console.log(opt);
 			if (target && target.link && target.link.enabled) {
 				this.handler.onClick?.(this.canvas, target);
 			}
@@ -361,7 +364,7 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public mousedown = (opt: FabricEvent) => {
-		const { e: event, target } = opt as FabricEvent<MouseEvent>;
+		const { e: event, target, subTargets } = opt as FabricEvent<MouseEvent>;
 		const { editable } = this.handler;
 		if (event.altKey && editable && !this.handler.interactionHandler.isDrawingMode()) {
 			this.handler.interactionHandler.grab();
@@ -377,6 +380,17 @@ class EventHandler extends AbstractHandler {
 				this.handler.prevTarget.setColor(
 					this.handler.prevTarget.originStroke || this.handler.prevTarget.stroke,
 				);
+			}
+			if (
+				this.handler.interactionMode !== 'link' &&
+				target?.superType === 'node' &&
+				subTargets.length &&
+				subTargets[0] === target._objects[target._objects.length - 1]
+			) {
+				this.canvas.discardActiveObject();
+				this.canvas.requestRenderAll();
+				this.handler.onClick?.(this.canvas, target, subTargets[0]);
+				return;
 			}
 			if (target && target.type === 'fromPort') {
 				this.handler.linkHandler.init(target);
@@ -523,23 +537,13 @@ class EventHandler extends AbstractHandler {
 	};
 
 	/**
-	 * Mouse over event on canvas
-	 *
-	 * @param {FabricEvent<MouseEvent>} opt
-	 * @returns
-	 */
-	public mouseover = (opt: FabricEvent) => {
-		console.log(opt);
-	};
-
-	/**
 	 * Mouse out event on canvas
 	 *
 	 * @param {FabricEvent<MouseEvent>} opt
 	 */
 	public mouseout = (opt: FabricEvent) => {
-		const event = opt as FabricEvent<MouseEvent>;
-		if (!event.target) {
+		const { target } = opt as FabricEvent<MouseEvent>;
+		if (!target) {
 			this.handler.tooltipHandler.hide();
 		}
 	};
@@ -549,17 +553,14 @@ class EventHandler extends AbstractHandler {
 	 *
 	 * @param {FabricEvent} opt
 	 */
-	public selection = (opt: FabricEvent) => {
-		const { onSelect, activeSelectionOption } = this.handler;
-		const target = opt.target as FabricObject<fabric.ActiveSelection>;
+	public selection = (opt: FabricEvent<FabricObject<fabric.ActiveSelection>>) => {
+		const { activeSelectionOption } = this.handler;
+		const { target } = opt;
 		if (target && target.type === 'activeSelection') {
-			target.set({
-				...activeSelectionOption,
-			});
+			target.set({ ...activeSelectionOption });
 		}
-		if (onSelect) {
-			onSelect(target);
-		}
+		this.currentTarget = target;
+		this.handler.onSelect?.(target);
 	};
 
 	/**

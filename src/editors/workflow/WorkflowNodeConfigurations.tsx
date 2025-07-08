@@ -1,14 +1,13 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Form, Divider, Input } from 'antd';
+import { Divider, Form, Input } from 'antd';
+import { FormComponentProps } from 'antd/lib/form';
 import i18n from 'i18next';
-import NodeDescriptor from './configuration/NodeDescriptor';
-import NodeAction from './configuration/NodeAction';
-import NodeConfiguration from './configuration/NodeConfiguration';
-import { Canvas } from '../../canvas';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Scrollbar } from '../../components/common';
 import { Flex } from '../../components/flex';
-import { FormComponentProps } from 'antd/lib/form';
+import NodeAction from './configuration/NodeAction';
+import NodeConfiguration from './configuration/NodeConfiguration';
+import NodeDescriptor from './configuration/NodeDescriptor';
 
 interface IProps extends FormComponentProps {
 	canvasRef?: Canvas;
@@ -55,13 +54,7 @@ class WorkflowNodeConfigurations extends Component<IProps> {
 												}),
 											},
 										],
-									})(
-										<Input
-											minLength={0}
-											maxLength={30}
-											placeholder={i18n.t('workflow.node-name-required')}
-										/>,
-									)}
+									})(<Input placeholder={i18n.t('workflow.node-name-required')} />)}
 								</Form.Item>
 								<Form.Item label={i18n.t('common.description')} colon={false}>
 									{form.getFieldDecorator('description', {

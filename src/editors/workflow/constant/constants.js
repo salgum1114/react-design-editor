@@ -2,20 +2,20 @@ import i18n from 'i18next';
 
 const NODE_COLORS = {
 	TRIGGER: {
-		fill: '#48C9B0',
-		border: '#1ABC9C',
+		fill: '#2bd99f',
+		border: '#2bd99f',
 	},
 	LOGIC: {
-		fill: '#AF7AC5',
-		border: '#9B59B6',
+		fill: '#b251e6',
+		border: '#b251e6',
 	},
 	DATA: {
-		fill: '#5DADE2',
-		border: '#3498DB',
+		fill: '#4d96ff',
+		border: '#4d96ff',
 	},
 	ACTION: {
-		fill: '#F5B041',
-		border: 'rgb(243, 156, 18)',
+		fill: '#ffb340',
+		border: 'ffb340',
 	},
 };
 

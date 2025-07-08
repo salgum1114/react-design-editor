@@ -55,7 +55,7 @@ class WorkflowEditor extends React.Component {
 				return;
 			}
 			if (target.superType === 'node') {
-				this.canvasRef.handler.nodeHandler.highlightingNode(target);
+				// this.canvasRef.handler.nodeHandler.highlightingNode(target);
 				this.canvasRef.handler.select(target);
 			}
 		},
@@ -344,7 +344,7 @@ class WorkflowEditor extends React.Component {
 							this.canvasRef = c;
 						}}
 						className="rde-canvas"
-						canvasOption={{ backgroundColor: '#2d2e2e' }}
+						canvasOption={{ backgroundColor: '#1c2128' }}
 						fabricObjects={{ ...nodes, ...Links }}
 						workareaOption={{
 							width: 0,
@@ -355,7 +355,7 @@ class WorkflowEditor extends React.Component {
 							grid: 20,
 							snapToGrid: true,
 							type: 'dot',
-							dotColor: '#848484',
+							dotColor: '#5f646b',
 						}}
 						activeSelectionOption={{
 							hasControls: false,
@@ -364,7 +364,7 @@ class WorkflowEditor extends React.Component {
 						}}
 						linkOption={{ stroke: '#c3c9d5', strokeWidth: 2 }}
 						minZoom={30}
-						maxZoom={150}
+						maxZoom={200}
 						onZoom={onZoom}
 						onSelect={onSelect}
 						onAdd={onAdd}
