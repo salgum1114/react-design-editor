@@ -13,7 +13,6 @@ import {
 } from '@flomon-ui/models';
 import { extractDefaultsJsonSchema, parseBoolean, sessionStorage, simpleid } from '@flomon-ui/utils';
 import { Collapse, Input, Popover } from 'antd';
-import classnames from 'classnames';
 import clsx from 'clsx';
 import { fabric } from 'fabric';
 import memoize from 'lodash/memoize';
@@ -413,7 +412,7 @@ class FlowItems extends Component<IProps, IState> {
 
 	render() {
 		const { collapsed, searchText } = this.state;
-		const itemsClassName = classnames('fui-flow-editor-items', {
+		const itemsClassName = clsx('fui-flow-editor-items', {
 			minimize: collapsed,
 		});
 		const memoizedDescriptors = memoize(this.convertToObject)(searchText);

@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Canvas from '../../canvas/Canvas';
@@ -16,7 +16,7 @@ class ImageMapPreview extends React.Component {
 
 	render() {
 		const { onChangePreview, onTooltip, onClick, preview, objects } = this.props;
-		const previewClassName = classnames('rde-preview', { preview });
+		const previewClassName = clsx('rde-preview', { preview });
 		return (
 			preview && (
 				<div className={previewClassName}>

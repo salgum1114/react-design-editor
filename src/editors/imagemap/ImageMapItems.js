@@ -1,5 +1,5 @@
 import { Collapse, Input, message, notification } from 'antd';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import i18n from 'i18next';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -254,7 +254,7 @@ class ImageMapItems extends React.Component {
 	render() {
 		const { descriptors } = this.props;
 		const { collapse, textSearch, filteredDescriptors, activeKey, svgModalVisible, svgOption } = this.state;
-		const className = classnames('rde-editor-items', {
+		const className = clsx('rde-editor-items', {
 			minimize: collapse,
 		});
 		return (

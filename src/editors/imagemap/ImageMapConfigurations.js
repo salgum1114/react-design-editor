@@ -1,17 +1,16 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
-import classnames from 'classnames';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+import React from 'react';
 
-import NodeProperties from './properties/NodeProperties';
-import MapProperties from './properties/MapProperties';
-import Animations from './animations/Animations';
-import Styles from './styles/Styles';
-import DataSources from './datasources/DataSources';
-import Icon from '../../components/icon/Icon';
 import CommonButton from '../../components/common/CommonButton';
+import Icon from '../../components/icon/Icon';
+import Animations from './animations/Animations';
+import MapProperties from './properties/MapProperties';
+import NodeProperties from './properties/NodeProperties';
+import Styles from './styles/Styles';
 
-class ImageMapConfigurations extends Component {
+class ImageMapConfigurations extends React.Component {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		selectedItem: PropTypes.object,
@@ -55,7 +54,7 @@ class ImageMapConfigurations extends Component {
 		} = this.props;
 		const { collapse, activeKey } = this.state;
 		const { onChangeTab, onCollapse } = this.handlers;
-		const className = classnames('rde-editor-configurations', {
+		const className = clsx('rde-editor-configurations', {
 			minimize: collapse,
 		});
 		return (

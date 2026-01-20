@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Tabs } from 'antd';
-import classnames from 'classnames';
-import WorkflowInfo from './WorkflowInfo';
-import WorkflowGlobalParameters from './WorkflowGlobalParameters';
-import { Canvas, FabricObject } from '../../canvas';
+import clsx from 'clsx';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { CanvasInstance, FabricObject } from '../../canvas';
 import { CommonButton } from '../../components/common';
 import Icon from '../../components/icon/Icon';
+import WorkflowGlobalParameters from './WorkflowGlobalParameters';
+import WorkflowInfo from './WorkflowInfo';
 
 interface IProps {
-	canvasRef?: Canvas;
+	canvasRef?: CanvasInstance;
 	selectedItem?: FabricObject;
 	workflow?: FabricObject;
 	onChange?: any;
 }
 
-class WorkflowConfigurations extends Component<IProps> {
+class WorkflowConfigurations extends React.Component<IProps> {
 	static propTypes = {
 		canvasRef: PropTypes.any,
 		selectedItem: PropTypes.object,
@@ -44,7 +44,7 @@ class WorkflowConfigurations extends Component<IProps> {
 	render() {
 		const { canvasRef, selectedItem, workflow, onChange } = this.props;
 		const { collapse, activeKey } = this.state;
-		const className = classnames('rde-editor-configurations', {
+		const className = clsx('rde-editor-configurations', {
 			minimize: collapse,
 		});
 		return (

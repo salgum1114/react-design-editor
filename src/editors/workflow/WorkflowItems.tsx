@@ -1,5 +1,5 @@
 import { Collapse, Input } from 'antd';
-import classnames from 'classnames';
+import clsx from 'clsx';
 import { fabric } from 'fabric';
 import i18n from 'i18next';
 import PropTypes from 'prop-types';
@@ -295,7 +295,7 @@ class WorkflowItems extends React.Component<IProps> {
 	render() {
 		const { descriptors } = this.props;
 		const { activeKey, filteredDescriptors, collapse, textSearch } = this.state;
-		const className = classnames('rde-editor-items', {
+		const className = clsx('rde-editor-items', {
 			minimize: collapse,
 		});
 		return (
