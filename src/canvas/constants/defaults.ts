@@ -1,4 +1,4 @@
-import { CanvasOption, FabricObjectOption, GridOption, WorkareaObject } from '../models';
+import { CanvasActions, CanvasOption, FabricObjectOption, GridOption, WorkareaObject } from '../models';
 
 export const canvasOption: CanvasOption = {
 	preserveObjectStacking: true,
@@ -9,7 +9,7 @@ export const canvasOption: CanvasOption = {
 	backgroundColor: '#f3f3f3',
 };
 
-export const keyEvent = {
+export const canvasActions: CanvasActions = {
 	move: true,
 	all: true,
 	copy: true,
@@ -21,6 +21,7 @@ export const keyEvent = {
 	zoom: true,
 	cut: true,
 	grab: true,
+	scroll: true,
 };
 
 export const gridOption: GridOption = {

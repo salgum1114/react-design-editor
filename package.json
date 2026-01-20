@@ -1,6 +1,6 @@
 {
 	"name": "react-design-editor",
-	"version": "0.0.76",
+	"version": "0.0.77",
 	"description": "Design Editor Tools with React.js + ant.design + fabric.js",
 	"main": "dist/react-design-editor.cjs.js",
 	"module": "dist/react-design-editor.es.js",
@@ -44,14 +44,13 @@
 	"peerDependencies": {
 		"animejs": "^3.0.0",
 		"fabric": "^4.6.0",
-		"react": "^16.14.0",
-		"react-dom": "^16.14.0"
+		"react": ">=16",
+		"react-dom": ">=16"
 	},
 	"dependencies": {
 		"@dagrejs/dagre": "^1.1.4",
 		"@flomon-ui/icons": "^0.0.68",
 		"animejs": "^3.0.0",
-		"antd": "3.15.0",
 		"classnames": "^2.2.6",
 		"clsx": "^2.1.1",
 		"color": "^3.1.2",
@@ -65,11 +64,9 @@
 		"lodash": "^4.17.10",
 		"mediaelement": "^4.2.9",
 		"prop-types": "^15.6.2",
-		"react": "^16.14.0",
 		"react-ace": "^8.1.0",
 		"react-color": "^2.14.1",
 		"react-custom-scrollbars": "^4.2.1",
-		"react-dom": "^16.14.0",
 		"react-helmet": "^5.2.0",
 		"react-json-view": "^1.19.1",
 		"resize-observer-polyfill": "^1.5.1",
@@ -107,6 +104,7 @@
 		"@typescript-eslint/parser": "^5.31.0",
 		"@vitejs/plugin-react": "^4.5.0",
 		"ajv": "^8.17.1",
+		"antd": "^3.15.0",
 		"babel-eslint": "^10.1.0",
 		"babel-loader": "^8.1.0",
 		"babel-plugin-dynamic-import-webpack": "^1.1.0",
@@ -134,6 +132,8 @@
 		"less-loader": "^5.0.0",
 		"path": "^0.12.7",
 		"prettier": "^3.5.3",
+		"react": "^16.14.0",
+		"react-dom": "^16.14.0",
 		"style-loader": "^1.1.4",
 		"terser-webpack-plugin": "^5.3.14",
 		"tslib": "^2.8.1",

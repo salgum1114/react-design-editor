@@ -1,6 +1,6 @@
 import { fabric } from 'fabric';
+import { fitTextToRect } from '../../../../canvas';
 import { FromPort } from '../../../../canvas/objects';
-import { getEllipsis } from '../../configuration/NodeConfiguration';
 import LogicNode from './LogicNode';
 
 const SwitchNode = fabric.util.createClass(LogicNode, {
@@ -9,11 +9,11 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 	initialize(options) {
 		options = options || {};
 		const routeLength = options.configuration.routes.length;
-		if (routeLength > 2) {
+		if (routeLength > 3) {
 			// ex) 40 + ((4 - 3) * 80) = 120 / 2 = 60
-			options.left =
-				(options.left ?? 0) +
-				(this.portWidth + (routeLength - this.defaultRouteLength) * (this.portWidth * 2)) / 2;
+			// options.left =
+			// 	(options.left ?? 0) +
+			// 	(this.portWidth + (routeLength - this.defaultRouteLength) * (this.portWidth * 2)) / 2;
 		}
 		this.callSuper('initialize', options);
 	},
@@ -55,22 +55,24 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 				leftDiff,
 			};
 		};
+		const canvas = document.createElement('canvas');
+		const context = canvas.getContext('2d');
 		this.ports = this.configuration.routes.map((outPort, i) => {
 			const rect = new fabric.Rect({
 				width: 80,
 				height: 40,
-				fill: '#2c2d3a',
-				originFill: '#2c2d3a',
+				fill: '#272e38',
+				originFill: '#272e38',
 				hoverFill: 'green',
 				stroke: '#5f646b',
-				rx: 7,
-				ry: 7,
+				rx: 12,
+				ry: 12,
 			});
-			const label = new fabric.Text(getEllipsis(outPort, 7), {
-				fontSize: 16,
+			const { text, fontSize, height } = fitTextToRect(context, outPort, this.fontSize, this.fontFamily, 72, 32);
+			const label = new fabric.Text(text, {
+				fontSize,
 				fontFamily: 'Noto Sans',
 				fontWeight: 400,
-				lineHeight: 2,
 				fill: '#fff',
 			});
 			let coords;
@@ -93,10 +95,7 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 				originX: 'center',
 				originY: 'center',
 			});
-			label.set({
-				top: rect.top + 10,
-				left: rect.center().x,
-			});
+			label.set({ fontSize, top: -height / 2, left: rect.center().x });
 			return portLabel;
 		});
 		this.ports.forEach(port => {

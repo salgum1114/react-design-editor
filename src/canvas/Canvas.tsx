@@ -2,9 +2,11 @@ import { fabric } from 'fabric';
 import React, { Component, useRef } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { v4 as uuid } from 'uuid';
+import { TooltipPortal, TooltipState } from './components';
 import { defaults } from './constants';
-import Handler, { HandlerOptions } from './handlers/Handler';
+import { Handler, HandlerOptions } from './handlers';
 import { FabricCanvas } from './models';
+
 import './styles/canvas.less';
 import './styles/contextmenu.less';
 import './styles/fabricjs.less';
@@ -24,6 +26,7 @@ export type CanvasProps = HandlerOptions & {
 interface IState {
 	id: string;
 	loaded: boolean;
+	tooltip: TooltipState;
 }
 
 class InternalCanvas extends Component<CanvasProps, IState> implements CanvasInstance {
@@ -36,7 +39,6 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 	static defaultProps: CanvasProps = {
 		id: uuid(),
 		editable: true,
-		zoomEnabled: true,
 		minZoom: 30,
 		maxZoom: 300,
 		responsive: true,
@@ -47,20 +49,25 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 	state: IState = {
 		id: uuid(),
 		loaded: false,
+		tooltip: null,
 	};
 
 	componentDidMount() {
 		const { editable, canvasOption, width, height, responsive, ...other } = this.props;
 		const { id } = this.state;
+
 		const mergedCanvasOption = Object.assign({}, defaults.canvasOption, canvasOption, {
 			width,
 			height,
 			selection: (typeof canvasOption?.selection !== 'undefined' && canvasOption?.selection) || editable,
 		});
+
 		this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
 		this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
 		this.canvas.renderAll();
+
 		this.container = this.containerRef.current;
+
 		this.handler = new Handler({
 			id,
 			width,
@@ -71,6 +78,13 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 			canvasOption: mergedCanvasOption,
 			...other,
 		});
+		if (this.handler.tooltipHandler?.bindPortal) {
+			this.handler.tooltipHandler.bindPortal(
+				(payload: any) => this.setState({ tooltip: payload }),
+				() => this.setState({ tooltip: null }),
+			);
+		}
+
 		if (this.props.responsive) {
 			this.createObserver();
 		} else {
@@ -96,8 +110,8 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 		if (JSON.stringify(this.props.canvasOption) !== JSON.stringify(prevProps.canvasOption)) {
 			this.handler.setCanvasOption(this.props.canvasOption);
 		}
-		if (JSON.stringify(this.props.keyEvent) !== JSON.stringify(prevProps.keyEvent)) {
-			this.handler.setKeyEvent(this.props.keyEvent);
+		if (JSON.stringify(this.props.canvasActions) !== JSON.stringify(prevProps.canvasActions)) {
+			this.handler.setCanvasActions(this.props.canvasActions);
 		}
 		if (JSON.stringify(this.props.fabricObjects) !== JSON.stringify(prevProps.fabricObjects)) {
 			this.handler.setFabricObjects(this.props.fabricObjects);
@@ -127,6 +141,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 
 	componentWillUnmount() {
 		this.destroyObserver();
+		this.setState({ tooltip: null });
 		this.handler.destroy();
 	}
 
@@ -163,7 +178,8 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 
 	render() {
 		const { style } = this.props;
-		const { id } = this.state;
+		const { id, tooltip } = this.state;
+
 		return (
 			<div
 				ref={this.containerRef}
@@ -171,6 +187,14 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 				className="rde-canvas"
 				style={{ width: '100%', height: '100%', ...style }}
 			>
+				<TooltipPortal
+					tooltip={tooltip}
+					onMeasured={box => {
+						if ((this.state.tooltip as any)?.measuring) {
+							this.handler.tooltipHandler.placeMeasured(box);
+						}
+					}}
+				/>
 				<canvas id={`canvas_${id}`} />
 			</div>
 		);
@@ -179,11 +203,13 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 
 const Canvas: React.FC<CanvasProps> = React.forwardRef<CanvasInstance, CanvasProps>((props, ref) => {
 	const canvasRef = useRef<InternalCanvas>();
+
 	React.useImperativeHandle(ref, () => ({
 		handler: canvasRef.current.handler,
 		canvas: canvasRef.current.canvas,
 		container: canvasRef.current.container,
 	}));
+
 	return <InternalCanvas ref={canvasRef} {...props} />;
 });
 

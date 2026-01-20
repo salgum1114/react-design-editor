@@ -23,7 +23,7 @@ export default class LayoutHandler extends AbstractHandler {
 		} else if (type === 'elk') {
 			await this.elk(options);
 		}
-		if (this.handler.keyEvent.transaction && this.handler.transactionHandler.active) {
+		if (this.handler.canvasActions.transaction && this.handler.transactionHandler.active) {
 			this.handler.transactionHandler.save('layout');
 		}
 		this.handler.onModified?.({ type: 'runLayout' });

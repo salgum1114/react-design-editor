@@ -61,15 +61,9 @@ class PortHandler extends AbstractHandler {
 						}
 					});
 					port.on('mouseout', () => {
-						if (this.handler.interactionMode !== 'link') {
-							port.set({
-								fill: port.connected
-									? port.connectedFill
-									: port.enabled
-										? port.originFill
-										: port.hoverFill,
-							});
-						}
+						port.set({
+							fill: port.connected ? port.connectedFill : port.enabled ? port.originFill : port.hoverFill,
+						});
 						this.handler.canvas.renderAll();
 					});
 					this.handler.canvas.add(port);

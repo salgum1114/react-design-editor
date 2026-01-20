@@ -60,7 +60,7 @@ class EventHandler extends AbstractHandler {
 		this.canvas.wrapperEl.addEventListener('keyup', this.keyup, false);
 		this.canvas.wrapperEl.addEventListener('mousedown', this.onmousedown, false);
 		this.canvas.wrapperEl.addEventListener('contextmenu', this.contextmenu, false);
-		if (this.handler.keyEvent.clipboard) {
+		if (this.handler.canvasActions.clipboard) {
 			document.addEventListener('paste', this.paste, false);
 		}
 	}
@@ -105,7 +105,7 @@ class EventHandler extends AbstractHandler {
 		this.canvas.wrapperEl.removeEventListener('keyup', this.keyup);
 		this.canvas.wrapperEl.removeEventListener('mousedown', this.onmousedown);
 		this.canvas.wrapperEl.removeEventListener('contextmenu', this.contextmenu);
-		if (this.handler.keyEvent.clipboard) {
+		if (this.handler.canvasActions.clipboard) {
 			this.canvas.wrapperEl.removeEventListener('paste', this.paste);
 		}
 	};
@@ -324,9 +324,11 @@ class EventHandler extends AbstractHandler {
 	 */
 	public mousewheel = (opt: FabricEvent) => {
 		const event = opt.e as WheelEvent;
-		const { zoomEnabled } = this.handler;
+		event.preventDefault();
+		event.stopPropagation();
+		const { canvasActions } = this.handler;
 		if (event.ctrlKey) {
-			if (!zoomEnabled) {
+			if (!canvasActions.zoom) {
 				return;
 			}
 			const delta = event.deltaY;
@@ -341,6 +343,9 @@ class EventHandler extends AbstractHandler {
 				zoomRatio,
 			);
 		} else {
+			if (!canvasActions.scroll) {
+				return;
+			}
 			const deltaY = event.deltaY / 2;
 			const [scaleX, skewY, skewX, scaleY, panX, panY] = this.canvas.viewportTransform;
 			this.canvas.setViewportTransform([
@@ -353,8 +358,6 @@ class EventHandler extends AbstractHandler {
 			]);
 		}
 		this.canvas.requestRenderAll();
-		event.preventDefault();
-		event.stopPropagation();
 	};
 
 	/**
@@ -365,8 +368,8 @@ class EventHandler extends AbstractHandler {
 	 */
 	public mousedown = (opt: FabricEvent) => {
 		const { e: event, target, subTargets } = opt as FabricEvent<MouseEvent>;
-		const { editable } = this.handler;
-		if (event.altKey && editable && !this.handler.interactionHandler.isDrawingMode()) {
+		const { editable, canvasActions } = this.handler;
+		if (canvasActions.grab && event.altKey && editable && !this.handler.interactionHandler.isDrawingMode()) {
 			this.handler.interactionHandler.grab();
 			this.panning = true;
 			return;
@@ -463,7 +466,7 @@ class EventHandler extends AbstractHandler {
 					this.handler.tooltipHandler.show(event.target);
 				}
 			} else {
-				this.handler.tooltipHandler.hide(event.target);
+				this.handler.tooltipHandler.hide();
 			}
 		}
 		if (this.handler.interactionMode === 'polygon') {
@@ -770,11 +773,11 @@ class EventHandler extends AbstractHandler {
 	 * @param {KeyboardEvent} e
 	 */
 	public keydown = (e: KeyboardEvent) => {
-		const { keyEvent, editable } = this.handler;
-		if (!Object.keys(keyEvent).length) {
+		const { canvasActions, editable } = this.handler;
+		if (!Object.keys(canvasActions).length) {
 			return;
 		}
-		const { clipboard, grab } = keyEvent;
+		const { clipboard, grab } = canvasActions;
 		if (this.handler.interactionHandler.isDrawingMode()) {
 			if (this.handler.shortcutHandler.isEscape(e)) {
 				if (this.handler.interactionMode === 'polygon') {
@@ -794,7 +797,8 @@ class EventHandler extends AbstractHandler {
 			this.handler.interactionHandler.grab();
 			return;
 		}
-		if ((this.handler.shortcutHandler.isSpace(e) || e.altKey) && editable && grab) {
+		console.log(e.altKey, grab);
+		if ((this.handler.shortcutHandler.isSpace(e) || e.altKey) && grab) {
 			this.handler.interactionHandler.grab();
 			return;
 		}

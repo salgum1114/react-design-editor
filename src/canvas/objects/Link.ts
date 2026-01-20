@@ -164,7 +164,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 		const width = this.fromNode?.width || 240;
 		const height = this.fromNode?.height || 60;
 		const curvedOffset = Math.floor(p1.x) === Math.floor(p2.x) ? 0 : 40;
-		console.log(p1.x, p2.x);
+		// console.log(p1.x, p2.x);
 		const offset = 40;
 		const fromGroup = this.fromNode.group;
 		const toGroup = this.toNode.group;

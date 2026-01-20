@@ -340,60 +340,78 @@ export interface GuidelineOption {
 	enabled?: boolean;
 }
 
-export interface KeyEvent {
+export interface CanvasActions {
 	/**
-	 * Arrow key
+	 * Move selected objects (Arrow keys)
 	 * @type {boolean}
 	 */
 	move?: boolean;
+
 	/**
-	 * Ctrl + A
+	 * Select all objects (Ctrl + A)
 	 * @type {boolean}
 	 */
 	all?: boolean;
+
 	/**
-	 * Ctrl + C
+	 * Copy selected objects (Ctrl + C)
 	 * @type {boolean}
 	 */
 	copy?: boolean;
+
 	/**
-	 * Ctrl + P
+	 * Paste copied objects (Ctrl + P)
 	 * @type {boolean}
 	 */
 	paste?: boolean;
+
 	/**
-	 * Escape
+	 * Cancel selection or action (Escape)
 	 * @type {boolean}
 	 */
 	esc?: boolean;
+
 	/**
-	 * Delete or Backspace
+	 * Delete selected objects (Delete or Backspace)
 	 * @type {boolean}
 	 */
 	del?: boolean;
+
 	/**
-	 * When have copied object, whether should copy object option on clipboard
+	 * Whether to use object options on the clipboard when copying
 	 * @type {boolean}
 	 */
 	clipboard?: boolean;
+
 	/**
-	 * Ctrl + Z, Ctrl + Y
+	 * Undo or redo actions (Ctrl + Z, Ctrl + Y)
 	 * @type {boolean}
 	 */
 	transaction?: boolean;
+
 	/**
-	 * Plus, Minus
-	 *
+	 * Zoom in or out (Plus, Minus)
 	 * @type {boolean}
 	 */
 	zoom?: boolean;
+
 	/**
-	 * Ctrl + X
-	 *
+	 * Cut selected objects (Ctrl + X)
 	 * @type {boolean}
 	 */
 	cut?: boolean;
+
+	/**
+	 * Hand tool for panning the canvas (Space or Alt Key + Drag)
+	 * @type {boolean}
+	 */
 	grab?: boolean;
+
+	/**
+	 * Scroll the canvas view (Mouse wheel)
+	 * @type {boolean}
+	 */
+	scroll?: boolean;
 }
 
 export type InteractionMode = 'selection' | 'grab' | 'polygon' | 'line' | 'arrow' | 'link' | 'crop';

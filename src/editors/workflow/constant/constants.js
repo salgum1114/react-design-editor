@@ -15,7 +15,7 @@ const NODE_COLORS = {
 	},
 	ACTION: {
 		fill: '#ffb340',
-		border: 'ffb340',
+		border: '#ffb340',
 	},
 };
 

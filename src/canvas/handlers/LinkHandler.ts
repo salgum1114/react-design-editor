@@ -81,7 +81,13 @@ class LinkHandler {
 	 */
 	finish = (link?: LinkObject) => {
 		if (!link) {
-			this.port.set({ fill: this.port.originFill });
+			this.port.set({
+				fill: this.port.connected
+					? this.port.connectedFill
+					: this.port.enabled
+						? this.port.originFill
+						: this.port.hoverFill,
+			});
 		}
 		this.handler.interactionHandler.selection();
 		this.handler.canvas.remove(this.handler.activeLine);
@@ -169,9 +175,11 @@ class LinkHandler {
 					link.fromPort.links.splice(index, 1);
 				}
 			}
-			link.setPortEnabled(link.fromNode, link.fromPort, true);
-			link.fromPort.setConnected?.(false);
-			this.handler.portHandler.setCoords(link.fromNode);
+			if (!link.fromPort.links.length) {
+				link.setPortEnabled(link.fromNode, link.fromPort, true);
+				link.fromPort.setConnected?.(false);
+				this.handler.portHandler.setCoords(link.fromNode);
+			}
 		}
 	};
 

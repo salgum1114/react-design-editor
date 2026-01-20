@@ -1,11 +1,11 @@
 import { Button } from 'antd';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React from 'react';
 import Canvas from '../../canvas/Canvas';
 import Icon from '../../components/icon/Icon';
 
-class ImageMapPreview extends Component {
+class ImageMapPreview extends React.Component {
 	static propTypes = {
 		preview: PropTypes.bool,
 		onChangePreview: PropTypes.func,
@@ -37,9 +37,7 @@ class ImageMapPreview extends Component {
 							canvasOption={{
 								perPixelTargetFind: true,
 							}}
-							keyEvent={{
-								grab: false,
-							}}
+							canvasActions={{ transaction: false, grab: false, scroll: false, zoom: false }}
 							onLoad={handler => handler.importJSON(objects)}
 							onTooltip={onTooltip}
 							onClick={onClick}

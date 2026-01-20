@@ -5,6 +5,7 @@ import warning from 'warning';
 import CanvasObject from '../CanvasObject';
 import { defaults } from '../constants';
 import {
+	CanvasActions,
 	CanvasOption,
 	FabricCanvas,
 	FabricElement,
@@ -16,7 +17,6 @@ import {
 	GridOption,
 	GuidelineOption,
 	InteractionMode,
-	KeyEvent,
 	WorkareaObject,
 	WorkareaOption,
 } from '../models';
@@ -181,11 +181,6 @@ export interface HandlerOption {
 	 */
 	guidelineOption?: GuidelineOption;
 	/**
-	 * Whether to use zoom
-	 * @type {boolean}
-	 */
-	zoomEnabled?: boolean;
-	/**
 	 * ActiveSelection option
 	 * @type {Partial<FabricObjectOption<fabric.ActiveSelection>>}
 	 */
@@ -201,10 +196,10 @@ export interface HandlerOption {
 	 */
 	height?: number;
 	/**
-	 * Keyboard event in Canvas
-	 * @type {KeyEvent}
+	 * Configuration for enabling/disabling specific user actions in the canvas.
+	 * @type {CanvasActions}
 	 */
-	keyEvent?: KeyEvent;
+	canvasActions?: CanvasActions;
 	/**
 	 * Append custom objects
 	 * @type {{ [key: string]: any }}
@@ -238,10 +233,9 @@ class Handler implements HandlerOptions {
 	public objectOption?: FabricObjectOption = defaults.objectOption;
 	public linkOption?: FabricObjectOption;
 	public guidelineOption?: GuidelineOption = defaults.guidelineOption;
-	public keyEvent?: KeyEvent = defaults.keyEvent;
+	public canvasActions?: CanvasActions = defaults.canvasActions;
 	public activeSelectionOption?: Partial<FabricObjectOption<fabric.ActiveSelection>> = defaults.activeSelectionOption;
 	public fabricObjects?: FabricObjects = CanvasObject;
-	public zoomEnabled?: boolean;
 	public width?: number;
 	public height?: number;
 
@@ -331,20 +325,19 @@ class Handler implements HandlerOptions {
 		this.minZoom = options.minZoom;
 		this.maxZoom = options.maxZoom;
 		this.zoomStep = options.zoomStep || 0.05;
-		this.zoomEnabled = options.zoomEnabled;
 		this.width = options.width;
 		this.height = options.height;
 		this.objects = [];
 		this.setPropertiesToInclude(options.propertiesToInclude);
 		this.setWorkareaOption(options.workareaOption);
 		this.setCanvasOption(options.canvasOption);
+		this.setCanvasActions(options.canvasActions);
 		this.setGridOption(options.gridOption);
 		this.setObjectOption(options.objectOption);
 		this.setLinkOption(options.linkOption);
 		this.setFabricObjects(options.fabricObjects);
 		this.setGuidelineOption(options.guidelineOption);
 		this.setActiveSelectionOption(options.activeSelectionOption);
-		this.setKeyEvent(options.keyEvent);
 	};
 
 	/**
@@ -1159,7 +1152,7 @@ class Handler implements HandlerOptions {
 			if (activeObject.type === 'activeSelection') {
 				const activeSelection = activeObject as fabric.ActiveSelection;
 				if (activeSelection.getObjects().some((obj: any) => obj.superType === 'node')) {
-					if (this.keyEvent.clipboard) {
+					if (this.canvasActions.clipboard) {
 						const links = [] as any[];
 						const objects = activeSelection.getObjects().map((obj: any, index: number) => {
 							if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
@@ -1209,7 +1202,7 @@ class Handler implements HandlerOptions {
 				}
 			}
 			activeObject.clone((cloned: FabricObject) => {
-				if (this.keyEvent.clipboard) {
+				if (this.canvasActions.clipboard) {
 					if (cloned.superType === 'node') {
 						const node = {
 							name: cloned.name,
@@ -1627,7 +1620,7 @@ class Handler implements HandlerOptions {
 			this.canvas.renderAll();
 		});
 		this.objects = this.getObjects();
-		if (this.keyEvent.transaction) {
+		if (this.canvasActions.transaction) {
 			this.transactionHandler.setDefaultObjects(this.objects);
 		}
 		if (callback) {
@@ -1944,12 +1937,12 @@ class Handler implements HandlerOptions {
 	};
 
 	/**
-	 * Set keyboard event
+	 * Set canvas acitons
 	 *
-	 * @param {KeyEvent} keyEvent
+	 * @param {CanvasActions} canvasActions
 	 */
-	public setKeyEvent = (keyEvent: KeyEvent) => {
-		this.keyEvent = Object.assign({}, this.keyEvent, keyEvent);
+	public setCanvasActions = (canvasActions: CanvasActions) => {
+		this.canvasActions = Object.assign({}, this.canvasActions, canvasActions);
 	};
 
 	/**

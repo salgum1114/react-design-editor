@@ -5,7 +5,7 @@ import DataNode from './data/DataNode';
 import LogicNode from './logic/LogicNode';
 import TriggerNode from './trigger/TriggerNode';
 
-import { getNode } from '../configuration/NodeConfiguration';
+import { NODE_COLORS } from '../constant/constants';
 import FilterNode from './logic/FilterNode';
 import SwitchNode from './logic/SwitchNode';
 import VirtualButtonNode from './trigger/VirtualButtonNode';
@@ -52,9 +52,8 @@ const NODES = {
 	},
 	LOGIC: {
 		create: (option, descriptor) => {
-			const node = getNode(descriptor.nodeClazz);
 			const options = Object.assign({}, defaultOption, { descriptor }, option);
-			switch (node) {
+			switch (descriptor.nodeClazz) {
 				case 'FilterNode':
 					return new FilterNode(options);
 				case 'SwitchNode':
@@ -66,9 +65,8 @@ const NODES = {
 	},
 	TRIGGER: {
 		create: (option, descriptor) => {
-			const node = getNode(descriptor.nodeClazz);
 			const options = Object.assign({}, defaultOption, { descriptor }, option);
-			switch (node) {
+			switch (descriptor.nodeClazz) {
 				case 'VirtualButtonNode':
 					return new VirtualButtonNode(options);
 				default:
@@ -82,15 +80,18 @@ export default descriptors => {
 	return Object.keys(descriptors).reduce((prev, key) => {
 		return Object.assign(
 			prev,
-			descriptors[key].reduce((p, c) => {
+			descriptors[key].reduce((p, descriptor) => {
 				return Object.assign(p, {
-					[getNode(c.nodeClazz)]: {
+					[descriptor.nodeClazz]: {
 						create: option => {
-							const iconMetadata = metadata[c.icon];
+							const iconMetadata = metadata[descriptor.icon];
 							const icon = iconMetadata
 								? String.fromCodePoint(parseInt(iconMetadata.unicode, 16))
 								: '\uf03e';
-							return NODES[c.type].create({ ...option, icon }, c);
+							return NODES[descriptor.type].create(
+								{ ...option, icon, color: NODE_COLORS[descriptor.type].fill },
+								descriptor,
+							);
 						},
 					},
 				});

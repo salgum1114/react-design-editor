@@ -78,7 +78,6 @@ class WorkflowItems extends React.Component<IProps> {
 			const id = uuid();
 			const option = Object.assign({}, item, {
 				id,
-				subType: item.type,
 				superType: 'node',
 				type: getNode(item.nodeClazz),
 				configuration: item.defaultConfiguration,

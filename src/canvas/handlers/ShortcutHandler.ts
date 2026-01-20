@@ -1,5 +1,5 @@
 import { code } from '../constants';
-import { KeyEvent } from '../models';
+import { CanvasActions } from '../models';
 import Handler from './Handler';
 
 /**
@@ -10,10 +10,10 @@ import Handler from './Handler';
  */
 class ShortcutHandler {
 	handler: Handler;
-	keyEvent: KeyEvent;
+	canvasActions: CanvasActions;
 	constructor(handler: Handler) {
 		this.handler = handler;
-		this.keyEvent = handler.keyEvent;
+		this.canvasActions = handler.canvasActions;
 	}
 
 	/**
@@ -23,7 +23,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isEscape = (e: KeyboardEvent) => {
-		return e.code === code.ESCAPE && this.keyEvent.esc;
+		return e.code === code.ESCAPE && this.canvasActions.esc;
 	};
 
 	/**
@@ -53,7 +53,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isDelete = (e: KeyboardEvent) => {
-		return (e.code === code.BACKSPACE || e.code === code.DELETE) && this.keyEvent.del;
+		return (e.code === code.BACKSPACE || e.code === code.DELETE) && this.canvasActions.del;
 	};
 
 	/**
@@ -63,7 +63,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isArrow = (e: KeyboardEvent) => {
-		return e.code.includes('Arrow') && this.keyEvent.move;
+		return e.code.includes('Arrow') && this.canvasActions.move;
 	};
 
 	/**
@@ -73,7 +73,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isCtrlA = (e: KeyboardEvent) => {
-		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_A && this.keyEvent.all;
+		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_A && this.canvasActions.all;
 	};
 
 	/**
@@ -83,7 +83,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isCtrlC = (e: KeyboardEvent) => {
-		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_C && this.keyEvent.copy;
+		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_C && this.canvasActions.copy;
 	};
 
 	/**
@@ -93,7 +93,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isCtrlV = (e: KeyboardEvent) => {
-		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_V && this.keyEvent.paste;
+		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_V && this.canvasActions.paste;
 	};
 
 	/**
@@ -103,7 +103,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isCtrlZ = (e: KeyboardEvent) => {
-		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_Z && this.keyEvent.transaction;
+		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_Z && this.canvasActions.transaction;
 	};
 
 	/**
@@ -113,7 +113,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isCtrlY = (e: KeyboardEvent) => {
-		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_Y && this.keyEvent.transaction;
+		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_Y && this.canvasActions.transaction;
 	};
 
 	/**
@@ -123,7 +123,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isPlus = (e: KeyboardEvent) => {
-		return e.code === code.EQUAL && this.keyEvent.zoom;
+		return e.code === code.EQUAL && this.canvasActions.zoom;
 	};
 
 	/**
@@ -133,7 +133,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isMinus = (e: KeyboardEvent) => {
-		return e.code === code.MINUS && this.keyEvent.zoom;
+		return e.code === code.MINUS && this.canvasActions.zoom;
 	};
 
 	/**
@@ -143,7 +143,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isO = (e: KeyboardEvent) => {
-		return e.code === code.KEY_O && this.keyEvent.zoom;
+		return e.code === code.KEY_O && this.canvasActions.zoom;
 	};
 
 	/**
@@ -153,7 +153,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isP = (e: KeyboardEvent) => {
-		return e.code === code.KEY_P && this.keyEvent.zoom;
+		return e.code === code.KEY_P && this.canvasActions.zoom;
 	};
 
 	/**
@@ -163,7 +163,7 @@ class ShortcutHandler {
 	 * @returns
 	 */
 	public isCtrlX = (e: KeyboardEvent) => {
-		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_X && this.keyEvent.cut;
+		return (e.ctrlKey || e.metaKey) && e.code === code.KEY_X && this.canvasActions.cut;
 	};
 
 	/**

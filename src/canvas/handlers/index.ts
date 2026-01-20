@@ -1,6 +1,6 @@
 export { default as AbstractHandler } from './AbstractHandler';
 export { default as CustomHandler } from './CustomHandler';
-export { default as Handler } from './Handler';
+export { default as Handler, type HandlerOptions } from './Handler';
 export type {
 	BlendColorFilter,
 	BlendImageFilter,

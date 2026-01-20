@@ -292,7 +292,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 	staticPort(left: number, top: number) {
 		const offset = 60;
 		return this.descriptor.outPorts.map((outPort: string, i: number) => {
-			const fill = i === 0 ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 255, 0, 1)';
+			const fill = i === 0 ? '#ff3030' : '#15cc08';
 			return new FromPort({
 				id: outPort,
 				type: 'fromPort',

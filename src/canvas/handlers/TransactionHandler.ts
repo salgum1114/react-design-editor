@@ -85,7 +85,7 @@ class TransactionHandler extends AbstractHandler {
 	 * @param {TransactionType} type
 	 */
 	public save = (type: TransactionType) => {
-		if (!this.handler.keyEvent.transaction) {
+		if (!this.handler.canvasActions.transaction) {
 			return;
 		}
 		try {

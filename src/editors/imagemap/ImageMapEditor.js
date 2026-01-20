@@ -742,9 +742,6 @@ class ImageMapEditor extends Component {
 							onClick={onClick}
 							onContext={onContext}
 							onTransaction={onTransaction}
-							keyEvent={{
-								transaction: true,
-							}}
 							canvasOption={{
 								selectionColor: 'rgba(8, 151, 156, 0.3)',
 							}}

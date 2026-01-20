@@ -27,7 +27,7 @@ const ToPort = fabric.util.createClass(fabric.Path, {
 		const strokeWidth = connected ? 0 : 2;
 		const fill = connected ? this.connectedFill : this.originFill;
 		const width = connected ? undefined : 24;
-		const height = connected ? undefined : 8;
+		const height = connected ? undefined : 6;
 		this.initialize({ ...this.toObject(), connected, radius, strokeWidth, fill, width, height });
 		this.setCoords();
 		this.canvas.requestRenderAll();

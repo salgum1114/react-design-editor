@@ -102,39 +102,42 @@ class WorkflowEditor extends React.Component {
 				this.showLoading();
 				const reader = new FileReader();
 				reader.onload = e => {
-					const result = JSON.parse(e.target!.result as string);
-					this.setState({
-						workflow: result,
-					});
-					this.canvasRef.handler.clear();
-					const nodes = result.nodes.map(node => {
-						return {
-							...node,
-							type: getNode(node.nodeClazz),
-							left: node.properties ? node.properties.left : 0,
-							top: node.properties ? node.properties.top : 0,
-						};
-					});
-					const links = result.links.map(link => {
-						return {
-							fromNodeId: link.fromNode,
-							fromPortId: link.fromPort,
-							toNodeId: link.toNode,
-							type: 'link',
-							superType: 'link',
-							left: link.properties ? link.properties.left : 0,
-							top: link.properties ? link.properties.top : 0,
-						};
-					});
-					const objects = nodes.concat(links);
-					const { viewportTransform } = result.properties;
-					if (viewportTransform) {
-						this.canvasRef.canvas.setViewportTransform(viewportTransform);
-					}
-					this.canvasRef.handler.importJSON(objects, () => {
+					try {
+						const result = JSON.parse(e.target!.result as string);
+						this.setState({ workflow: result });
+						this.canvasRef.handler.clear();
+						const nodes = result.nodes.map(node => {
+							return {
+								...node,
+								type: getNode(node.nodeClazz),
+								left: node.properties ? node.properties.left : 0,
+								top: node.properties ? node.properties.top : 0,
+							};
+						});
+						const links = result.links.map(link => {
+							return {
+								fromNodeId: link.fromNode,
+								fromPortId: link.fromPort,
+								toNodeId: link.toNode,
+								type: 'link',
+								superType: 'link',
+								left: link.properties ? link.properties.left : 0,
+								top: link.properties ? link.properties.top : 0,
+							};
+						});
+						const objects = nodes.concat(links);
+						const { viewportTransform } = result.properties;
+						if (viewportTransform) {
+							this.canvasRef.canvas.setViewportTransform(viewportTransform);
+						}
+						this.canvasRef.handler.importJSON(objects, () => {
+							this.hideLoading();
+							this.canvasRef.canvas.setZoom(this.state.zoomRatio);
+						});
+					} catch (error) {
+						console.error(error);
 						this.hideLoading();
-						this.canvasRef.canvas.setZoom(this.state.zoomRatio);
-					});
+					}
 				};
 				reader.readAsText(files[0]);
 			}
@@ -370,7 +373,7 @@ class WorkflowEditor extends React.Component {
 						onAdd={onAdd}
 						onRemove={onRemove}
 						onModified={onModified}
-						keyEvent={{ move: false, transaction: true, clipboard: true }}
+						canvasActions={{ move: false, transaction: true, clipboard: true }}
 						guidelineOption={{ enabled: false }}
 					/>
 					<div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>

@@ -1,96 +1,101 @@
 import debounce from 'lodash/debounce';
-import ReactDOM from 'react-dom';
-import { FabricObject } from '../models';
-import Handler from './Handler';
+import type { FabricObject } from '../models';
+import type Handler from './Handler';
+
+type TooltipPayload = {
+	x: number;
+	y: number;
+	placement: 'left' | 'right';
+	content: any;
+	measuring?: boolean;
+};
 
 class TooltipHandler {
 	handler: Handler;
-	tooltipEl: HTMLDivElement;
-	target?: fabric.Object;
+
+	private openTooltip?: (payload: TooltipPayload) => void;
+	private closeTooltip?: () => void;
+
+	private lastContent: any = null;
+	private lastTarget: FabricObject | null = null;
 
 	constructor(handler: Handler) {
 		this.handler = handler;
-		if (!handler.editable) {
-			this.initialize();
-		}
 	}
 
-	/**
-	 * Initialize tooltip
-	 *
-	 * @author salgum1114
-	 */
-	public initialize() {
-		this.tooltipEl = document.createElement('div');
-		this.tooltipEl.id = `${this.handler.id}_tooltip`;
-		this.tooltipEl.className = 'rde-tooltip tooltip-hidden';
-		document.body.appendChild(this.tooltipEl);
+	public bindPortal(open: (payload: TooltipPayload) => void, close: () => void) {
+		this.openTooltip = open;
+		this.closeTooltip = close;
 	}
 
-	/**
-	 * Destroy tooltip
-	 *
-	 * @author salgum1114
-	 */
 	public destroy() {
-		if (this.tooltipEl) {
-			document.body.removeChild(this.tooltipEl);
-		}
+		this.closeTooltip?.();
 	}
 
-	/**
-	 * Show tooltip
-	 *
-	 * @param {FabricObject} [target]
-	 */
 	public show = debounce(async (target?: FabricObject) => {
-		if (target.tooltip && target.tooltip.enabled) {
-			while (this.tooltipEl.hasChildNodes()) {
-				this.tooltipEl.removeChild(this.tooltipEl.firstChild);
-			}
-			const tooltip = document.createElement('div');
-			tooltip.className = 'rde-tooltip-right';
-			let element = target.name as any;
-			const { onTooltip } = this.handler;
-			if (onTooltip) {
-				element = await onTooltip(tooltip, target);
-				if (!element) {
-					return;
-				}
-			}
-			tooltip.innerHTML = element;
-			this.tooltipEl.appendChild(tooltip);
-			ReactDOM.render(element, tooltip);
-			this.tooltipEl.classList.remove('tooltip-hidden');
-			const zoom = this.handler.canvas.getZoom();
-			const { clientHeight } = this.tooltipEl;
-			const { width, height, scaleX, scaleY } = target;
-			const { left, top } = target.getBoundingRect();
-			const { _offset: offset } = this.handler.canvas.calcOffset() as any;
-			const objWidthDiff = width * scaleX * zoom;
-			const objHeightDiff = (height * scaleY * zoom) / 2 - clientHeight / 2;
-			const calcLeft = offset.left + left + objWidthDiff;
-			const calcTop = offset.top + top + objHeightDiff;
-			if (document.body.clientWidth <= calcLeft + this.tooltipEl.offsetWidth) {
-				this.tooltipEl.style.left = `${left + offset.left - this.tooltipEl.offsetWidth}px`;
-				tooltip.className = 'rde-tooltip-left';
-			} else {
-				this.tooltipEl.style.left = `${calcLeft}px`;
-			}
-			this.tooltipEl.style.top = `${calcTop}px`;
-			this.handler.target = target;
+		if (!target) return;
+		if (!this.openTooltip) return;
+		if (!(target.tooltip && target.tooltip.enabled)) return;
+
+		let content: any = target.name;
+		const { onTooltip } = this.handler as any;
+		if (onTooltip) {
+			const result = await onTooltip(null, target);
+			if (!result) return;
+			content = result;
 		}
+
+		this.lastTarget = target;
+		this.lastContent = content;
+		(this.handler as any).target = target;
+
+		this.openTooltip({
+			x: 0,
+			y: 0,
+			placement: 'right',
+			content,
+			measuring: true,
+		});
 	}, 100);
 
-	/**
-	 * Hide tooltip
-	 * @param {fabric.Object} [_target]
-	 */
-	public hide = debounce((_target?: fabric.Object) => {
-		this.handler.target = null;
-		if (this.tooltipEl) {
-			this.tooltipEl.classList.add('tooltip-hidden');
+	public placeMeasured = (box: { width: number; height: number }) => {
+		const target = this.lastTarget;
+		const content = this.lastContent;
+		if (!target || !content || !this.openTooltip) return;
+
+		const zoom = this.handler.canvas.getZoom();
+		const { width, height, scaleX, scaleY } = target;
+		const { left, top } = target.getBoundingRect();
+		const { _offset: offset } = this.handler.canvas.calcOffset() as any;
+
+		const objWidthDiff = width * scaleX * zoom;
+		const objHeightDiff = (height * scaleY * zoom) / 2 - box.height / 2;
+
+		const calcLeft = offset.left + left + objWidthDiff;
+		const calcTop = offset.top + top + objHeightDiff;
+
+		let placement: 'left' | 'right' = 'right';
+		let x = calcLeft;
+
+		if (document.body.clientWidth <= calcLeft + box.width) {
+			placement = 'left';
+			x = left + offset.left - box.width;
 		}
+
+		this.openTooltip({
+			x,
+			y: calcTop,
+			placement,
+			content,
+			measuring: false,
+		});
+	};
+
+	public hide = debounce(() => {
+		this.lastTarget = null;
+		this.lastContent = null;
+		(this.handler as any).target = null;
+		this.closeTooltip?.();
 	}, 100);
 }
 
