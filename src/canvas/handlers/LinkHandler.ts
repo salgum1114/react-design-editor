@@ -57,7 +57,6 @@ class LinkHandler {
 			return;
 		}
 		this.port = port;
-		this.port.set({ fill: port.selectFill });
 		this.handler.interactionHandler.linking();
 		const { left, top } = port;
 		const toPort = { left, top };
@@ -82,11 +81,7 @@ class LinkHandler {
 	finish = (link?: LinkObject) => {
 		if (!link) {
 			this.port.set({
-				fill: this.port.connected
-					? this.port.connectedFill
-					: this.port.enabled
-						? this.port.originFill
-						: this.port.hoverFill,
+				fill: this.port.connected ? this.port.connectedFill : this.port.originFill,
 			});
 		}
 		this.handler.interactionHandler.selection();

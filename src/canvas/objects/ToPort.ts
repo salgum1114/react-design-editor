@@ -18,8 +18,8 @@ const ToPort = fabric.util.createClass(fabric.Path, {
 	},
 	setPosition(left: number, top: number) {
 		this.set({
-			left: left - this.width / 2,
-			top: top - (this.connected ? this.height / 2 : this.height + this.strokeWidth + 2),
+			left,
+			top: top - (this.connected ? 0 : this.height + (this.strokeWidth ?? 0)),
 		});
 	},
 	setConnected(connected?: boolean) {

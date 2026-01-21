@@ -61,7 +61,7 @@ const LineLink = fabric.util.createClass(fabric.Line, {
 		if (node.descriptor.outPortType !== OUT_PORT_TYPE.BROADCAST) {
 			port.set({
 				enabled,
-				fill: enabled ? port.originFill : port.selectFill,
+				fill: port.originFill,
 			});
 		} else {
 			if (node.toPort.id === port.id) {

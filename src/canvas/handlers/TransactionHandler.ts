@@ -57,7 +57,6 @@ class TransactionHandler extends AbstractHandler {
 
 	/**
 	 * Initialize transaction handler
-	 *
 	 */
 	protected initialize = () => {
 		this.redos = [];
@@ -76,7 +75,28 @@ class TransactionHandler extends AbstractHandler {
 	public setDefaultObjects = (objects: FabricObject[]) => {
 		this.undos = [];
 		this.redos = [];
-		this.currentObjects = this.sortObjects(objects);
+		this.currentObjects = this.sortObjects(this.normalizeObjects(objects));
+	};
+
+	private normalizeObjects = (objects: FabricObject[]) => {
+		return (objects || []).map((obj: any) => {
+			if (!obj) return obj;
+			if (obj.superType !== 'node' && obj.superType !== 'link') {
+				return obj;
+			}
+			const shadow = obj.shadow ?? {};
+			return {
+				...obj,
+				opacity: 1,
+				animating: false,
+				animation: undefined,
+				shadow: {
+					...shadow,
+					blur: 0,
+				},
+				stroke: obj.originStroke ?? obj.stroke,
+			};
+		});
 	};
 
 	/**
@@ -89,23 +109,18 @@ class TransactionHandler extends AbstractHandler {
 			return;
 		}
 		try {
-			const json = JSON.stringify(this.currentObjects);
+			const prevJson = JSON.stringify(this.currentObjects);
+
 			this.redos = [];
-			this.undos.push({ type, json });
+			this.undos.push({ type, json: prevJson });
 			if (this.undos.length > this.MAX_HISTORY_SIZE) {
 				this.undos.shift();
 			}
-			const objects = this.handler.canvas.toJSON(this.handler.propertiesToInclude).objects.map(obj => {
-				const target = obj as FabricObject;
-				if (target.superType === 'node' || target.superType === 'link') {
-					return {
-						...target,
-						shadow: { ...(target.shadow as fabric.Shadow), blur: 0 },
-					};
-				}
-				return obj;
-			}) as FabricObject[];
-			this.currentObjects = this.sortObjects(objects);
+
+			const objects = this.handler.canvas.toJSON(this.handler.propertiesToInclude).objects as FabricObject[];
+
+			const normalized = this.normalizeObjects(objects);
+			this.currentObjects = this.sortObjects(normalized);
 		} catch (error) {
 			console.error(error);
 		}
@@ -113,7 +128,6 @@ class TransactionHandler extends AbstractHandler {
 
 	/**
 	 * Undo transaction
-	 *
 	 */
 	public undo = throttle(() => {
 		const undo = this.undos.pop();
@@ -133,7 +147,6 @@ class TransactionHandler extends AbstractHandler {
 
 	/**
 	 * Redo transaction
-	 *
 	 */
 	public redo = throttle(() => {
 		const redo = this.redos.pop();
@@ -158,7 +171,7 @@ class TransactionHandler extends AbstractHandler {
 	 */
 	public replay = (transaction: TransactionEvent) => {
 		try {
-			this.currentObjects = JSON.parse(transaction.json) as FabricObject[];
+			this.currentObjects = this.normalizeObjects(JSON.parse(transaction.json) as FabricObject[]);
 			this.active = true;
 			this.handler.canvas.renderOnAddRemove = false;
 			this.handler.clear();

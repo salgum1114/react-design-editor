@@ -75,7 +75,7 @@ const Link = fabric.util.createClass(fabric.Group, {
 	},
 	setPortEnabled(node: NodeObject, port: PortObject, enabled: boolean) {
 		if (node.descriptor.outPortType !== OUT_PORT_TYPE.BROADCAST) {
-			port.set({ enabled, fill: enabled ? port.originFill : port.selectFill });
+			port.set({ enabled, fill: port.originFill });
 		} else {
 			if (node.toPort.id === port.id) {
 				return;
@@ -97,18 +97,19 @@ const Link = fabric.util.createClass(fabric.Group, {
 		return tempPathObj.path;
 	},
 	getPortPosition(port: Partial<PortObject>, direction: string) {
-		const { left, top, width, height } = port || {};
+		const { left = 0, top = 0, width = 0, height = 0, strokeWidth = 0 } = port || {};
+
 		switch (direction) {
 			case 'R':
-				return { x: left + width, y: top + height / 2 };
+				return { x: left + width / 2, y: top };
 			case 'L':
-				return { x: left, y: top + height / 2 };
+				return { x: left - width / 2, y: top };
 			case 'T':
-				return { x: width ? left + width / 2 : left, y: top };
+				return { x: left, y: top - height / 2 - strokeWidth / 2 };
 			case 'B':
-				return { x: left + width / 2, y: top + height };
+				return { x: left, y: top + height / 2 + strokeWidth / 2 };
 			default:
-				return { x: 0, y: 0 };
+				return { x: left, y: top };
 		}
 	},
 	draw(fromPort: PortObject, toPort: PortObject, options: any = {}) {
@@ -164,7 +165,6 @@ const Link = fabric.util.createClass(fabric.Group, {
 		const width = this.fromNode?.width || 240;
 		const height = this.fromNode?.height || 60;
 		const curvedOffset = Math.floor(p1.x) === Math.floor(p2.x) ? 0 : 40;
-		// console.log(p1.x, p2.x);
 		const offset = 40;
 		const fromGroup = this.fromNode.group;
 		const toGroup = this.toNode.group;

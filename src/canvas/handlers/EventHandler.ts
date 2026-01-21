@@ -121,7 +121,6 @@ class EventHandler extends AbstractHandler {
 		 */
 		mousedown: (opt: FabricEvent) => {
 			const { target } = opt;
-			console.log(opt);
 			if (target && target.link && target.link.enabled) {
 				this.handler.onClick?.(this.canvas, target);
 			}
@@ -478,9 +477,7 @@ class EventHandler extends AbstractHandler {
 					x: pointer.x,
 					y: pointer.y,
 				};
-				this.handler.activeShape.set({
-					points,
-				});
+				this.handler.activeShape.set({ points });
 				this.canvas.requestRenderAll();
 			}
 		} else if (this.handler.interactionMode === 'line') {
@@ -529,6 +526,9 @@ class EventHandler extends AbstractHandler {
 					...this.handler.activeSelectionOption,
 				});
 				this.canvas.setActiveObject(activeSelection);
+				if (this.handler.shouldHighlightPathOnSelect) {
+					this.handler.nodeHandler.selectByPath(nodes.map(node => node.id));
+				}
 				this.canvas.requestRenderAll();
 			}
 		}
@@ -797,7 +797,6 @@ class EventHandler extends AbstractHandler {
 			this.handler.interactionHandler.grab();
 			return;
 		}
-		console.log(e.altKey, grab);
 		if ((this.handler.shortcutHandler.isSpace(e) || e.altKey) && grab) {
 			this.handler.interactionHandler.grab();
 			return;

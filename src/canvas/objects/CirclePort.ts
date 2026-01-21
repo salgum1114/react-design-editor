@@ -9,6 +9,9 @@ const CirclePort = fabric.util.createClass(fabric.Circle, {
 		options = options || {};
 		this.callSuper('initialize', options);
 	},
+	setPosition(left: number, top: number) {
+		this.set({ left, top });
+	},
 	toObject() {
 		return fabric.util.object.extend(this.callSuper('toObject'), {
 			id: this.get('id'),

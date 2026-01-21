@@ -1,11 +1,12 @@
 import Color from 'color';
 import { fabric } from 'fabric';
 import { v4 as uuid } from 'uuid';
-import { FromPort, ToPort } from '.';
 import { FabricObject } from '../models';
 import { fitTextToRect } from '../utils';
+import FromPort from './FromPort';
 import { LinkObject } from './Link';
 import Port, { PortObject } from './Port';
+import ToPort from './ToPort';
 
 export const OUT_PORT_TYPE = {
 	SINGLE: 'SINGLE',
@@ -18,6 +19,7 @@ export const OUT_PORT_TYPE = {
 export interface NodeObject extends FabricObject<fabric.Group> {
 	errorFlag?: fabric.IText;
 	label?: fabric.Text;
+	color?: string;
 	toPort?: PortObject;
 	errors?: any;
 	fromPort?: PortObject[];
@@ -29,10 +31,6 @@ export interface NodeObject extends FabricObject<fabric.Group> {
 	fromPortOption?: () => Partial<PortObject>;
 	createToPort?: (left: number, top: number) => PortObject;
 	createFromPort?: (left: number, top: number) => PortObject[];
-	singlePort?: (portOption: Partial<PortObject>) => PortObject[];
-	staticPort?: (portOption: Partial<PortObject>) => PortObject[];
-	dynamicPort?: (portOption: Partial<PortObject>) => PortObject[];
-	broadcastPort?: (portOption: Partial<PortObject>) => PortObject[];
 	setErrors?: (errors: any) => void;
 	setName?: (name: string) => void;
 	select?: () => void;
@@ -112,28 +110,6 @@ const Node = fabric.util.createClass(fabric.Group, {
 			this.button.setCoords();
 		}
 	},
-	toObject() {
-		return fabric.util.object.extend(this.callSuper('toObject'), {
-			id: this.get('id'),
-			name: this.get('name'),
-			icon: this.get('icon'),
-			color: this.get('color'),
-			fontSize: this.get('fontSize'),
-			fontFamily: this.get('fontFamily'),
-			description: this.get('description'),
-			superType: this.get('superType'),
-			configuration: this.get('configuration'),
-			nodeClazz: this.get('nodeClazz'),
-			descriptor: this.get('descriptor'),
-			borderColor: this.get('borderColor'),
-			borderScaleFactor: this.get('borderScaleFactor'),
-			dblclick: this.get('dblclick'),
-			deletable: this.get('deletable'),
-			cloneable: this.get('cloneable'),
-			fromPort: this.get('fromPort'),
-			toPort: this.get('toPort'),
-		});
-	},
 	defaultPortOption() {
 		return {
 			nodeId: this.id,
@@ -141,8 +117,8 @@ const Node = fabric.util.createClass(fabric.Group, {
 			hasControls: false,
 			hasRotatingPoint: false,
 			selectable: false,
-			originX: 'left',
-			originY: 'top',
+			originX: 'center',
+			originY: 'center',
 			lockScalingX: true,
 			lockScalingY: true,
 			superType: 'port',
@@ -150,12 +126,10 @@ const Node = fabric.util.createClass(fabric.Group, {
 			disabledFill: 'red',
 			enabledFill: 'green',
 			originFill: '#5f646b',
-			hoverFill: '#5f646b',
-			selectFill: '#5f646b',
 			fill: '#5f646b',
 			hoverCursor: 'pointer',
 			strokeWidth: 2,
-			stroke: 'transparent',
+			stroke: this.stroke,
 			links: [] as LinkObject[],
 			enabled: true,
 		};
@@ -267,55 +241,44 @@ const Node = fabric.util.createClass(fabric.Group, {
 		return this.toPort;
 	},
 	createFromPort(left: number, top: number) {
-		if (this.descriptor.outPortType === OUT_PORT_TYPE.BROADCAST) {
-			this.fromPort = this.broadcastPort({ ...this.fromPortOption(), left, top });
-		} else if (this.descriptor.outPortType === OUT_PORT_TYPE.STATIC) {
-			this.fromPort = this.staticPort(left, top);
+		if (this.descriptor.outPortType === OUT_PORT_TYPE.STATIC) {
+			const offset = 60;
+			this.fromPort = this.descriptor.outPorts.map((outPort: string, i: number) => {
+				const fill = i === 0 ? '#ff3030' : '#15cc08';
+				const targetLeft = i === 0 ? left - offset : left + offset;
+				const port = new FromPort({
+					id: outPort,
+					type: 'fromPort',
+					left: targetLeft,
+					top,
+					leftDiff: i === 0 ? -offset : offset,
+					...this.fromPortOption(),
+					fill,
+					originFill: fill,
+					label: outPort,
+					color: fill,
+					fontSize: 14,
+					fontFamily: 'Noto Sans',
+				});
+				port.setPosition(targetLeft, top);
+				return port;
+			});
 		} else if (this.descriptor.outPortType === OUT_PORT_TYPE.DYNAMIC) {
-			this.fromPort = this.dynamicPort({ ...this.fromPortOption(), left, top });
+			this.fromPort = [];
 		} else if (this.descriptor.outPortType === OUT_PORT_TYPE.NONE) {
 			this.fromPort = [];
 		} else {
-			this.fromPort = this.singlePort({ ...this.fromPortOption(), left, top });
-		}
-		this.fromPort.forEach((port: PortObject) => port.setPosition(left, top));
-		return this.fromPort;
-	},
-	singlePort(portOption: any) {
-		const fromPort = new FromPort({
-			id: 'defaultFromPort',
-			type: 'fromPort',
-			...portOption,
-		});
-		return [fromPort];
-	},
-	staticPort(left: number, top: number) {
-		const offset = 60;
-		return this.descriptor.outPorts.map((outPort: string, i: number) => {
-			const fill = i === 0 ? '#ff3030' : '#15cc08';
-			return new FromPort({
-				id: outPort,
+			const port = new FromPort({
+				id: 'defaultFromPort',
 				type: 'fromPort',
-				left: i === 0 ? left - offset : left + offset,
-				top,
-				leftDiff: i === 0 ? -offset : offset,
 				...this.fromPortOption(),
-				fill,
-				originFill: fill,
-				hoverFill: fill,
-				selectFill: fill,
-				label: outPort,
-				color: fill,
-				fontSize: 14,
-				fontFamily: 'Noto Sans',
+				left,
+				top,
 			});
-		});
-	},
-	dynamicPort(_portOption: any): any[] {
-		return [];
-	},
-	broadcastPort(portOption: any) {
-		return this.singlePort(portOption);
+			port.setPosition(left, top);
+			this.fromPort = [port];
+		}
+		return this.fromPort;
 	},
 	setErrors(errors: any) {
 		this.set({ errors });
@@ -358,6 +321,28 @@ const Node = fabric.util.createClass(fabric.Group, {
 		options.name = `${options.name}_clone`;
 		return new Node(options);
 	},
+	toObject() {
+		return fabric.util.object.extend(this.callSuper('toObject'), {
+			id: this.get('id'),
+			name: this.get('name'),
+			icon: this.get('icon'),
+			color: this.get('color'),
+			fontSize: this.get('fontSize'),
+			fontFamily: this.get('fontFamily'),
+			description: this.get('description'),
+			superType: this.get('superType'),
+			configuration: this.get('configuration'),
+			nodeClazz: this.get('nodeClazz'),
+			descriptor: this.get('descriptor'),
+			borderColor: this.get('borderColor'),
+			borderScaleFactor: this.get('borderScaleFactor'),
+			dblclick: this.get('dblclick'),
+			deletable: this.get('deletable'),
+			cloneable: this.get('cloneable'),
+			fromPort: this.get('fromPort'),
+			toPort: this.get('toPort'),
+		});
+	},
 	_render(ctx: CanvasRenderingContext2D) {
 		this.callSuper('_render', ctx);
 	},
@@ -368,7 +353,6 @@ Node.fromObject = (options: NodeObject, callback: (obj: NodeObject) => any) => {
 };
 
 // @ts-ignore
-
 window.fabric.FromPort = Port;
 
 // @ts-ignore

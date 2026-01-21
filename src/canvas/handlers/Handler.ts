@@ -205,6 +205,12 @@ export interface HandlerOption {
 	 * @type {{ [key: string]: any }}
 	 */
 	fabricObjects?: FabricObjects;
+	/**
+	 * Determines if path highlighting should be triggered by mouse events.
+	 *
+	 * @type {boolean}
+	 */
+	shouldHighlightPathOnSelect?: boolean;
 	handlers?: { [key: string]: CustomHandler };
 	[key: string]: any;
 }
@@ -285,6 +291,7 @@ class Handler implements HandlerOptions {
 	public pointArray?: any[];
 	public lineArray?: any[];
 	public isCut = false;
+	public shouldHighlightPathOnSelect = false;
 
 	private isRequsetAnimFrame = false;
 	private requestFrame: any;
@@ -328,6 +335,7 @@ class Handler implements HandlerOptions {
 		this.width = options.width;
 		this.height = options.height;
 		this.objects = [];
+		this.shouldHighlightPathOnSelect = options.shouldHighlightPathOnSelect;
 		this.setPropertiesToInclude(options.propertiesToInclude);
 		this.setWorkareaOption(options.workareaOption);
 		this.setCanvasOption(options.canvasOption);
@@ -838,7 +846,7 @@ class Handler implements HandlerOptions {
 			this.animationHandler.play(createdObj.id);
 		}
 		if (createdObj.superType === 'node') {
-			createdObj.set('shadow', { color: createdObj.stroke } as fabric.Shadow);
+			createdObj.set('shadow', { color: createdObj.color } as fabric.Shadow);
 		}
 		if (gridOption.enabled) {
 			this.gridHandler.setCoords(createdObj);

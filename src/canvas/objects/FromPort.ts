@@ -17,7 +17,7 @@ const FromPort = fabric.util.createClass(fabric.Path, {
 		this.callSuper('initialize', path, options);
 	},
 	setPosition(left: number, top: number) {
-		this.set({ left: left - this.width / 2, top: top + this.strokeWidth - (this.connected ? this.height / 2 : 0) });
+		this.set({ left, top: top + (this.connected ? 0 : this.height + (this.strokeWidth ?? 0)) });
 	},
 	setConnected(connected?: boolean) {
 		const radius = connected ? 4 : 12;

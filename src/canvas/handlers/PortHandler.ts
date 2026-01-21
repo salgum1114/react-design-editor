@@ -23,12 +23,12 @@ class PortHandler extends AbstractHandler {
 					this.handler.activeLine &&
 					this.handler.activeLine.class === 'line'
 				) {
-					if (toPort.links.some(link => link.fromNode === this.handler.activeLine.fromNode)) {
-						toPort.set({ fill: 'red' });
+					if (toPort.nodeId === this.handler.activeLine.fromNode?.id) {
+						toPort.set({ fill: toPort.disabledFill });
 						this.handler.canvas.renderAll();
 						return;
 					}
-					toPort.set({ fill: 'green' });
+					toPort.set({ fill: toPort.enabledFill });
 					this.handler.canvas.renderAll();
 				}
 			});
@@ -61,9 +61,7 @@ class PortHandler extends AbstractHandler {
 						}
 					});
 					port.on('mouseout', () => {
-						port.set({
-							fill: port.connected ? port.connectedFill : port.enabled ? port.originFill : port.hoverFill,
-						});
+						port.set({ fill: port.connected ? port.connectedFill : port.originFill });
 						this.handler.canvas.renderAll();
 					});
 					this.handler.canvas.add(port);
@@ -80,54 +78,36 @@ class PortHandler extends AbstractHandler {
 	 */
 	setCoords = (target: NodeObject) => {
 		if (target.toPort) {
-			const toCoords = {
-				left: target.left + target.width / 2,
-				top: target.top,
-			};
-			target.toPort.setPosition(toCoords.left, toCoords.top);
+			const left = target.left + target.width / 2;
+			const top = target.top;
+
+			target.toPort.setPosition(left, top);
 			target.toPort.setCoords();
+
 			if (target.toPort.links.length) {
 				target.toPort.links.forEach(link => {
 					const fromPort = link.fromNode.fromPort.filter(port => port.id === link.fromPort.id)[0];
-					link.update(
-						{
-							left: fromPort.left,
-							top: fromPort.top,
-							width: fromPort.width,
-							height: fromPort.height,
-						},
-						{
-							left: toCoords.left,
-							top: toCoords.top - (target.toPort.connected ? 0 : target.toPort.height),
-						},
-					);
+					link.update(fromPort, target.toPort);
 				});
 			}
 		}
+
 		if (target.fromPort) {
 			const fromCoords = {
 				left: target.left + target.width / 2,
 				top: target.top + target.height,
 			};
+
 			target.fromPort.forEach(port => {
 				const left = port.leftDiff ? fromCoords.left + port.leftDiff : fromCoords.left;
 				const top = port.topDiff ? fromCoords.top + port.topDiff : fromCoords.top;
+
 				port.setPosition(left, top);
 				port.setCoords();
+
 				if (port.links.length) {
 					port.links.forEach(link => {
-						link.update(
-							{
-								left: left - (port.connected ? port.width / 2 : 0),
-								top: top - (port.connected ? port.height / 2 : 0),
-								width: port.width,
-								height: port.height,
-							},
-							{
-								left: link.toNode.toPort.left + link.toNode.toPort.width / 2,
-								top: link.toNode.toPort.top,
-							},
-						);
+						link.update(port, link.toNode.toPort);
 					});
 				}
 			});
@@ -180,6 +160,7 @@ class PortHandler extends AbstractHandler {
 					}
 				});
 			});
+		this.handler.transactionHandler.save('modified');
 	};
 }
 

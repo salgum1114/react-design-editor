@@ -1,54 +1,62 @@
 import { fabric } from 'fabric';
+import { v4 as uuid } from 'uuid';
 import { fitTextToRect } from '../../../../canvas';
-import { FromPort } from '../../../../canvas/objects';
+import { FromPort, PortObject } from '../../../../canvas/objects';
 import LogicNode from './LogicNode';
 
 const SwitchNode = fabric.util.createClass(LogicNode, {
-	portWidth: 40,
+	portWidth: 80,
+	portHeight: 40,
 	defaultRouteLength: 3,
-	initialize(options) {
+	initialize(options: any) {
 		options = options || {};
 		const routeLength = options.configuration.routes.length;
-		if (routeLength > 3) {
-			// ex) 40 + ((4 - 3) * 80) = 120 / 2 = 60
-			// options.left =
-			// 	(options.left ?? 0) +
-			// 	(this.portWidth + (routeLength - this.defaultRouteLength) * (this.portWidth * 2)) / 2;
+
+		if (options.__baseLeft == null) {
+			options.__baseLeft = options.left ?? 0;
 		}
+
+		if (routeLength > 3) {
+			const shift = ((routeLength - this.defaultRouteLength) * this.portWidth) / 2;
+			options.left = options.__baseLeft + shift;
+		}
+
 		this.callSuper('initialize', options);
 	},
-	createFromPort(x, y) {
+	createFromPort(x: number, y: number) {
 		const isEven = this.configuration.routes.length % 2 === 0;
-		const calcOdd = (port, i) => {
+		const calcOdd = (port: PortObject, i: number) => {
 			const centerIndex = Math.ceil(this.configuration.routes.length / 2);
 			const index = i + 1;
 			let left;
 			let leftDiff;
+			const width = port.width ?? 0;
 			if (centerIndex === index) {
 				left = x;
 			} else if (centerIndex > index) {
-				left = x - port.width * (centerIndex - index);
-				leftDiff = -port.width * (centerIndex - index);
+				left = x - width * (centerIndex - index);
+				leftDiff = -width * (centerIndex - index);
 			} else {
-				left = x + port.width * (index - centerIndex);
-				leftDiff = port.width * (index - centerIndex);
+				left = x + width * (index - centerIndex);
+				leftDiff = width * (index - centerIndex);
 			}
 			return {
 				left,
 				leftDiff,
 			};
 		};
-		const calcEven = (port, i) => {
+		const calcEven = (port: PortObject, i: number) => {
 			const centerIndex = this.configuration.routes.length / 2;
 			const index = i + 1;
 			let left;
 			let leftDiff;
+			const width = port.width ?? 0;
 			if (centerIndex >= index) {
-				left = x - port.width / 2 - port.width * (centerIndex - index);
-				leftDiff = -(port.width / 2) - port.width * (centerIndex - index);
+				left = x - width / 2 - width * (centerIndex - index);
+				leftDiff = -(width / 2) - width * (centerIndex - index);
 			} else {
-				left = x - port.width / 2 + port.width * (index - centerIndex);
-				leftDiff = -(port.width / 2) + port.width * (index - centerIndex);
+				left = x - width / 2 + width * (index - centerIndex);
+				leftDiff = -(width / 2) + width * (index - centerIndex);
 			}
 			return {
 				left,
@@ -56,14 +64,14 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 			};
 		};
 		const canvas = document.createElement('canvas');
-		const context = canvas.getContext('2d');
-		this.ports = this.configuration.routes.map((outPort, i) => {
+		const context = canvas.getContext('2d')!;
+		this.ports = this.configuration.routes.map((outPort: string, i: number) => {
 			const rect = new fabric.Rect({
-				width: 80,
-				height: 40,
+				width: this.portWidth,
+				height: this.portHeight,
 				fill: '#272e38',
+				// @ts-ignore
 				originFill: '#272e38',
-				hoverFill: 'green',
 				stroke: '#5f646b',
 				rx: 12,
 				ry: 12,
@@ -82,9 +90,10 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 				coords = calcOdd(rect, i);
 			}
 			const portLabel = new fabric.Group([rect, label], {
+				// @ts-ignore
 				id: outPort,
-				width: 80,
-				height: 40,
+				width: this.portWidth,
+				height: this.portHeight,
 				rx: 7,
 				ry: 7,
 				left: coords.left,
@@ -95,30 +104,32 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 				originX: 'center',
 				originY: 'center',
 			});
-			label.set({ fontSize, top: -height / 2, left: rect.center().x });
+			label.set({ fontSize, top: -height / 2, left: (rect.center() as any).x });
 			return portLabel;
 		});
-		this.ports.forEach(port => {
+		this.ports.forEach((port: PortObject) => {
 			this.addWithUpdate(port);
 			port.setCoords();
 		});
-		this.fromPort = this.ports.map((port, i) => {
+		this.fromPort = this.ports.map((port: PortObject, i: number) => {
 			let coords;
 			if (isEven) {
 				coords = calcEven(port, i);
 			} else {
 				coords = calcOdd(port, i);
 			}
+			const height = port.height ?? 0;
+			const top = y + height;
 			port.fromPort = new FromPort({
 				id: port.id,
 				type: 'fromPort',
 				left: coords.left,
-				top: y + port.height,
+				top,
 				leftDiff: coords.leftDiff,
-				width: 10,
-				height: 10,
 				...this.fromPortOption(),
+				radius: 12,
 			});
+			port.fromPort.setPosition(coords.left, top);
 			return port.fromPort;
 		});
 		return this.fromPort;
@@ -127,15 +138,17 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 		const options = this.toObject();
 		options.id = uuid();
 		options.name = `${options.name}_clone`;
+		options.__baseLeft = options.left ?? 0;
 		const clonedObj = new SwitchNode(options);
 		return clonedObj;
 	},
 });
 
-SwitchNode.fromObject = function (options, callback) {
+SwitchNode.fromObject = function (options: any, callback: any) {
 	return callback(new SwitchNode(options));
 };
 
+// @ts-ignore
 window.fabric.SwitchNode = SwitchNode;
 
 export default SwitchNode;

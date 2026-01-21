@@ -1,23 +1,49 @@
 import { fabric } from 'fabric';
-import { FabricObject } from '../models';
+import { FabricObject, NodeHighlightOptions } from '../models';
 import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
 import AbstractHandler from './AbstractHandler';
 
-class NodeHandler extends AbstractHandler {
-	public create = (options: Partial<NodeObject>, loaded?: boolean) => {
-		const createdObj = this.handler.fabricObjects[options.type].create(options) as NodeObject;
-		createdObj.set('shadow', { color: createdObj.stroke } as fabric.Shadow);
-		this.canvas.add(createdObj);
-		if (createdObj.iconButton) {
-			this.canvas.add(createdObj.iconButton);
-		}
-		this.handler.portHandler.create(createdObj);
-		if (this.handler.editable && !loaded) {
-			this.handler.onAdd?.(createdObj);
-		}
-	};
+const parseColor = (color: string) => {
+	const m = color?.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([0-9.]+))?\)/i);
+	if (m) {
+		return {
+			r: Number(m[1]),
+			g: Number(m[2]),
+			b: Number(m[3]),
+			a: m[4] == null ? 1 : Number(m[4]),
+		};
+	}
+	let hex = (color || '').replace('#', '').trim();
+	if (hex.length === 3) {
+		hex = hex
+			.split('')
+			.map(c => c + c)
+			.join('');
+	}
+	if (hex.length !== 6) {
+		// 파싱 실패 시 흰색 fallback
+		return { r: 255, g: 255, b: 255, a: 1 };
+	}
+	const n = parseInt(hex, 16);
+	return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255, a: 1 };
+};
 
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+const lerpColor = (from: string, to: string, t: number) => {
+	t = clamp01(t);
+	const A = parseColor(from);
+	const B = parseColor(to);
+	const r = Math.round(lerp(A.r, B.r, t));
+	const g = Math.round(lerp(A.g, B.g, t));
+	const b = Math.round(lerp(A.b, B.b, t));
+	const a = clamp01(lerp(A.a, B.a, t));
+	return `rgba(${r},${g},${b},${a})`;
+};
+
+class NodeHandler extends AbstractHandler {
 	/**
 	 * Get the node path by target object
 	 * @param {NodeObject} target
@@ -61,52 +87,47 @@ class NodeHandler extends AbstractHandler {
 	/**
 	 * Select the node path
 	 * @param {string[]} [path]
+	 * @param {NodeHighlightOptions} options
 	 */
-	selectByPath = (path?: string[]) => {
+	selectByPath = (path?: string[], options?: NodeHighlightOptions) => {
 		if (!path || !path.length) {
 			return;
 		}
-		const targetObjects = this.handler.objects.filter(object => path.some(id => id === object.id));
-		const nonTargetObjects = this.handler.objects.filter(object => path.some(id => id !== object.id));
-		nonTargetObjects.forEach((object: any) => {
-			if (object.superType === 'link') {
-				const { fromNode, toNode } = object as LinkObject;
+		const targetObjects = this.handler.objects.filter(obj => path.some(id => id === obj.id));
+		const nonTargetObjects = this.handler.objects.filter(obj => path.some(id => id !== obj.id));
+		nonTargetObjects.forEach((obj: any) => {
+			if (obj.superType === 'link') {
+				const { fromNode, toNode } = obj as LinkObject;
 				if (fromNode && toNode) {
 					const fromIndex = targetObjects.findIndex(obj => obj.id === fromNode.id);
 					const toIndex = targetObjects.findIndex(obj => obj.id === toNode.id);
 					if (fromIndex >= 0 && targetObjects[fromIndex] && toIndex >= 0 && targetObjects[toIndex]) {
-						object.set({
-							opacity: 1,
-							shadow: { color: object.stroke },
-						});
-						this.highlightingNode(object, 300);
+						obj.set({ opacity: 1, shadow: { color: obj.color || obj.fill } });
+						this.highlightingNode(obj, options);
 						this.handler.canvas.requestRenderAll();
 						return;
 					}
 				}
 			}
-			object.set({ opacity: 0.2 });
-			if (object.superType === 'node') {
-				if (object.toPort) {
-					object.toPort.set({ opacity: 0.2 });
+			obj.set({ opacity: 0.2 });
+			if (obj.superType === 'node') {
+				if (obj.toPort) {
+					obj.toPort.set({ opacity: 0.2 });
 				}
-				object.fromPort.forEach((port: any) => port.set({ opacity: 0.2 }));
+				obj.fromPort.forEach((port: any) => port.set({ opacity: 0.2 }));
 			}
-			if (!object.animating) {
-				object.set('shadow', { blur: 0 });
+			if (!obj.animating) {
+				obj.set('shadow', { blur: 0 });
 			}
 		});
-		targetObjects.forEach((object: any) => {
-			object.set({
-				opacity: 1,
-				shadow: { color: object.stroke },
-			});
-			this.highlightingNode(object, 300);
-			if (object.toPort) {
-				object.toPort.set({ opacity: 1 });
+		targetObjects.forEach((obj: any) => {
+			obj.set({ opacity: 1, shadow: { color: obj.color || obj.fill } });
+			this.highlightingNode(obj, options);
+			if (obj.toPort) {
+				obj.toPort.set({ opacity: 1 });
 			}
-			if (object.fromPort) {
-				object.fromPort.forEach((port: any) => port.set({ opacity: 1 }));
+			if (obj.fromPort) {
+				obj.fromPort.forEach((port: any) => port.set({ opacity: 1 }));
 			}
 		});
 		this.handler.canvas.requestRenderAll();
@@ -117,14 +138,14 @@ class NodeHandler extends AbstractHandler {
 	 * @param {string} id
 	 */
 	selectById = (id: string) => {
-		this.handler.objects.forEach((object: FabricObject) => {
-			if (id === object.id) {
-				object.set('shadow', { color: object.stroke, blur: 50 } as fabric.Shadow);
+		this.handler.objects.forEach((obj: FabricObject) => {
+			if (id === obj.id) {
+				obj.set('shadow', { color: obj.fill, blur: 50 } as fabric.Shadow);
 				return;
-			} else if (id === object.nodeId) {
+			} else if (id === obj.nodeId) {
 				return;
 			}
-			object.set('shadow', { blur: 0 } as fabric.Shadow);
+			obj.set('shadow', { blur: 0 } as fabric.Shadow);
 		});
 		this.handler.canvas.requestRenderAll();
 	};
@@ -133,17 +154,16 @@ class NodeHandler extends AbstractHandler {
 	 * Deselect nodes
 	 */
 	deselect = () => {
-		this.handler.objects.forEach((object: FabricObject) => {
-			object.set({ opacity: 1 });
-			if (object.superType === 'node') {
-				const node = object as NodeObject;
+		this.handler.objects.forEach((obj: FabricObject) => {
+			obj.set({ opacity: 1 });
+			if (obj.superType === 'node') {
+				const node = obj as NodeObject;
 				if (node.toPort) {
 					node.toPort.set({ opacity: 1 });
 				}
-				// node.fromPort.forEach(port => port.set({ opacity: 1 }));
 			}
-			if (!object.animating) {
-				const node = object as FabricObject;
+			if (!obj.animating) {
+				const node = obj as FabricObject;
 				node.set('shadow', { blur: 0 } as fabric.Shadow);
 			}
 		});
@@ -152,38 +172,40 @@ class NodeHandler extends AbstractHandler {
 
 	/**
 	 * Highlight path by ids
+	 *
 	 * @param {string[]} [path]
+	 * @param {NodeHighlightOptions} highlightOptions
 	 */
-	highlightingByPath = (path?: string[]) => {
+	highlightingByPath = (path?: string[], options?: NodeHighlightOptions) => {
 		if (!path || !path.length) {
 			return;
 		}
-		const targetObjects = this.handler.objects.filter((obj: FabricObject) => path.some(id => id === obj.id));
-		const nonTargetObjects = this.handler.objects.filter((obj: FabricObject) => path.some(id => id !== obj.id));
-		const lastObject = targetObjects.filter((obj: FabricObject) => obj.id === path[path.length - 1])[0];
-		targetObjects.forEach((object: FabricObject) => {
-			if (lastObject) {
-				object.set('shadow', { color: lastObject.stroke } as fabric.Shadow);
+		const targetObjects = (this.handler.objects as NodeObject[]).filter(obj => path.some(id => id === obj.id));
+		const nonTargetObjects = (this.handler.objects as NodeObject[]).filter(obj => path.some(id => id !== obj.id));
+		const lastObj = targetObjects.filter(obj => obj.id === path[path.length - 1])[0];
+		targetObjects.forEach(obj => {
+			if (lastObj) {
+				obj.set('shadow', { color: lastObj.color || lastObj.fill } as fabric.Shadow);
 			} else {
-				object.set('shadow', { color: object.stroke } as fabric.Shadow);
+				obj.set('shadow', { color: lastObj.color || obj.fill } as fabric.Shadow);
 			}
-			this.highlightingNode(object);
+			this.highlightingNode(obj, options);
 			this.handler.canvas.requestRenderAll();
 		});
-		nonTargetObjects.forEach((object: FabricObject) => {
-			if (object.superType === 'link') {
-				const { fromNode, toNode } = object;
+		nonTargetObjects.forEach(obj => {
+			if (obj.superType === 'link') {
+				const { fromNode, toNode } = obj;
 				if (fromNode && toNode) {
-					const fromIndex = targetObjects.findIndex((obj: FabricObject) => obj.id === fromNode.id);
-					const toIndex = targetObjects.findIndex((obj: FabricObject) => obj.id === toNode.id);
+					const fromIndex = targetObjects.findIndex(obj => obj.id === fromNode.id);
+					const toIndex = targetObjects.findIndex(obj => obj.id === toNode.id);
 					if (fromIndex >= 0 && targetObjects[fromIndex] && toIndex >= 0 && targetObjects[toIndex]) {
-						if (lastObject) {
-							object.set('shadow', { color: lastObject.stroke } as fabric.Shadow);
+						if (lastObj) {
+							obj.set('shadow', { color: lastObj.color || lastObj.fill } as fabric.Shadow);
 						} else {
-							object.set('shadow', { color: object.stroke } as fabric.Shadow);
+							obj.set('shadow', { color: lastObj.color || obj.fill } as fabric.Shadow);
 						}
-						this.highlightingNode(object);
-						this.highlightingLink(object, lastObject);
+						this.highlightingNode(obj, options);
+						this.highlightingLink(obj, lastObj);
 						return;
 					}
 				}
@@ -194,57 +216,121 @@ class NodeHandler extends AbstractHandler {
 
 	/**
 	 * Highlight link
-	 * @param {FabricObject} object
-	 * @param {FabricObject} targetObject
+	 * @param {FabricObject} obj
+	 * @param {FabricObject} targetObj
 	 * @param {number} [duration=500]
 	 */
-	highlightingLink = (object: FabricObject, targetObject: FabricObject, duration = 500) => {
-		object.animation = {
+	highlightingLink = (obj: FabricObject, targetObj?: NodeObject, duration = 300) => {
+		const link: any = obj as any;
+		const line: fabric.Path | undefined = link.line;
+		const arrow: fabric.Triangle | undefined = link.arrow;
+		if (!line) return;
+		if (!(obj as any).__baseStroke) {
+			(obj as any).__baseStroke =
+				(line.stroke as string) || (obj.stroke as string) || (obj.originStroke as string) || '#ffffff';
+		}
+		const baseStroke = (obj as any).__baseStroke as string;
+		const targetStroke = targetObj?.color || (targetObj?.fill as string) || baseStroke;
+		if (!baseStroke || baseStroke === targetStroke) return;
+		const nextToken = ((obj as any).__linkAnimToken ?? 0) + 1;
+		(obj as any).__linkAnimToken = nextToken > 1_000_000 ? 1 : nextToken;
+		const token = (obj as any).__linkAnimToken;
+		fabric.util.animate({
+			startValue: 0,
+			endValue: 1,
 			duration,
-			type: 'flash',
-			stroke: targetObject ? targetObject.stroke : object.stroke,
-			loop: 1,
-			delay: 0,
-		};
-		this.handler.animationHandler.play(object.id, false);
+			easing: fabric.util.ease.easeInOutQuad,
+			onChange: (t: number) => {
+				if ((obj as any).__linkAnimToken !== token) return;
+				const c = lerpColor(baseStroke, targetStroke, t);
+				line.set('stroke', c);
+				if (arrow) arrow.set('fill', c);
+				this.handler.canvas.requestRenderAll();
+			},
+			onComplete: () => {
+				if ((obj as any).__linkAnimToken !== token) return;
+
+				fabric.util.animate({
+					startValue: 1,
+					endValue: 0,
+					duration,
+					easing: fabric.util.ease.easeInOutQuad,
+					onChange: (t: number) => {
+						if ((obj as any).__linkAnimToken !== token) return;
+
+						const c = lerpColor(baseStroke, targetStroke, t);
+						line.set('stroke', c);
+						if (arrow) arrow.set('fill', c);
+						this.handler.canvas.requestRenderAll();
+					},
+					onComplete: () => {
+						if ((obj as any).__linkAnimToken !== token) return;
+
+						line.set('stroke', baseStroke);
+						if (arrow) arrow.set('fill', baseStroke);
+						this.handler.canvas.requestRenderAll();
+					},
+				});
+			},
+		});
 	};
 
 	/**
 	 * Highlight node
 	 *
-	 * @param {*} object
-	 * @param {number} [duration=500]
-	 * @param {number} [minBlur=0]
-	 * @param {number} [maxBlur=50]
+	 * @param {*} obj
+	 * @param {NodeHighlightOptions} highlightOptions
 	 */
-	highlightingNode = (object: FabricObject, duration = 500, minBlur = 0, maxBlur = 50) => {
-		const onComplete = () => {
-			if ((object.shadow as fabric.Shadow).blur === maxBlur) {
-				object.animating = true;
-				object.animate('shadow.blur', minBlur, {
-					easing: fabric.util.ease.easeInOutQuad,
-					onChange: (value: number) => {
-						(object.shadow as fabric.Shadow).blur = value;
-						this.handler.canvas.requestRenderAll();
-					},
-					onComplete: () => {
-						object.animating = false;
-						if (object.superType === 'link') {
-							object.set({ stroke: object.originStroke || object.stroke });
-						}
-					},
-				});
+	highlightingNode = (
+		obj: NodeObject,
+		options: NodeHighlightOptions = { duration: 300, minBlur: 0, maxBlur: 30 },
+	) => {
+		const { duration, minBlur, maxBlur } = options;
+		const nextToken = ((obj as any).__nodeBlurAnimToken ?? 0) + 1;
+		(obj as any).__nodeBlurAnimToken = nextToken > 1_000_000 ? 1 : nextToken;
+		const token = (obj as any).__nodeBlurAnimToken;
+
+		const currentShadow = obj.shadow as fabric.Shadow | undefined;
+		if (!currentShadow) {
+			obj.set('shadow', new fabric.Shadow({ color: obj.color as string, blur: minBlur }));
+		} else {
+			if (!(currentShadow as any).color) {
+				(obj.shadow as fabric.Shadow).color = (obj as any).color || (obj as any).stroke;
 			}
-		};
-		object.animating = true;
-		object.animate('shadow.blur', maxBlur, {
+			(obj.shadow as fabric.Shadow).blur = (obj.shadow as fabric.Shadow).blur ?? minBlur;
+		}
+		obj.animating = true;
+
+		obj.animate('shadow.blur', maxBlur, {
 			easing: fabric.util.ease.easeInOutQuad,
 			duration,
 			onChange: (value: number) => {
-				(object.shadow as fabric.Shadow).blur = value;
+				if ((obj as any).__nodeBlurAnimToken !== token) return;
+
+				(obj.shadow as fabric.Shadow).blur = value;
 				this.handler.canvas.requestRenderAll();
 			},
-			onComplete,
+			onComplete: () => {
+				if ((obj as any).__nodeBlurAnimToken !== token) return;
+
+				obj.animate('shadow.blur', minBlur, {
+					easing: fabric.util.ease.easeInOutQuad,
+					duration,
+					onChange: (value: number) => {
+						if ((obj as any).__nodeBlurAnimToken !== token) return;
+
+						(obj.shadow as fabric.Shadow).blur = value;
+						this.handler.canvas.requestRenderAll();
+					},
+					onComplete: () => {
+						if ((obj as any).__nodeBlurAnimToken !== token) return;
+
+						obj.animating = false;
+						(obj.shadow as fabric.Shadow).blur = minBlur;
+						this.handler.canvas.requestRenderAll();
+					},
+				});
+			},
 		});
 	};
 }

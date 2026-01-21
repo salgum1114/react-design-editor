@@ -7,19 +7,26 @@ export interface PortObject extends FabricObject<fabric.Rect> {
 	links?: LinkObject[];
 	nodeId?: string;
 	enabled?: boolean;
-	hoverFill?: string;
-	selectFill?: string;
 	connected?: boolean;
 	setPosition?: (left: number, top: number) => void;
 	setConnected?: (connected?: boolean) => void;
 }
 
-const Port = fabric.util.createClass(fabric.Circle, {
+const Port = fabric.util.createClass(fabric.Rect, {
 	type: 'port',
 	superType: 'port',
 	initialize(options: any) {
 		options = options || {};
 		this.callSuper('initialize', options);
+	},
+	setPosition(left: number, top: number) {
+		this.set({ left, top });
+	},
+	setConnected(connected?: boolean) {
+		const fill = connected ? this.connectedFill : this.originFill;
+		this.initialize({ ...this.toObject(), connected, fill });
+		this.setCoords();
+		this.canvas.requestRenderAll();
 	},
 	toObject() {
 		return fabric.util.object.extend(this.callSuper('toObject'), {
@@ -31,6 +38,7 @@ const Port = fabric.util.createClass(fabric.Circle, {
 			fontSize: this.get('fontSize'),
 			fontFamily: this.get('fontFamily'),
 			color: this.get('color'),
+			connected: this.get('connected'),
 		});
 	},
 	_render(ctx: CanvasRenderingContext2D) {

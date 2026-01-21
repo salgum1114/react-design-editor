@@ -55,7 +55,7 @@ class WorkflowEditor extends React.Component {
 				return;
 			}
 			if (target.superType === 'node') {
-				// this.canvasRef.handler.nodeHandler.highlightingNode(target);
+				this.canvasRef.handler.nodeHandler.highlightingNode(target);
 				this.canvasRef.handler.select(target);
 			}
 		},
@@ -375,6 +375,7 @@ class WorkflowEditor extends React.Component {
 						onModified={onModified}
 						canvasActions={{ move: false, transaction: true, clipboard: true }}
 						guidelineOption={{ enabled: false }}
+						shouldHighlightPathOnSelect={true}
 					/>
 					<div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
 						<WorkflowNodeConfigurations

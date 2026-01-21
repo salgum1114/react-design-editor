@@ -98,14 +98,6 @@ class GridHandler extends AbstractHandler {
 
 		const dotRadius = 1;
 		ctx.fillStyle = dotColor;
-		// for (let i = 0; i <= 5; i++) {
-		// 	for (let j = 0; j <= 5; j++) {
-		// 		const x = i * grid - dotRadius / 2;
-		// 		const y = j * grid - dotRadius / 2;
-
-		// 		ctx.fillRect(x, y, dotRadius, dotRadius);
-		// 	}
-		// }
 		for (let i = 0; i <= 5; i++) {
 			for (let j = 0; j <= 5; j++) {
 				const x = i * grid;
