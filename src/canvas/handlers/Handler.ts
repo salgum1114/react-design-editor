@@ -1629,7 +1629,7 @@ class Handler implements HandlerOptions {
 		});
 		this.objects = this.getObjects();
 		if (this.canvasActions.transaction) {
-			this.transactionHandler.setDefaultObjects(this.objects);
+			this.transactionHandler.setDefaultObjects(this.canvas.toJSON(this.propertiesToInclude).objects);
 		}
 		if (callback) {
 			callback(this.canvas);

@@ -10,16 +10,14 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 	defaultRouteLength: 3,
 	initialize(options: any) {
 		options = options || {};
-		const routeLength = options.configuration.routes.length;
+		const routeLength = options.configuration?.routes?.length ?? 0;
 
-		if (options.__baseLeft == null) {
-			options.__baseLeft = options.left ?? 0;
-		}
+		if (options.__baseLeft == null) options.__baseLeft = options.left ?? 0;
 
-		if (routeLength > 3) {
-			const shift = ((routeLength - this.defaultRouteLength) * this.portWidth) / 2;
-			options.left = options.__baseLeft + shift;
-		}
+		const nodeWidth = 240;
+		const portsWidth = routeLength * this.portWidth;
+		const shift = Math.max(0, (portsWidth - nodeWidth) / 2);
+		options.left = options.__baseLeft + shift;
 
 		this.callSuper('initialize', options);
 	},
