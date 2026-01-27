@@ -13,6 +13,7 @@ export { default as Link, type LinkedNodePropeties, type LinkObject } from './Li
 export { default as Node, type NodeObject } from './Node';
 export { default as OrthogonalLink } from './OrthogonalLink';
 export { default as Port, type PortObject } from './Port';
+export { default as Spinner } from './Spinner';
 export { default as Svg, type SvgObject, type SvgOption } from './Svg';
 export { default as ToPort } from './ToPort';
 export { default as Video } from './Video';

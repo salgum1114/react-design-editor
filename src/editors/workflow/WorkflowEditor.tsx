@@ -373,6 +373,18 @@ class WorkflowEditor extends React.Component {
 						onAdd={onAdd}
 						onRemove={onRemove}
 						onModified={onModified}
+						onClick={(canvas, target, subTarget) => {
+							if (subTarget) {
+								console.log(target.ports);
+								if (target.ports?.length) {
+									const spinner = target.ports.find(p => p.type === 'spinner');
+									spinner?.setVisibility(true);
+									setTimeout(() => {
+										spinner?.setVisibility(false);
+									}, 5000);
+								}
+							}
+						}}
 						canvasActions={{ move: false, transaction: true, clipboard: true }}
 						guidelineOption={{ enabled: false }}
 						shouldHighlightPathOnSelect={true}

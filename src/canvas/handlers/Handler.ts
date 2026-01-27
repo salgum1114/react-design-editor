@@ -71,7 +71,7 @@ export interface HandlerCallback {
 	 * When clicked object, Called function
 	 *
 	 */
-	onClick?: (canvas: FabricCanvas, target: FabricObject, actionTarget?: FabricObject) => void;
+	onClick?: (canvas: FabricCanvas, target: FabricObject, subTarget?: FabricObject) => void;
 	/**
 	 * When double clicked object, Called function
 	 *
@@ -856,6 +856,7 @@ class Handler implements HandlerOptions {
 		}
 		if (onAdd && editable && !loaded) {
 			onAdd(createdObj);
+			this.interactionHandler.selection();
 		}
 		return createdObj;
 	};
@@ -926,6 +927,11 @@ class Handler implements HandlerOptions {
 			if (activeObject.superType === 'link') {
 				this.linkHandler.remove(activeObject);
 			} else if (activeObject.superType === 'node') {
+				if (activeObject.port?.length) {
+					activeObject.port.forEach((port: any) => {
+						this.canvas.remove(port);
+					});
+				}
 				if (activeObject.toPort) {
 					if (activeObject.toPort.links.length) {
 						activeObject.toPort.links.forEach((link: any) => {

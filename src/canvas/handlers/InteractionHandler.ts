@@ -6,6 +6,7 @@ type IReturnType = { selectable?: boolean; evented?: boolean } | boolean;
 
 class InteractionHandler {
 	handler: Handler;
+	cursor: 'default' | 'pointer' | 'move' | 'grab' | 'grabbing';
 
 	constructor(handler: Handler) {
 		this.handler = handler;
@@ -13,6 +14,14 @@ class InteractionHandler {
 			this.selection();
 		}
 	}
+
+	public setCursor = (cursor: typeof this.cursor) => {
+		this.cursor = cursor;
+		this.handler.canvas.defaultCursor = cursor;
+		this.handler.workarea.hoverCursor = cursor;
+		this.handler.canvas.setCursor(cursor);
+		this.handler.canvas.requestRenderAll();
+	};
 
 	/**
 	 * Change selection mode
@@ -28,8 +37,7 @@ class InteractionHandler {
 		} else {
 			this.handler.canvas.selection = this.handler.canvasOption.selection;
 		}
-		this.handler.canvas.defaultCursor = 'default';
-		this.handler.workarea.hoverCursor = 'default';
+		this.setCursor('default');
 		this.handler.getObjects().forEach(obj => {
 			if (callback) {
 				this.interactionCallback(obj, callback);
@@ -50,7 +58,6 @@ class InteractionHandler {
 				obj.evented = true;
 			}
 		});
-		this.handler.canvas.renderAll();
 		this.handler.onInteraction?.('selection');
 	};
 
@@ -64,8 +71,7 @@ class InteractionHandler {
 		}
 		this.handler.interactionMode = 'grab';
 		this.handler.canvas.selection = false;
-		this.handler.canvas.defaultCursor = 'grab';
-		this.handler.workarea.hoverCursor = 'grab';
+		this.setCursor('grab');
 		this.handler.getObjects().forEach(obj => {
 			if (callback) {
 				this.interactionCallback(obj, callback);
@@ -74,7 +80,7 @@ class InteractionHandler {
 				obj.evented = this.handler.editable ? false : true;
 			}
 		});
-		this.handler.canvas.renderAll();
+		this.handler.canvas.requestRenderAll();
 		this.handler.onInteraction?.('grab');
 	};
 
@@ -89,8 +95,7 @@ class InteractionHandler {
 		}
 		this.handler.interactionMode = type;
 		this.handler.canvas.selection = false;
-		this.handler.canvas.defaultCursor = 'pointer';
-		this.handler.workarea.hoverCursor = 'pointer';
+		this.setCursor('pointer');
 		this.handler.getObjects().forEach(obj => {
 			if (callback) {
 				this.interactionCallback(obj, callback);
@@ -99,7 +104,7 @@ class InteractionHandler {
 				obj.evented = this.handler.editable ? false : true;
 			}
 		});
-		this.handler.canvas.renderAll();
+		this.handler.canvas.requestRenderAll();
 		this.handler.onInteraction?.(type);
 	};
 
@@ -109,8 +114,7 @@ class InteractionHandler {
 		}
 		this.handler.interactionMode = 'link';
 		this.handler.canvas.selection = false;
-		this.handler.canvas.defaultCursor = 'default';
-		this.handler.workarea.hoverCursor = 'default';
+		this.setCursor('default');
 		this.handler.getObjects().forEach(obj => {
 			if (callback) {
 				this.interactionCallback(obj, callback);
@@ -125,7 +129,7 @@ class InteractionHandler {
 				obj.evented = this.handler.editable ? false : true;
 			}
 		});
-		this.handler.canvas.renderAll();
+		this.handler.canvas.requestRenderAll();
 		this.handler.onInteraction?.('link');
 	};
 
@@ -148,6 +152,7 @@ class InteractionHandler {
 				this.handler.elementHandler.setPosition(el, obj);
 			}
 		});
+		this.handler.canvas.requestRenderAll();
 	};
 
 	/**

@@ -6,6 +6,7 @@ import { fitTextToRect } from '../utils';
 import FromPort from './FromPort';
 import { LinkObject } from './Link';
 import Port, { PortObject } from './Port';
+import Spinner from './Spinner';
 import ToPort from './ToPort';
 
 export const OUT_PORT_TYPE = {
@@ -20,15 +21,17 @@ export interface NodeObject extends FabricObject<fabric.Group> {
 	errorFlag?: fabric.IText;
 	label?: fabric.Text;
 	color?: string;
-	toPort?: PortObject;
 	errors?: any;
+	toPort?: PortObject;
 	fromPort?: PortObject[];
 	descriptor?: Record<string, any>;
 	nodeClazz?: string;
 	configuration?: Record<string, any>;
+	ports?: PortObject[];
 	defaultPortOption?: () => Partial<PortObject>;
 	toPortOption?: () => Partial<PortObject>;
 	fromPortOption?: () => Partial<PortObject>;
+	createPorts?: (left: number, top: number) => PortObject[];
 	createToPort?: (left: number, top: number) => PortObject;
 	createFromPort?: (left: number, top: number) => PortObject[];
 	setErrors?: (errors: any) => void;
@@ -226,6 +229,18 @@ const Node = fabric.util.createClass(fabric.Group, {
 			`Z`,
 		].join(' ');
 		return new fabric.Path(path, other);
+	},
+	createPorts(left: number, top: number) {
+		const spinner = new Spinner({
+			left,
+			top,
+			radius: 12,
+			fill: '#FFD700',
+			transaciton: false,
+		});
+		this.ports = [spinner];
+		spinner.setPosition(left, top);
+		return this.ports;
 	},
 	createToPort(left: number, top: number) {
 		if (this.descriptor.inEnabled) {

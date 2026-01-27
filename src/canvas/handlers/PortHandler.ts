@@ -12,10 +12,13 @@ class PortHandler extends AbstractHandler {
 	 * @param {NodeObject} target
 	 */
 	create = (target: NodeObject) => {
-		if (!target.createToPort) {
-			return;
-		}
-		const toPort = target.createToPort(target.left + target.width / 2, target.top);
+		const ports = target.createPorts?.(target.left, target.top);
+		ports?.forEach(p => {
+			this.handler.canvas.add(p);
+			this.handler.canvas.bringToFront(p);
+			p.setCoords();
+		});
+		const toPort = target.createToPort?.(target.left + target.width / 2, target.top);
 		if (toPort) {
 			toPort.on('mouseover', () => {
 				if (
@@ -40,7 +43,7 @@ class PortHandler extends AbstractHandler {
 			toPort.setCoords();
 			this.handler.canvas.bringToFront(toPort);
 		}
-		const fromPort = target.createFromPort(target.left + target.width / 2, target.top + target.height);
+		const fromPort = target.createFromPort?.(target.left + target.width / 2, target.top + target.height);
 		if (fromPort && fromPort.length) {
 			fromPort.forEach(port => {
 				if (port) {
@@ -77,6 +80,9 @@ class PortHandler extends AbstractHandler {
 	 * @param {NodeObject} target
 	 */
 	setCoords = (target: NodeObject) => {
+		target.ports?.forEach(port => {
+			port.setPosition(target.left, target.top);
+		});
 		if (target.toPort) {
 			const left = target.left + target.width / 2;
 			const top = target.top;

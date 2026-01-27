@@ -15,6 +15,7 @@ class EventHandler extends AbstractHandler {
 	code: string;
 	panning: boolean;
 	currentTarget: FabricObject;
+	isSpacePanning: boolean;
 
 	constructor(handler: any) {
 		super(handler);
@@ -60,6 +61,7 @@ class EventHandler extends AbstractHandler {
 		this.canvas.wrapperEl.addEventListener('keyup', this.keyup, false);
 		this.canvas.wrapperEl.addEventListener('mousedown', this.onmousedown, false);
 		this.canvas.wrapperEl.addEventListener('contextmenu', this.contextmenu, false);
+		this.canvas.wrapperEl.addEventListener('blur', this.blur, false);
 		if (this.handler.canvasActions.clipboard) {
 			document.addEventListener('paste', this.paste, false);
 		}
@@ -105,6 +107,7 @@ class EventHandler extends AbstractHandler {
 		this.canvas.wrapperEl.removeEventListener('keyup', this.keyup);
 		this.canvas.wrapperEl.removeEventListener('mousedown', this.onmousedown);
 		this.canvas.wrapperEl.removeEventListener('contextmenu', this.contextmenu);
+		this.canvas.wrapperEl.removeEventListener('blur', this.blur, false);
 		if (this.handler.canvasActions.clipboard) {
 			this.canvas.wrapperEl.removeEventListener('paste', this.paste);
 		}
@@ -366,15 +369,11 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public mousedown = (opt: FabricEvent) => {
-		const { e: event, target, subTargets } = opt as FabricEvent<MouseEvent>;
+		const { target, subTargets } = opt as FabricEvent<MouseEvent>;
 		const { editable, canvasActions } = this.handler;
-		if (canvasActions.grab && event.altKey && editable && !this.handler.interactionHandler.isDrawingMode()) {
-			this.handler.interactionHandler.grab();
+		if (canvasActions.grab && this.handler.interactionMode === 'grab') {
 			this.panning = true;
-			return;
-		}
-		if (this.handler.interactionMode === 'grab') {
-			this.panning = true;
+			this.handler.interactionHandler.setCursor('grabbing');
 			return;
 		}
 		if (editable) {
@@ -512,6 +511,7 @@ class EventHandler extends AbstractHandler {
 		const event = opt as FabricEvent<MouseEvent>;
 		if (this.handler.interactionMode === 'grab') {
 			this.panning = false;
+			this.handler.interactionHandler.setCursor('grab');
 			return;
 		}
 		const { target, e } = event;
@@ -797,7 +797,8 @@ class EventHandler extends AbstractHandler {
 			this.handler.interactionHandler.grab();
 			return;
 		}
-		if ((this.handler.shortcutHandler.isSpace(e) || e.altKey) && grab) {
+		if (this.handler.interactionMode !== 'grab' && this.handler.shortcutHandler.isSpace(e) && grab) {
+			this.isSpacePanning = true;
 			this.handler.interactionHandler.grab();
 			return;
 		}
@@ -863,8 +864,13 @@ class EventHandler extends AbstractHandler {
 		if (this.handler.interactionHandler.isDrawingMode()) {
 			return;
 		}
-		if (!this.handler.shortcutHandler.isW(e)) {
+		if (this.handler.shortcutHandler.isW({ code: this.code } as any) && this.handler.shortcutHandler.isSpace(e)) {
+			this.isSpacePanning = false;
+			return;
+		}
+		if (!this.handler.shortcutHandler.isW({ code: this.code } as any) && !this.handler.shortcutHandler.isW(e)) {
 			this.handler.interactionHandler.selection();
+			this.code = e.code;
 		}
 	};
 
@@ -882,6 +888,15 @@ class EventHandler extends AbstractHandler {
 				this.handler.select(target);
 			}
 			this.handler.contextmenuHandler.show(e, target);
+		}
+	};
+
+	public blur = (_e: FocusEvent) => {
+		if (this.handler.shortcutHandler.isW({ code: this.code } as any)) {
+			return;
+		}
+		if (this.isSpacePanning) {
+			this.handler.interactionHandler.selection();
 		}
 	};
 

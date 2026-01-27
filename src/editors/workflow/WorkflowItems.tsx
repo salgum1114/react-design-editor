@@ -75,92 +75,94 @@ class WorkflowItems extends React.Component<IProps> {
 	handlers = {
 		addItem: (item, centered?: boolean) => {
 			const { instance } = this.props;
-			const id = uuid();
-			const option = Object.assign({}, item, {
-				id,
-				superType: 'node',
-				type: getNode(item.nodeClazz),
-				configuration: item.defaultConfiguration,
-				description: '',
-				color: NODE_COLORS[item.type].fill,
-			});
-			instance.handler
-				.getObjects()
-				.filter(obj => obj.type === 'link')
-				.forEach(link => {
-					link.setColor(link.originStroke || '#999');
-					link.set({ strokeDashArray: undefined });
-					instance.canvas.requestRenderAll();
+			if (instance.handler.interactionMode === 'selection') {
+				const id = uuid();
+				const option = Object.assign({}, item, {
+					id,
+					superType: 'node',
+					type: getNode(item.nodeClazz),
+					configuration: item.defaultConfiguration,
+					description: '',
+					color: NODE_COLORS[item.type].fill,
 				});
-			if (this.intersectedLink) {
-				const createdNode = instance.handler.add(option, false, false, false, false);
-				if (this.intersectedLink?.fromNode && this.intersectedLink?.toNode) {
-					instance.handler.linkHandler.remove(this.intersectedLink);
-					instance.handler.linkHandler.create({
-						type: 'link',
-						fromNodeId: this.intersectedLink.fromNodeId,
-						fromPortId: this.intersectedLink.fromPortId,
-						toNodeId: createdNode.id,
+				instance.handler
+					.getObjects()
+					.filter(obj => obj.type === 'link')
+					.forEach(link => {
+						link.setColor(link.originStroke || '#999');
+						link.set({ strokeDashArray: undefined });
+						instance.canvas.requestRenderAll();
 					});
-					instance.handler.linkHandler.create({
-						type: 'link',
-						fromNodeId: createdNode.id,
-						fromPortId: createdNode.fromPort?.[0].id,
-						toNodeId: this.intersectedLink.toNodeId,
-					});
-				}
-			} else {
-				const selectedNode = this.props.selectedItem as NodeObject;
-				const unusedFromPort =
-					selectedNode?.type === 'BroadcastNode'
-						? selectedNode.fromPort![0]
-						: selectedNode?.fromPort
-							? selectedNode?.fromPort?.find(port => !port.links!.length)
-							: undefined;
-				if (item.type !== 'TRIGGER' && unusedFromPort) {
-					const createdNode = !centered
-						? instance.handler.add(option, false, false, false, false)
-						: instance.handler.add(
-								{ ...option, left: selectedNode.left, top: selectedNode.top },
-								false,
-								false,
-								false,
-								false,
-							);
-					instance.handler.linkHandler.create({
-						type: 'link',
-						fromNodeId: selectedNode.id,
-						fromPortId: unusedFromPort.id,
-						toNodeId: createdNode.id,
-					});
-					if (centered) {
-						createdNode.set({
-							left: selectedNode.left! + (selectedNode.width! - createdNode.width) / 2,
-							top: selectedNode.height! + selectedNode.top! + 40,
+				if (this.intersectedLink) {
+					const createdNode = instance.handler.add(option, false, false, false, false);
+					if (this.intersectedLink?.fromNode && this.intersectedLink?.toNode) {
+						instance.handler.linkHandler.remove(this.intersectedLink);
+						instance.handler.linkHandler.create({
+							type: 'link',
+							fromNodeId: this.intersectedLink.fromNodeId,
+							fromPortId: this.intersectedLink.fromPortId,
+							toNodeId: createdNode.id,
 						});
-						instance.handler.portHandler.setCoords(createdNode as any);
-						instance.handler.zoomHandler.zoomToCenterWithObject(createdNode);
+						instance.handler.linkHandler.create({
+							type: 'link',
+							fromNodeId: createdNode.id,
+							fromPortId: createdNode.fromPort?.[0].id,
+							toNodeId: this.intersectedLink.toNodeId,
+						});
 					}
 				} else {
-					const createdNode = instance.handler.add(option, false, false, false, false);
-					if (centered) {
-						createdNode.set({
-							left:
-								(instance.canvas.getWidth() / 2 - instance.canvas.viewportTransform![4]) /
-								instance.canvas.getZoom(),
-							top:
-								(instance.canvas.getHeight() / 2 - instance.canvas.viewportTransform![5]) /
-								instance.canvas.getZoom(),
+					const selectedNode = this.props.selectedItem as NodeObject;
+					const unusedFromPort =
+						selectedNode?.type === 'BroadcastNode'
+							? selectedNode.fromPort![0]
+							: selectedNode?.fromPort
+								? selectedNode?.fromPort?.find(port => !port.links!.length)
+								: undefined;
+					if (item.type !== 'TRIGGER' && unusedFromPort) {
+						const createdNode = !centered
+							? instance.handler.add(option, false, false, false, false)
+							: instance.handler.add(
+									{ ...option, left: selectedNode.left, top: selectedNode.top },
+									false,
+									false,
+									false,
+									false,
+								);
+						instance.handler.linkHandler.create({
+							type: 'link',
+							fromNodeId: selectedNode.id,
+							fromPortId: unusedFromPort.id,
+							toNodeId: createdNode.id,
 						});
-						instance.handler.portHandler.setCoords(createdNode as any);
-						instance.handler.zoomHandler.zoomToCenterWithObject(createdNode);
-						createdNode.setCoords();
+						if (centered) {
+							createdNode.set({
+								left: selectedNode.left! + (selectedNode.width! - createdNode.width) / 2,
+								top: selectedNode.height! + selectedNode.top! + 40,
+							});
+							instance.handler.portHandler.setCoords(createdNode as any);
+							instance.handler.zoomHandler.zoomToCenterWithObject(createdNode);
+						}
+					} else {
+						const createdNode = instance.handler.add(option, false, false, false, false);
+						if (centered) {
+							createdNode.set({
+								left:
+									(instance.canvas.getWidth() / 2 - instance.canvas.viewportTransform![4]) /
+									instance.canvas.getZoom(),
+								top:
+									(instance.canvas.getHeight() / 2 - instance.canvas.viewportTransform![5]) /
+									instance.canvas.getZoom(),
+							});
+							instance.handler.portHandler.setCoords(createdNode as any);
+							instance.handler.zoomHandler.zoomToCenterWithObject(createdNode);
+							createdNode.setCoords();
+						}
 					}
 				}
+				this.intersectedLink = undefined;
+				instance.handler.transactionHandler.save('add');
+				instance.canvas.requestRenderAll();
 			}
-			this.intersectedLink = undefined;
-			instance.handler.transactionHandler.save('add');
-			instance.canvas.requestRenderAll();
 		},
 		onChangeActiveKey: activeKey => {
 			this.setState({

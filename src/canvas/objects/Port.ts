@@ -8,6 +8,7 @@ export interface PortObject extends FabricObject<fabric.Rect> {
 	nodeId?: string;
 	enabled?: boolean;
 	connected?: boolean;
+	transaction?: boolean;
 	setPosition?: (left: number, top: number) => void;
 	setConnected?: (connected?: boolean) => void;
 }
@@ -21,6 +22,7 @@ const Port = fabric.util.createClass(fabric.Rect, {
 	},
 	setPosition(left: number, top: number) {
 		this.set({ left, top });
+		this.setCoords();
 	},
 	setConnected(connected?: boolean) {
 		const fill = connected ? this.connectedFill : this.originFill;

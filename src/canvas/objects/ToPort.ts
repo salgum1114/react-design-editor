@@ -2,7 +2,7 @@ import { fabric } from 'fabric';
 import { PortObject } from './Port';
 
 const ToPort = fabric.util.createClass(fabric.Path, {
-	type: 'port',
+	type: 'ToPort',
 	superType: 'port',
 	initialize(options: any = {}) {
 		const { width, height, connected, radius = 10 } = options;
