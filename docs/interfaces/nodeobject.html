@@ -124,6 +124,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="nodeobject.html#cornerstrokecolor" class="tsd-kind-icon">corner<wbr>Stroke<wbr>Color</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="nodeobject.html#cornerstyle" class="tsd-kind-icon">corner<wbr>Style</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="nodeobject.html#createfromport" class="tsd-kind-icon">create<wbr>From<wbr>Port</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="nodeobject.html#createports" class="tsd-kind-icon">create<wbr>Ports</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="nodeobject.html#createtoport" class="tsd-kind-icon">create<wbr>ToPort</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="nodeobject.html#data" class="tsd-kind-icon">data</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="nodeobject.html#dblclick" class="tsd-kind-icon">dblclick</a></li>
@@ -192,6 +193,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="nodeobject.html#paintfirst" class="tsd-kind-icon">paint<wbr>First</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="nodeobject.html#parentid" class="tsd-kind-icon">parent<wbr>Id</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="nodeobject.html#perpixeltargetfind" class="tsd-kind-icon">per<wbr>Pixel<wbr>Target<wbr>Find</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="nodeobject.html#ports" class="tsd-kind-icon">ports</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="nodeobject.html#rotatingpointoffset" class="tsd-kind-icon">rotating<wbr>Point<wbr>Offset</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="nodeobject.html#rotation" class="tsd-kind-icon">rotation</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="nodeobject.html#scalex" class="tsd-kind-icon">scaleX</a></li>
@@ -684,7 +686,7 @@
 					<div class="tsd-signature tsd-kind-icon">color<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L22">src/canvas/objects/Node.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L23">src/canvas/objects/Node.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -694,7 +696,7 @@
 					<div class="tsd-signature tsd-kind-icon">configuration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L28">src/canvas/objects/Node.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L29">src/canvas/objects/Node.ts:29</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -789,7 +791,41 @@
 					<div class="tsd-signature tsd-kind-icon">create<wbr>From<wbr>Port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, top<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="portobject.html" class="tsd-signature-type">PortObject</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L33">src/canvas/objects/Node.ts:33</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L36">src/canvas/objects/Node.ts:36</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, top<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="portobject.html" class="tsd-signature-type">PortObject</a><span class="tsd-signature-symbol">[]</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>left: <span class="tsd-signature-type">number</span></h5>
+											</li>
+											<li>
+												<h5>top: <span class="tsd-signature-type">number</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <a href="portobject.html" class="tsd-signature-type">PortObject</a><span class="tsd-signature-symbol">[]</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="createports" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> create<wbr>Ports</h3>
+					<div class="tsd-signature tsd-kind-icon">create<wbr>Ports<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, top<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="portobject.html" class="tsd-signature-type">PortObject</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L34">src/canvas/objects/Node.ts:34</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -823,7 +859,7 @@
 					<div class="tsd-signature tsd-kind-icon">create<wbr>ToPort<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>left<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, top<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="portobject.html" class="tsd-signature-type">PortObject</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L32">src/canvas/objects/Node.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L35">src/canvas/objects/Node.ts:35</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -890,7 +926,7 @@
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Port<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="portobject.html" class="tsd-signature-type">PortObject</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L29">src/canvas/objects/Node.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L31">src/canvas/objects/Node.ts:31</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -948,7 +984,7 @@
 					<div class="tsd-signature tsd-kind-icon">descriptor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L26">src/canvas/objects/Node.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L27">src/canvas/objects/Node.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -975,7 +1011,7 @@
 					<div class="tsd-signature tsd-kind-icon">duplicate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><a href="nodeobject.html" class="tsd-signature-type">NodeObject</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L38">src/canvas/objects/Node.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L41">src/canvas/objects/Node.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -1016,7 +1052,7 @@
 					<div class="tsd-signature tsd-kind-icon">error<wbr>Flag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">IText</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L20">src/canvas/objects/Node.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L21">src/canvas/objects/Node.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1145,7 +1181,7 @@
 					<div class="tsd-signature tsd-kind-icon">from<wbr>Port<span class="tsd-signature-symbol">:</span> <a href="portobject.html" class="tsd-signature-type">PortObject</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L25">src/canvas/objects/Node.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L26">src/canvas/objects/Node.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1155,7 +1191,7 @@
 					<div class="tsd-signature tsd-kind-icon">from<wbr>Port<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="portobject.html" class="tsd-signature-type">PortObject</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L31">src/canvas/objects/Node.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L33">src/canvas/objects/Node.ts:33</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -1356,7 +1392,7 @@
 					<div class="tsd-signature tsd-kind-icon">label<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Text</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L21">src/canvas/objects/Node.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L22">src/canvas/objects/Node.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1657,7 +1693,7 @@
 					<div class="tsd-signature tsd-kind-icon">node<wbr>Clazz<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L27">src/canvas/objects/Node.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L28">src/canvas/objects/Node.ts:28</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1987,6 +2023,16 @@
 						</div>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="ports" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> ports</h3>
+					<div class="tsd-signature tsd-kind-icon">ports<span class="tsd-signature-symbol">:</span> <a href="portobject.html" class="tsd-signature-type">PortObject</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L30">src/canvas/objects/Node.ts:30</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external">
 					<a name="rotatingpointoffset" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> rotating<wbr>Point<wbr>Offset</h3>
@@ -2060,7 +2106,7 @@
 					<div class="tsd-signature tsd-kind-icon">select<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L36">src/canvas/objects/Node.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L39">src/canvas/objects/Node.ts:39</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -2121,7 +2167,7 @@
 					<div class="tsd-signature tsd-kind-icon">set<wbr>Errors<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>errors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L34">src/canvas/objects/Node.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L37">src/canvas/objects/Node.ts:37</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -2152,7 +2198,7 @@
 					<div class="tsd-signature tsd-kind-icon">set<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L35">src/canvas/objects/Node.ts:35</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L38">src/canvas/objects/Node.ts:38</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -2496,7 +2542,7 @@
 					<div class="tsd-signature tsd-kind-icon">to<wbr>Port<span class="tsd-signature-symbol">:</span> <a href="portobject.html" class="tsd-signature-type">PortObject</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L23">src/canvas/objects/Node.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L25">src/canvas/objects/Node.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -2506,7 +2552,7 @@
 					<div class="tsd-signature tsd-kind-icon">to<wbr>Port<wbr>Option<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="portobject.html" class="tsd-signature-type">PortObject</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L30">src/canvas/objects/Node.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L32">src/canvas/objects/Node.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -2600,7 +2646,7 @@
 					<div class="tsd-signature tsd-kind-icon">unselect<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L37">src/canvas/objects/Node.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/dc55995/src/canvas/objects/Node.ts#L40">src/canvas/objects/Node.ts:40</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -4086,6 +4132,9 @@
 								<a href="nodeobject.html#createfromport" class="tsd-kind-icon">create<wbr>From<wbr>Port</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="nodeobject.html#createports" class="tsd-kind-icon">create<wbr>Ports</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="nodeobject.html#createtoport" class="tsd-kind-icon">create<wbr>ToPort</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external">
@@ -4288,6 +4337,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external">
 								<a href="nodeobject.html#perpixeltargetfind" class="tsd-kind-icon">per<wbr>Pixel<wbr>Target<wbr>Find</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="nodeobject.html#ports" class="tsd-kind-icon">ports</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited tsd-is-external">
 								<a href="nodeobject.html#rotatingpointoffset" class="tsd-kind-icon">rotating<wbr>Point<wbr>Offset</a>
