@@ -1,9 +1,9 @@
+import { Col, Form, Select, Slider, Tag } from 'antd';
 import React from 'react';
-import { Form, Slider, Col, Select, Tag } from 'antd';
-import sortBy from 'lodash/sortBy';
 
-import Icon from '../../../components/icon/Icon';
+import { sortBy } from 'lodash-es';
 import Fonts from '../../../components/font/fonts';
+import Icon from '../../../components/icon/Icon';
 
 const fonts = Fonts.getFonts();
 

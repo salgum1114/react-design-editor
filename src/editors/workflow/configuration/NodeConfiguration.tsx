@@ -1,6 +1,6 @@
 import { Col, Form, Input, InputNumber, Select, Switch, Tooltip } from 'antd';
 import i18n from 'i18next';
-import isEmpty from 'lodash/isEmpty';
+import { isEmpty } from 'lodash-es';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { CanvasInstance } from '../../../canvas';

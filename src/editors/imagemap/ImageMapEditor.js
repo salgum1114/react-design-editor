@@ -1,6 +1,6 @@
 import { Badge, Button, Menu, Popconfirm } from 'antd';
 import i18n from 'i18next';
-import debounce from 'lodash/debounce';
+import { debounce } from 'lodash-es';
 import React, { Component } from 'react';
 import Canvas from '../../canvas/Canvas';
 import CommonButton from '../../components/common/CommonButton';

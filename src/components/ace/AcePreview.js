@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
-class AcePreview extends Component {
+class AcePreview extends React.Component {
 	static propTypes = {
 		html: PropTypes.string,
 		css: PropTypes.string,
@@ -50,7 +50,7 @@ class AcePreview extends Component {
 	render() {
 		return (
 			<div
-				ref={(c) => {
+				ref={c => {
 					this.container = c;
 				}}
 				id="code-preview"

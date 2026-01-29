@@ -1,5 +1,6 @@
 import { message, Popconfirm } from 'antd';
 import i18n from 'i18next';
+import { debounce } from 'lodash-es';
 import React from 'react';
 import { FabricObject } from '../../canvas';
 import Canvas, { CanvasInstance } from '../../canvas/Canvas';
@@ -223,7 +224,7 @@ class WorkflowEditor extends React.Component {
 				this.hideLoading();
 			}
 		},
-		onChange: (selectedItem, changedValues, allValues) => {
+		onChange: debounce((selectedItem, changedValues, allValues) => {
 			if (!this.state.editing) {
 				this.changeEditing(true);
 			}
@@ -255,8 +256,9 @@ class WorkflowEditor extends React.Component {
 				if (selectedItem.descriptor.outPortType === OUT_PORT_TYPE.DYNAMIC) {
 					this.canvasRef.handler.portHandler.recreate(selectedItem);
 				}
+				this.canvasRef.handler.transactionHandler.save('configuration');
 			}
-		},
+		}, 200),
 	};
 
 	showLoading = () => {

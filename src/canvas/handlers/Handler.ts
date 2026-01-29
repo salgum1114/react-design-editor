@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import { union } from 'lodash';
+import { union } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 import warning from 'warning';
 import CanvasObject from '../CanvasObject';

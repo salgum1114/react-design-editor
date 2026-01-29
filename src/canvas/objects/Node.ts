@@ -3,6 +3,7 @@ import { fabric } from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { FabricObject } from '../models';
 import { fitTextToRect } from '../utils';
+import { CustomControlObject } from './CustomControl';
 import FromPort from './FromPort';
 import { LinkObject } from './Link';
 import Port, { PortObject } from './Port';
@@ -25,13 +26,15 @@ export interface NodeObject extends FabricObject<fabric.Group> {
 	toPort?: PortObject;
 	fromPort?: PortObject[];
 	descriptor?: Record<string, any>;
+	ports?: PortObject[];
 	nodeClazz?: string;
 	configuration?: Record<string, any>;
-	ports?: PortObject[];
+	handlers?: PortObject[];
+	customControls?: CustomControlObject[];
 	defaultPortOption?: () => Partial<PortObject>;
 	toPortOption?: () => Partial<PortObject>;
 	fromPortOption?: () => Partial<PortObject>;
-	createPorts?: (left: number, top: number) => PortObject[];
+	createCustomControls?: (left: number, top: number) => CustomControlObject[];
 	createToPort?: (left: number, top: number) => PortObject;
 	createFromPort?: (left: number, top: number) => PortObject[];
 	setErrors?: (errors: any) => void;
@@ -230,7 +233,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 		].join(' ');
 		return new fabric.Path(path, other);
 	},
-	createPorts(left: number, top: number) {
+	createCustomControls(left: number, top: number) {
 		const spinner = new Spinner({
 			left,
 			top,
@@ -238,9 +241,9 @@ const Node = fabric.util.createClass(fabric.Group, {
 			fill: '#FFD700',
 			transaciton: false,
 		});
-		this.ports = [spinner];
+		this.customControls = [spinner];
 		spinner.setPosition(left, top);
-		return this.ports;
+		return this.customControls;
 	},
 	createToPort(left: number, top: number) {
 		if (this.descriptor.inEnabled) {

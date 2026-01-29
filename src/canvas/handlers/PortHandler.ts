@@ -1,5 +1,4 @@
 import { NodeObject } from '../objects/Node';
-import { PortObject } from '../objects/Port';
 import AbstractHandler from './AbstractHandler';
 
 class PortHandler extends AbstractHandler {
@@ -12,12 +11,6 @@ class PortHandler extends AbstractHandler {
 	 * @param {NodeObject} target
 	 */
 	create = (target: NodeObject) => {
-		const ports = target.createPorts?.(target.left, target.top);
-		ports?.forEach(p => {
-			this.handler.canvas.add(p);
-			this.handler.canvas.bringToFront(p);
-			p.setCoords();
-		});
 		const toPort = target.createToPort?.(target.left + target.width / 2, target.top);
 		if (toPort) {
 			toPort.on('mouseover', () => {
@@ -80,9 +73,6 @@ class PortHandler extends AbstractHandler {
 	 * @param {NodeObject} target
 	 */
 	setCoords = (target: NodeObject) => {
-		target.ports?.forEach(port => {
-			port.setPosition(target.left, target.top);
-		});
 		if (target.toPort) {
 			const left = target.left + target.width / 2;
 			const top = target.top;
@@ -125,14 +115,11 @@ class PortHandler extends AbstractHandler {
 	 * @param {NodeObject} target
 	 */
 	recreate = (target: NodeObject) => {
-		const { fromPort, toPort } = target;
-		const ports = target.ports as PortObject[];
-		if (ports) {
-			ports.forEach(port => {
-				target.removeWithUpdate(port);
-				this.handler.canvas.remove(port.fromPort);
-			});
-		}
+		const { fromPort, toPort, ports } = target;
+		ports?.forEach(port => {
+			target.removeWithUpdate(port);
+			this.handler.canvas.remove(port.fromPort);
+		});
 		this.handler.canvas.remove(target.toPort);
 		if (target.toPort) {
 			target.toPort.links.forEach(link => this.handler.linkHandler.remove(link, 'from'));
@@ -166,7 +153,6 @@ class PortHandler extends AbstractHandler {
 					}
 				});
 			});
-		this.handler.transactionHandler.save('modified');
 	};
 }
 

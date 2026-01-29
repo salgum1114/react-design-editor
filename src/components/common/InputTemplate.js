@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import ReactAce from 'react-ace';
 
 import 'ace-builds/src-noconflict/mode-handlebars';
 import 'ace-builds/src-noconflict/theme-github';
 
-class InputTemplate extends Component {
+class InputTemplate extends React.Component {
 	static propTypes = {
 		defaultValue: PropTypes.string,
 		value: PropTypes.string,

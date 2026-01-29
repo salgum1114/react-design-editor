@@ -1,4 +1,4 @@
-import debounce from 'lodash/debounce';
+import { debounce } from 'lodash-es';
 import type { FabricObject } from '../models';
 import type Handler from './Handler';
 

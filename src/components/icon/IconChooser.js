@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import debounce from 'lodash/debounce';
-import { Button, Modal, Form, Col, Row, Input } from 'antd';
+import { Button, Col, Form, Input, Modal, Row } from 'antd';
 import i18n from 'i18next';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-import Icon from './Icon';
+import { debounce } from 'lodash-es';
 import icons from '../../libs/fontawesome-5.2.0/metadata/icons.json';
+import Icon from './Icon';
 
 class IconChooser extends Component {
 	handlers = {

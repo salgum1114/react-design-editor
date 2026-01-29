@@ -1,9 +1,9 @@
 import { fabric } from 'fabric';
-import sortBy from 'lodash/sortBy';
-import throttle from 'lodash/throttle';
+import { sortBy, throttle } from 'lodash-es';
 import { FabricObject } from '../models';
 import { NodeObject } from '../objects/Node';
 import AbstractHandler from './AbstractHandler';
+import Handler from './Handler';
 
 export type TransactionType =
 	| 'add'
@@ -22,7 +22,8 @@ export type TransactionType =
 	| 'sendToBack'
 	| 'redo'
 	| 'undo'
-	| 'layout';
+	| 'layout'
+	| 'configuration';
 
 export interface TransactionTransform {
 	scaleX?: number;
@@ -43,14 +44,25 @@ export interface TransactionEvent {
 	type: TransactionType;
 }
 
+type StickyNodeFields = Partial<{
+	configuration: any;
+	name: string;
+	description: string;
+}>;
+
 class TransactionHandler extends AbstractHandler {
 	private readonly MAX_HISTORY_SIZE = 30;
+
 	private currentObjects: FabricObject[] = [];
 	redos: TransactionEvent[];
 	undos: TransactionEvent[];
 	active: boolean = false;
 
-	constructor(handler: any) {
+	// Sticky fields must always remain at the latest value (NOT part of undo/redo)
+	// nodeId -> { configuration, name, description }
+	private latestNodeSticky = new Map<string, StickyNodeFields>();
+
+	constructor(handler: Handler) {
 		super(handler);
 		this.initialize();
 	}
@@ -63,6 +75,7 @@ class TransactionHandler extends AbstractHandler {
 		this.undos = [];
 		this.currentObjects = [];
 		this.active = false;
+		this.latestNodeSticky.clear();
 	};
 
 	private sortObjects = (objects: FabricObject[]) => {
@@ -75,7 +88,13 @@ class TransactionHandler extends AbstractHandler {
 	public setDefaultObjects = (objects: FabricObject[]) => {
 		this.undos = [];
 		this.redos = [];
-		this.currentObjects = this.sortObjects(this.normalizeObjects(objects));
+
+		const normalized = this.sortObjects(this.normalizeObjects(objects));
+
+		// Seed sticky fields from initial state
+		this.captureLatestStickyFromSnapshot(normalized);
+
+		this.currentObjects = normalized;
 	};
 
 	private normalizeObjects = (objects: FabricObject[]) => {
@@ -99,28 +118,113 @@ class TransactionHandler extends AbstractHandler {
 		});
 	};
 
+	/** Deep clone helper (avoid reference sharing across snapshots). */
+	private cloneDeep<T>(v: T): T {
+		// eslint-disable-next-line no-undef
+		if (typeof structuredClone === 'function') return structuredClone(v);
+		return JSON.parse(JSON.stringify(v));
+	}
+
+	/**
+	 * Capture sticky fields from a snapshot.
+	 * If nodeId is provided, capture only that node.
+	 *
+	 * NOTE: We use `"field" in obj` to allow clearing values (setting undefined/null)
+	 * while still being captured/applied consistently.
+	 */
+	private captureLatestStickyFromSnapshot = (objects: FabricObject[], nodeId?: string) => {
+		for (const obj of objects || []) {
+			if (!obj) continue;
+			if (obj.superType !== 'node') continue;
+
+			const anyObj = obj as any;
+			const id = anyObj.id as string | undefined;
+			if (!id) continue;
+
+			if (nodeId && id !== nodeId) continue;
+
+			const prev = this.latestNodeSticky.get(id) ?? {};
+			const next: StickyNodeFields = { ...prev };
+
+			// configuration
+			if ('configuration' in anyObj) next.configuration = this.cloneDeep(anyObj.configuration);
+
+			// name
+			if ('name' in anyObj) next.name = anyObj.name;
+
+			// description
+			if ('description' in anyObj) next.description = anyObj.description;
+
+			this.latestNodeSticky.set(id, next);
+		}
+	};
+
+	/**
+	 * Apply sticky fields into a snapshot before enlivening.
+	 * This guarantees node.configuration/name/description always stay at newest values even after undo/redo.
+	 */
+	private applyLatestStickyToSnapshot = (objects: FabricObject[]) => {
+		for (const obj of objects || []) {
+			if (!obj) continue;
+			if (obj.superType !== 'node') continue;
+
+			const anyObj = obj as any;
+			const id = anyObj.id as string | undefined;
+			if (!id) continue;
+
+			const sticky = this.latestNodeSticky.get(id);
+			if (!sticky) continue;
+
+			// Apply only keys that exist in the cache object.
+			if (Object.prototype.hasOwnProperty.call(sticky, 'configuration')) {
+				anyObj.configuration = this.cloneDeep(sticky.configuration);
+			}
+			if (Object.prototype.hasOwnProperty.call(sticky, 'name')) {
+				anyObj.name = this.cloneDeep(sticky.name);
+			}
+			if (Object.prototype.hasOwnProperty.call(sticky, 'description')) {
+				anyObj.description = this.cloneDeep(sticky.description);
+			}
+		}
+	};
+
 	/**
 	 * Save transaction
 	 *
-	 * @param {TransactionType} type
+	 * Rules:
+	 * - type === 'configuration': update sticky cache (configuration/name/description)
+	 *   and DO NOT push to undos/redos (NOT part of undo/redo),
+	 *   and DO NOT clear redo stack (redo remains possible).
+	 * - other types: normal history behavior (push to undos, clear redos).
 	 */
-	public save = (type: TransactionType) => {
-		if (!this.handler.canvasActions.transaction) {
-			return;
-		}
-		try {
-			const prevJson = JSON.stringify(this.currentObjects);
+	public save = (type: TransactionType, nodeId?: string) => {
+		if (!this.handler.canvasActions.transaction) return;
 
+		try {
+			// Always read fresh canvas state first.
+			const objects = this.handler.canvas.toJSON(this.handler.propertiesToInclude).objects as FabricObject[];
+			const normalized = this.sortObjects(this.normalizeObjects(objects));
+
+			if (type === 'configuration') {
+				// Update sticky cache (optionally for a single node)
+				this.captureLatestStickyFromSnapshot(normalized, nodeId);
+
+				// Keep internal snapshot in sync, but do NOT touch undos/redos (redo stays valid)
+				this.currentObjects = normalized;
+				return;
+			}
+
+			// Normal transactions go into history and invalidate redo.
+			const prevJson = JSON.stringify(this.currentObjects);
 			this.redos = [];
+
 			this.undos.push({ type, json: prevJson });
 			if (this.undos.length > this.MAX_HISTORY_SIZE) {
 				this.undos.shift();
 			}
 
-			const objects = this.handler.canvas.toJSON(this.handler.propertiesToInclude).objects as FabricObject[];
-
-			const normalized = this.normalizeObjects(objects);
-			this.currentObjects = this.sortObjects(normalized);
+			// Update current snapshot
+			this.currentObjects = normalized;
 		} catch (error) {
 			console.error(error);
 		}
@@ -131,9 +235,8 @@ class TransactionHandler extends AbstractHandler {
 	 */
 	public undo = throttle(() => {
 		const undo = this.undos.pop();
-		if (!undo) {
-			return;
-		}
+		if (!undo) return;
+
 		try {
 			this.redos.push({
 				type: 'redo',
@@ -150,9 +253,8 @@ class TransactionHandler extends AbstractHandler {
 	 */
 	public redo = throttle(() => {
 		const redo = this.redos.pop();
-		if (!redo) {
-			return;
-		}
+		if (!redo) return;
+
 		try {
 			this.undos.push({
 				type: 'undo',
@@ -171,16 +273,25 @@ class TransactionHandler extends AbstractHandler {
 	 */
 	public replay = (transaction: TransactionEvent) => {
 		try {
-			this.currentObjects = this.normalizeObjects(JSON.parse(transaction.json) as FabricObject[]);
+			const parsed = JSON.parse(transaction.json) as FabricObject[];
+			const normalized = this.normalizeObjects(parsed);
+
+			// Enforce sticky fields (configuration/name/description) before enlivening
+			this.applyLatestStickyToSnapshot(normalized);
+
+			this.currentObjects = normalized;
+
 			this.active = true;
 			this.handler.canvas.renderOnAddRemove = false;
 			this.handler.clear();
 			this.handler.canvas.discardActiveObject();
+
 			fabric.util.enlivenObjects(
 				this.currentObjects,
 				(enlivenObjects: FabricObject[]) => {
 					enlivenObjects.forEach(obj => {
 						const targetIndex = this.handler.canvas._objects.length;
+
 						if (obj.superType === 'node') {
 							const node = obj as NodeObject;
 							this.handler.canvas.insertAt(node, targetIndex, false);
@@ -189,15 +300,16 @@ class TransactionHandler extends AbstractHandler {
 							this.handler.objects = this.handler.getObjects();
 							this.handler.linkHandler.create({
 								type: 'link',
-								fromNodeId: obj.fromNode?.id,
-								fromPortId: obj.fromPort?.id,
-								toNodeId: obj.toNode?.id,
-								toPortId: obj.toPort?.id,
+								fromNodeId: (obj as any).fromNode?.id,
+								fromPortId: (obj as any).fromPort?.id,
+								toNodeId: (obj as any).toNode?.id,
+								toPortId: (obj as any).toPort?.id,
 							});
 						} else {
 							this.handler.canvas.insertAt(obj, targetIndex, false);
 						}
 					});
+
 					this.active = false;
 					this.handler.canvas.renderOnAddRemove = true;
 					this.handler.canvas.renderAll();

@@ -3,6 +3,7 @@ export { default as Chart } from './Chart';
 export { default as CirclePort } from './CirclePort';
 export { default as Cube } from './Cube';
 export { default as CurvedLink } from './CurvedLink';
+export { default as CustomControl, type CustomControlObject } from './CustomControl';
 export { default as Element } from './Element';
 export { default as FromPort } from './FromPort';
 export { default as Gif } from './Gif';

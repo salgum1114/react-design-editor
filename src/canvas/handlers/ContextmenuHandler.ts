@@ -1,5 +1,5 @@
+import { debounce } from 'lodash-es';
 import ReactDOM from 'react-dom';
-import debounce from 'lodash/debounce';
 
 import { Handler } from '.';
 

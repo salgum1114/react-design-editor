@@ -15,7 +15,7 @@ import { extractDefaultsJsonSchema, parseBoolean, sessionStorage, simpleid } fro
 import { Collapse, Input, Popover } from 'antd';
 import clsx from 'clsx';
 import { fabric } from 'fabric';
-import memoize from 'lodash/memoize';
+import { memoize } from 'lodash-es';
 import React, { Component } from 'react';
 import { CanvasInstance, LinkObject } from 'react-design-editor';
 import { connect, ConnectedProps } from 'react-redux';

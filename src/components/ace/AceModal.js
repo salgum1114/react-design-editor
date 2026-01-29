@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import { Button, Form, Modal, notification } from 'antd';
 import PropTypes from 'prop-types';
-import { Form, Modal, Button, notification } from 'antd';
+import React from 'react';
 import Icon from '../icon/Icon';
 import AceEditor from './AceEditor';
 
@@ -9,7 +9,7 @@ notification.config({
 	duration: 1,
 });
 
-class AceModal extends Component {
+class AceModal extends React.Component {
 	static propTypes = {
 		value: PropTypes.any,
 		onChange: PropTypes.func,
@@ -104,7 +104,7 @@ class AceModal extends Component {
 				</Form.Item>
 				<Modal onCancel={onCancel} onOk={onOk} visible={visible} width="80%">
 					<AceEditor
-						ref={(c) => {
+						ref={c => {
 							this.aceRef = c;
 						}}
 						html={html}
