@@ -111,10 +111,8 @@ class NodeHandler extends AbstractHandler {
 			}
 			obj.set({ opacity: 0.2 });
 			if (obj.superType === 'node') {
-				if (obj.toPort) {
-					obj.toPort.set({ opacity: 0.2 });
-				}
-				obj.fromPort.forEach((port: any) => port.set({ opacity: 0.2 }));
+				obj.toPort?.set({ opacity: 0.2 });
+				obj.fromPort?.forEach((port: any) => port.set({ opacity: 0.2 }));
 			}
 			if (!obj.animating) {
 				obj.set('shadow', { blur: 0 });
@@ -123,12 +121,8 @@ class NodeHandler extends AbstractHandler {
 		targetObjects.forEach((obj: any) => {
 			obj.set({ opacity: 1, shadow: { color: obj.color || obj.fill } });
 			this.highlightingNode(obj, options);
-			if (obj.toPort) {
-				obj.toPort.set({ opacity: 1 });
-			}
-			if (obj.fromPort) {
-				obj.fromPort.forEach((port: any) => port.set({ opacity: 1 }));
-			}
+			obj.toPort?.set({ opacity: 1 });
+			obj.fromPort?.forEach((port: any) => port.set({ opacity: 1 }));
 		});
 		this.handler.canvas.requestRenderAll();
 	};
@@ -158,9 +152,8 @@ class NodeHandler extends AbstractHandler {
 			obj.set({ opacity: 1 });
 			if (obj.superType === 'node') {
 				const node = obj as NodeObject;
-				if (node.toPort) {
-					node.toPort.set({ opacity: 1 });
-				}
+				node.toPort?.set({ opacity: 1 });
+				node.fromPort?.forEach(port => port.set({ opacity: 1 }));
 			}
 			if (!obj.animating) {
 				const node = obj as FabricObject;
