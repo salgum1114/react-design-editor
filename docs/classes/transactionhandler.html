@@ -97,6 +97,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="transactionhandler.html#canvas" class="tsd-kind-icon">canvas</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="transactionhandler.html#currentobjects" class="tsd-kind-icon">current<wbr>Objects</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external"><a href="transactionhandler.html#handler" class="tsd-kind-icon">handler</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="transactionhandler.html#latestnodesticky" class="tsd-kind-icon">latest<wbr>Node<wbr>Sticky</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#redo" class="tsd-kind-icon">redo</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#redos" class="tsd-kind-icon">redos</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#undo" class="tsd-kind-icon">undo</a></li>
@@ -106,8 +107,11 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="transactionhandler.html#applylateststickytosnapshot" class="tsd-kind-icon">apply<wbr>Latest<wbr>Sticky<wbr>ToSnapshot</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#canredo" class="tsd-kind-icon">can<wbr>Redo</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#canundo" class="tsd-kind-icon">can<wbr>Undo</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="transactionhandler.html#capturelateststickyfromsnapshot" class="tsd-kind-icon">capture<wbr>Latest<wbr>Sticky<wbr>From<wbr>Snapshot</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-private tsd-is-external"><a href="transactionhandler.html#clonedeep" class="tsd-kind-icon">clone<wbr>Deep</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-external"><a href="transactionhandler.html#initialize" class="tsd-kind-icon">initialize</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="transactionhandler.html#normalizeobjects" class="tsd-kind-icon">normalize<wbr>Objects</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="transactionhandler.html#replay" class="tsd-kind-icon">replay</a></li>
@@ -125,20 +129,20 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Transaction<wbr>Handler<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="transactionhandler.html" class="tsd-signature-type">TransactionHandler</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Transaction<wbr>Handler<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="handler.html" class="tsd-signature-type">Handler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="transactionhandler.html" class="tsd-signature-type">TransactionHandler</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L51">src/canvas/handlers/TransactionHandler.ts:51</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L63">src/canvas/handlers/TransactionHandler.ts:63</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>handler: <span class="tsd-signature-type">any</span></h5>
+									<h5>handler: <a href="handler.html" class="tsd-signature-type">Handler</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="transactionhandler.html" class="tsd-signature-type">TransactionHandler</a></h4>
@@ -154,7 +158,7 @@
 					<div class="tsd-signature tsd-kind-icon">MAX_<wbr>HISTORY_<wbr>SIZE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">30</span><span class="tsd-signature-symbol"> = 30</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L47">src/canvas/handlers/TransactionHandler.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L54">src/canvas/handlers/TransactionHandler.ts:54</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -164,7 +168,7 @@
 					<div class="tsd-signature tsd-kind-icon">active<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L51">src/canvas/handlers/TransactionHandler.ts:51</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L59">src/canvas/handlers/TransactionHandler.ts:59</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -185,7 +189,7 @@
 					<div class="tsd-signature tsd-kind-icon">current<wbr>Objects<span class="tsd-signature-symbol">:</span> <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L48">src/canvas/handlers/TransactionHandler.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L56">src/canvas/handlers/TransactionHandler.ts:56</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -200,13 +204,23 @@
 						</ul>
 					</aside>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="latestnodesticky" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> latest<wbr>Node<wbr>Sticky</h3>
+					<div class="tsd-signature tsd-kind-icon">latest<wbr>Node<wbr>Sticky<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Map&lt;string, StickyNodeFields&gt;()</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L63">src/canvas/handlers/TransactionHandler.ts:63</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="redo" class="tsd-anchor"></a>
 					<h3>redo</h3>
-					<div class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFuncLeading</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = throttle(() &#x3D;&gt; {const redo &#x3D; this.redos.pop();if (!redo) {return;}try {this.undos.push({type: &#x27;undo&#x27;,json: JSON.stringify(this.currentObjects),});this.replay(redo);} catch (error) {console.error(&#x27;[TransactionHandler] Redo failed:&#x27;, error);}}, 100)</span></div>
+					<div class="tsd-signature tsd-kind-icon">redo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFuncLeading</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = throttle(() &#x3D;&gt; {const redo &#x3D; this.redos.pop();if (!redo) return;try {this.undos.push({type: &#x27;undo&#x27;,json: JSON.stringify(this.currentObjects),});this.replay(redo);} catch (error) {console.error(&#x27;[TransactionHandler] Redo failed:&#x27;, error);}}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L151">src/canvas/handlers/TransactionHandler.ts:151</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L254">src/canvas/handlers/TransactionHandler.ts:254</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -221,17 +235,17 @@
 					<div class="tsd-signature tsd-kind-icon">redos<span class="tsd-signature-symbol">:</span> <a href="../interfaces/transactionevent.html" class="tsd-signature-type">TransactionEvent</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L49">src/canvas/handlers/TransactionHandler.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L57">src/canvas/handlers/TransactionHandler.ts:57</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="undo" class="tsd-anchor"></a>
 					<h3>undo</h3>
-					<div class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFuncLeading</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = throttle(() &#x3D;&gt; {const undo &#x3D; this.undos.pop();if (!undo) {return;}try {this.redos.push({type: &#x27;redo&#x27;,json: JSON.stringify(this.currentObjects),});this.replay(undo);} catch (error) {console.error(&#x27;[TransactionHandler] Undo failed:&#x27;, error);}}, 100)</span></div>
+					<div class="tsd-signature tsd-kind-icon">undo<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFuncLeading</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = throttle(() &#x3D;&gt; {const undo &#x3D; this.undos.pop();if (!undo) return;try {this.redos.push({type: &#x27;redo&#x27;,json: JSON.stringify(this.currentObjects),});this.replay(undo);} catch (error) {console.error(&#x27;[TransactionHandler] Undo failed:&#x27;, error);}}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L132">src/canvas/handlers/TransactionHandler.ts:132</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L236">src/canvas/handlers/TransactionHandler.ts:236</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -246,13 +260,42 @@
 					<div class="tsd-signature tsd-kind-icon">undos<span class="tsd-signature-symbol">:</span> <a href="../interfaces/transactionevent.html" class="tsd-signature-type">TransactionEvent</a><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L50">src/canvas/handlers/TransactionHandler.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L58">src/canvas/handlers/TransactionHandler.ts:58</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="applylateststickytosnapshot" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> apply<wbr>Latest<wbr>Sticky<wbr>ToSnapshot</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">apply<wbr>Latest<wbr>Sticky<wbr>ToSnapshot<span class="tsd-signature-symbol">(</span>objects<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L166">src/canvas/handlers/TransactionHandler.ts:166</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Apply sticky fields into a snapshot before enlivening.
+									This guarantees node.configuration/name/description always stay at newest values even after undo/redo.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>objects: <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="canredo" class="tsd-anchor"></a>
 					<h3>can<wbr>Redo</h3>
@@ -263,7 +306,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L215">src/canvas/handlers/TransactionHandler.ts:215</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L327">src/canvas/handlers/TransactionHandler.ts:327</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -280,10 +323,78 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L214">src/canvas/handlers/TransactionHandler.ts:214</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L326">src/canvas/handlers/TransactionHandler.ts:326</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="capturelateststickyfromsnapshot" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> capture<wbr>Latest<wbr>Sticky<wbr>From<wbr>Snapshot</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">capture<wbr>Latest<wbr>Sticky<wbr>From<wbr>Snapshot<span class="tsd-signature-symbol">(</span>objects<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">[]</span>, nodeId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L135">src/canvas/handlers/TransactionHandler.ts:135</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Capture sticky fields from a snapshot.
+									If nodeId is provided, capture only that node.</p>
+								</div>
+								<p>NOTE: We use <code>&quot;field&quot; in obj</code> to allow clearing values (setting undefined/null)
+								while still being captured/applied consistently.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>objects: <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> nodeId: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-private tsd-is-external">
+					<a name="clonedeep" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> clone<wbr>Deep</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-private tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">clone<wbr>Deep&lt;T&gt;<span class="tsd-signature-symbol">(</span>v<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L122">src/canvas/handlers/TransactionHandler.ts:122</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Deep clone helper (avoid reference sharing across snapshots).</p>
+								</div>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T</h4>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>v: <span class="tsd-signature-type">T</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">T</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -298,7 +409,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="abstracthandler.html">AbstractHandler</a>.<a href="abstracthandler.html#initialize">initialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L61">src/canvas/handlers/TransactionHandler.ts:61</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L73">src/canvas/handlers/TransactionHandler.ts:73</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -320,7 +431,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L81">src/canvas/handlers/TransactionHandler.ts:81</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L100">src/canvas/handlers/TransactionHandler.ts:100</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -343,7 +454,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L172">src/canvas/handlers/TransactionHandler.ts:172</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L274">src/canvas/handlers/TransactionHandler.ts:274</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -369,28 +480,34 @@
 					<a name="save" class="tsd-anchor"></a>
 					<h3>save</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">save<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">save<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">: </span><a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a>, nodeId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L107">src/canvas/handlers/TransactionHandler.ts:107</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L200">src/canvas/handlers/TransactionHandler.ts:200</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Save transaction</p>
 								</div>
+								<p>Rules:</p>
+								<ul>
+									<li>type === &#39;configuration&#39;: update sticky cache (configuration/name/description)
+										and DO NOT push to undos/redos (NOT part of undo/redo),
+									and DO NOT clear redo stack (redo remains possible).</li>
+									<li>other types: normal history behavior (push to undos, clear redos).</li>
+								</ul>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>type: <a href="../globals.html#transactiontype" class="tsd-signature-type">TransactionType</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-										</div>
-									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> nodeId: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -407,7 +524,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L75">src/canvas/handlers/TransactionHandler.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L88">src/canvas/handlers/TransactionHandler.ts:88</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -430,7 +547,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L68">src/canvas/handlers/TransactionHandler.ts:68</a></li>
+									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/e5f7c7a/src/canvas/handlers/TransactionHandler.ts#L81">src/canvas/handlers/TransactionHandler.ts:81</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -478,6 +595,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected tsd-is-external">
 								<a href="transactionhandler.html#handler" class="tsd-kind-icon">handler</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="transactionhandler.html#latestnodesticky" class="tsd-kind-icon">latest<wbr>Node<wbr>Sticky</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#redo" class="tsd-kind-icon">redo</a>
 							</li>
@@ -490,11 +610,20 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#undos" class="tsd-kind-icon">undos</a>
 							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="transactionhandler.html#applylateststickytosnapshot" class="tsd-kind-icon">apply<wbr>Latest<wbr>Sticky<wbr>ToSnapshot</a>
+							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#canredo" class="tsd-kind-icon">can<wbr>Redo</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 								<a href="transactionhandler.html#canundo" class="tsd-kind-icon">can<wbr>Undo</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="transactionhandler.html#capturelateststickyfromsnapshot" class="tsd-kind-icon">capture<wbr>Latest<wbr>Sticky<wbr>From<wbr>Snapshot</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-private tsd-is-external">
+								<a href="transactionhandler.html#clonedeep" class="tsd-kind-icon">clone<wbr>Deep</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-protected tsd-is-external">
 								<a href="transactionhandler.html#initialize" class="tsd-kind-icon">initialize</a>
