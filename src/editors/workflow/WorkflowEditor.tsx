@@ -244,6 +244,7 @@ class WorkflowEditor extends React.Component {
 					} else {
 						selectedItem?.setErrors(false);
 					}
+					this.canvasRef.handler.transactionHandler.save('configuration');
 					this.canvasRef.canvas.renderAll();
 				}, 0);
 				const configuration = Object.assign({}, selectedItem?.configuration, changedValues.configuration);

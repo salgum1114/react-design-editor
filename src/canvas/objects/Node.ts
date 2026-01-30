@@ -107,7 +107,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 			left: this.nodeIcon.left + this.nodeIcon.width + 10,
 			top: this.nodeIcon.top + this.nodeIcon.height / 2 - this.label.height / 2,
 		});
-		this.errorFlag.set({ visible: options.errors });
+		this.setErrors(options.errors);
 		if (options.descriptor.actionButton) {
 			this.button.set({
 				left: this.rect.left + this.rect.width - this.button.width + 1,
@@ -359,6 +359,7 @@ const Node = fabric.util.createClass(fabric.Group, {
 			cloneable: this.get('cloneable'),
 			fromPort: this.get('fromPort'),
 			toPort: this.get('toPort'),
+			errors: this.get('errors'),
 		});
 	},
 	_render(ctx: CanvasRenderingContext2D) {

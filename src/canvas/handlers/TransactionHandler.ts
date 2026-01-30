@@ -48,6 +48,7 @@ type StickyNodeFields = Partial<{
 	configuration: any;
 	name: string;
 	description: string;
+	errors: any;
 }>;
 
 class TransactionHandler extends AbstractHandler {
@@ -155,6 +156,9 @@ class TransactionHandler extends AbstractHandler {
 			// description
 			if ('description' in anyObj) next.description = anyObj.description;
 
+			// errors
+			if ('errors' in anyObj) next.errors = this.cloneDeep(anyObj.errors);
+
 			this.latestNodeSticky.set(id, next);
 		}
 	};
@@ -180,10 +184,13 @@ class TransactionHandler extends AbstractHandler {
 				anyObj.configuration = this.cloneDeep(sticky.configuration);
 			}
 			if (Object.prototype.hasOwnProperty.call(sticky, 'name')) {
-				anyObj.name = this.cloneDeep(sticky.name);
+				anyObj.name = sticky.name;
 			}
 			if (Object.prototype.hasOwnProperty.call(sticky, 'description')) {
-				anyObj.description = this.cloneDeep(sticky.description);
+				anyObj.description = sticky.description;
+			}
+			if (Object.prototype.hasOwnProperty.call(sticky, 'errors')) {
+				anyObj.errors = this.cloneDeep(sticky.errors);
 			}
 		}
 	};
