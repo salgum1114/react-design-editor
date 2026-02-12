@@ -142,8 +142,8 @@ class LinkHandler {
 		}
 		this.handler.canvas.renderAll();
 		link.setPort(fromNode, fromPort, toNode, toPort);
-		fromPort.setConnected?.(true);
-		toPort.setConnected?.(true);
+		fromPort?.setConnected?.(true);
+		toPort?.setConnected?.(true);
 		this.handler.portHandler.setCoords(fromNode);
 		this.handler.portHandler.setCoords(toNode);
 		this.handler.canvas.requestRenderAll();
