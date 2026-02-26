@@ -60,7 +60,8 @@ class FileUpload extends Component {
 			beforeUpload: file => {
 				const isLimit = file.size / 1024 / 1024 < limit;
 				if (!isLimit) {
-					return false;
+					message.error(`Limited to ${limit}MB or less`);
+					return Upload.LIST_IGNORE;
 				}
 				this.setState({
 					fileList: [file],
