@@ -78,7 +78,6 @@ class PortHandler extends AbstractHandler {
 			const top = target.top;
 
 			target.toPort.setPosition(left, top);
-			target.toPort.setCoords();
 
 			if (target.toPort.links.length) {
 				target.toPort.links.forEach(link => {
@@ -99,7 +98,6 @@ class PortHandler extends AbstractHandler {
 				const top = port.topDiff ? fromCoords.top + port.topDiff : fromCoords.top;
 
 				port.setPosition(left, top);
-				port.setCoords();
 
 				if (port.links.length) {
 					port.links.forEach(link => {

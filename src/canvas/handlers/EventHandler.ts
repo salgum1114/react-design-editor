@@ -194,6 +194,7 @@ class EventHandler extends AbstractHandler {
 				const el = this.handler.elementHandler.findById(id);
 				this.handler.elementHandler.setPosition(el, target);
 			}
+			this.handler.onMoving?.(target);
 		}
 	};
 

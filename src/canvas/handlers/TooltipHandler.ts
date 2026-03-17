@@ -40,7 +40,7 @@ class TooltipHandler {
 		let content: any = target.name;
 		const { onTooltip } = this.handler as any;
 		if (onTooltip) {
-			const result = await onTooltip(null, target);
+			const result = await onTooltip(target);
 			if (!result) return;
 			content = result;
 		}

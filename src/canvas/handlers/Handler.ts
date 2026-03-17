@@ -27,7 +27,7 @@ import { SvgObject } from '../objects/Svg';
 import AlignmentHandler from './AlignmentHandler';
 import AnimationHandler from './AnimationHandler';
 import ChartHandler from './ChartHandler';
-import ContextmenuHandler from './ContextmenuHandler';
+import ContextMenuHandler from './ContextMenuHandler';
 import CropHandler from './CropHandler';
 import CustomHandler from './CustomHandler';
 import DrawingHandler from './DrawingHandler';
@@ -57,12 +57,12 @@ export interface HandlerCallback {
 	 * Return contextmenu element
 	 *
 	 */
-	onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject) => Promise<any> | any;
+	onContext?: (e: MouseEvent, target?: FabricObject) => Promise<any> | any;
 	/**
 	 * Return tooltip element
 	 *
 	 */
-	onTooltip?: (el: HTMLDivElement, target?: FabricObject) => Promise<any> | any;
+	onTooltip?: (target?: FabricObject) => Promise<any> | any;
 	/**
 	 * When zoom, Called function
 	 */
@@ -72,6 +72,11 @@ export interface HandlerCallback {
 	 *
 	 */
 	onClick?: (canvas: FabricCanvas, target: FabricObject, subTarget?: FabricObject) => void;
+	/**
+	 * When moving object, called function
+	 *
+	 */
+	onMoving?: (target: FabricObject) => void;
 	/**
 	 * When double clicked object, Called function
 	 *
@@ -246,12 +251,13 @@ class Handler implements HandlerOptions {
 	public height?: number;
 
 	public onAdd?: (object: FabricObject) => void;
-	public onContext?: (el: HTMLDivElement, e: React.MouseEvent, target?: FabricObject) => Promise<any>;
-	public onTooltip?: (el: HTMLDivElement, target?: FabricObject) => Promise<any>;
+	public onContext?: (e: MouseEvent, target?: FabricObject) => Promise<any>;
+	public onTooltip?: (target?: FabricObject) => Promise<any>;
 	public onZoom?: (zoomRatio: number) => void;
 	public onClick?: (canvas: FabricCanvas, target: FabricObject, actionTarget?: FabricObject) => void;
 	public onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
 	public onModified?: (target: Partial<FabricObject>) => void;
+	public onMoving?: (target: FabricObject) => void;
 	public onSelect?: (target: FabricObject) => void;
 	public onRemove?: (target: FabricObject) => void;
 	public onTransaction?: (transaction: TransactionEvent) => void;
@@ -263,7 +269,7 @@ class Handler implements HandlerOptions {
 	public elementHandler: ElementHandler;
 	public cropHandler: CropHandler;
 	public animationHandler: AnimationHandler;
-	public contextmenuHandler: ContextmenuHandler;
+	public contextmenuHandler: ContextMenuHandler;
 	public tooltipHandler: TooltipHandler;
 	public zoomHandler: ZoomHandler;
 	public workareaHandler: WorkareaHandler;
@@ -359,6 +365,7 @@ class Handler implements HandlerOptions {
 		this.onContext = options.onContext;
 		this.onClick = options.onClick;
 		this.onModified = options.onModified;
+		this.onMoving = options.onMoving;
 		this.onDblClick = options.onDblClick;
 		this.onSelect = options.onSelect;
 		this.onRemove = options.onRemove;
@@ -378,7 +385,7 @@ class Handler implements HandlerOptions {
 		this.elementHandler = new ElementHandler(this);
 		this.cropHandler = new CropHandler(this);
 		this.animationHandler = new AnimationHandler(this);
-		this.contextmenuHandler = new ContextmenuHandler(this);
+		this.contextmenuHandler = new ContextMenuHandler(this);
 		this.tooltipHandler = new TooltipHandler(this);
 		this.zoomHandler = new ZoomHandler(this, this.zoomStep);
 		this.interactionHandler = new InteractionHandler(this);
@@ -1916,7 +1923,7 @@ class Handler implements HandlerOptions {
 	public destroy = () => {
 		this.eventHandler.destroy();
 		this.guidelineHandler.destroy();
-		this.contextmenuHandler.destory();
+		this.contextmenuHandler.destroy();
 		this.tooltipHandler.destroy();
 		this.clear(true);
 	};

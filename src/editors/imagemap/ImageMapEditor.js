@@ -353,7 +353,7 @@ class ImageMapEditor extends Component {
 			this.canvasRef.handler.workarea.set(changedKey, changedValue);
 			this.canvasRef.canvas.requestRenderAll();
 		},
-		onTooltip: (ref, target) => {
+		onTooltip: target => {
 			const value = Math.random() * 10 + 1;
 			return (
 				<div>
@@ -374,9 +374,9 @@ class ImageMapEditor extends Component {
 			}
 			window.open(link.url);
 		},
-		onContext: (ref, event, target) => {
+		onContext: (e, target) => {
 			if ((target && target.id === 'workarea') || !target) {
-				const { layerX: left, layerY: top } = event;
+				const { layerX: left, layerY: top } = e;
 				return (
 					<Menu>
 						<Menu.SubMenu key="add" style={{ width: 120 }} title={i18n.t('action.add')}>

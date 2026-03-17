@@ -1,71 +1,70 @@
 import { debounce } from 'lodash-es';
-import ReactDOM from 'react-dom';
 
 import { Handler } from '.';
+import { FabricObject } from '../models';
 
-class ContextmenuHandler {
+export type ContextMenuPayload = {
+	x: number;
+	y: number;
+	placement: 'left' | 'right';
+	content: any;
+	target?: FabricObject | null;
+};
+
+class ContextMenuHandler {
 	handler: Handler;
-	contextmenuEl: HTMLDivElement;
+
+	private openContextmenu?: (payload: ContextMenuPayload) => void;
+	private closeContextmenu?: () => void;
 
 	constructor(handler: Handler) {
 		this.handler = handler;
-		this.initialize();
 	}
 
-	/**
-	 * Initialize contextmenu
-	 *
-	 */
-	public initialize() {
-		this.contextmenuEl = document.createElement('div');
-		this.contextmenuEl.id = `${this.handler.id}_contextmenu`;
-		this.contextmenuEl.className = 'rde-contextmenu contextmenu-hidden';
-		document.body.appendChild(this.contextmenuEl);
+	public bindPortal(open: (payload: ContextMenuPayload) => void, close: () => void) {
+		this.openContextmenu = open;
+		this.closeContextmenu = close;
 	}
 
-	/**
-	 * Destroy contextmenu
-	 *
-	 */
-	public destory() {
-		if (this.contextmenuEl) {
-			document.body.removeChild(this.contextmenuEl);
-		}
+	public destroy() {
+		this.show.cancel?.();
+		this.hide.cancel?.();
+		this.closeContextmenu?.();
 	}
 
 	/**
 	 * Show context menu
-	 *
 	 */
-	public show = debounce(async (e, target) => {
-		const { onContext } = this.handler;
-		while (this.contextmenuEl.hasChildNodes()) {
-			this.contextmenuEl.removeChild(this.contextmenuEl.firstChild);
-		}
-		const contextmenu = document.createElement('div');
-		contextmenu.className = 'rde-contextmenu-right';
-		const element = await onContext(this.contextmenuEl, e, target);
-		if (!element) {
+	public show = debounce(async (e: MouseEvent, target?: FabricObject) => {
+		if (!this.openContextmenu) {
 			return;
 		}
-		contextmenu.innerHTML = element;
-		this.contextmenuEl.appendChild(contextmenu);
-		ReactDOM.render(element, contextmenu);
-		this.contextmenuEl.classList.remove('contextmenu-hidden');
-		const { clientX: left, clientY: top } = e;
-		this.contextmenuEl.style.left = `${left}px`;
-		this.contextmenuEl.style.top = `${top}px`;
+
+		const { onContext } = this.handler;
+		if (!onContext) {
+			return;
+		}
+
+		const content = await onContext(e, target);
+		if (content === null || content === undefined) {
+			return;
+		}
+
+		this.openContextmenu({
+			x: e.clientX,
+			y: e.clientY,
+			placement: 'right',
+			content,
+			target: target ?? null,
+		});
 	}, 100);
 
 	/**
 	 * Hide context menu
-	 *
 	 */
 	public hide = debounce(() => {
-		if (this.contextmenuEl) {
-			this.contextmenuEl.classList.add('contextmenu-hidden');
-		}
+		this.closeContextmenu?.();
 	}, 100);
 }
 
-export default ContextmenuHandler;
+export default ContextMenuHandler;

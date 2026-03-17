@@ -2,7 +2,7 @@ import { fabric } from 'fabric';
 import React, { Component, useRef } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { v4 as uuid } from 'uuid';
-import { TooltipPortal, TooltipState } from './components';
+import { ContextMenuPortal, ContextMenuState, TooltipPortal, TooltipState } from './components';
 import { defaults } from './constants';
 import { Handler, HandlerOptions } from './handlers';
 import { FabricCanvas } from './models';
@@ -27,6 +27,7 @@ interface IState {
 	id: string;
 	loaded: boolean;
 	tooltip: TooltipState;
+	contextmenu: ContextMenuState;
 }
 
 class InternalCanvas extends Component<CanvasProps, IState> implements CanvasInstance {
@@ -50,6 +51,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 		id: uuid(),
 		loaded: false,
 		tooltip: null,
+		contextmenu: null,
 	};
 
 	componentDidMount() {
@@ -82,6 +84,12 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 			this.handler.tooltipHandler.bindPortal(
 				(payload: any) => this.setState({ tooltip: payload }),
 				() => this.setState({ tooltip: null }),
+			);
+		}
+		if (this.handler.contextmenuHandler?.bindPortal) {
+			this.handler.contextmenuHandler.bindPortal(
+				(payload: any) => this.setState({ contextmenu: payload }),
+				() => this.setState({ contextmenu: null }),
 			);
 		}
 
@@ -178,7 +186,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 
 	render() {
 		const { style } = this.props;
-		const { id, tooltip } = this.state;
+		const { id, tooltip, contextmenu } = this.state;
 
 		return (
 			<div
@@ -195,6 +203,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 						}
 					}}
 				/>
+				<ContextMenuPortal contextmenu={contextmenu} />
 				<canvas id={`canvas_${id}`} />
 			</div>
 		);

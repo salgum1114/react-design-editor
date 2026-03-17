@@ -23,7 +23,7 @@ export default class LayoutHandler extends AbstractHandler {
 		} else if (type === 'elk') {
 			await this.elk(options);
 		}
-		if (this.handler.canvasActions.transaction && this.handler.transactionHandler.active) {
+		if (this.handler.canvasActions.transaction) {
 			this.handler.transactionHandler.save('layout');
 		}
 		this.handler.onModified?.({ type: 'runLayout' });
@@ -95,7 +95,7 @@ export default class LayoutHandler extends AbstractHandler {
 			node.setCoords();
 			this.handler.portHandler.setCoords(node);
 		});
-		this.canvas.renderAll();
+		this.canvas.requestRenderAll();
 	}
 
 	private dagre(options: LayoutOptions) {
@@ -120,7 +120,6 @@ export default class LayoutHandler extends AbstractHandler {
 			node.setCoords();
 			this.handler.portHandler.setCoords(node);
 		});
-
-		this.canvas.renderAll();
+		this.canvas.requestRenderAll();
 	}
 }
