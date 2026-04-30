@@ -371,6 +371,7 @@ class EventHandler extends AbstractHandler {
 	 */
 	public mousedown = (opt: FabricEvent) => {
 		const { target, subTargets } = opt as FabricEvent<MouseEvent>;
+		this.handler.onClick?.(this.canvas, target, subTargets[0]);
 		const { editable, canvasActions } = this.handler;
 		if (canvasActions.grab && this.handler.interactionMode === 'grab') {
 			this.panning = true;
@@ -391,7 +392,6 @@ class EventHandler extends AbstractHandler {
 			) {
 				this.canvas.discardActiveObject();
 				this.canvas.requestRenderAll();
-				this.handler.onClick?.(this.canvas, target, subTargets[0]);
 				return;
 			}
 			if (target && target.type === 'fromPort') {
