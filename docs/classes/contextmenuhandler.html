@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ContextmenuHandler | react-design-editor</title>
+	<title>ContextMenuHandler | react-design-editor</title>
 	<meta name="description" content="Documentation for react-design-editor">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="contextmenuhandler.html">ContextmenuHandler</a>
+					<a href="contextmenuhandler.html">ContextMenuHandler</a>
 				</li>
 			</ul>
-			<h1>Class ContextmenuHandler</h1>
+			<h1>Class ContextMenuHandler</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ContextmenuHandler</span>
+						<span class="target">ContextMenuHandler</span>
 					</li>
 				</ul>
 			</section>
@@ -87,17 +87,18 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="contextmenuhandler.html#contextmenuel" class="tsd-kind-icon">contextmenu<wbr>El</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="contextmenuhandler.html#closecontextmenu" class="tsd-kind-icon">close<wbr>Contextmenu</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="contextmenuhandler.html#handler" class="tsd-kind-icon">handler</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="contextmenuhandler.html#hide" class="tsd-kind-icon">hide</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="contextmenuhandler.html#opencontextmenu" class="tsd-kind-icon">open<wbr>Contextmenu</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="contextmenuhandler.html#show" class="tsd-kind-icon">show</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="contextmenuhandler.html#destory" class="tsd-kind-icon">destory</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="contextmenuhandler.html#initialize" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="contextmenuhandler.html#bindportal" class="tsd-kind-icon">bind<wbr>Portal</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="contextmenuhandler.html#destroy" class="tsd-kind-icon">destroy</a></li>
 							</ul>
 						</section>
 					</div>
@@ -109,13 +110,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Contextmenu<wbr>Handler<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="handler.html" class="tsd-signature-type">Handler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="contextmenuhandler.html" class="tsd-signature-type">ContextmenuHandler</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Context<wbr>Menu<wbr>Handler<span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="handler.html" class="tsd-signature-type">Handler</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="contextmenuhandler.html" class="tsd-signature-type">ContextMenuHandler</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/ContextmenuHandler.ts#L8">src/canvas/handlers/ContextmenuHandler.ts:8</a></li>
+									<li>Defined in src/canvas/handlers/ContextMenuHandler.ts:18</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -124,22 +125,37 @@
 									<h5>handler: <a href="handler.html" class="tsd-signature-type">Handler</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="contextmenuhandler.html" class="tsd-signature-type">ContextmenuHandler</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="contextmenuhandler.html" class="tsd-signature-type">ContextMenuHandler</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
-					<a name="contextmenuel" class="tsd-anchor"></a>
-					<h3>contextmenu<wbr>El</h3>
-					<div class="tsd-signature tsd-kind-icon">contextmenu<wbr>El<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">HTMLDivElement</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="closecontextmenu" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagOptional">Optional</span> close<wbr>Contextmenu</h3>
+					<div class="tsd-signature tsd-kind-icon">close<wbr>Contextmenu<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/ContextmenuHandler.ts#L8">src/canvas/handlers/ContextmenuHandler.ts:8</a></li>
+							<li>Defined in src/canvas/handlers/ContextMenuHandler.ts:18</li>
 						</ul>
 					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="handler" class="tsd-anchor"></a>
@@ -147,17 +163,17 @@
 					<div class="tsd-signature tsd-kind-icon">handler<span class="tsd-signature-symbol">:</span> <a href="handler.html" class="tsd-signature-type">Handler</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/ContextmenuHandler.ts#L7">src/canvas/handlers/ContextmenuHandler.ts:7</a></li>
+							<li>Defined in src/canvas/handlers/ContextMenuHandler.ts:15</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="hide" class="tsd-anchor"></a>
 					<h3>hide</h3>
-					<div class="tsd-signature tsd-kind-icon">hide<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFunc</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = debounce(() &#x3D;&gt; {if (this.contextmenuEl) {this.contextmenuEl.classList.add(&#x27;contextmenu-hidden&#x27;);}}, 100)</span></div>
+					<div class="tsd-signature tsd-kind-icon">hide<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFunc</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = debounce(() &#x3D;&gt; {this.closeContextmenu?.();}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/ContextmenuHandler.ts#L64">src/canvas/handlers/ContextmenuHandler.ts:64</a></li>
+							<li>Defined in src/canvas/handlers/ContextMenuHandler.ts:65</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -166,13 +182,44 @@
 						</div>
 					</div>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="opencontextmenu" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagOptional">Optional</span> open<wbr>Contextmenu</h3>
+					<div class="tsd-signature tsd-kind-icon">open<wbr>Contextmenu<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../globals.html#contextmenupayload" class="tsd-signature-type">ContextMenuPayload</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/canvas/handlers/ContextMenuHandler.ts:17</li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../globals.html#contextmenupayload" class="tsd-signature-type">ContextMenuPayload</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>payload: <a href="../globals.html#contextmenupayload" class="tsd-signature-type">ContextMenuPayload</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
 					<a name="show" class="tsd-anchor"></a>
 					<h3>show</h3>
-					<div class="tsd-signature tsd-kind-icon">show<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFunc</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = debounce(async (e, target) &#x3D;&gt; {const { onContext } &#x3D; this.handler;while (this.contextmenuEl.hasChildNodes()) {this.contextmenuEl.removeChild(this.contextmenuEl.firstChild);}const contextmenu &#x3D; document.createElement(&#x27;div&#x27;);contextmenu.className &#x3D; &#x27;rde-contextmenu-right&#x27;;const element &#x3D; await onContext(this.contextmenuEl, e, target);if (!element) {return;}contextmenu.innerHTML &#x3D; element;this.contextmenuEl.appendChild(contextmenu);ReactDOM.render(element, contextmenu);this.contextmenuEl.classList.remove(&#x27;contextmenu-hidden&#x27;);const { clientX: left, clientY: top } &#x3D; e;this.contextmenuEl.style.left &#x3D; &#x60;${left}px&#x60;;this.contextmenuEl.style.top &#x3D; &#x60;${top}px&#x60;;}, 100)</span></div>
+					<div class="tsd-signature tsd-kind-icon">show<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">DebouncedFunc</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">(Anonymous function)</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = debounce(async (e: MouseEvent, target?: FabricObject) &#x3D;&gt; {if (!this.openContextmenu) {return;}const { onContext } &#x3D; this.handler;if (!onContext) {return;}const content &#x3D; await onContext(e, target);if (content &#x3D;&#x3D;&#x3D; null || content &#x3D;&#x3D;&#x3D; undefined) {return;}this.openContextmenu({x: e.clientX,y: e.clientY,placement: &#x27;right&#x27;,content,target: target ?? null,});}, 100)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/ContextmenuHandler.ts#L40">src/canvas/handlers/ContextmenuHandler.ts:40</a></li>
+							<li>Defined in src/canvas/handlers/ContextMenuHandler.ts:38</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -185,45 +232,74 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="destory" class="tsd-anchor"></a>
-					<h3>destory</h3>
+					<a name="bindportal" class="tsd-anchor"></a>
+					<h3>bind<wbr>Portal</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">destory<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">bind<wbr>Portal<span class="tsd-signature-symbol">(</span>open<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../globals.html#contextmenupayload" class="tsd-signature-type">ContextMenuPayload</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span>, close<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/ContextmenuHandler.ts#L30">src/canvas/handlers/ContextmenuHandler.ts:30</a></li>
+									<li>Defined in src/canvas/handlers/ContextMenuHandler.ts:24</li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Destroy contextmenu</p>
-								</div>
-							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>open: <span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../globals.html#contextmenupayload" class="tsd-signature-type">ContextMenuPayload</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><a href="../globals.html#contextmenupayload" class="tsd-signature-type">ContextMenuPayload</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>payload: <a href="../globals.html#contextmenupayload" class="tsd-signature-type">ContextMenuPayload</a></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<h5>close: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
-					<a name="initialize" class="tsd-anchor"></a>
-					<h3>initialize</h3>
+					<a name="destroy" class="tsd-anchor"></a>
+					<h3>destroy</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">destroy<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/ContextmenuHandler.ts#L19">src/canvas/handlers/ContextmenuHandler.ts:19</a></li>
+									<li>Defined in src/canvas/handlers/ContextMenuHandler.ts:29</li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Initialize contextmenu</p>
-								</div>
-							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -243,13 +319,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-is-external">
-						<a href="contextmenuhandler.html" class="tsd-kind-icon">Contextmenu<wbr>Handler</a>
+						<a href="contextmenuhandler.html" class="tsd-kind-icon">Context<wbr>Menu<wbr>Handler</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
 								<a href="contextmenuhandler.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
-								<a href="contextmenuhandler.html#contextmenuel" class="tsd-kind-icon">contextmenu<wbr>El</a>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="contextmenuhandler.html#closecontextmenu" class="tsd-kind-icon">close<wbr>Contextmenu</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="contextmenuhandler.html#handler" class="tsd-kind-icon">handler</a>
@@ -257,14 +333,17 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="contextmenuhandler.html#hide" class="tsd-kind-icon">hide</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+								<a href="contextmenuhandler.html#opencontextmenu" class="tsd-kind-icon">open<wbr>Contextmenu</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
 								<a href="contextmenuhandler.html#show" class="tsd-kind-icon">show</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="contextmenuhandler.html#destory" class="tsd-kind-icon">destory</a>
+								<a href="contextmenuhandler.html#bindportal" class="tsd-kind-icon">bind<wbr>Portal</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
-								<a href="contextmenuhandler.html#initialize" class="tsd-kind-icon">initialize</a>
+								<a href="contextmenuhandler.html#destroy" class="tsd-kind-icon">destroy</a>
 							</li>
 						</ul>
 					</li>

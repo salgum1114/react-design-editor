@@ -88,6 +88,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="handlercallback.html#oninteraction" class="tsd-kind-icon">on<wbr>Interaction</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="handlercallback.html#onload" class="tsd-kind-icon">on<wbr>Load</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="handlercallback.html#onmodified" class="tsd-kind-icon">on<wbr>Modified</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="handlercallback.html#onmoving" class="tsd-kind-icon">on<wbr>Moving</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="handlercallback.html#onremove" class="tsd-kind-icon">on<wbr>Remove</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="handlercallback.html#onselect" class="tsd-kind-icon">on<wbr>Select</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="handlercallback.html#ontooltip" class="tsd-kind-icon">on<wbr>Tooltip</a></li>
@@ -106,7 +107,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Add<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L55">src/canvas/handlers/Handler.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L55">src/canvas/handlers/Handler.ts:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -142,7 +143,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Click<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>canvas<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabriccanvas" class="tsd-signature-type">FabricCanvas</a>, target<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a>, subTarget<span class="tsd-signature-symbol">?: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L74">src/canvas/handlers/Handler.ts:74</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L74">src/canvas/handlers/Handler.ts:74</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -181,10 +182,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="oncontext" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Context</h3>
-					<div class="tsd-signature tsd-kind-icon">on<wbr>Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>el<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLDivElement</span>, e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MouseEvent</span>, target<span class="tsd-signature-symbol">?: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></div>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MouseEvent</span>, target<span class="tsd-signature-symbol">?: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L60">src/canvas/handlers/Handler.ts:60</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L60">src/canvas/handlers/Handler.ts:60</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -197,15 +198,12 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>el<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLDivElement</span>, e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MouseEvent</span>, target<span class="tsd-signature-symbol">?: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">MouseEvent</span>, target<span class="tsd-signature-symbol">?: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
-											<li>
-												<h5>el: <span class="tsd-signature-type">HTMLDivElement</span></h5>
-											</li>
 											<li>
 												<h5>e: <span class="tsd-signature-type">MouseEvent</span></h5>
 											</li>
@@ -226,7 +224,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Dbl<wbr>Click<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>canvas<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabriccanvas" class="tsd-signature-type">FabricCanvas</a>, target<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L79">src/canvas/handlers/Handler.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L84">src/canvas/handlers/Handler.ts:84</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -265,7 +263,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Interaction<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>interactionMode<span class="tsd-signature-symbol">: </span><a href="../globals.html#interactionmode" class="tsd-signature-type">InteractionMode</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L103">src/canvas/handlers/Handler.ts:103</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L108">src/canvas/handlers/Handler.ts:108</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -301,7 +299,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Load<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>handler<span class="tsd-signature-symbol">: </span><a href="../classes/handler.html" class="tsd-signature-type">Handler</a>, canvas<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Canvas</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L108">src/canvas/handlers/Handler.ts:108</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L113">src/canvas/handlers/Handler.ts:113</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -340,7 +338,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Modified<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L83">src/canvas/handlers/Handler.ts:83</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L88">src/canvas/handlers/Handler.ts:88</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -371,12 +369,48 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="onmoving" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Moving</h3>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Moving<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L79">src/canvas/handlers/Handler.ts:79</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>When moving object, called function</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>target: <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="onremove" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Remove</h3>
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Remove<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L93">src/canvas/handlers/Handler.ts:93</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L98">src/canvas/handlers/Handler.ts:98</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -412,7 +446,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Select<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L88">src/canvas/handlers/Handler.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L93">src/canvas/handlers/Handler.ts:93</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -445,10 +479,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a name="ontooltip" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> on<wbr>Tooltip</h3>
-					<div class="tsd-signature tsd-kind-icon">on<wbr>Tooltip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>el<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLDivElement</span>, target<span class="tsd-signature-symbol">?: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></div>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Tooltip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">?: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L65">src/canvas/handlers/Handler.ts:65</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L65">src/canvas/handlers/Handler.ts:65</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -461,15 +495,12 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>el<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">HTMLDivElement</span>, target<span class="tsd-signature-symbol">?: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>target<span class="tsd-signature-symbol">?: </span><a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
-											<li>
-												<h5>el: <span class="tsd-signature-type">HTMLDivElement</span></h5>
-											</li>
 											<li>
 												<h5><span class="tsd-flag ts-flagOptional">Optional</span> target: <a href="../globals.html#fabricobject" class="tsd-signature-type">FabricObject</a></h5>
 											</li>
@@ -487,7 +518,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Transaction<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>transaction<span class="tsd-signature-symbol">: </span><a href="transactionevent.html" class="tsd-signature-type">TransactionEvent</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L98">src/canvas/handlers/Handler.ts:98</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L103">src/canvas/handlers/Handler.ts:103</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -523,7 +554,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Zoom<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>zoomRatio<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4f12244/src/canvas/handlers/Handler.ts#L69">src/canvas/handlers/Handler.ts:69</a></li>
+							<li>Defined in <a href="https://github.com/salgum1114/react-design-editor/blob/4476190/src/canvas/handlers/Handler.ts#L69">src/canvas/handlers/Handler.ts:69</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -590,6 +621,9 @@
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="handlercallback.html#onmodified" class="tsd-kind-icon">on<wbr>Modified</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="handlercallback.html#onmoving" class="tsd-kind-icon">on<wbr>Moving</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 								<a href="handlercallback.html#onremove" class="tsd-kind-icon">on<wbr>Remove</a>
