@@ -43,7 +43,7 @@
 	"homepage": "https://salgum1114.github.io/react-design-editor",
 	"peerDependencies": {
 		"animejs": "^3.0.0",
-		"fabric": "^4.6.0",
+		"fabric": "^5.4.2",
 		"react": ">=16",
 		"react-dom": ">=16"
 	},
@@ -53,7 +53,7 @@
 		"color": "^3.1.2",
 		"echarts": "^4.7.0",
 		"elkjs": "^0.10.0",
-		"fabric": "^4.6.0",
+		"fabric": "^5.4.2",
 		"gifler": "^0.1.0",
 		"honeycomb-grid": "^3.1.7",
 		"lodash-es": "^4.17.23",
@@ -81,7 +81,7 @@
 		"@types/animejs": "^3.1.0",
 		"@types/color": "^3.0.1",
 		"@types/echarts": "^4.4.6",
-		"@types/fabric": "^4.5.7",
+		"@types/fabric": "^5.3.11",
 		"@types/lodash-es": "^4.17.12",
 		"@types/react": "^16.14.21",
 		"@types/react-dom": "^16.9.14",

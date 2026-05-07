@@ -113,6 +113,7 @@ class ImageMapEditor extends Component {
 		},
 		onSelect: target => {
 			const { selectedItem } = this.state;
+			console.log(target, selectedItem);
 			if (target && target.id && target.id !== 'workarea' && target.type !== 'activeSelection') {
 				if (selectedItem && target.id === selectedItem.id) {
 					return;
@@ -739,7 +740,6 @@ class ImageMapEditor extends Component {
 							onSelect={onSelect}
 							onZoom={onZoom}
 							onTooltip={onTooltip}
-							onClick={onClick}
 							onContext={onContext}
 							onTransaction={onTransaction}
 							canvasOption={{

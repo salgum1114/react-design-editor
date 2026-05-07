@@ -14,7 +14,7 @@ import AbstractHandler from './AbstractHandler';
 class EventHandler extends AbstractHandler {
 	code: string;
 	panning: boolean;
-	currentTarget: FabricObject;
+	currentTarget: FabricObject | null;
 	isSpacePanning: boolean;
 
 	constructor(handler: any) {
@@ -32,11 +32,8 @@ class EventHandler extends AbstractHandler {
 			this.canvas.on({
 				'object:modified': this.modified,
 				'object:scaling': this.scaling,
-				'object:scaled': this.scaled,
 				'object:moving': this.moving,
-				'object:moved': this.moved,
 				'object:rotating': this.rotating,
-				'object:rotated': this.rotated,
 				'mouse:wheel': this.mousewheel,
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
@@ -77,7 +74,6 @@ class EventHandler extends AbstractHandler {
 				'object:modified': this.modified,
 				'object:scaling': this.scaling,
 				'object:moving': this.moving,
-				'object:moved': this.moved,
 				'object:rotating': this.rotating,
 				'mouse:wheel': this.mousewheel,
 				'mouse:down': this.mousedown,
@@ -109,7 +105,7 @@ class EventHandler extends AbstractHandler {
 		this.canvas.wrapperEl.removeEventListener('contextmenu', this.contextmenu);
 		this.canvas.wrapperEl.removeEventListener('blur', this.blur, false);
 		if (this.handler.canvasActions.clipboard) {
-			this.canvas.wrapperEl.removeEventListener('paste', this.paste);
+			document.removeEventListener('paste', this.paste, false);
 		}
 	};
 
@@ -153,6 +149,22 @@ class EventHandler extends AbstractHandler {
 		}
 		if (target.type === 'circle' && target.parentId) {
 			return;
+		}
+		switch (opt.action) {
+			case 'drag':
+				this.moved(opt);
+				break;
+			case 'scale':
+			case 'scaleX':
+			case 'scaleY':
+			case 'resizing':
+				this.scaled(opt);
+				break;
+			case 'rotate':
+				this.rotated(opt);
+				break;
+			default:
+				break;
 		}
 		this.handler.onModified?.(target);
 	};
@@ -370,8 +382,11 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public mousedown = (opt: FabricEvent) => {
-		const { target, subTargets } = opt as FabricEvent<MouseEvent>;
-		this.handler.onClick?.(this.canvas, target, subTargets[0]);
+		const { target, subTargets = [] } = opt as FabricEvent<MouseEvent>;
+		const actionTarget = subTargets[0];
+		if (target) {
+			this.handler.onClick?.(this.canvas, target, actionTarget);
+		}
 		const { editable, canvasActions } = this.handler;
 		if (canvasActions.grab && this.handler.interactionMode === 'grab') {
 			this.panning = true;
@@ -388,7 +403,7 @@ class EventHandler extends AbstractHandler {
 				this.handler.interactionMode !== 'link' &&
 				target?.superType === 'node' &&
 				subTargets.length &&
-				subTargets[0] === target._objects[target._objects.length - 1]
+				actionTarget === target._objects[target._objects.length - 1]
 			) {
 				this.canvas.discardActiveObject();
 				this.canvas.requestRenderAll();
@@ -557,9 +572,9 @@ class EventHandler extends AbstractHandler {
 	 *
 	 * @param {FabricEvent} opt
 	 */
-	public selection = (opt: FabricEvent<FabricObject<fabric.ActiveSelection>>) => {
+	public selection = (_opt: FabricEvent<FabricObject<fabric.ActiveSelection>>) => {
 		const { activeSelectionOption } = this.handler;
-		const { target } = opt;
+		const target = (this.canvas.getActiveObject() as FabricObject) ?? null;
 		if (target && target.type === 'activeSelection') {
 			target.set({ ...activeSelectionOption });
 		}

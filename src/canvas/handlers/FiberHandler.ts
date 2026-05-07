@@ -7,7 +7,7 @@ class FiberHandler extends CustomHandler {
 	}
 
 	private mousedown(opt: fabric.IEvent) {
-		const { subTargets } = opt;
+		const subTargets = opt.subTargets || [];
 		if (subTargets.length) {
 			const target = subTargets[0];
 			console.log(target);

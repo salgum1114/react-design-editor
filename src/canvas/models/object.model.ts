@@ -420,8 +420,11 @@ export interface FabricEvent<T extends any = Event> extends Omit<fabric.IEvent, 
 	e: T;
 	target?: FabricObject;
 	subTargets?: FabricObject[];
+	selected?: FabricObject[];
+	deselected?: FabricObject[];
 	button?: number;
 	isClick?: boolean;
+	action?: string;
 	pointer?: fabric.Point;
 	absolutePointer?: fabric.Point;
 }

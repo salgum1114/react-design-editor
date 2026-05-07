@@ -90,7 +90,7 @@ export interface HandlerCallback {
 	 * When select object, Called function
 	 *
 	 */
-	onSelect?: (target: FabricObject) => void;
+	onSelect?: (target: FabricObject | null) => void;
 	/**
 	 * When has been removed object in Canvas, Called function
 	 *
@@ -258,7 +258,7 @@ class Handler implements HandlerOptions {
 	public onDblClick?: (canvas: FabricCanvas, target: FabricObject) => void;
 	public onModified?: (target: Partial<FabricObject>) => void;
 	public onMoving?: (target: FabricObject) => void;
-	public onSelect?: (target: FabricObject) => void;
+	public onSelect?: (target: FabricObject | null) => void;
 	public onRemove?: (target: FabricObject) => void;
 	public onTransaction?: (transaction: TransactionEvent) => void;
 	public onInteraction?: (interactionMode: InteractionMode) => void;
