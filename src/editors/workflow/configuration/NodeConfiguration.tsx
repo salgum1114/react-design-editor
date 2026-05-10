@@ -1,21 +1,22 @@
 import { Col, Form, Input, InputNumber, Select, Switch, Tooltip } from 'antd';
 import i18n from 'i18next';
 import { isEmpty } from 'lodash-es';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { CanvasInstance } from '../../../canvas';
 import { InputJson, InputScript, InputTemplate } from '../../../components/common';
 import Icon from '../../../components/icon/Icon';
 import Configuration from './index';
 
-export const getNode = nodeClazz => {
+const configurationMap = Configuration as Record<string, any>;
+
+export const getNode = (nodeClazz: string) => {
 	const classPath = nodeClazz.split('.');
 	return classPath[classPath.length - 1];
 };
 
-export const getConfiguration = clazz => Configuration[clazz] || null;
+export const getConfiguration = (clazz: string) => configurationMap[clazz] || null;
 
-export const getEllipsis = (text, length) => {
+export const getEllipsis = (text: string, length?: number) => {
 	if (!length) {
 		return /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/.test(text)
 			? text.length > 8
@@ -41,29 +42,28 @@ interface IProps {
 	workflow?: any;
 }
 
-export default class NodeConfiguration extends Component<IProps> {
-	static propTypes = {
-		canvasRef: PropTypes.any,
-		selectedItem: PropTypes.object,
-		form: PropTypes.object,
-		workflow: PropTypes.object,
-	};
+interface IState {
+	errors: any[] | null;
+}
 
-	state = {
+export default class NodeConfiguration extends Component<IProps, IState> {
+	state: IState = {
 		errors: null,
 	};
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		if (this.props.selectedItem && nextProps.selectedItem) {
-			if (this.props.selectedItem.id !== nextProps.selectedItem.id) {
-				this.setState({
-					errors: null,
-				});
-			}
+	componentDidUpdate(prevProps: IProps) {
+		if (
+			prevProps.selectedItem &&
+			this.props.selectedItem &&
+			prevProps.selectedItem.id !== this.props.selectedItem.id
+		) {
+			this.setState({
+				errors: null,
+			});
 		}
 	}
 
-	getForm(form, configuration, key, formConfig) {
+	getForm(form: any, configuration: Record<string, any>, key: string, formConfig: any) {
 		let component = null;
 		const { disabled, icon, extra, help, description, span, max, min, placeholder, valuePropName, required } =
 			formConfig;
@@ -92,9 +92,9 @@ export default class NodeConfiguration extends Component<IProps> {
 			case 'select':
 				component = (
 					<Select placeholder={placeholder} disabled={disabled}>
-						{formConfig.items.map(item => {
+						{formConfig.items.map((item: any) => {
 							if (item.forms && item.value === initialValue) {
-								selectFormItems = Object.keys(item.forms).map(formKey => {
+								selectFormItems = Object.keys(item.forms).map((formKey: string) => {
 									return this.getForm(form, configuration, formKey, item.forms[formKey]);
 								});
 							}
@@ -131,7 +131,7 @@ export default class NodeConfiguration extends Component<IProps> {
 						placeholder={placeholder}
 						disabled={disabled}
 					>
-						{initialValue.map(item => (
+						{initialValue.map((item: string) => (
 							<Select.Option key={item} value={item}>
 								{item}
 							</Select.Option>
@@ -174,12 +174,17 @@ export default class NodeConfiguration extends Component<IProps> {
 		return (
 			<React.Fragment key={key}>
 				<Col key={key} span={span || 24}>
-					<Form.Item label={label} help={help} extra={extra} colon={false}>
-						{form.getFieldDecorator(`configuration.${key}`, {
-							initialValue,
-							rules,
-							valuePropName: typeof initialValue === 'boolean' ? 'checked' : valuePropName || 'value',
-						})(component)}
+					<Form.Item
+						label={label}
+						help={help}
+						extra={extra}
+						colon={false}
+						name={['configuration', key]}
+						initialValue={initialValue}
+						rules={rules}
+						valuePropName={typeof initialValue === 'boolean' ? 'checked' : valuePropName || 'value'}
+					>
+						{component}
 					</Form.Item>
 				</Col>
 				{selectFormItems}
@@ -187,7 +192,7 @@ export default class NodeConfiguration extends Component<IProps> {
 		);
 	}
 
-	createForm(canvasRef, form, selectedItem) {
+	createForm(form: any, selectedItem: any) {
 		const { configuration, nodeClazz } = selectedItem;
 		if (!nodeClazz) {
 			return null;
@@ -207,7 +212,7 @@ export default class NodeConfiguration extends Component<IProps> {
 	}
 
 	handlers = {
-		onValidate: errors => {
+		onValidate: (errors: any[] | null) => {
 			this.setState({
 				errors,
 			});
@@ -215,7 +220,7 @@ export default class NodeConfiguration extends Component<IProps> {
 				errors,
 			});
 		},
-		aceEditorValidator: (rule, value, callback) => {
+		aceEditorValidator: (_rule: any, _value: any, callback: (errors?: any) => void) => {
 			const { errors } = this.state;
 			if (errors && errors.length) {
 				callback(errors);
@@ -226,10 +231,10 @@ export default class NodeConfiguration extends Component<IProps> {
 	};
 
 	render() {
-		const { selectedItem, form, canvasRef } = this.props;
+		const { selectedItem, form } = this.props;
 		if (!selectedItem || isEmpty(selectedItem)) {
 			return null;
 		}
-		return this.createForm(canvasRef, form, selectedItem);
+		return this.createForm(form, selectedItem);
 	}
 }

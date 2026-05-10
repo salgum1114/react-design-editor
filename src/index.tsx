@@ -1,32 +1,42 @@
-import { LocaleProvider } from 'antd';
-import enUS from 'antd/lib/locale-provider/en_US';
-import koKR from 'antd/lib/locale-provider/ko_KR';
+import { ConfigProvider } from 'antd';
+import enUS from 'antd/locale/en_US';
+import koKR from 'antd/locale/ko_KR';
 import i18next from 'i18next';
 import React from 'react';
-import ReactDom from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
 import { i18nClient } from './i18n';
 import { register } from './serviceWorker';
+import './styles/react-design-editor.css';
 
-const antResources = {
+const antResources: Record<string, typeof koKR> = {
 	ko: koKR,
 	'ko-KR': koKR,
 	en: enUS,
 	'en-US': enUS,
 };
 
-const root = document.createElement('div');
-root.id = 'root';
-document.body.appendChild(root);
+const rootElement = (() => {
+	const existingRoot = document.getElementById('root');
+	if (existingRoot) {
+		return existingRoot;
+	}
+	const root = document.createElement('div');
+	root.id = 'root';
+	document.body.appendChild(root);
+	return root;
+})();
 
-const rootElement = document.getElementById('root');
+const root = createRoot(rootElement);
 
 const render = (Component: React.ElementType) => {
-	ReactDom.render(
-		<LocaleProvider locale={antResources[i18next.language]}>
-			<Component />
-		</LocaleProvider>,
-		rootElement,
+	root.render(
+		<HelmetProvider>
+			<ConfigProvider locale={antResources[i18next.language] || enUS}>
+				<Component />
+			</ConfigProvider>
+		</HelmetProvider>,
 	);
 };
 

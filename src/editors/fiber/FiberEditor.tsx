@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { v4 as uuid } from 'uuid';
 import { Canvas } from '../../canvas';
 import { CanvasInstance } from '../../canvas/Canvas';
@@ -7,9 +7,9 @@ import { Content } from '../../components/layout';
 import { CableSectionNode } from './node';
 
 const FiberEditor = () => {
-	const canvasRef = useRef<CanvasInstance>();
+	const canvasRef = useRef<CanvasInstance | null>(null);
 	const handleLoad = () => {
-		const createdObj = canvasRef.current.handler.add(
+		canvasRef.current?.handler.add(
 			{
 				id: uuid(),
 				type: 'cableNode',
@@ -18,7 +18,7 @@ const FiberEditor = () => {
 			},
 			true,
 		);
-		const fiberHandler = canvasRef.current.handler.registerHandler('fiber', FiberHandler) as FiberHandler;
+		canvasRef.current?.handler.registerHandler('fiber', FiberHandler) as FiberHandler;
 	};
 	return (
 		<Content>
@@ -30,7 +30,7 @@ const FiberEditor = () => {
 				activeSelectionOption={{ hasControls: false, hasBorders: false }}
 				fabricObjects={{
 					cableNode: {
-						create: options => new CableSectionNode(options),
+						create: options => new CableSectionNode(options) as any,
 					},
 				}}
 			/>

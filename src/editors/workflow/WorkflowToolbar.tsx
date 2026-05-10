@@ -1,7 +1,6 @@
 import { Button } from 'antd';
 import clsx from 'clsx';
 import i18n from 'i18next';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { CanvasInstance, LinkObject, NodeObject } from '../../canvas';
 import { code } from '../../canvas/constants';
@@ -11,17 +10,15 @@ interface IProps {
 	instance: CanvasInstance;
 	zoomRatio: number;
 	debugEnabled?: boolean;
-	setDebugEnabled?: any;
+	setDebugEnabled?: unknown;
 }
 
-class WorkflowToolbar extends Component<IProps> {
-	static propTypes = {
-		instance: PropTypes.any,
-		selectedItem: PropTypes.object,
-		zoomRatio: PropTypes.number,
-	};
+interface IState {
+	interactionMode: 'selection' | 'grab';
+}
 
-	state = {
+class WorkflowToolbar extends Component<IProps, IState> {
+	state: IState = {
 		interactionMode: 'selection',
 	};
 
@@ -47,7 +44,7 @@ class WorkflowToolbar extends Component<IProps> {
 	};
 
 	events = {
-		keydown: e => {
+		keydown: (e: KeyboardEvent) => {
 			if (this.props.instance.canvas.wrapperEl !== document.activeElement) {
 				return false;
 			}
@@ -56,10 +53,11 @@ class WorkflowToolbar extends Component<IProps> {
 			} else if (e.code === code.KEY_W) {
 				this.handlers.grab();
 			}
+			return undefined;
 		},
 	};
 
-	waitForCanvasRender = canvas => {
+	waitForCanvasRender = (canvas?: CanvasInstance) => {
 		setTimeout(() => {
 			if (canvas) {
 				this.attachEventListener(canvas);
@@ -70,16 +68,16 @@ class WorkflowToolbar extends Component<IProps> {
 		}, 5);
 	};
 
-	attachEventListener = instance => {
+	attachEventListener = (instance: CanvasInstance) => {
 		instance.canvas.wrapperEl.addEventListener('keydown', this.events.keydown, false);
 	};
 
-	detachEventListener = instance => {
+	detachEventListener = (instance: CanvasInstance) => {
 		instance.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
 	};
 
 	render() {
-		const { instance, zoomRatio, debugEnabled, setDebugEnabled } = this.props;
+		const { instance, zoomRatio } = this.props;
 		const { interactionMode } = this.state;
 		const { selection, grab } = this.handlers;
 		const zoomValue = parseInt((zoomRatio * 100).toFixed(2), 10);

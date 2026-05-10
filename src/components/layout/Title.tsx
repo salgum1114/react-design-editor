@@ -1,5 +1,4 @@
 import { Button, Menu, Modal, Tooltip } from 'antd';
-import { ClickParam } from 'antd/lib/menu';
 import i18next from 'i18next';
 import React from 'react';
 import { Flex } from '../flex';
@@ -7,7 +6,7 @@ import { ShortcutHelp } from '../help';
 import Icon from '../icon/Icon';
 
 interface IProps {
-	onChangeEditor: (param: ClickParam) => void;
+	onChangeEditor: NonNullable<React.ComponentProps<typeof Menu>['onClick']>;
 	currentEditor: string;
 }
 
@@ -17,8 +16,8 @@ class Title extends React.Component<IProps> {
 	};
 
 	componentDidMount() {
-		if (globalThis) {
-			(globalThis.adsbygoogle = globalThis.adsbygoogle || []).push({});
+		if (typeof window !== 'undefined') {
+			(window.adsbygoogle = window.adsbygoogle || []).push({});
 		}
 	}
 
@@ -119,7 +118,7 @@ class Title extends React.Component<IProps> {
 					/>
 				</Flex>
 				<Modal
-					visible={visible}
+					open={visible}
 					onCancel={() => this.setState({ visible: false })}
 					closable={true}
 					footer={null}

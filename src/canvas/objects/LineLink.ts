@@ -1,6 +1,7 @@
 import { fabric } from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { FabricObject } from '../models';
+import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 import { NodeObject, OUT_PORT_TYPE } from './Node';
 import { PortObject } from './Port';
 
@@ -14,19 +15,24 @@ export interface LineLinkObject extends FabricObject<fabric.Line> {
 	setPortEnabled?: (node: NodeObject, port: PortObject, enabled: boolean) => void;
 }
 
-const LineLink = fabric.util.createClass(fabric.Line, {
-	type: 'lineLink',
-	superType: 'link',
-	initialize(
+class LineLink extends fabric.Line {
+	static type = 'lineLink';
+	superType = 'link';
+	declare fromNode: Partial<NodeObject>;
+	declare fromPort: Partial<PortObject>;
+	declare toNode: Partial<NodeObject>;
+	declare toPort: Partial<PortObject>;
+
+	constructor(
 		fromNode: Partial<NodeObject>,
 		fromPort: Partial<PortObject>,
 		toNode: Partial<NodeObject>,
 		toPort: Partial<PortObject>,
-		options: Partial<LineLinkObject>,
+		options: Partial<LineLinkObject> = {},
 	) {
-		options = options || {};
 		const coords = [fromPort.left, fromPort.top, toPort.left, toPort.top];
-		Object.assign(options, {
+		const nextOptions = {
+			...options,
 			strokeWidth: 4,
 			id: options.id || uuid(),
 			originX: 'center',
@@ -46,42 +52,37 @@ const LineLink = fabric.util.createClass(fabric.Line, {
 			toNode,
 			toPort,
 			hoverCursor: 'pointer',
-		});
-		this.callSuper('initialize', coords, options);
-	},
+		};
+		super(coords, nextOptions);
+		this.fromNode = fromNode;
+		this.fromPort = fromPort;
+		this.toNode = toNode;
+		this.toPort = toPort;
+	}
+
 	setPort(fromNode: NodeObject, fromPort: PortObject, _toNode: NodeObject, toPort: PortObject) {
-		if (fromNode.type === 'BroadcastNode') {
-			fromPort = fromNode.fromPort[0];
-		}
-		fromPort.links.push(this);
-		toPort.links.push(this);
-		this.setPortEnabled(fromNode, fromPort, false);
-	},
+		const resolvedPort = fromNode.type === 'BroadcastNode' ? fromNode.fromPort[0] : fromPort;
+		resolvedPort.links.push(this as any);
+		toPort.links.push(this as any);
+		this.setPortEnabled(fromNode, resolvedPort, false);
+	}
+
 	setPortEnabled(node: NodeObject, port: PortObject, enabled: boolean) {
 		if (node.descriptor.outPortType !== OUT_PORT_TYPE.BROADCAST) {
-			port.set({
-				enabled,
-				fill: port.originFill,
-			});
+			port.set({ enabled, fill: port.originFill });
 		} else {
 			if (node.toPort.id === port.id) {
 				return;
 			}
 			port.links.forEach((link, index) => {
-				link.set({
-					fromPort: port,
-					fromPortIndex: index,
-				});
+				link.set({ fromPort: port, fromPortIndex: index });
 			});
-			node.set({
-				configuration: {
-					outputCount: port.links.length,
-				},
-			});
+			node.set({ configuration: { outputCount: port.links.length } });
 		}
-	},
-	toObject() {
-		return fabric.util.object.extend(this.callSuper('toObject'), {
+	}
+
+	toObject(propertiesToInclude: string[] = []) {
+		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			name: this.get('name'),
 			superType: this.get('superType'),
@@ -91,9 +92,10 @@ const LineLink = fabric.util.createClass(fabric.Line, {
 			toNode: this.get('toNode'),
 			toPort: this.get('toPort'),
 		});
-	},
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
-		this.callSuper('_render', ctx);
+		super._render(ctx);
 		ctx.save();
 		const xDiff = this.x2 - this.x1;
 		const yDiff = this.y2 - this.y1;
@@ -101,26 +103,26 @@ const LineLink = fabric.util.createClass(fabric.Line, {
 		ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);
 		ctx.rotate(angle);
 		ctx.beginPath();
-		if (this.arrow) {
-			// Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
+		if ((this as any).arrow) {
 			ctx.moveTo(5, 0);
 			ctx.lineTo(-5, 5);
 			ctx.lineTo(-5, -5);
 		}
 		ctx.closePath();
 		ctx.lineWidth = this.strokeWidth;
-		ctx.fillStyle = this.stroke;
+		ctx.fillStyle = this.stroke as string;
 		ctx.fill();
 		ctx.restore();
-	},
-});
+	}
 
-LineLink.fromObject = (options: LineLinkObject, callback: (obj: LineLinkObject) => any) => {
-	const { fromNode, fromPort, toNode, toPort } = options;
-	return callback(new LineLink(fromNode, fromPort, toNode, toPort, options));
-};
+	static fromObject(options: LineLinkObject, callback?: (obj: LineLinkObject) => any) {
+		return resolveFromObject(
+			new LineLink(options.fromNode, options.fromPort, options.toNode, options.toPort, options),
+			callback,
+		);
+	}
+}
 
-// @ts-ignore
-window.fabric.LineLink = LineLink;
+registerFabricClass('LineLink', LineLink);
 
 export default LineLink;

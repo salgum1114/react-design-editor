@@ -1,10 +1,10 @@
 import { fabric } from 'fabric';
 
-import Handler from './Handler';
-import { VideoObject } from '../objects/Video';
 import { ChartObject } from '../objects/Chart';
-import { IframeObject } from '../objects/Iframe';
 import { ElementObject } from '../objects/Element';
+import { IframeObject } from '../objects/Iframe';
+import { VideoObject } from '../objects/Video';
+import Handler from './Handler';
 
 export type ElementType = 'container' | 'script' | 'style';
 
@@ -123,7 +123,7 @@ class ElementHandler {
         obj.setCoords();
         const zoom = this.handler.canvas.getZoom();
         const { scaleX, scaleY, width, height } = obj;
-        const { left, top } = obj.getBoundingRect(false);
+                const { left, top } = obj.getBoundingRect();
         const padLeft = ((width * scaleX * zoom) - width) / 2;
         const padTop = ((height * scaleY * zoom) - height) / 2;
         el.style.left = `${left + padLeft}px`;

@@ -1,8 +1,16 @@
-const Toolbar = fabric.util.createClass(fabric.Group, {
-	superType: 'toolbar',
-	type: 'toolbar',
-	initialize(options: any) {
-		const objects = [];
-		this.callSuper('initialize', objects);
-	},
-});
+import { fabric } from 'fabric';
+
+import { registerFabricClass } from '../utils';
+
+class Toolbar extends fabric.Group {
+	static type = 'toolbar';
+	superType = 'toolbar';
+
+	constructor(_options: any) {
+		super([]);
+	}
+}
+
+registerFabricClass('Toolbar', Toolbar);
+
+export default Toolbar;

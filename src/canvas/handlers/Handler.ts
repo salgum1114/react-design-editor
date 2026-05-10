@@ -27,7 +27,7 @@ import { SvgObject } from '../objects/Svg';
 import AlignmentHandler from './AlignmentHandler';
 import AnimationHandler from './AnimationHandler';
 import ChartHandler from './ChartHandler';
-import ContextMenuHandler from './ContextMenuHandler';
+import ContextMenuHandler from './ContextmenuHandler';
 import CropHandler from './CropHandler';
 import CustomHandler from './CustomHandler';
 import DrawingHandler from './DrawingHandler';
@@ -439,7 +439,7 @@ class Handler implements HandlerOptions {
 		if (activeObject.type === 'svg' && (key === 'fill' || key === 'stroke')) {
 			(activeObject as FabricGroup)._objects.forEach(obj => obj.set(key, value));
 		}
-		activeObject.set(key, value);
+		activeObject.set(key as any, value);
 		activeObject.setCoords();
 		this.canvas.requestRenderAll();
 		const { id, superType, type, player, width, height } = activeObject as any;
@@ -641,47 +641,42 @@ class Handler implements HandlerOptions {
 			this.canvas.requestRenderAll();
 		};
 		return new Promise(resolve => {
+			const applySource = (src: string, nextOptions?: Record<string, any>) => {
+				obj.setSrc(src, nextOptions as any)
+					.then(() => {
+						renderCallbaack(obj, src);
+						resolve(obj);
+					})
+					.catch(() => resolve(obj));
+			};
 			if (!source) {
 				obj.set('file', null);
 				obj.set('src', null);
-				resolve(
-					obj.setSrc(
-						'./images/sample/transparentBg.png',
-						(imgObj: FabricImage) => renderCallbaack(imgObj, null),
-						{
-							dirty: true,
-							...options,
-						},
-					) as FabricImage,
-				);
+				applySource('./images/sample/transparentBg.png', {
+					dirty: true,
+					...options,
+				});
+				return;
 			}
 			if (source instanceof File) {
 				const reader = new FileReader();
 				reader.onload = () => {
 					obj.set('file', source);
 					obj.set('src', null);
-					resolve(
-						obj.setSrc(
-							reader.result as string,
-							(imgObj: FabricImage) => renderCallbaack(imgObj, reader.result as string),
-							{
-								dirty: true,
-								...options,
-							},
-						) as FabricImage,
-					);
+					applySource(reader.result as string, {
+						dirty: true,
+						...options,
+					});
 				};
 				reader.readAsDataURL(source);
 			} else {
 				obj.set('file', null);
 				obj.set('src', source);
-				resolve(
-					obj.setSrc(source, (imgObj: FabricImage) => renderCallbaack(imgObj, source), {
-						dirty: true,
-						crossOrigin: 'anonymous',
-						...options,
-					}) as FabricImage,
-				);
+				applySource(source, {
+					dirty: true,
+					crossOrigin: 'anonymous',
+					...options,
+				});
 			}
 		});
 	};
@@ -1040,7 +1035,7 @@ class Handler implements HandlerOptions {
 		if (typeof activeObject.cloneable !== 'undefined' && !activeObject.cloneable) {
 			return;
 		}
-		activeObject.clone((clonedObj: FabricObject) => {
+		void (activeObject as any).clone(propertiesToInclude).then((clonedObj: FabricObject) => {
 			this.canvas.discardActiveObject();
 			clonedObj.set({
 				left: clonedObj.left + grid,
@@ -1088,7 +1083,7 @@ class Handler implements HandlerOptions {
 			this.canvas.setActiveObject(clonedObj);
 			this.portHandler.create(clonedObj as NodeObject);
 			this.canvas.requestRenderAll();
-		}, propertiesToInclude);
+		});
 	};
 
 	/**
@@ -1107,7 +1102,7 @@ class Handler implements HandlerOptions {
 			if (typeof findObject.cloneable !== 'undefined' && !findObject.cloneable) {
 				return false;
 			}
-			findObject.clone((cloned: FabricObject) => {
+			void (findObject as any).clone(propertiesToInclude).then((cloned: FabricObject) => {
 				cloned.set({
 					left: cloned.left + grid,
 					top: cloned.top + grid,
@@ -1125,7 +1120,7 @@ class Handler implements HandlerOptions {
 				this.canvas.setActiveObject(cloned);
 				this.portHandler.create(cloned as NodeObject);
 				this.canvas.requestRenderAll();
-			}, propertiesToInclude);
+			});
 		}
 		return true;
 	};
@@ -1222,7 +1217,7 @@ class Handler implements HandlerOptions {
 					return true;
 				}
 			}
-			activeObject.clone((cloned: FabricObject) => {
+			void (activeObject as any).clone(propertiesToInclude).then((cloned: FabricObject) => {
 				if (this.canvasActions.clipboard) {
 					if (cloned.superType === 'node') {
 						const node = {
@@ -1248,7 +1243,7 @@ class Handler implements HandlerOptions {
 				} else {
 					this.clipboard = cloned;
 				}
-			}, propertiesToInclude);
+			});
 		}
 		return true;
 	};
@@ -1353,7 +1348,7 @@ class Handler implements HandlerOptions {
 				return true;
 			}
 		}
-		clipboard.clone((clonedObj: any) => {
+		void clipboard.clone(propertiesToInclude).then((clonedObj: any) => {
 			this.canvas.discardActiveObject();
 			clonedObj.set({
 				left: clonedObj.left + padding,
@@ -1403,7 +1398,7 @@ class Handler implements HandlerOptions {
 			clonedObj.setCoords();
 			this.canvas.setActiveObject(clonedObj);
 			this.canvas.requestRenderAll();
-		}, propertiesToInclude);
+		});
 		return true;
 	};
 
@@ -1597,7 +1592,8 @@ class Handler implements HandlerOptions {
 		}
 		let prevLeft = 0;
 		let prevTop = 0;
-		this.canvas.setBackgroundColor(this.canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
+		this.canvas.backgroundColor = this.canvasOption.backgroundColor;
+		this.canvas.renderAll();
 		const workarea = json.find((obj: FabricObjectOption) => obj.id === 'workarea');
 		if (!this.workarea) {
 			this.workareaHandler.initialize();
@@ -1642,7 +1638,7 @@ class Handler implements HandlerOptions {
 		});
 		this.objects = this.getObjects();
 		if (this.canvasActions.transaction) {
-			this.transactionHandler.setDefaultObjects(this.canvas.toJSON(this.propertiesToInclude).objects);
+			this.transactionHandler.setDefaultObjects((this.canvas as any).toJSON(this.propertiesToInclude).objects);
 		}
 		if (callback) {
 			callback(this.canvas);
@@ -1667,7 +1663,7 @@ class Handler implements HandlerOptions {
 		if (activeObject.type !== 'activeSelection') {
 			return null;
 		}
-		const group = activeObject.toGroup() as FabricObject<fabric.Group>;
+		const group = (activeObject as any).toGroup() as FabricObject<fabric.Group>;
 		group.set({
 			id: uuid(),
 			name: 'New group',
@@ -1697,7 +1693,7 @@ class Handler implements HandlerOptions {
 		if (activeObject.type !== 'group') {
 			return;
 		}
-		const activeSelection = activeObject.toActiveSelection();
+		const activeSelection = (activeObject as any).toActiveSelection();
 		this.objects = this.getObjects();
 		if (!this.transactionHandler.active) {
 			this.transactionHandler.save('ungroup');
@@ -1715,7 +1711,7 @@ class Handler implements HandlerOptions {
 	public bringForward = () => {
 		const activeObject = this.canvas.getActiveObject() as FabricObject;
 		if (activeObject) {
-			this.canvas.bringForward(activeObject);
+			this.canvas.bringObjectForward(activeObject);
 			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('bringForward');
 			}
@@ -1732,7 +1728,7 @@ class Handler implements HandlerOptions {
 	public bringToFront = () => {
 		const activeObject = this.canvas.getActiveObject() as FabricObject;
 		if (activeObject) {
-			this.canvas.bringToFront(activeObject);
+			this.canvas.bringObjectToFront(activeObject);
 			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('bringToFront');
 			}
@@ -1757,7 +1753,7 @@ class Handler implements HandlerOptions {
 			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('sendBackwards');
 			}
-			this.canvas.sendBackwards(activeObject);
+			this.canvas.sendObjectBackwards(activeObject);
 			const { onModified } = this;
 			if (onModified) {
 				onModified(activeObject);
@@ -1771,8 +1767,8 @@ class Handler implements HandlerOptions {
 	public sendToBack = () => {
 		const activeObject = this.canvas.getActiveObject() as FabricObject;
 		if (activeObject) {
-			this.canvas.sendToBack(activeObject);
-			this.canvas.sendToBack(this.canvas.getObjects()[1]);
+			this.canvas.sendObjectToBack(activeObject);
+			this.canvas.sendObjectToBack(this.canvas.getObjects()[1]);
 			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('sendToBack');
 			}
@@ -1849,18 +1845,19 @@ class Handler implements HandlerOptions {
 	public saveImage = (targetObject: FabricObject, option = { name: 'New Image', format: 'png', quality: 1 }) => {
 		let dataUrl;
 		let target = targetObject;
+		const { name, ...exportOptions } = option;
 		if (target) {
-			dataUrl = target.toDataURL(option);
+			dataUrl = target.toDataURL(exportOptions as any);
 		} else {
 			target = this.canvas.getActiveObject() as FabricObject;
 			if (target) {
-				dataUrl = target.toDataURL(option);
+				dataUrl = target.toDataURL(exportOptions as any);
 			}
 		}
 		if (dataUrl) {
 			const anchorEl = document.createElement('a');
 			anchorEl.href = dataUrl;
-			anchorEl.download = `${option.name}.png`;
+			anchorEl.download = `${name}.png`;
 			document.body.appendChild(anchorEl);
 			anchorEl.click();
 			anchorEl.remove();
@@ -1881,19 +1878,21 @@ class Handler implements HandlerOptions {
 		const cachedVT = this.canvas.viewportTransform;
 		// reset the viewportTransform to default (no zoom)
 		this.canvas.viewportTransform = [1, 0, 0, 1, 0, 0];
+		const { name, ...exportOptions } = option;
 		const dataUrl = this.canvas.toDataURL({
-			...option,
+			...exportOptions,
 			left,
 			top,
 			width,
 			height,
 			enableRetinaScaling: true,
-		});
+			multiplier: 1,
+		} as any);
 
 		if (dataUrl) {
 			const anchorEl = document.createElement('a');
 			anchorEl.href = dataUrl;
-			anchorEl.download = `${option.name}.png`;
+			anchorEl.download = `${name}.png`;
 			document.body.appendChild(anchorEl);
 			anchorEl.click();
 			anchorEl.remove();
@@ -1935,12 +1934,14 @@ class Handler implements HandlerOptions {
 	 */
 	public setCanvasOption = (canvasOption: CanvasOption) => {
 		this.canvasOption = Object.assign({}, this.canvasOption, canvasOption);
-		this.canvas.setBackgroundColor(canvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
+		this.canvas.backgroundColor = canvasOption.backgroundColor;
+		this.canvas.renderAll();
 		if (typeof canvasOption.width !== 'undefined' && typeof canvasOption.height !== 'undefined') {
 			if (this.eventHandler) {
 				this.eventHandler.resize(canvasOption.width, canvasOption.height);
 			} else {
-				this.canvas.setWidth(canvasOption.width).setHeight(canvasOption.height);
+				this.canvas.setWidth(canvasOption.width);
+				this.canvas.setHeight(canvasOption.height);
 			}
 		}
 		if (typeof canvasOption.selection !== 'undefined') {

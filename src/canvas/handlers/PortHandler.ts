@@ -34,7 +34,7 @@ class PortHandler extends AbstractHandler {
 			});
 			this.handler.canvas.add(toPort);
 			toPort.setCoords();
-			this.handler.canvas.bringToFront(toPort);
+			this.handler.canvas.bringObjectToFront(toPort);
 		}
 		const fromPort = target.createFromPort?.(target.left + target.width / 2, target.top + target.height);
 		if (fromPort && fromPort.length) {
@@ -62,7 +62,7 @@ class PortHandler extends AbstractHandler {
 					});
 					this.handler.canvas.add(port);
 					port.setCoords();
-					this.handler.canvas.bringToFront(port);
+					this.handler.canvas.bringObjectToFront(port);
 				}
 			});
 		}

@@ -1,35 +1,47 @@
-import React, { Component } from 'react';
+import { Divider, Form, Input, InputNumber, List, Modal, Select, Switch } from 'antd';
 import i18n from 'i18next';
-import PropTypes from 'prop-types';
-import { List, Divider, Modal, Form, Input, Select, InputNumber, Switch } from 'antd';
-import ReactJson from 'react-json-view';
-import WorkflowSiderContainer from './WorkflowSiderContainer';
+import React from 'react';
 import { CommonButton, InputJson } from '../../components/common';
 import { Flex } from '../../components/flex';
-import { FormComponentProps } from 'antd/lib/form';
+import WorkflowSiderContainer from './WorkflowSiderContainer';
 
-interface IProps extends FormComponentProps {
+interface IProps {
 	workflow?: any;
 	onChange?: any;
 }
 
-const initSelectedVar = {
+type VariableType = 'text' | 'number' | 'boolean' | 'json';
+
+interface SelectedVar {
+	type: VariableType;
+	key: string;
+	value: any;
+}
+
+const initSelectedVar: SelectedVar = {
 	type: 'text',
-	key: null,
-	value: null,
+	key: '',
+	value: '',
 };
 
-class WorkflowGlobalParameters extends Component<IProps> {
-	state = {
-		types: ['text', 'number', 'boolean', 'json'],
-		vars: this.props.workflow.vars || {},
-		selectedVar: initSelectedVar,
-		visible: false,
-		isEdit: false,
-		errors: null,
+const WorkflowGlobalParameters = ({ workflow, onChange }: IProps) => {
+	const [form] = Form.useForm();
+	const [types] = React.useState<VariableType[]>(['text', 'number', 'boolean', 'json']);
+	const [vars, setVars] = React.useState<Record<string, any>>(workflow?.vars || {});
+	const [selectedVar, setSelectedVar] = React.useState<SelectedVar>(initSelectedVar);
+	const [visible, setVisible] = React.useState(false);
+	const [isEdit, setIsEdit] = React.useState(false);
+	const [errors, setErrors] = React.useState<any>(null);
+
+	React.useEffect(() => {
+		setVars(workflow?.vars || {});
+	}, [workflow?.vars]);
+
+	const handleValidate = (nextErrors: any) => {
+		setErrors(nextErrors);
 	};
 
-	getComponentByType = type => {
+	const getComponentByType = (type: VariableType): React.ReactElement<any> => {
 		switch (type) {
 			case 'text':
 				return <Input />;
@@ -38,238 +50,182 @@ class WorkflowGlobalParameters extends Component<IProps> {
 			case 'boolean':
 				return <Switch />;
 			case 'json':
-				return <InputJson onValidate={this.handlers.onValidate} />;
+				return <InputJson onValidate={handleValidate} />;
 			default:
 				return <Input />;
 		}
 	};
 
-	getType = variable => {
+	const getType = (variable: { value: any }): VariableType => {
 		if (typeof variable.value === 'number') {
 			return 'number';
-		} else if (typeof variable.value === 'boolean') {
+		}
+		if (typeof variable.value === 'boolean') {
 			return 'boolean';
-		} else {
-			if (variable.value.startsWith('{') && variable.value.endsWith('}')) {
-				return 'json';
-			} else {
-				return 'text';
-			}
+		}
+		if (typeof variable.value === 'string' && variable.value.startsWith('{') && variable.value.endsWith('}')) {
+			return 'json';
+		}
+		return 'text';
+	};
+
+	const handleModalVisible = (nextVisible: boolean) => {
+		setVisible(nextVisible);
+		setErrors(null);
+		if (!nextVisible) {
+			setSelectedVar(initSelectedVar);
+			form.resetFields();
+			return;
+		}
+		form.setFieldsValue(selectedVar);
+	};
+
+	const handleAdd = () => {
+		setIsEdit(false);
+		setSelectedVar(initSelectedVar);
+		setVisible(true);
+		form.setFieldsValue(initSelectedVar);
+	};
+
+	const handleClear = () => {
+		onChange?.(null, { workflow: { vars: {} } }, null);
+		setVars({});
+		setSelectedVar(initSelectedVar);
+	};
+
+	const handleDelete = (key: string) => {
+		const nextVars = { ...vars };
+		delete nextVars[key];
+		onChange?.(null, { workflow: { vars: nextVars } }, null);
+		setVars(nextVars);
+	};
+
+	const handleEdit = (variable: { key: string; value: any }) => {
+		const nextSelectedVar: SelectedVar = {
+			...variable,
+			type: getType(variable),
+		};
+		setIsEdit(true);
+		setSelectedVar(nextSelectedVar);
+		setVisible(true);
+		form.setFieldsValue(nextSelectedVar);
+	};
+
+	const handleOk = async () => {
+		const values = await form.validateFields();
+		const nextVars = { ...vars };
+		if (isEdit) {
+			delete nextVars[selectedVar.key];
+		}
+		nextVars[values.key] = values.value;
+		setVars(nextVars);
+		onChange?.(null, { workflow: { vars: nextVars } }, null);
+		handleModalVisible(false);
+	};
+
+	const handleTypeChange = (value: VariableType) => {
+		let newValue: any = '';
+		if (value === 'number') {
+			newValue = 0;
+		} else if (value === 'boolean') {
+			newValue = false;
+		} else if (value === 'json') {
+			newValue = '{}';
+		}
+		const nextSelectedVar: SelectedVar = {
+			...selectedVar,
+			type: value,
+			value: newValue,
+		};
+		setSelectedVar(nextSelectedVar);
+		form.setFieldsValue({ type: value, value: newValue });
+	};
+
+	const keyValidator = async (_rule: unknown, value: string) => {
+		if (!isEdit && vars[value]) {
+			throw new Error(i18n.t('common.enter-exist', { arg: value }));
 		}
 	};
 
-	handlers = {
-		onModalVisible: visible => {
-			if (visible) {
-				this.setState(
-					{
-						visible,
-					},
-					() => {
-						this.props.form.resetFields();
-					},
-				);
-				return;
-			}
-			this.setState(
-				{
-					visible,
-					selectedVar: initSelectedVar,
-				},
-				() => {
-					this.props.form.resetFields();
-				},
-			);
-		},
-		onAdd: () => {
-			this.setState(
-				{
-					isEdit: false,
-					selectedVar: initSelectedVar,
-				},
-				() => {
-					this.handlers.onModalVisible(true);
-				},
-			);
-		},
-		onClear: () => {
-			this.props.onChange(null, { workflow: { vars: {} } }, null);
-			this.setState({
-				vars: {},
-				selectedVar: initSelectedVar,
-			});
-		},
-		onDelete: key => {
-			delete this.state.vars[key];
-			this.props.onChange(null, { workflow: { vars: this.state.vars } }, null);
-			this.setState({
-				vars: this.state.vars,
-			});
-		},
-		onEdit: variable => {
-			variable.type = this.getType(variable);
-			this.setState(
-				{
-					isEdit: true,
-					selectedVar: variable,
-				},
-				() => {
-					this.handlers.onModalVisible(true);
-				},
-			);
-		},
-		onOk: () => {
-			this.props.form.validateFields((err, values) => {
-				if (err) {
-					return;
-				}
-				if (this.state.isEdit) {
-					delete this.state.vars[this.state.selectedVar.key];
-				}
-				const vars = Object.assign({}, this.state.vars, { [values.key]: values.value });
-				this.setState(
-					{
-						vars,
-					},
-					() => {
-						this.props.onChange(null, { workflow: { vars } }, null);
-						this.handlers.onModalVisible(false);
-					},
-				);
-			});
-		},
-		onCancel: () => {
-			this.handlers.onModalVisible(false);
-		},
-		onChange: value => {
-			let newValue = null;
-			if (value === 'number') {
-				newValue = 0;
-			} else if (value === 'boolean') {
-				newValue = false;
-			}
-			const selectedVar = Object.assign({}, this.state.selectedVar, {
-				type: value,
-				value: newValue,
-			});
-			this.setState({
-				selectedVar,
-			});
-		},
-		onValidate: errors => {
-			this.setState({
-				errors,
-			});
-		},
-		keyValidator: (rule, value, callback) => {
-			if (!this.state.isEdit) {
-				if (this.state.vars[value]) {
-					callback(i18n.t('common.enter-exist', { arg: value }));
-					return false;
-				}
-			}
-			callback();
-			return true;
-		},
-		valueValidator: (rule, value, callback) => {
-			if (this.state.errors) {
-				callback(this.state.errors);
-				return false;
-			}
-			callback();
-			return true;
-		},
+	const valueValidator = async () => {
+		if (errors) {
+			throw new Error(errors);
+		}
 	};
 
-	render() {
-		const { form } = this.props;
-		const { vars, selectedVar, visible, isEdit, types } = this.state;
-		const dataSource = Object.keys(vars).reduce((prev, key) => {
-			prev.push({ key, value: vars[key] });
-			return prev;
-		}, []);
-		const rules = [{ required: true, message: i18n.t('common.enter-property') }];
-		if (selectedVar.type === 'json') {
-			rules.push({
-				required: true,
-				// @ts-ignore
-				validator: this.handlers.valueValidator,
-			});
-		}
-		return (
-			<WorkflowSiderContainer title={i18n.t('workflow.variables')} icon="globe">
-				<Flex justifyContent="flex-end">
-					<CommonButton className="rde-action-btn" shape="circle" icon="plus" onClick={this.handlers.onAdd} />
-					<CommonButton
-						className="rde-action-btn"
-						type="danger"
-						shape="circle"
-						icon="times"
-						onClick={this.handlers.onClear}
-					/>
-				</Flex>
-				<Divider style={{ margin: '12px 0' }} />
-				<List
-					dataSource={dataSource}
-					renderItem={variable => {
-						const actions = [
-							<CommonButton
-								key="edit"
-								className="rde-action-btn"
-								shape="circle"
-								icon="edit"
-								onClick={() => this.handlers.onEdit(variable)}
-							/>,
-							<CommonButton
-								key="delete"
-								className="rde-action-btn"
-								shape="circle"
-								icon="trash"
-								onClick={() => this.handlers.onDelete(variable.key)}
-							/>,
-						];
-						const description =
-							this.getType(variable) === 'json' ? (
-								<ReactJson
-									src={JSON.parse(variable.value)}
-									name={false}
-									enableClipboard={false}
-									displayDataTypes={false}
-									groupArraysAfterLength={10}
-									collapseStringsAfterLength={100}
-								/>
-							) : (
-								<pre>{variable.value.toString()}</pre>
-							);
-						return (
-							<List.Item actions={actions}>
-								<List.Item.Meta title={variable.key} description={description} />
-							</List.Item>
+	const dataSource = Object.keys(vars).map(key => ({ key, value: vars[key] }));
+	const rules: Array<Record<string, any>> = [{ required: true, message: i18n.t('common.enter-property') }];
+	if (selectedVar.type === 'json') {
+		rules.push({ validator: valueValidator });
+	}
+
+	return (
+		<WorkflowSiderContainer title={i18n.t('workflow.variables')} icon="globe">
+			<Flex justifyContent="flex-end">
+				<CommonButton className="rde-action-btn" shape="circle" icon="plus" onClick={handleAdd} />
+				<CommonButton className="rde-action-btn" danger shape="circle" icon="times" onClick={handleClear} />
+			</Flex>
+			<Divider style={{ margin: '12px 0' }} />
+			<List
+				dataSource={dataSource}
+				renderItem={variable => {
+					const description =
+						getType(variable) === 'json' ? (
+							<pre>
+								{JSON.stringify(
+									typeof variable.value === 'string' ? JSON.parse(variable.value) : variable.value,
+									null,
+									2,
+								)}
+							</pre>
+						) : (
+							<pre>{String(variable.value)}</pre>
 						);
-					}}
-				/>
-				<Modal
-					title={isEdit ? i18n.t('workflow.variables-modify') : i18n.t('workflow.variables-add')}
-					onOk={this.handlers.onOk}
-					onCancel={this.handlers.onCancel}
-					visible={visible}
-				>
-					<Form.Item label={i18n.t('common.key')} colon={false}>
-						{form.getFieldDecorator('key', {
-							initialValue: selectedVar.key,
-							rules: [
-								{ required: true, message: i18n.t('common.enter-property') },
-								{ required: true, validator: this.handlers.keyValidator },
-							],
-						})(<Input />)}
-					</Form.Item>
-					<Form.Item label={i18n.t('common.type')} colon={false}>
-						<Select
-							defaultValue={selectedVar.type}
-							value={selectedVar.type}
-							onChange={this.handlers.onChange}
-							style={{ width: '100%' }}
+
+					return (
+						<List.Item
+							actions={[
+								<CommonButton
+									key="edit"
+									className="rde-action-btn"
+									shape="circle"
+									icon="edit"
+									onClick={() => handleEdit(variable)}
+								/>,
+								<CommonButton
+									key="delete"
+									className="rde-action-btn"
+									shape="circle"
+									icon="trash"
+									onClick={() => handleDelete(variable.key)}
+								/>,
+							]}
 						>
+							<List.Item.Meta title={variable.key} description={description} />
+						</List.Item>
+					);
+				}}
+			/>
+			<Modal
+				title={isEdit ? i18n.t('workflow.variables-modify') : i18n.t('workflow.variables-add')}
+				onOk={handleOk}
+				onCancel={() => handleModalVisible(false)}
+				open={visible}
+			>
+				<Form form={form} initialValues={selectedVar} layout="vertical">
+					<Form.Item
+						label={i18n.t('common.key')}
+						colon={false}
+						name="key"
+						rules={[
+							{ required: true, message: i18n.t('common.enter-property') },
+							{ validator: keyValidator },
+						]}
+					>
+						<Input />
+					</Form.Item>
+					<Form.Item label={i18n.t('common.type')} colon={false} name="type">
+						<Select onChange={handleTypeChange} style={{ width: '100%' }}>
 							{types.map(type => (
 								<Select.Option key={type} value={type}>
 									{type}
@@ -277,17 +233,19 @@ class WorkflowGlobalParameters extends Component<IProps> {
 							))}
 						</Select>
 					</Form.Item>
-					<Form.Item label={i18n.t('common.value')} colon={false}>
-						{form.getFieldDecorator('value', {
-							initialValue: selectedVar.value,
-							rules,
-							valuePropName: selectedVar.type === 'boolean' ? 'checked' : 'value',
-						})(this.getComponentByType(selectedVar.type))}
+					<Form.Item
+						label={i18n.t('common.value')}
+						colon={false}
+						name="value"
+						rules={rules}
+						valuePropName={selectedVar.type === 'boolean' ? 'checked' : 'value'}
+					>
+						{getComponentByType(selectedVar.type)}
 					</Form.Item>
-				</Modal>
-			</WorkflowSiderContainer>
-		);
-	}
-}
+				</Form>
+			</Modal>
+		</WorkflowSiderContainer>
+	);
+};
 
-export default Form.create<IProps>()(WorkflowGlobalParameters);
+export default WorkflowGlobalParameters;

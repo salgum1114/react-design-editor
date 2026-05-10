@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
 import i18n from 'i18next';
-import { Canvas } from '../../../canvas';
-import { Flex } from '../../../components/flex';
+import React, { Component } from 'react';
+import type { CanvasInstance } from '../../../canvas';
 import { CommonButton } from '../../../components/common';
+import { Flex } from '../../../components/flex';
 
 interface IProps {
-	canvasRef?: Canvas;
+	canvasRef?: CanvasInstance;
 	selectedItem?: any;
 	workflow?: any;
 }
 
 class NodeAction extends Component<IProps> {
 	render() {
-		const { canvasRef, selectedItem } = this.props;
+		const { canvasRef } = this.props;
 		return (
 			<Flex justifyContent="center" alignItems="flex-end" flex="1">
 				<Flex.Item alignSelf="flex-start">
@@ -28,7 +28,7 @@ class NodeAction extends Component<IProps> {
 				<Flex.Item alignSelf="flex-end">
 					<CommonButton
 						icon="trash"
-						type="danger"
+						danger
 						onClick={() => {
 							canvasRef.handler.remove();
 						}}

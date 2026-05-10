@@ -209,7 +209,7 @@ class TransactionHandler extends AbstractHandler {
 
 		try {
 			// Always read fresh canvas state first.
-			const objects = this.handler.canvas.toJSON(this.handler.propertiesToInclude).objects as FabricObject[];
+			const objects = (this.handler.canvas as any).toJSON(this.handler.propertiesToInclude).objects as FabricObject[];
 			const normalized = this.sortObjects(this.normalizeObjects(objects));
 
 			if (type === 'configuration') {
@@ -293,38 +293,34 @@ class TransactionHandler extends AbstractHandler {
 			this.handler.clear();
 			this.handler.canvas.discardActiveObject();
 
-			fabric.util.enlivenObjects(
-				this.currentObjects,
-				(enlivenObjects: FabricObject[]) => {
-					enlivenObjects.forEach(obj => {
-						const targetIndex = this.handler.canvas._objects.length;
+			void fabric.util.enlivenObjects(this.currentObjects).then((enlivenedObjects: FabricObject[]) => {
+				enlivenedObjects.forEach(obj => {
+					const targetIndex = this.handler.canvas._objects.length;
 
-						if (obj.superType === 'node') {
-							const node = obj as NodeObject;
-							this.handler.canvas.insertAt(node, targetIndex, false);
-							this.handler.portHandler.create(node);
-						} else if (obj.superType === 'link') {
-							this.handler.objects = this.handler.getObjects();
-							this.handler.linkHandler.create({
-								type: 'link',
-								fromNodeId: (obj as any).fromNode?.id,
-								fromPortId: (obj as any).fromPort?.id,
-								toNodeId: (obj as any).toNode?.id,
-								toPortId: (obj as any).toPort?.id,
-							});
-						} else {
-							this.handler.canvas.insertAt(obj, targetIndex, false);
-						}
-					});
+					if (obj.superType === 'node') {
+						const node = obj as NodeObject;
+						this.handler.canvas.insertAt(targetIndex, node);
+						this.handler.portHandler.create(node);
+					} else if (obj.superType === 'link') {
+						this.handler.objects = this.handler.getObjects();
+						this.handler.linkHandler.create({
+							type: 'link',
+							fromNodeId: (obj as any).fromNode?.id,
+							fromPortId: (obj as any).fromPort?.id,
+							toNodeId: (obj as any).toNode?.id,
+							toPortId: (obj as any).toPort?.id,
+						});
+					} else {
+						this.handler.canvas.insertAt(targetIndex, obj);
+					}
+				});
 
-					this.active = false;
-					this.handler.canvas.renderOnAddRemove = true;
-					this.handler.canvas.renderAll();
-					this.handler.objects = this.handler.getObjects();
-					this.handler.onTransaction?.(transaction);
-				},
-				null,
-			);
+				this.active = false;
+				this.handler.canvas.renderOnAddRemove = true;
+				this.handler.canvas.renderAll();
+				this.handler.objects = this.handler.getObjects();
+				this.handler.onTransaction?.(transaction);
+			}).catch((error: unknown) => console.error(error));
 		} catch (error) {
 			console.error(error);
 		}

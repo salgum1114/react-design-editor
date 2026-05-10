@@ -7,10 +7,10 @@ import { defaults } from './constants';
 import { Handler, HandlerOptions } from './handlers';
 import { FabricCanvas } from './models';
 
-import './styles/canvas.less';
-import './styles/contextmenu.less';
-import './styles/fabricjs.less';
-import './styles/tooltip.less';
+import './styles/canvas.css';
+import './styles/contextmenu.css';
+import './styles/fabricjs.css';
+import './styles/tooltip.css';
 
 export interface CanvasInstance {
 	handler: Handler;
@@ -65,7 +65,7 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 		});
 
 		this.canvas = new fabric.Canvas(`canvas_${id}`, mergedCanvasOption);
-		this.canvas.setBackgroundColor(mergedCanvasOption.backgroundColor, this.canvas.renderAll.bind(this.canvas));
+		this.canvas.backgroundColor = mergedCanvasOption.backgroundColor;
 		this.canvas.renderAll();
 
 		this.container = this.containerRef.current;
@@ -211,12 +211,12 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 }
 
 const Canvas: React.FC<CanvasProps> = React.forwardRef<CanvasInstance, CanvasProps>((props, ref) => {
-	const canvasRef = useRef<InternalCanvas>();
+	const canvasRef = useRef<InternalCanvas | null>(null);
 
 	React.useImperativeHandle(ref, () => ({
-		handler: canvasRef.current.handler,
-		canvas: canvasRef.current.canvas,
-		container: canvasRef.current.container,
+		handler: canvasRef.current!.handler,
+		canvas: canvasRef.current!.canvas,
+		container: canvasRef.current!.container,
 	}));
 
 	return <InternalCanvas ref={canvasRef} {...props} />;

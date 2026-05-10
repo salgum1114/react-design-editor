@@ -294,7 +294,7 @@ class NodeHandler extends AbstractHandler {
 		}
 		obj.animating = true;
 
-		obj.animate('shadow.blur', maxBlur, {
+		(obj as any).animate('shadow.blur', maxBlur, {
 			easing: fabric.util.ease.easeInOutQuad,
 			duration,
 			onChange: (value: number) => {
@@ -306,7 +306,7 @@ class NodeHandler extends AbstractHandler {
 			onComplete: () => {
 				if ((obj as any).__nodeBlurAnimToken !== token) return;
 
-				obj.animate('shadow.blur', minBlur, {
+				(obj as any).animate('shadow.blur', minBlur, {
 					easing: fabric.util.ease.easeInOutQuad,
 					duration,
 					onChange: (value: number) => {

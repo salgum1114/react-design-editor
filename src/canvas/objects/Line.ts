@@ -1,26 +1,26 @@
-import { fabric } from 'fabric';
+import { classRegistry, fabric } from 'fabric';
 
-const Line = fabric.util.createClass(fabric.Line, {
-	type: 'line',
-	superType: 'drawing',
-	initialize(points: any, options: any) {
-		if (!points) {
-			const { x1, x2, y1, y2 } = options;
-			points = [x1, y1, x2, y2];
-		}
-		options = options || {};
-		this.callSuper('initialize', points, options);
-	},
+class Line extends fabric.Line {
+	static type = 'line';
+	superType = 'drawing';
+
+	constructor(points: any, options: any = {}) {
+		const nextPoints = points ?? [options.x1, options.y1, options.x2, options.y2];
+		super(nextPoints, options);
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
-		this.callSuper('_render', ctx);
-	},
-});
+		super._render(ctx);
+	}
 
-Line.fromObject = (options: any, callback: any) => {
-	const { x1, x2, y1, y2 } = options;
-	return callback(new Line([x1, y1, x2, y2], options));
-};
+	static fromObject(options: any, callback?: (obj: Line) => void) {
+		const instance = new Line([options.x1, options.y1, options.x2, options.y2], options);
+		callback?.(instance);
+		return Promise.resolve(instance);
+	}
+}
 
+classRegistry.setClass(Line, Line.type);
 window.fabric.Line = Line;
 
 export default Line;

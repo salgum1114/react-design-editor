@@ -1,6 +1,6 @@
 import { fabric } from 'fabric';
 import { FabricGroup, FabricObject, FabricObjectOption } from '../models';
-import { toObject } from '../utils';
+import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 
 export type SvgObject = (FabricGroup | FabricObject) & {
 	loadSvg(option: SvgOption): Promise<SvgObject>;
@@ -20,19 +20,21 @@ export interface SvgOption extends FabricObjectOption {
 	keepSize?: boolean;
 }
 
-const Svg = fabric.util.createClass(fabric.Group, {
-	type: 'svg',
-	initialize(option: SvgOption = {}) {
-		this.callSuper('initialize', [], option);
-		this.loadSvg(option);
-	},
+class Svg extends fabric.Group {
+	static type = 'svg';
+
+	constructor(option: SvgOption = {}) {
+		super([], option);
+		void this.loadSvg(option);
+	}
+
 	addSvgElements(objects: FabricObject[], options: SvgOption) {
 		const createdObj = fabric.util.groupSVGElements(objects, options) as SvgObject;
 		const { height, scaleY } = this;
 		const scale = height ? (height * scaleY) / createdObj.height : createdObj.scaleY;
 		this.set({ ...options, scaleX: scale, scaleY: scale });
 		if (this._objects?.length) {
-			(this as FabricGroup).getObjects().forEach(obj => {
+			this.getObjects().forEach((obj: FabricObject) => {
 				this.remove(obj);
 			});
 		}
@@ -47,75 +49,64 @@ const Svg = fabric.util.createClass(fabric.Group, {
 				}
 			});
 		} else {
-			createdObj.set({
-				originX: 'center',
-				originY: 'center',
-			});
+			createdObj.set({ originX: 'center', originY: 'center' });
 			if (options.fill) {
-				createdObj.set({
-					fill: options.fill,
-				});
+				createdObj.set({ fill: options.fill });
 			}
 			if (options.stroke) {
-				createdObj.set({
-					stroke: options.stroke,
-				});
+				createdObj.set({ stroke: options.stroke });
 			}
 			if (this._objects?.length) {
-				(this as FabricGroup)._objects.forEach(obj => this.remove(obj));
+				this.getObjects().forEach((obj: FabricObject) => this.remove(obj));
 			}
 			this.add(createdObj);
 		}
 		this.setCoords();
-		if (this.canvas) {
-			this.canvas.requestRenderAll();
-		}
-		return this;
-	},
-	loadSvg(option: SvgOption) {
+		this.canvas?.requestRenderAll();
+		return this as unknown as SvgObject;
+	}
+
+	async loadSvg(option: SvgOption) {
 		const { src, svg, loadType, fill, stroke } = option;
-		return new Promise<SvgObject>(resolve => {
-			if (loadType === 'svg') {
-				fabric.loadSVGFromString(svg || src, (objects, options) => {
-					resolve(this.addSvgElements(objects, { ...options, fill, stroke }));
-				});
-			} else {
-				fabric.loadSVGFromURL(svg || src, (objects, options) => {
-					resolve(this.addSvgElements(objects, { ...options, fill, stroke }));
-				});
-			}
-		});
-	},
-	setFill(value: any, filter: (obj: FabricObject) => boolean = () => true) {
+		const result =
+			loadType === 'svg'
+				? await fabric.loadSVGFromString(svg || src)
+				: await fabric.loadSVGFromURL(svg || src);
+		return this.addSvgElements(result.objects as FabricObject[], { ...result.options, fill, stroke });
+	}
+
+	setFill(value: string, filter: (obj: FabricObject) => boolean = () => true) {
 		this.getObjects()
 			.filter(filter)
 			.forEach((obj: FabricObject) => obj.set('fill', value));
-		this.canvas.requestRenderAll();
-		return this;
-	},
-	setStroke(value: any, filter: (obj: FabricObject) => boolean = () => true) {
+		this.canvas?.requestRenderAll();
+		return this as unknown as SvgObject;
+	}
+
+	setStroke(value: string, filter: (obj: FabricObject) => boolean = () => true) {
 		this.getObjects()
 			.filter(filter)
 			.forEach((obj: FabricObject) => obj.set('stroke', value));
-		this.canvas.requestRenderAll();
-		return this;
-	},
-	toObject(propertiesToInclude: string[]) {
-		return toObject(this, propertiesToInclude, {
+		this.canvas?.requestRenderAll();
+		return this as unknown as SvgObject;
+	}
+
+	toObject(propertiesToInclude: string[] = []) {
+		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			src: this.get('src'),
 			loadType: this.get('loadType'),
 		});
-	},
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
-		this.callSuper('_render', ctx);
-	},
-});
+		super._render(ctx);
+	}
 
-Svg.fromObject = (option: SvgOption, callback: (obj: SvgObject) => any) => {
-	return callback(new Svg(option));
-};
+	static fromObject(option: SvgOption, callback?: (obj: SvgObject) => any) {
+		return resolveFromObject(new Svg(option) as unknown as SvgObject, callback);
+	}
+}
 
-// @ts-ignore
-window.fabric.Svg = Svg;
+registerFabricClass('Svg', Svg, 'Svg');
 
 export default Svg;

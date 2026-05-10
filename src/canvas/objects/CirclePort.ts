@@ -1,25 +1,29 @@
 import { fabric } from 'fabric';
 
+import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 import { PortObject } from './Port';
 
-const CirclePort = fabric.util.createClass(fabric.Circle, {
-	type: 'port',
-	superType: 'port',
-	initialize(options: any) {
-		options = options || {};
-		this.callSuper('initialize', options);
-	},
+class CirclePort extends fabric.Circle {
+	static type = 'port';
+	superType = 'port';
+
+	constructor(options: any = {}) {
+		super(options);
+	}
+
 	setPosition(left: number, top: number) {
 		this.set({ left, top });
-	},
+	}
+
 	setConnected(connected?: boolean) {
-		const fill = connected ? this.connectedFill : this.originFill;
-		this.initialize({ ...this.toObject(), connected, fill });
+		const fill = connected ? (this as any).connectedFill : (this as any).originFill;
+		this.set({ connected, fill });
 		this.setCoords();
-		this.canvas.requestRenderAll();
-	},
-	toObject() {
-		return fabric.util.object.extend(this.callSuper('toObject'), {
+		this.canvas?.requestRenderAll();
+	}
+
+	toObject(propertiesToInclude: string[] = []) {
+		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			superType: this.get('superType'),
 			enabled: this.get('enabled'),
@@ -30,17 +34,17 @@ const CirclePort = fabric.util.createClass(fabric.Circle, {
 			color: this.get('color'),
 			connected: this.get('connected'),
 		});
-	},
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
-		this.callSuper('_render', ctx);
-	},
-});
+		super._render(ctx);
+	}
 
-CirclePort.fromObject = (options: PortObject, callback: (obj: PortObject) => any) => {
-	return callback(new CirclePort(options));
-};
+	static fromObject(options: PortObject, callback?: (obj: PortObject) => any) {
+		return resolveFromObject(new CirclePort(options), callback);
+	}
+}
 
-// @ts-ignore
-window.fabric.CirclePort = CirclePort;
+registerFabricClass('CirclePort', CirclePort, 'circlePort');
 
 export default CirclePort;

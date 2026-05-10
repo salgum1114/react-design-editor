@@ -1,26 +1,23 @@
 import { fabric } from 'fabric';
 import { defineGrid, extendHex } from 'honeycomb-grid';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { v4 as uuid } from 'uuid';
 import { Canvas, Handler } from '../../canvas';
 import { CanvasInstance } from '../../canvas/Canvas';
 import { Content } from '../../components/layout';
 
-const Hexagon = fabric.util.createClass(fabric.Polygon, {
-	type: 'polygon',
-	superType: 'shape',
-	editable: false,
-	initialize(points: fabric.Point, option: fabric.Polygon) {
-		this.callSuper('initialize', points, option);
-	},
-	_render(ctx: CanvasRenderingContext2D) {
-		this.callSuper('_render', ctx);
-	},
-});
+class Hexagon extends fabric.Polygon {
+	superType = 'shape';
+	editable = false;
+
+	constructor(points: any, option: any = {}) {
+		super(points, { ...option, type: option.type ?? 'polygon' });
+	}
+}
 
 const HexGridEditor = () => {
-	const canvasRef = useRef<CanvasInstance>();
-	const handleLoad = (handler: Handler, canvas: fabric.Canvas) => {
+	const canvasRef = useRef<CanvasInstance | null>(null);
+	const handleLoad = (handler: Handler) => {
 		const size = 20;
 		const Hex = extendHex({
 			size,
@@ -59,7 +56,7 @@ const HexGridEditor = () => {
 				}}
 				fabricObjects={{
 					hexagon: {
-						create: ({ points, ...other }) => new Hexagon(points, other),
+						create: ({ points, ...other }) => new Hexagon(points, other) as any,
 					},
 				}}
 				canvasOption={{

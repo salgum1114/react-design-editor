@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Icon from '../../components/icon/Icon';
 import { Flex } from '../../components/flex';
+import Icon from '../../components/icon/Icon';
 
 interface IProps {
+	children?: React.ReactNode;
 	title?: React.ReactNode;
 	content?: React.ReactNode;
 	icon?: string;
@@ -13,16 +13,6 @@ interface IProps {
 }
 
 class WorkflowSiderContainer extends Component<IProps> {
-	static propTypes = {
-		children: PropTypes.any,
-		title: PropTypes.string,
-		icon: PropTypes.string,
-		content: PropTypes.any,
-		extra: PropTypes.any,
-		titleStyle: PropTypes.object,
-		contentStyle: PropTypes.object,
-	};
-
 	render() {
 		const { children, title, content, icon, extra, titleStyle, contentStyle } = this.props;
 		return (

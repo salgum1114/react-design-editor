@@ -281,11 +281,15 @@ class ImageHandler {
 	public applyFilterValue = (index: number, prop: string, value: any, imageObj?: fabric.Image): void => {
 		const obj = imageObj || (this.handler.canvas.getActiveObject() as fabric.Image);
 		if (obj.filters) {
-			const filter = obj.filters[index];
+			const filter = obj.filters[index] as any;
 			if (filter) {
-				filter.setOptions({
-					[prop]: value,
-				});
+				if (typeof filter.setOptions === 'function') {
+					filter.setOptions({
+						[prop]: value,
+					});
+				} else {
+					filter[prop] = value;
+				}
 				obj.applyFilters();
 				this.handler.canvas.requestRenderAll();
 			}

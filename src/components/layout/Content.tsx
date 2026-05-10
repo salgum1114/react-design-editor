@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { Layout, Spin } from 'antd';
+import React, { Component } from 'react';
 
 interface IProps {
 	title?: React.ReactNode;
@@ -9,18 +8,10 @@ interface IProps {
 	rightSider?: React.ReactNode;
 	className?: string;
 	loading?: boolean;
+	children?: React.ReactNode;
 }
 
 class Content extends Component<IProps> {
-	static propTypes = {
-		title: PropTypes.any,
-		leftSider: PropTypes.any,
-		content: PropTypes.any,
-		rightSider: PropTypes.any,
-		className: PropTypes.string,
-		loading: PropTypes.bool,
-	};
-
 	static defaultProps = {
 		className: 'rde-content-layout-main',
 		loading: false,

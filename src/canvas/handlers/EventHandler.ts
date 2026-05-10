@@ -28,7 +28,6 @@ class EventHandler extends AbstractHandler {
 	 */
 	protected initialize() {
 		if (this.handler.editable) {
-			// @ts-ignore
 			this.canvas.on({
 				'object:modified': this.modified,
 				'object:scaling': this.scaling,
@@ -42,16 +41,15 @@ class EventHandler extends AbstractHandler {
 				'selection:cleared': this.selection,
 				'selection:created': this.selection,
 				'selection:updated': this.selection,
-			});
+			} as any);
 		} else {
-			// @ts-ignore
 			this.canvas.on({
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
 				'mouse:out': this.mouseout,
 				'mouse:up': this.mouseup,
 				'mouse:wheel': this.mousewheel,
-			});
+			} as any);
 		}
 		this.canvas.wrapperEl.tabIndex = 1000;
 		this.canvas.wrapperEl.addEventListener('keydown', this.keydown, false);
@@ -83,7 +81,7 @@ class EventHandler extends AbstractHandler {
 				'selection:cleared': this.selection,
 				'selection:created': this.selection,
 				'selection:updated': this.selection,
-			});
+			} as any);
 		} else {
 			this.canvas.off({
 				'mouse:down': this.mousedown,
@@ -91,7 +89,7 @@ class EventHandler extends AbstractHandler {
 				'mouse:out': this.mouseout,
 				'mouse:up': this.mouseup,
 				'mouse:wheel': this.mousewheel,
-			});
+			} as any);
 			this.handler.getObjects().forEach(object => {
 				object.off('mousedown', this.handler.eventHandler.object.mousedown);
 				if (object.anime) {
@@ -410,7 +408,7 @@ class EventHandler extends AbstractHandler {
 				return;
 			}
 			if (target && target.type === 'fromPort') {
-				this.handler.linkHandler.init(target);
+				this.handler.linkHandler.init(target as any);
 				return;
 			}
 			if (
@@ -590,11 +588,10 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public resize = (nextWidth: number, nextHeight: number) => {
-		this.canvas.setWidth(nextWidth).setHeight(nextHeight);
-		this.canvas.setBackgroundColor(
-			this.handler.canvasOption.backgroundColor,
-			this.canvas.renderAll.bind(this.canvas),
-		);
+		this.canvas.setWidth(nextWidth);
+		this.canvas.setHeight(nextHeight);
+		this.canvas.backgroundColor = this.handler.canvasOption.backgroundColor;
+		this.canvas.renderAll();
 		if (!this.handler.workarea) {
 			return;
 		}
@@ -899,7 +896,7 @@ class EventHandler extends AbstractHandler {
 		e.preventDefault();
 		const { editable, onContext } = this.handler;
 		if (editable && onContext) {
-			const target = this.canvas.findTarget(e, false) as FabricObject;
+			const target = this.canvas.findTarget(e as any) as FabricObject;
 			if (target && target.type !== 'activeSelection') {
 				this.handler.select(target);
 			}

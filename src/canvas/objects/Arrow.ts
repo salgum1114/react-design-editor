@@ -1,18 +1,18 @@
 import { fabric } from 'fabric';
 
-const Arrow = fabric.util.createClass(fabric.Line, {
-	type: 'arrow',
-	superType: 'drawing',
-	initialize(points: any, options: any) {
-		if (!points) {
-			const { x1, x2, y1, y2 } = options;
-			points = [x1, y1, x2, y2];
-		}
-		options = options || {};
-		this.callSuper('initialize', points, options);
-	},
+import { registerFabricClass, resolveFromObject } from '../utils';
+
+class Arrow extends fabric.Line {
+	static type = 'arrow';
+	superType = 'drawing';
+
+	constructor(points: any, options: any = {}) {
+		const nextPoints = points ?? [options.x1, options.y1, options.x2, options.y2];
+		super(nextPoints, options);
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
-		this.callSuper('_render', ctx);
+		super._render(ctx);
 		ctx.save();
 		const xDiff = this.x2 - this.x1;
 		const yDiff = this.y2 - this.y1;
@@ -20,23 +20,20 @@ const Arrow = fabric.util.createClass(fabric.Line, {
 		ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);
 		ctx.rotate(angle);
 		ctx.beginPath();
-		// Move 5px in front of line to start the arrow so it does not have the square line end showing in front (0,0)
 		ctx.moveTo(5, 0);
 		ctx.lineTo(-5, 5);
 		ctx.lineTo(-5, -5);
 		ctx.closePath();
-		ctx.fillStyle = this.stroke;
+		ctx.fillStyle = this.stroke as string;
 		ctx.fill();
 		ctx.restore();
-	},
-});
+	}
 
-Arrow.fromObject = (options: any, callback: any) => {
-	const { x1, x2, y1, y2 } = options;
-	return callback(new Arrow([x1, y1, x2, y2], options));
-};
+	static fromObject(options: any, callback?: (obj: Arrow) => void) {
+		return resolveFromObject(new Arrow([options.x1, options.y1, options.x2, options.y2], options), callback);
+	}
+}
 
-// @ts-ignore
-window.fabric.Arrow = Arrow;
+registerFabricClass('Arrow', Arrow);
 
 export default Arrow;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import Title from './components/layout/Title';
 import FlowContainer from './containers/FlowContainer';
 import { FiberEditor, HexGridEditor, ImageMapEditor, WorkflowEditor } from './editors';
@@ -15,9 +15,9 @@ class App extends React.Component<any, IState> {
 		activeEditor: 'workflow',
 	};
 
-	handleChangeEditor = ({ key }) => {
+	handleChangeEditor = ({ key }: { key: string }) => {
 		this.setState({
-			activeEditor: key,
+			activeEditor: key as EditorType,
 		});
 	};
 

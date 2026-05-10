@@ -1,6 +1,5 @@
 import { Tabs } from 'antd';
 import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { CanvasInstance, FabricObject } from '../../canvas';
 import { CommonButton } from '../../components/common';
@@ -12,29 +11,27 @@ interface IProps {
 	canvasRef?: CanvasInstance;
 	selectedItem?: FabricObject;
 	workflow?: FabricObject;
-	onChange?: any;
+	onChange?: (...args: any[]) => void;
 }
 
-class WorkflowConfigurations extends React.Component<IProps> {
-	static propTypes = {
-		canvasRef: PropTypes.any,
-		selectedItem: PropTypes.object,
-		workflow: PropTypes.object,
-		onChange: PropTypes.func,
-	};
+interface IState {
+	collapse: boolean;
+	activeKey: string;
+}
 
-	state = {
+class WorkflowConfigurations extends React.Component<IProps, IState> {
+	state: IState = {
 		collapse: false,
 		activeKey: 'info',
 	};
 
 	handlers = {
 		onCollapse: () => {
-			this.setState({
-				collapse: !this.state.collapse,
-			});
+			this.setState(prevState => ({
+				collapse: !prevState.collapse,
+			}));
 		},
-		onChange: activeKey => {
+		onChange: (activeKey: string) => {
 			this.setState({
 				activeKey,
 			});
@@ -42,7 +39,7 @@ class WorkflowConfigurations extends React.Component<IProps> {
 	};
 
 	render() {
-		const { canvasRef, selectedItem, workflow, onChange } = this.props;
+		const { workflow, onChange } = this.props;
 		const { collapse, activeKey } = this.state;
 		const className = clsx('rde-editor-configurations', {
 			minimize: collapse,
@@ -62,14 +59,19 @@ class WorkflowConfigurations extends React.Component<IProps> {
 					onChange={this.handlers.onChange}
 					style={{ height: '100%' }}
 					tabBarStyle={{ marginTop: 60 }}
-				>
-					<Tabs.TabPane tab={<Icon name="cog" />} key="info">
-						<WorkflowInfo workflow={workflow} onChange={onChange} />
-					</Tabs.TabPane>
-					<Tabs.TabPane tab={<Icon name="globe" />} key="variables">
-						<WorkflowGlobalParameters workflow={workflow} onChange={onChange} />
-					</Tabs.TabPane>
-				</Tabs>
+					items={[
+						{
+							key: 'info',
+							label: <Icon name="cog" />,
+							children: <WorkflowInfo workflow={workflow} onChange={onChange} />,
+						},
+						{
+							key: 'variables',
+							label: <Icon name="globe" />,
+							children: <WorkflowGlobalParameters workflow={workflow} onChange={onChange} />,
+						},
+					]}
+				/>
 			</div>
 		);
 	}

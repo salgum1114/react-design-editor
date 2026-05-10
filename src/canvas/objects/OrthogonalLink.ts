@@ -1,21 +1,22 @@
-import { fabric } from 'fabric';
+import { registerFabricClass, resolveFromObject } from '../utils';
 import Link, { LinkObject } from './Link';
 import { NodeObject } from './Node';
 import { PortObject } from './Port';
 
-const OrthogonalLink = fabric.util.createClass(Link, {
-	type: 'OrthogonalLink',
-	superType: 'link',
-	initialize(
+class OrthogonalLink extends Link {
+	static type = 'orthogonalLink';
+	superType = 'link';
+
+	constructor(
 		fromNode: Partial<NodeObject>,
 		fromPort: Partial<PortObject>,
 		toNode: Partial<NodeObject>,
 		toPort: Partial<PortObject>,
-		options: Partial<LinkObject>,
+		options: Partial<LinkObject> = {},
 	) {
-		options = options || {};
-		this.callSuper('initialize', fromNode, fromPort, toNode, toPort, options);
-	},
+		super(fromNode, fromPort, toNode, toPort, options);
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
 		// Drawing orthogonal link
 		const { x1, y1, x2, y2 } = this;
@@ -54,15 +55,16 @@ const OrthogonalLink = fabric.util.createClass(Link, {
 		ctx.fillStyle = this.stroke;
 		ctx.fill();
 		ctx.restore();
-	},
-});
+	}
 
-OrthogonalLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
-	const { fromNode, fromPort, toNode, toPort } = options;
-	return callback(new OrthogonalLink(fromNode, fromPort, toNode, toPort, options));
-};
+	static fromObject(options: LinkObject, callback?: (obj: LinkObject) => any) {
+		return resolveFromObject(
+			new OrthogonalLink(options.fromNode, options.fromPort, options.toNode, options.toPort, options),
+			callback,
+		);
+	}
+}
 
-// @ts-ignore
-window.fabric.OrthogonalLink = OrthogonalLink;
+registerFabricClass('OrthogonalLink', OrthogonalLink, 'OrthogonalLink');
 
 export default OrthogonalLink;

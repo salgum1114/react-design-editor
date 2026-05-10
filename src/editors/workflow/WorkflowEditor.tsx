@@ -36,9 +36,9 @@ class WorkflowEditor extends React.Component {
 		editing: false,
 	};
 
-	canvasRef: CanvasInstance;
-	nodeConfigurationRef: any;
-	container: any;
+	canvasRef!: CanvasInstance;
+	nodeConfigurationRef?: { props: { form: any } };
+	container: HTMLDivElement | null = null;
 
 	componentDidMount() {
 		import('./Descriptors.json').then(descriptors => {
@@ -47,29 +47,33 @@ class WorkflowEditor extends React.Component {
 	}
 
 	canvasHandlers = {
-		onZoom: zoom => {
+		onZoom: (zoom: number) => {
 			this.setState({ zoomRatio: zoom });
 		},
-		onAdd: (target: FabricObject) => {
+		onAdd: (target: FabricObject & Record<string, any>) => {
 			if (target.type === 'activeSelection') {
 				this.canvasHandlers.onSelect(null);
 				return;
 			}
 			if (target.superType === 'node') {
-				this.canvasRef.handler.nodeHandler.highlightingNode(target);
-				this.canvasRef.handler.select(target);
+				this.canvasRef.handler.nodeHandler.highlightingNode(target as any);
+				this.canvasRef.handler.select(target as any);
 			}
 		},
-		onSelect: target => {
-			this.nodeConfigurationRef.props.form.validateFields(err => {
-				if (this.state.selectedItem) {
-					if (err || (this.state.selectedItem.errors && this.state.selectedItem.errors.length)) {
-						this.state.selectedItem.setErrors(true);
-					} else {
-						this.state.selectedItem.setErrors(false);
+		onSelect: (target: any) => {
+			const currentSelectedItem = this.state.selectedItem;
+			this.nodeConfigurationRef?.props.form
+				.validateFields()
+				.then(() => {
+					if (currentSelectedItem) {
+						currentSelectedItem.setErrors(
+							!!(currentSelectedItem.errors && currentSelectedItem.errors.length),
+						);
 					}
-				}
-			});
+				})
+				.catch(() => {
+					currentSelectedItem?.setErrors(true);
+				});
 			if (
 				target &&
 				target.id &&
@@ -90,7 +94,7 @@ class WorkflowEditor extends React.Component {
 				this.changeEditing(true);
 			}
 		},
-		onModified: target => {
+		onModified: () => {
 			if (!this.state.editing) {
 				this.changeEditing(true);
 			}
@@ -98,16 +102,16 @@ class WorkflowEditor extends React.Component {
 	};
 
 	handlers = {
-		onImport: files => {
-			if (files) {
+		onImport: (files: FileList | null) => {
+			if (files?.length) {
 				this.showLoading();
 				const reader = new FileReader();
-				reader.onload = e => {
+				reader.onload = (e: ProgressEvent<FileReader>) => {
 					try {
-						const result = JSON.parse(e.target!.result as string);
+						const result = JSON.parse(String(e.target?.result || '{}')) as any;
 						this.setState({ workflow: result });
 						this.canvasRef.handler.clear();
-						const nodes = result.nodes.map(node => {
+						const nodes = (result.nodes || []).map((node: any) => {
 							return {
 								...node,
 								type: getNode(node.nodeClazz),
@@ -115,7 +119,7 @@ class WorkflowEditor extends React.Component {
 								top: node.properties ? node.properties.top : 0,
 							};
 						});
-						const links = result.links.map(link => {
+						const links = (result.links || []).map((link: any) => {
 							return {
 								fromNodeId: link.fromNode,
 								fromPortId: link.fromPort,
@@ -126,7 +130,7 @@ class WorkflowEditor extends React.Component {
 								top: link.properties ? link.properties.top : 0,
 							};
 						});
-						const objects = nodes.concat(links);
+						const objects = nodes.concat(links) as any[];
 						const { viewportTransform } = result.properties;
 						if (viewportTransform) {
 							this.canvasRef.canvas.setViewportTransform(viewportTransform);
@@ -135,7 +139,7 @@ class WorkflowEditor extends React.Component {
 							this.hideLoading();
 							this.canvasRef.canvas.setZoom(this.state.zoomRatio);
 						});
-					} catch (error) {
+					} catch (error: any) {
 						console.error(error);
 						this.hideLoading();
 					}
@@ -157,7 +161,7 @@ class WorkflowEditor extends React.Component {
 		},
 		onDownload: () => {
 			this.showLoading();
-			const workflow = this.handlers.exportJsonCode() as any;
+			const workflow = this.handlers.exportJsonCode();
 			if (workflow) {
 				const anchorEl = document.createElement('a');
 				anchorEl.href = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -172,10 +176,10 @@ class WorkflowEditor extends React.Component {
 		},
 		exportJsonCode: () => {
 			const workflow = Object.assign({}, this.state.workflow);
-			const nodes = [];
-			const links = [];
+			const nodes: any[] = [];
+			const links: any[] = [];
 			try {
-				this.canvasRef.handler.exportJSON().forEach(obj => {
+				this.canvasRef.handler.exportJSON().forEach((obj: any) => {
 					if (obj.superType === 'node') {
 						if (obj.errors) {
 							throw new NodeConfigurationError(
@@ -217,14 +221,16 @@ class WorkflowEditor extends React.Component {
 				};
 				workflow.properties = properties;
 				return workflow;
-			} catch (error) {
+			} catch (error: any) {
 				console.error(`[ERROR] ${this.constructor.name} exportJsonCode()`, error);
-				this.canvasRef.handler.selectById(error.nodeId);
-				message.error(error.message);
+				if (error?.nodeId) {
+					this.canvasRef.handler.selectById(error.nodeId);
+				}
+				message.error(error?.message || 'Failed to export workflow');
 				this.hideLoading();
 			}
 		},
-		onChange: debounce((selectedItem, changedValues, allValues) => {
+		onChange: debounce((selectedItem: any, changedValues: any, allValues: any) => {
 			if (!this.state.editing) {
 				this.changeEditing(true);
 			}
@@ -274,7 +280,7 @@ class WorkflowEditor extends React.Component {
 		});
 	};
 
-	changeEditing = editing => {
+	changeEditing = (editing: boolean) => {
 		this.setState({
 			editing,
 		});
@@ -340,18 +346,20 @@ class WorkflowEditor extends React.Component {
 					descriptors={descriptors}
 				/>
 				<div
-					ref={c => {
+					ref={(c: HTMLDivElement | null) => {
 						this.container = c;
 					}}
 					className="rde-editor-canvas"
 				>
 					<Canvas
-						ref={c => {
-							this.canvasRef = c;
+						ref={(c: CanvasInstance | null) => {
+							if (c) {
+								this.canvasRef = c;
+							}
 						}}
 						className="rde-canvas"
 						canvasOption={{ backgroundColor: '#1c2128' }}
-						fabricObjects={{ ...nodes, ...Links }}
+						fabricObjects={{ ...nodes, ...Links } as any}
 						workareaOption={{
 							width: 0,
 							height: 0,
@@ -376,11 +384,10 @@ class WorkflowEditor extends React.Component {
 						onAdd={onAdd}
 						onRemove={onRemove}
 						onModified={onModified}
-						onClick={(canvas, target, subTarget) => {
+						onClick={(_canvas: any, target: any, subTarget: any) => {
 							if (subTarget) {
-								console.log(target.ports);
 								if (target.ports?.length) {
-									const spinner = target.ports.find(p => p.type === 'spinner');
+									const spinner = target.ports.find((p: any) => p.type === 'spinner');
 									spinner?.setVisibility(true);
 									setTimeout(() => {
 										spinner?.setVisibility(false);
@@ -394,7 +401,7 @@ class WorkflowEditor extends React.Component {
 					/>
 					<div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
 						<WorkflowNodeConfigurations
-							wrappedComponentRef={c => {
+							wrappedComponentRef={(c: any) => {
 								this.nodeConfigurationRef = c;
 							}}
 							selectedItem={selectedItem}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FlowContext } from '../contexts';
 
-const FlowContainer: React.FC = props => {
+const FlowContainer: React.FC<React.PropsWithChildren> = props => {
 	const { children } = props;
 	const [selectedFlowNode, setSelectedFlowNode] = useState(null);
 	return (

@@ -1,5 +1,6 @@
 import { fabric } from 'fabric';
 import { FabricObject } from '../models';
+import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 
 export interface CustomControlObject extends FabricObject<fabric.Rect> {
 	nodeId?: string;
@@ -8,11 +9,12 @@ export interface CustomControlObject extends FabricObject<fabric.Rect> {
 	setPosition: (left: number, top: number) => void;
 }
 
-const CustomControl = fabric.util.createClass(fabric.Group, {
-	type: 'CustomControl',
-	superType: 'control',
-	initialize(options: any = {}) {
-		this.callSuper('initialize', [], {
+class CustomControl extends fabric.Group {
+	static type = 'CustomControl';
+	superType = 'control';
+
+	constructor(options: any = {}) {
+		super([], {
 			originX: 'center',
 			originY: 'center',
 			selectable: false,
@@ -20,21 +22,21 @@ const CustomControl = fabric.util.createClass(fabric.Group, {
 			visible: false,
 			...options,
 		});
-	},
+	}
 
 	setPosition(left: number, top: number) {
 		this.set({ left, top });
 		this.setCoords();
-	},
+	}
 
 	setVisibility(visible: boolean) {
 		this.set('visible', visible);
 		this.set('dirty', true);
 		this.canvas?.requestRenderAll();
-	},
+	}
 
-	toObject() {
-		return fabric.util.object.extend(this.callSuper('toObject'), {
+	toObject(propertiesToInclude: string[] = []) {
+		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			superType: this.get('superType'),
 			enabled: this.get('enabled'),
@@ -44,14 +46,13 @@ const CustomControl = fabric.util.createClass(fabric.Group, {
 			fontFamily: this.get('fontFamily'),
 			color: this.get('color'),
 		});
-	},
-});
+	}
 
-CustomControl.fromObject = (options: any, callback: (obj: any) => any) => {
-	return callback(new CustomControl(options));
-};
+	static fromObject(options: any, callback?: (obj: any) => any) {
+		return resolveFromObject(new CustomControl(options), callback);
+	}
+}
 
-// @ts-ignore
-window.fabric.CustomControl = CustomControl;
+registerFabricClass('CustomControl', CustomControl);
 
 export default CustomControl;

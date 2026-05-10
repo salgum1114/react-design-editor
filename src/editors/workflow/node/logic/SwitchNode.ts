@@ -1,26 +1,32 @@
 import { fabric } from 'fabric';
 import { v4 as uuid } from 'uuid';
-import { fitTextToRect } from '../../../../canvas';
+import { fitTextToRect, registerFabricClass, resolveFromObject } from '../../../../canvas';
 import { FromPort, PortObject } from '../../../../canvas/objects';
 import LogicNode from './LogicNode';
 
-const SwitchNode = fabric.util.createClass(LogicNode, {
-	portWidth: 80,
-	portHeight: 40,
-	defaultRouteLength: 3,
-	initialize(options: any) {
-		options = options || {};
-		const routeLength = options.configuration?.routes?.length ?? 0;
+class SwitchNode extends LogicNode {
+	portWidth = 80;
+	portHeight = 40;
+	defaultRouteLength = 3;
 
-		if (options.__baseLeft == null) options.__baseLeft = options.left ?? 0;
-
+	constructor(options: any = {}) {
+		const nextOptions = { ...options };
+		const type = nextOptions.type ?? 'SwitchNode';
+		const routeLength = nextOptions.configuration?.routes?.length ?? 0;
+		if (nextOptions.__baseLeft == null) {
+			nextOptions.__baseLeft = nextOptions.left ?? 0;
+		}
 		const nodeWidth = 240;
-		const portsWidth = routeLength * this.portWidth;
+		const portsWidth = routeLength * 80;
 		const shift = Math.max(0, (portsWidth - nodeWidth) / 2);
-		options.left = options.__baseLeft + shift;
+		super({
+			...nextOptions,
+			left: nextOptions.__baseLeft + shift,
+			type,
+			nodeClazz: nextOptions.nodeClazz ?? type,
+		});
+	}
 
-		this.callSuper('initialize', options);
-	},
 	createFromPort(x: number, y: number) {
 		const isEven = this.configuration.routes.length % 2 === 0;
 		const calcOdd = (port: PortObject, i: number) => {
@@ -131,22 +137,21 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 			return port.fromPort;
 		});
 		return this.fromPort;
-	},
-	duplicate() {
+	}
+
+	duplicate(): any {
 		const options = this.toObject();
 		options.id = uuid();
 		options.name = `${options.name}_clone`;
 		options.__baseLeft = options.left ?? 0;
-		const clonedObj = new SwitchNode(options);
-		return clonedObj;
-	},
-});
+		return new SwitchNode(options);
+	}
 
-SwitchNode.fromObject = function (options: any, callback: any) {
-	return callback(new SwitchNode(options));
-};
+	static fromObject(options: any, callback?: (obj: any) => any) {
+		return resolveFromObject(new SwitchNode(options), callback as any) as Promise<any>;
+	}
+}
 
-// @ts-ignore
-window.fabric.SwitchNode = SwitchNode;
+registerFabricClass('SwitchNode', SwitchNode);
 
 export default SwitchNode;

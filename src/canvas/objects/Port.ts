@@ -1,9 +1,10 @@
 import { fabric } from 'fabric';
 
 import { FabricObject } from '../models';
+import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 import { LinkObject } from './Link';
 
-export interface PortObject extends FabricObject<fabric.Rect> {
+export type PortObject = FabricObject<fabric.Rect> & {
 	links?: LinkObject[];
 	nodeId?: string;
 	enabled?: boolean;
@@ -11,27 +12,30 @@ export interface PortObject extends FabricObject<fabric.Rect> {
 	transaction?: boolean;
 	setPosition?: (left: number, top: number) => void;
 	setConnected?: (connected?: boolean) => void;
-}
+};
 
-const Port = fabric.util.createClass(fabric.Rect, {
-	type: 'port',
-	superType: 'port',
-	initialize(options: any) {
-		options = options || {};
-		this.callSuper('initialize', options);
-	},
+class Port extends fabric.Rect {
+	static type = 'port';
+	superType = 'port';
+
+	constructor(options: any = {}) {
+		super(options);
+	}
+
 	setPosition(left: number, top: number) {
 		this.set({ left, top });
 		this.setCoords();
-	},
+	}
+
 	setConnected(connected?: boolean) {
-		const fill = connected ? this.connectedFill : this.originFill;
-		this.initialize({ ...this.toObject(), connected, fill });
+		const fill = connected ? (this as any).connectedFill : (this as any).originFill;
+		this.set({ connected, fill });
 		this.setCoords();
-		this.canvas.requestRenderAll();
-	},
-	toObject() {
-		return fabric.util.object.extend(this.callSuper('toObject'), {
+		this.canvas?.requestRenderAll();
+	}
+
+	toObject(propertiesToInclude: string[] = []) {
+		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			superType: this.get('superType'),
 			enabled: this.get('enabled'),
@@ -42,26 +46,26 @@ const Port = fabric.util.createClass(fabric.Rect, {
 			color: this.get('color'),
 			connected: this.get('connected'),
 		});
-	},
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
-		this.callSuper('_render', ctx);
-		if (this.label) {
+		super._render(ctx);
+		if ((this as any).label) {
 			ctx.save();
-			ctx.font = `${this.fontSize || 12}px ${this.fontFamily || 'Helvetica'}`;
-			ctx.fillStyle = this.color || '#000';
-			const { width } = ctx.measureText(this.label);
+			ctx.font = `${(this as any).fontSize || 12}px ${(this as any).fontFamily || 'Helvetica'}`;
+			ctx.fillStyle = (this as any).color || '#000';
+			const { width } = ctx.measureText((this as any).label);
 			ctx.rotate((360 - this.angle) * (Math.PI / 180));
-			ctx.fillText(this.label, -width / 2, this.height + 14);
+			ctx.fillText((this as any).label, -width / 2, this.height + 14);
 			ctx.restore();
 		}
-	},
-});
+	}
 
-Port.fromObject = (options: PortObject, callback: (obj: PortObject) => any) => {
-	return callback(new Port(options));
-};
+	static fromObject(options: PortObject, callback?: (obj: PortObject) => any) {
+		return resolveFromObject(new Port(options), callback);
+	}
+}
 
-// @ts-ignore
-window.fabric.Port = Port;
+registerFabricClass('Port', Port);
 
 export default Port;

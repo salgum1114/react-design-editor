@@ -75,7 +75,7 @@ class DrawingHandler {
 				class: 'line',
 			});
 			if (this.handler.activeShape) {
-				const position = this.handler.canvas.getPointer(e);
+				const position = this.handler.canvas.getPointer(e as any);
 				const activeShapePoints = this.handler.activeShape.get('points') as Array<{ x: number; y: number }>;
 				activeShapePoints.push({
 					x: position.x,
@@ -129,7 +129,8 @@ class DrawingHandler {
 			this.handler.lineArray.forEach(line => {
 				this.handler.canvas.remove(line);
 			});
-			this.handler.canvas.remove(this.handler.activeShape).remove(this.handler.activeLine);
+			this.handler.canvas.remove(this.handler.activeShape);
+			this.handler.canvas.remove(this.handler.activeLine);
 			const option = {
 				id,
 				points,

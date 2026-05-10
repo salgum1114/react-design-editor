@@ -1,21 +1,22 @@
-import { fabric } from 'fabric';
+import { registerFabricClass, resolveFromObject } from '../utils';
 import Link, { LinkObject } from './Link';
 import { NodeObject } from './Node';
 import { PortObject } from './Port';
 
-const CurvedLink = fabric.util.createClass(Link, {
-	type: 'curvedLink',
-	superType: 'link',
-	initialize(
+class CurvedLink extends Link {
+	static type = 'curvedLink';
+	superType = 'link';
+
+	constructor(
 		fromNode: Partial<NodeObject>,
 		fromPort: Partial<PortObject>,
 		toNode: Partial<NodeObject>,
 		toPort: Partial<PortObject>,
-		options: Partial<LinkObject>,
+		options: Partial<LinkObject> = {},
 	) {
-		options = options || {};
-		this.callSuper('initialize', fromNode, fromPort, toNode, toPort, options);
-	},
+		super(fromNode, fromPort, toNode, toPort, options);
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
 		// Drawing curved link
 		const { x1, y1, x2, y2 } = this;
@@ -51,15 +52,16 @@ const CurvedLink = fabric.util.createClass(Link, {
 		ctx.fillStyle = this.stroke;
 		ctx.fill();
 		ctx.restore();
-	},
-});
+	}
 
-CurvedLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
-	const { fromNode, fromPort, toNode, toPort } = options;
-	return callback(new CurvedLink(fromNode, fromPort, toNode, toPort, options));
-};
+	static fromObject(options: LinkObject, callback?: (obj: LinkObject) => any) {
+		return resolveFromObject(
+			new CurvedLink(options.fromNode, options.fromPort, options.toNode, options.toPort, options),
+			callback,
+		);
+	}
+}
 
-// @ts-ignore
-window.fabric.CurvedLink = CurvedLink;
+registerFabricClass('CurvedLink', CurvedLink);
 
 export default CurvedLink;

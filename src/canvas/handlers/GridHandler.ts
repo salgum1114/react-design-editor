@@ -80,7 +80,8 @@ class GridHandler extends AbstractHandler {
 		const image = new Image();
 		image.src = patternCanvas.toDataURL();
 		const pattern = new fabric.Pattern({ source: image, repeat: 'repeat' });
-		this.handler.canvas.setBackgroundColor(pattern, this.handler.canvas.renderAll.bind(this.handler.canvas));
+		this.handler.canvas.backgroundColor = pattern;
+		this.handler.canvas.renderAll();
 		this.handler.canvasOption.backgroundColor = pattern;
 	};
 
@@ -112,7 +113,8 @@ class GridHandler extends AbstractHandler {
 		const image = new Image();
 		image.src = patternCanvas.toDataURL();
 		const pattern = new fabric.Pattern({ source: image, repeat: 'repeat' });
-		this.handler.canvas.setBackgroundColor(pattern, this.handler.canvas.renderAll.bind(this.handler.canvas));
+		this.handler.canvas.backgroundColor = pattern;
+		this.handler.canvas.renderAll();
 		this.handler.canvasOption.backgroundColor = pattern;
 	};
 

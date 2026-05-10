@@ -1,34 +1,37 @@
 import { fabric } from 'fabric';
 import { FabricObject } from '../models';
+import { registerFabricClass, resolveFromObject } from '../utils';
 
 export interface CubeObject extends FabricObject {}
 
-const Cube = fabric.util.createClass(fabric.Object, {
-	type: 'cube',
-	superType: 'shape',
-	initialize(options: any) {
-		options = options || {};
-		this.callSuper('initialize', options);
-	},
-	shadeColor(color: any, percent: number) {
-		color = color.substr(1);
-		const num = parseInt(color, 16);
-		const amt = Math.round(2.55 * percent);
-		const R = (num >> 16) + amt;
-		const G = ((num >> 8) & 0x00ff) + amt;
-		const B = (num & 0x0000ff) + amt;
+class Cube extends fabric.Object {
+	static type = 'cube';
+	superType = 'shape';
+
+	constructor(options: any = {}) {
+		super(options);
+	}
+
+	shadeColor(color: string, percent: number) {
+		const normalizedColor = color.substr(1);
+		const num = parseInt(normalizedColor, 16);
+		const amount = Math.round(2.55 * percent);
+		const red = (num >> 16) + amount;
+		const green = ((num >> 8) & 0x00ff) + amount;
+		const blue = (num & 0x0000ff) + amount;
 		return (
 			'#' +
 			(
 				0x1000000 +
-				(R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
-				(G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
-				(B < 255 ? (B < 1 ? 0 : B) : 255)
+				(red < 255 ? (red < 1 ? 0 : red) : 255) * 0x10000 +
+				(green < 255 ? (green < 1 ? 0 : green) : 255) * 0x100 +
+				(blue < 255 ? (blue < 1 ? 0 : blue) : 255)
 			)
 				.toString(16)
 				.slice(1)
 		);
-	},
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
 		const { width, height, fill } = this;
 		const wx = width / 2;
@@ -40,10 +43,10 @@ const Cube = fabric.util.createClass(fabric.Object, {
 		ctx.moveTo(x, y);
 		ctx.lineTo(x - wx, y - wx * 0.5);
 		ctx.lineTo(x - wx, y - h - wx * 0.5);
-		ctx.lineTo(x, y - h * 1);
+		ctx.lineTo(x, y - h);
 		ctx.closePath();
-		ctx.fillStyle = this.shadeColor(fill, -10);
-		ctx.strokeStyle = fill;
+		ctx.fillStyle = this.shadeColor(fill as string, -10);
+		ctx.strokeStyle = fill as string;
 		ctx.stroke();
 		ctx.fill();
 
@@ -51,10 +54,10 @@ const Cube = fabric.util.createClass(fabric.Object, {
 		ctx.moveTo(x, y);
 		ctx.lineTo(x + wy, y - wy * 0.5);
 		ctx.lineTo(x + wy, y - h - wy * 0.5);
-		ctx.lineTo(x, y - h * 1);
+		ctx.lineTo(x, y - h);
 		ctx.closePath();
-		ctx.fillStyle = this.shadeColor(fill, 10);
-		ctx.strokeStyle = this.shadeColor(fill, 50);
+		ctx.fillStyle = this.shadeColor(fill as string, 10);
+		ctx.strokeStyle = this.shadeColor(fill as string, 50);
 		ctx.stroke();
 		ctx.fill();
 
@@ -64,20 +67,17 @@ const Cube = fabric.util.createClass(fabric.Object, {
 		ctx.lineTo(x - wx + wy, y - h - (wx * 0.5 + wy * 0.5));
 		ctx.lineTo(x + wy, y - h - wy * 0.5);
 		ctx.closePath();
-		ctx.fillStyle = this.shadeColor(fill, 20);
-		ctx.strokeStyle = this.shadeColor(fill, 60);
+		ctx.fillStyle = this.shadeColor(fill as string, 20);
+		ctx.strokeStyle = this.shadeColor(fill as string, 60);
 		ctx.stroke();
 		ctx.fill();
+	}
 
-		ctx.restore();
-	},
-});
+	static fromObject(options: CubeObject, callback?: (obj: CubeObject) => any) {
+		return resolveFromObject(new Cube(options), callback);
+	}
+}
 
-Cube.fromObject = (options: CubeObject, callback: (obj: CubeObject) => any) => {
-	return callback(new Cube(options));
-};
-
-// @ts-ignore
-window.fabric.Cube = Cube;
+registerFabricClass('Cube', Cube);
 
 export default Cube;

@@ -316,7 +316,7 @@ class AnimationHandler {
 				(obj as fabric.Group)._objects.forEach(child =>
 					this.handler.setByPartial(child, {
 						originFill: child.fill,
-						originStroke: child.stroke,
+						originStroke: typeof child.stroke === 'string' ? child.stroke : undefined,
 					}),
 				);
 			}
