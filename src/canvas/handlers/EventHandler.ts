@@ -1,5 +1,5 @@
 import anime from 'animejs';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { code } from '../constants';
 import { FabricEvent, FabricObject } from '../models';
 import { NodeObject } from '../objects/Node';
@@ -181,7 +181,7 @@ class EventHandler extends AbstractHandler {
 			if (this.handler.editable && this.handler.guidelineOption.enabled) {
 				this.handler.guidelineHandler.movingGuidelines(target);
 			}
-			if (target.type === 'activeSelection') {
+			if (this.handler.isActiveSelection(target)) {
 				const activeSelection = target as fabric.ActiveSelection;
 				activeSelection.getObjects().forEach((obj: any) => {
 					const left = obj.left + target.left + target.width / 2;
@@ -573,7 +573,7 @@ class EventHandler extends AbstractHandler {
 	public selection = (_opt: FabricEvent<FabricObject<fabric.ActiveSelection>>) => {
 		const { activeSelectionOption } = this.handler;
 		const target = (this.canvas.getActiveObject() as FabricObject) ?? null;
-		if (target && target.type === 'activeSelection') {
+		if (target && target.isType('ActiveSelection')) {
 			target.set({ ...activeSelectionOption });
 		}
 		this.currentTarget = target;
@@ -897,7 +897,7 @@ class EventHandler extends AbstractHandler {
 		const { editable, onContext } = this.handler;
 		if (editable && onContext) {
 			const target = this.canvas.findTarget(e as any) as FabricObject;
-			if (target && target.type !== 'activeSelection') {
+			if (target && !this.handler.isActiveSelection(target)) {
 				this.handler.select(target);
 			}
 			this.handler.contextmenuHandler.show(e, target);

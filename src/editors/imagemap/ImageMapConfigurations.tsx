@@ -64,7 +64,7 @@ class ImageMapConfigurations extends React.Component<ImageMapConfigurationsProps
 					style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
 				/>
 				<Tabs
-					tabPosition="right"
+					tabPlacement="end"
 					style={{ height: '100%' }}
 					activeKey={activeKey}
 					onChange={onChangeTab}

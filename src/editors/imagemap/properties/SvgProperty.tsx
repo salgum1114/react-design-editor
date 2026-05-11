@@ -1,7 +1,7 @@
 import { Form, Radio } from 'antd';
-import i18n from 'i18next';
 import React from 'react';
 
+import i18next from 'i18next';
 import { InputHtml } from '../../../components/common';
 import FileUpload from '../../../components/common/FileUpload';
 
@@ -20,21 +20,21 @@ export default {
 
 		return (
 			<React.Fragment>
-				<Form.Item label={i18n.t('common.type')} name="loadType" initialValue={loadType}>
+				<Form.Item label={i18next.t('common.type')} name="loadType" initialValue={loadType}>
 					<Radio.Group>
-						<Radio.Button value="file">{i18n.t('common.file')}</Radio.Button>
-						<Radio.Button value="svg">{i18n.t('common.svg')}</Radio.Button>
+						<Radio.Button value="file">{i18next.t('common.file')}</Radio.Button>
+						<Radio.Button value="svg">{i18next.t('common.svg')}</Radio.Button>
 					</Radio.Group>
 				</Form.Item>
 				<Form.Item
-					label={loadType === 'svg' ? i18n.t('common.svg') : i18n.t('common.file')}
+					label={loadType === 'svg' ? i18next.t('common.svg') : i18next.t('common.file')}
 					name="src"
 					initialValue={data.src}
 					rules={[
 						{
 							required: true,
-							message: i18n.t('validation.enter-property', {
-								arg: loadType === 'svg' ? i18n.t('common.svg') : i18n.t('common.file'),
+							message: i18next.t('validation.enter-property', {
+								arg: loadType === 'svg' ? i18next.t('common.svg') : i18next.t('common.file'),
 							}),
 						},
 					]}

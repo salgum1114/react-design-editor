@@ -1,5 +1,5 @@
 import { Divider, Form, Input, InputNumber, List, Modal, Select, Switch } from 'antd';
-import i18n from 'i18next';
+import i18next from 'i18next';
 import React from 'react';
 import { CommonButton, InputJson } from '../../components/common';
 import { Flex } from '../../components/flex';
@@ -143,7 +143,7 @@ const WorkflowGlobalParameters = ({ workflow, onChange }: IProps) => {
 
 	const keyValidator = async (_rule: unknown, value: string) => {
 		if (!isEdit && vars[value]) {
-			throw new Error(i18n.t('common.enter-exist', { arg: value }));
+			throw new Error(i18next.t('common.enter-exist', { arg: value }));
 		}
 	};
 
@@ -154,13 +154,13 @@ const WorkflowGlobalParameters = ({ workflow, onChange }: IProps) => {
 	};
 
 	const dataSource = Object.keys(vars).map(key => ({ key, value: vars[key] }));
-	const rules: Array<Record<string, any>> = [{ required: true, message: i18n.t('common.enter-property') }];
+	const rules: Array<Record<string, any>> = [{ required: true, message: i18next.t('common.enter-property') }];
 	if (selectedVar.type === 'json') {
 		rules.push({ validator: valueValidator });
 	}
 
 	return (
-		<WorkflowSiderContainer title={i18n.t('workflow.variables')} icon="globe">
+		<WorkflowSiderContainer title={i18next.t('workflow.variables')} icon="globe">
 			<Flex justifyContent="flex-end">
 				<CommonButton className="rde-action-btn" shape="circle" icon="plus" onClick={handleAdd} />
 				<CommonButton className="rde-action-btn" danger shape="circle" icon="times" onClick={handleClear} />
@@ -207,24 +207,24 @@ const WorkflowGlobalParameters = ({ workflow, onChange }: IProps) => {
 				}}
 			/>
 			<Modal
-				title={isEdit ? i18n.t('workflow.variables-modify') : i18n.t('workflow.variables-add')}
+				title={isEdit ? i18next.t('workflow.variables-modify') : i18next.t('workflow.variables-add')}
 				onOk={handleOk}
 				onCancel={() => handleModalVisible(false)}
 				open={visible}
 			>
 				<Form form={form} initialValues={selectedVar} layout="vertical">
 					<Form.Item
-						label={i18n.t('common.key')}
+						label={i18next.t('common.key')}
 						colon={false}
 						name="key"
 						rules={[
-							{ required: true, message: i18n.t('common.enter-property') },
+							{ required: true, message: i18next.t('common.enter-property') },
 							{ validator: keyValidator },
 						]}
 					>
 						<Input />
 					</Form.Item>
-					<Form.Item label={i18n.t('common.type')} colon={false} name="type">
+					<Form.Item label={i18next.t('common.type')} colon={false} name="type">
 						<Select onChange={handleTypeChange} style={{ width: '100%' }}>
 							{types.map(type => (
 								<Select.Option key={type} value={type}>
@@ -234,7 +234,7 @@ const WorkflowGlobalParameters = ({ workflow, onChange }: IProps) => {
 						</Select>
 					</Form.Item>
 					<Form.Item
-						label={i18n.t('common.value')}
+						label={i18next.t('common.value')}
 						colon={false}
 						name="value"
 						rules={rules}

@@ -1,8 +1,8 @@
 import { Badge, Button, Menu, Popconfirm } from 'antd';
-import i18n from 'i18next';
 import { debounce } from 'lodash-es';
 import React, { Component } from 'react';
 
+import i18next from 'i18next';
 import type { CanvasInstance } from '../../canvas';
 import Canvas from '../../canvas/Canvas';
 import CommonButton from '../../components/common/CommonButton';
@@ -124,7 +124,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 			if (!editing) {
 				this.changeEditing(true);
 			}
-			if (target.type === 'activeSelection') {
+			if (this.canvasRef?.handler.isActiveSelection(target)) {
 				this.canvasHandlers.onSelect(null);
 				return;
 			}
@@ -133,7 +133,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 		onSelect: (target: any) => {
 			const { selectedItem } = this.state;
 			console.log(target, selectedItem);
-			if (target && target.id && target.id !== 'workarea' && target.type !== 'activeSelection') {
+			if (target && target.id && target.id !== 'workarea' && !this.canvasRef?.handler.isActiveSelection(target)) {
 				if (selectedItem && target.id === selectedItem.id) {
 					return;
 				}
@@ -396,7 +396,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 				const { layerX: left, layerY: top } = event;
 				return (
 					<Menu>
-						<Menu.SubMenu key="add" style={{ width: 120 }} title={i18n.t('action.add')}>
+						<Menu.SubMenu key="add" style={{ width: 120 }} title={i18next.t('action.add')}>
 							{this.transformList().map(item => {
 								const option = Object.assign({}, item.option, { left, top });
 								const newItem = Object.assign({}, item, { option });
@@ -410,32 +410,37 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 					</Menu>
 				);
 			}
-			if (target.type === 'activeSelection') {
+			if (this.canvasRef?.handler.isActiveSelection(target)) {
 				return (
-					<Menu>
-						<Menu.Item onClick={() => this.canvasRef?.handler.toGroup()}>
-							{i18n.t('action.object-group')}
-						</Menu.Item>
+					<Menu
+						items={[
+							{
+								key: 'objec-group',
+								label: i18next.t('action.object-group'),
+								onClick: () => this.canvasRef?.handler.toGroup(),
+							},
+						]}
+					>
 						<Menu.Item onClick={() => this.canvasRef?.handler.duplicate()}>
-							{i18n.t('action.clone')}
+							{i18next.t('action.clone')}
 						</Menu.Item>
 						<Menu.Item onClick={() => this.canvasRef?.handler.remove()}>
-							{i18n.t('action.delete')}
+							{i18next.t('action.delete')}
 						</Menu.Item>
 					</Menu>
 				);
 			}
-			if (target.type === 'group') {
+			if (target.isType('Group')) {
 				return (
 					<Menu>
 						<Menu.Item onClick={() => this.canvasRef?.handler.toActiveSelection()}>
-							{i18n.t('action.object-ungroup')}
+							{i18next.t('action.object-ungroup')}
 						</Menu.Item>
 						<Menu.Item onClick={() => this.canvasRef?.handler.duplicate()}>
-							{i18n.t('action.clone')}
+							{i18next.t('action.clone')}
 						</Menu.Item>
 						<Menu.Item onClick={() => this.canvasRef?.handler.remove()}>
-							{i18n.t('action.delete')}
+							{i18next.t('action.delete')}
 						</Menu.Item>
 					</Menu>
 				);
@@ -443,10 +448,10 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 			return (
 				<Menu>
 					<Menu.Item onClick={() => this.canvasRef?.handler.duplicateById(target.id)}>
-						{i18n.t('action.clone')}
+						{i18next.t('action.clone')}
 					</Menu.Item>
 					<Menu.Item onClick={() => this.canvasRef?.handler.removeById(target.id)}>
-						{i18n.t('action.delete')}
+						{i18next.t('action.delete')}
 					</Menu.Item>
 				</Menu>
 			);
@@ -605,15 +610,15 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 					shape="circle"
 					icon="file-download"
 					disabled={!editing}
-					tooltipTitle={i18n.t('action.download')}
+					tooltipTitle={i18next.t('action.download')}
 					onClick={onDownload}
 					tooltipPlacement="bottomRight"
 				/>
 				{editing ? (
 					<Popconfirm
-						title={i18n.t('imagemap.imagemap-editing-confirm')}
-						okText={i18n.t('action.ok')}
-						cancelText={i18n.t('action.cancel')}
+						title={i18next.t('imagemap.imagemap-editing-confirm')}
+						okText={i18next.t('action.ok')}
+						cancelText={i18next.t('action.cancel')}
 						onConfirm={onUpload}
 						placement="bottomRight"
 					>
@@ -621,7 +626,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 							className="rde-action-btn"
 							shape="circle"
 							icon="file-upload"
-							tooltipTitle={i18n.t('action.upload')}
+							tooltipTitle={i18next.t('action.upload')}
 							tooltipPlacement="bottomRight"
 						/>
 					</Popconfirm>
@@ -630,7 +635,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 						className="rde-action-btn"
 						shape="circle"
 						icon="file-upload"
-						tooltipTitle={i18n.t('action.upload')}
+						tooltipTitle={i18next.t('action.upload')}
 						tooltipPlacement="bottomRight"
 						onClick={onUpload}
 					/>
@@ -639,14 +644,14 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 					className="rde-action-btn"
 					shape="circle"
 					icon="image"
-					tooltipTitle={i18n.t('action.image-save')}
+					tooltipTitle={i18next.t('action.image-save')}
 					onClick={onSaveImage}
 					tooltipPlacement="bottomRight"
 				/>
 			</React.Fragment>
 		);
 
-		const title = <ImageMapTitle title={<span>{i18n.t('imagemap.imagemap-editor')}</span>} action={action} />;
+		const title = <ImageMapTitle title={<span>{i18next.t('imagemap.imagemap-editor')}</span>} action={action} />;
 
 		const content = (
 			<div className="rde-editor">

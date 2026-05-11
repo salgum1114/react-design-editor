@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { Handler } from '.';
 import { FabricImage, WorkareaLayout, WorkareaObject } from '../models';
@@ -57,7 +57,7 @@ class WorkareaHandler {
 			}
 		}
 		this.handler.getObjects().forEach(obj => {
-			const { id, player } = obj as VideoObject;
+			const { id, player } = obj as unknown as VideoObject;
 			if (id !== 'workarea') {
 				const objScaleX = !isFullscreen ? 1 : scaleX;
 				const objScaleY = !isFullscreen ? 1 : scaleY;
@@ -313,7 +313,7 @@ class WorkareaHandler {
 	 * @param {FabricImage} [image]
 	 * @returns
 	 */
-	public calculateScale = (image?: FabricImage) => {
+	public calculateScale = (image?: FabricImage | fabric.FabricImage) => {
 		const { canvas, workarea } = this.handler;
 		const { workareaWidth, workareaHeight } = workarea;
 		const { _element } = image || workarea;

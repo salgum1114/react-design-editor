@@ -8,7 +8,8 @@ const host = 'localhost';
 const devPort = 4000;
 const previewPort = 4001;
 
-export default defineConfig(({ command, mode }: { command: string; mode: string }) => {
+export default defineConfig(config => {
+	const { command, mode } = config;
 	const isLibraryBuild = mode === 'lib';
 	const isBuild = command === 'build';
 
@@ -66,14 +67,6 @@ export default defineConfig(({ command, mode }: { command: string; mode: string 
 					]
 				: []),
 		],
-		resolve: {
-			alias: [
-				{
-					find: /^fabric$/,
-					replacement: path.resolve(__dirname, 'src/canvas/fabric.ts'),
-				},
-			],
-		},
 		server: {
 			host,
 			port: devPort,

@@ -1,5 +1,5 @@
 import { Col, Form, Row, Slider, Tag } from 'antd';
-import i18n from 'i18next';
+import i18next from 'i18next';
 import React from 'react';
 
 type ImageFilterData = {
@@ -39,7 +39,7 @@ export default {
 					<Row key={`row-${rowIndex}`}>
 						{row.map(filter => (
 							<Col md={24} lg={6} key={filter.key}>
-								<Form.Item label={i18n.t(filter.label)}>
+								<Form.Item label={i18next.t(filter.label)}>
 									<Form.Item
 										noStyle
 										name={['filters', filter.key]}
@@ -57,7 +57,7 @@ export default {
 				))}
 				<Row>
 					<Col md={24} lg={6}>
-						<Form.Item label={i18n.t('imagemap.filter.gamma')}>
+						<Form.Item label={i18next.t('imagemap.filter.gamma')}>
 							<Form.Item
 								noStyle
 								name={['filters', 'gamma', 'enabled']}
@@ -72,7 +72,7 @@ export default {
 					</Col>
 					<Col md={24} lg={6}>
 						<Form.Item
-							label={i18n.t('color.red')}
+							label={i18next.t('color.red')}
 							name={['filters', 'gamma', 'r']}
 							initialValue={filters[17] ? filters[17].gamma[0] : 1}
 						>
@@ -81,7 +81,7 @@ export default {
 					</Col>
 					<Col md={24} lg={6}>
 						<Form.Item
-							label={i18n.t('color.green')}
+							label={i18next.t('color.green')}
 							name={['filters', 'gamma', 'g']}
 							initialValue={filters[17] ? filters[17].gamma[1] : 1}
 						>
@@ -90,7 +90,7 @@ export default {
 					</Col>
 					<Col md={24} lg={6}>
 						<Form.Item
-							label={i18n.t('color.blue')}
+							label={i18next.t('color.blue')}
 							name={['filters', 'gamma', 'b']}
 							initialValue={filters[17] ? filters[17].gamma[2] : 1}
 						>
@@ -100,7 +100,7 @@ export default {
 				</Row>
 				<Row>
 					<Col md={24} lg={6}>
-						<Form.Item label={i18n.t('imagemap.filter.brightness')}>
+						<Form.Item label={i18next.t('imagemap.filter.brightness')}>
 							<Form.Item
 								noStyle
 								name={['filters', 'brightness', 'enabled']}
@@ -115,7 +115,7 @@ export default {
 					</Col>
 					<Col md={24} lg={18}>
 						<Form.Item
-							label={i18n.t('imagemap.filter.brightness')}
+							label={i18next.t('imagemap.filter.brightness')}
 							name={['filters', 'brightness', 'brightness']}
 							initialValue={filters[5] ? filters[5].brightness : 0.1}
 						>
@@ -125,7 +125,7 @@ export default {
 				</Row>
 				<Row>
 					<Col md={24} lg={6}>
-						<Form.Item label={i18n.t('imagemap.filter.contrast')}>
+						<Form.Item label={i18next.t('imagemap.filter.contrast')}>
 							<Form.Item
 								noStyle
 								name={['filters', 'contrast', 'enabled']}
@@ -140,7 +140,7 @@ export default {
 					</Col>
 					<Col md={24} lg={18}>
 						<Form.Item
-							label={i18n.t('imagemap.filter.contrast')}
+							label={i18next.t('imagemap.filter.contrast')}
 							name={['filters', 'contrast', 'contrast']}
 							initialValue={filters[6] ? filters[6].contrast : 0}
 						>
@@ -150,7 +150,7 @@ export default {
 				</Row>
 				<Row>
 					<Col md={24} lg={6}>
-						<Form.Item label={i18n.t('imagemap.filter.saturation')}>
+						<Form.Item label={i18next.t('imagemap.filter.saturation')}>
 							<Form.Item
 								noStyle
 								name={['filters', 'saturation', 'enabled']}
@@ -165,7 +165,7 @@ export default {
 					</Col>
 					<Col md={24} lg={18}>
 						<Form.Item
-							label={i18n.t('imagemap.filter.saturation')}
+							label={i18next.t('imagemap.filter.saturation')}
 							name={['filters', 'saturation', 'saturation']}
 							initialValue={filters[7] ? filters[7].saturation : 0}
 						>
@@ -175,7 +175,7 @@ export default {
 				</Row>
 				<Row>
 					<Col md={24} lg={6}>
-						<Form.Item label={i18n.t('imagemap.filter.hue')}>
+						<Form.Item label={i18next.t('imagemap.filter.hue')}>
 							<Form.Item
 								noStyle
 								name={['filters', 'hue', 'enabled']}
@@ -190,7 +190,7 @@ export default {
 					</Col>
 					<Col md={24} lg={18}>
 						<Form.Item
-							label={i18n.t('imagemap.filter.hue')}
+							label={i18next.t('imagemap.filter.hue')}
 							name={['filters', 'hue', 'rotation']}
 							initialValue={filters[21] ? filters[21].rotation : 0}
 						>
@@ -200,7 +200,7 @@ export default {
 				</Row>
 				<Row>
 					<Col md={24} lg={6}>
-						<Form.Item label={i18n.t('imagemap.filter.noise')}>
+						<Form.Item label={i18next.t('imagemap.filter.noise')}>
 							<Form.Item
 								noStyle
 								name={['filters', 'noise', 'enabled']}
@@ -215,7 +215,7 @@ export default {
 					</Col>
 					<Col md={24} lg={18}>
 						<Form.Item
-							label={i18n.t('imagemap.filter.noise')}
+							label={i18next.t('imagemap.filter.noise')}
 							name={['filters', 'noise', 'noise']}
 							initialValue={filters[8] ? filters[8].noise : 100}
 						>
@@ -225,7 +225,7 @@ export default {
 				</Row>
 				<Row>
 					<Col md={24} lg={6}>
-						<Form.Item label={i18n.t('imagemap.filter.pixelate')}>
+						<Form.Item label={i18next.t('imagemap.filter.pixelate')}>
 							<Form.Item
 								noStyle
 								name={['filters', 'pixelate', 'enabled']}
@@ -240,7 +240,7 @@ export default {
 					</Col>
 					<Col md={24} lg={18}>
 						<Form.Item
-							label={i18n.t('imagemap.filter.pixelate')}
+							label={i18next.t('imagemap.filter.pixelate')}
 							name={['filters', 'pixelate', 'blocksize']}
 							initialValue={filters[10] ? filters[10].blocksize : 4}
 						>
@@ -250,7 +250,7 @@ export default {
 				</Row>
 				<Row>
 					<Col md={24} lg={6}>
-						<Form.Item label={i18n.t('imagemap.filter.blur')}>
+						<Form.Item label={i18next.t('imagemap.filter.blur')}>
 							<Form.Item
 								noStyle
 								name={['filters', 'blur', 'enabled']}
@@ -265,7 +265,7 @@ export default {
 					</Col>
 					<Col md={24} lg={18}>
 						<Form.Item
-							label={i18n.t('imagemap.filter.blur')}
+							label={i18next.t('imagemap.filter.blur')}
 							name={['filters', 'blur', 'value']}
 							initialValue={filters[11] ? filters[11].value : 0.1}
 						>

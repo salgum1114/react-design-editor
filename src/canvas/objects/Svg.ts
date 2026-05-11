@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricGroup, FabricObject, FabricObjectOption } from '../models';
 import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 
@@ -69,9 +69,7 @@ class Svg extends fabric.Group {
 	async loadSvg(option: SvgOption) {
 		const { src, svg, loadType, fill, stroke } = option;
 		const result =
-			loadType === 'svg'
-				? await fabric.loadSVGFromString(svg || src)
-				: await fabric.loadSVGFromURL(svg || src);
+			loadType === 'svg' ? await fabric.loadSVGFromString(svg || src) : await fabric.loadSVGFromURL(svg || src);
 		return this.addSvgElements(result.objects as FabricObject[], { ...result.options, fill, stroke });
 	}
 
@@ -91,7 +89,7 @@ class Svg extends fabric.Group {
 		return this as unknown as SvgObject;
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			src: this.get('src'),
 			loadType: this.get('loadType'),
@@ -102,8 +100,8 @@ class Svg extends fabric.Group {
 		super._render(ctx);
 	}
 
-	static fromObject(option: SvgOption, callback?: (obj: SvgObject) => any) {
-		return resolveFromObject(new Svg(option) as unknown as SvgObject, callback);
+	static fromObject(option: any, _abortable?: any) {
+		return resolveFromObject(new Svg(option));
 	}
 }
 

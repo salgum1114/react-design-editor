@@ -1,9 +1,9 @@
 import { Collapse, Input, message, notification } from 'antd';
 import clsx from 'clsx';
-import i18n from 'i18next';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 
+import i18next from 'i18next';
 import type { CanvasInstance } from '../../canvas';
 import CommonButton from '../../components/common/CommonButton';
 import Scrollbar from '../../components/common/Scrollbar';
@@ -272,7 +272,7 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 					{collapse ? null : (
 						<Input
 							style={{ margin: '8px' }}
-							placeholder={i18n.t('action.search-list')}
+							placeholder={i18next.t('action.search-list')}
 							onChange={event => setTextSearch(event.target.value)}
 							value={textSearch}
 							allowClear
@@ -298,13 +298,13 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 								bordered={false}
 								activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
 								onChange={keys => setActiveKey(Array.isArray(keys) ? keys : [keys])}
-							>
-								{Object.keys(descriptors).map(key => (
-									<Collapse.Panel key={key} header={key} showArrow={!collapse}>
-										{renderItems(descriptors[key])}
-									</Collapse.Panel>
-								))}
-							</Collapse>
+								items={Object.keys(descriptors).map(key => ({
+									key,
+									label: key,
+									showArrow: !collapse,
+									children: renderItems(descriptors[key]),
+								}))}
+							/>
 						)}
 					</Flex>
 				</Scrollbar>

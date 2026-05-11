@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricObject } from '../models';
 import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 
@@ -35,7 +35,7 @@ class CustomControl extends fabric.Group {
 		this.canvas?.requestRenderAll();
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			superType: this.get('superType'),
@@ -48,8 +48,8 @@ class CustomControl extends fabric.Group {
 		});
 	}
 
-	static fromObject(options: any, callback?: (obj: any) => any) {
-		return resolveFromObject(new CustomControl(options), callback);
+	static fromObject(options: any, _abortable?: any) {
+		return resolveFromObject(new CustomControl(options));
 	}
 }
 

@@ -1,5 +1,5 @@
 import { Col, Form, Input, InputNumber, Select, Switch, Tooltip } from 'antd';
-import i18n from 'i18next';
+import i18next from 'i18next';
 import { isEmpty } from 'lodash-es';
 import React, { Component } from 'react';
 import { CanvasInstance } from '../../../canvas';
@@ -69,7 +69,7 @@ export default class NodeConfiguration extends Component<IProps, IState> {
 			formConfig;
 		let initialValue = configuration[key] || formConfig.default;
 		let rules = required
-			? [{ required: true, message: i18n.t('validation.enter-property', { arg: formConfig.label }) }]
+			? [{ required: true, message: i18next.t('validation.enter-property', { arg: formConfig.label }) }]
 			: [];
 		if (formConfig.rules) {
 			rules = rules.concat(formConfig.rules);

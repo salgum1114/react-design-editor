@@ -1,7 +1,7 @@
-import React from 'react';
 import { Form, Slider, Switch } from 'antd';
-import i18n from 'i18next';
+import React from 'react';
 
+import i18next from 'i18next';
 import ColorPicker from '../../../components/common/ColorPicker';
 
 type ShadowData = {
@@ -21,7 +21,7 @@ export default {
 		return (
 			<React.Fragment>
 				<Form.Item
-					label={i18n.t('imagemap.shadow.shadow-enabled')}
+					label={i18next.t('imagemap.shadow.shadow-enabled')}
 					colon={false}
 					name={['shadow', 'enabled']}
 					initialValue={data.shadow?.enabled ?? false}
@@ -32,7 +32,7 @@ export default {
 				{enabled ? (
 					<React.Fragment>
 						<Form.Item
-							label={i18n.t('common.color')}
+							label={i18next.t('common.color')}
 							colon={false}
 							name={['shadow', 'color']}
 							initialValue={data.shadow?.color || 'rgba(0, 0, 0, 0)'}
@@ -40,7 +40,7 @@ export default {
 							<ColorPicker />
 						</Form.Item>
 						<Form.Item
-							label={i18n.t('common.blur')}
+							label={i18next.t('common.blur')}
 							colon={false}
 							name={['shadow', 'blur']}
 							initialValue={data.shadow?.blur || 15}
@@ -49,7 +49,7 @@ export default {
 							<Slider min={0} max={100} />
 						</Form.Item>
 						<Form.Item
-							label={i18n.t('imagemap.shadow.offset-x')}
+							label={i18next.t('imagemap.shadow.offset-x')}
 							colon={false}
 							name={['shadow', 'offsetX']}
 							initialValue={data.shadow?.offsetX || 10}
@@ -58,7 +58,7 @@ export default {
 							<Slider min={0} max={100} />
 						</Form.Item>
 						<Form.Item
-							label={i18n.t('imagemap.shadow.offset-y')}
+							label={i18next.t('imagemap.shadow.offset-y')}
 							colon={false}
 							name={['shadow', 'offsetY']}
 							initialValue={data.shadow?.offsetY || 10}

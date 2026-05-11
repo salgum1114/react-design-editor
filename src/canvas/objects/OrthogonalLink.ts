@@ -19,9 +19,10 @@ class OrthogonalLink extends Link {
 
 	_render(ctx: CanvasRenderingContext2D) {
 		// Drawing orthogonal link
-		const { x1, y1, x2, y2 } = this;
+		const { x1, y1, x2, y2 } = this as any;
+		const stroke = typeof this.stroke === 'string' ? this.stroke : '#000';
 		ctx.lineWidth = this.strokeWidth;
-		ctx.strokeStyle = this.stroke;
+		ctx.strokeStyle = stroke;
 		const fp = { x: (x1 - x2) / 2, y: (y1 - y2) / 2 };
 		const sp = { x: (x2 - x1) / 2, y: (y2 - y1) / 2 };
 		ctx.lineJoin = 'round';
@@ -39,10 +40,10 @@ class OrthogonalLink extends Link {
 			)[0].originFill;
 			ctx.fillText(this.fromPort.id.toUpperCase(), (fp.x + sp.x) / 2 + 10, (fp.y + sp.y) / 2 - 10);
 		}
-		const xDiff = this.x2 - this.x1;
-		const yDiff = this.y2 - this.y1;
+		const xDiff = x2 - x1;
+		const yDiff = y2 - y1;
 		const angle = Math.atan2(yDiff, xDiff);
-		ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);
+		ctx.translate((x2 - x1) / 2, (y2 - y1) / 2);
 		ctx.rotate(angle >= 0 ? 1.57 : -1.57);
 		ctx.beginPath();
 		if (this.arrow) {
@@ -52,12 +53,12 @@ class OrthogonalLink extends Link {
 			ctx.lineTo(-5, -5);
 		}
 		ctx.closePath();
-		ctx.fillStyle = this.stroke;
+		ctx.fillStyle = stroke;
 		ctx.fill();
 		ctx.restore();
 	}
 
-	static fromObject(options: LinkObject, callback?: (obj: LinkObject) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(
 			new OrthogonalLink(options.fromNode, options.fromPort, options.toNode, options.toPort, options),
 			callback,

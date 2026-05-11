@@ -2,6 +2,7 @@ import dagre from '@dagrejs/dagre';
 import ELK, { ElkNode } from 'elkjs/lib/elk.bundled.js';
 import { AbstractHandler } from '.';
 import { LinkObject, NodeObject } from '../objects';
+import type { PortObject } from '../objects/Port';
 
 export type LayoutType = 'dagre' | 'elk';
 export type LayoutDirection = 'vertical' | 'horizontal';
@@ -52,7 +53,7 @@ export default class LayoutHandler extends AbstractHandler {
 				},
 				ports: node.fromPort?.length
 					? node.fromPort
-							?.map(port => ({
+							?.map((port: PortObject) => ({
 								id: `${node.id}:${port.id}`,
 								layoutOptions: { 'elk.port.side': 'SOUTH' },
 							}))

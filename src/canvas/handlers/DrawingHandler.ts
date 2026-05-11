@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { FabricEvent, FabricObject } from '../models';
 import { Arrow, Line } from '../objects';
@@ -59,7 +59,7 @@ class DrawingHandler {
 					fill: 'red',
 				});
 			}
-			const points = [x, y, x, y];
+			const points: [number, number, number, number] = [x, y, x, y];
 			const line = new fabric.Line(points, {
 				strokeWidth: 1,
 				fill: '#999999',

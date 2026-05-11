@@ -1,6 +1,6 @@
 import { Form, Switch } from 'antd';
+import i18next from 'i18next';
 import React from 'react';
-import i18n from 'i18next';
 
 type TooltipPropertyData = {
 	tooltip?: {
@@ -16,7 +16,7 @@ export default {
 
 		return (
 			<Form.Item
-				label={i18n.t('imagemap.tooltip.tooltip-enabled')}
+				label={i18next.t('imagemap.tooltip.tooltip-enabled')}
 				colon={false}
 				name={['tooltip', 'enabled']}
 				initialValue={data.tooltip?.enabled}

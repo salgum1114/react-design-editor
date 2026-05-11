@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricObject, NodeHighlightOptions } from '../models';
 import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
@@ -60,7 +60,7 @@ class NodeHandler extends AbstractHandler {
 		visited.add(target);
 		if (direction === 'to' || direction === 'init') {
 			if (target.toPort) {
-				target.toPort.links.forEach(link => {
+				target.toPort.links.forEach((link: LinkObject) => {
 					if (link.fromNode && !visited.has(link.fromNode)) {
 						nodes.push(link.fromNode);
 						this.getNodePath(link.fromNode, nodes, 'to', visited);
@@ -73,8 +73,8 @@ class NodeHandler extends AbstractHandler {
 		}
 
 		if (direction === 'from' || direction === 'init') {
-			target.fromPort.forEach(port => {
-				port.links.forEach(link => {
+			target.fromPort.forEach((port: any) => {
+				port.links.forEach((link: LinkObject) => {
 					if (link.toNode && !visited.has(link.toNode)) {
 						nodes.push(link.toNode);
 						this.getNodePath(link.toNode, nodes, 'from', visited);
@@ -153,7 +153,7 @@ class NodeHandler extends AbstractHandler {
 			if (obj.superType === 'node') {
 				const node = obj as NodeObject;
 				node.toPort?.set({ opacity: 1 });
-				node.fromPort?.forEach(port => port.set({ opacity: 1 }));
+				node.fromPort?.forEach((port: any) => port.set({ opacity: 1 }));
 			}
 			if (!obj.animating) {
 				const node = obj as FabricObject;

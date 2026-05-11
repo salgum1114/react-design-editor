@@ -1,6 +1,6 @@
 import { Form, Input, Select, Switch } from 'antd';
+import i18next from 'i18next';
 import React from 'react';
-import i18n from 'i18next';
 
 type LinkPropertyData = {
 	link: {
@@ -17,15 +17,15 @@ export default {
 		return (
 			<React.Fragment>
 				<Form.Item
-					label={i18n.t('imagemap.link.link-enabled')}
+					label={i18next.t('imagemap.link.link-enabled')}
 					colon={false}
 					name={['link', 'enabled']}
 					initialValue={data.link.enabled}
 					rules={[
 						{
 							required: true,
-							message: i18n.t('validation.enter-property', {
-								arg: i18n.t('imagemap.marker.link-enabled'),
+							message: i18next.t('validation.enter-property', {
+								arg: i18next.t('imagemap.marker.link-enabled'),
 							}),
 						},
 					]}
@@ -36,25 +36,25 @@ export default {
 				{enabled ? (
 					<React.Fragment>
 						<Form.Item
-							label={i18n.t('common.state')}
+							label={i18next.t('common.state')}
 							colon={false}
 							name={['link', 'state']}
 							initialValue={data.link.state || 'current'}
 						>
 							<Select>
-								<Select.Option value="current">{i18n.t('common.current')}</Select.Option>
-								<Select.Option value="new">{i18n.t('common.new')}</Select.Option>
+								<Select.Option value="current">{i18next.t('common.current')}</Select.Option>
+								<Select.Option value="new">{i18next.t('common.new')}</Select.Option>
 							</Select>
 						</Form.Item>
 						<Form.Item
-							label={i18n.t('common.url')}
+							label={i18next.t('common.url')}
 							colon={false}
 							name={['link', 'url']}
 							initialValue={data.link.url || ''}
 							rules={[
 								{
 									required: true,
-									message: i18n.t('validation.enter-property', { arg: i18n.t('common.url') }),
+									message: i18next.t('validation.enter-property', { arg: i18next.t('common.url') }),
 								},
 							]}
 						>

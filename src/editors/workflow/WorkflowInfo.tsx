@@ -1,6 +1,6 @@
-import React from 'react';
 import { Divider, Form, Input, Switch } from 'antd';
-import i18n from 'i18next';
+import i18next from 'i18next';
+import React from 'react';
 import { CommonButton } from '../../components/common';
 import WorkflowSiderContainer from './WorkflowSiderContainer';
 
@@ -36,24 +36,24 @@ const WorkflowInfo = ({ workflow, onChange }: IProps) => {
 	};
 
 	const component = isEdit ? (
-		<Form form={form} layout="horizontal">
+		<Form form={form}>
 			<Form.Item
-				label={i18n.t('common.name')}
+				label={i18next.t('common.name')}
 				colon={false}
 				name="name"
 				rules={[
 					{
 						required: true,
-						message: i18n.t('validation.enter-property', { arg: i18n.t('common.name') }),
+						message: i18next.t('validation.enter-property', { arg: i18next.t('common.name') }),
 					},
 				]}
 			>
 				<Input />
 			</Form.Item>
-			<Form.Item label={i18n.t('common.description')} colon={false} name="description">
+			<Form.Item label={i18next.t('common.description')} colon={false} name="description">
 				<Input.TextArea />
 			</Form.Item>
-			<Form.Item label={i18n.t('common.enabled')} colon={false} name="enabled" valuePropName="checked">
+			<Form.Item label={i18next.t('common.enabled')} colon={false} name="enabled" valuePropName="checked">
 				<Switch />
 			</Form.Item>
 		</Form>
@@ -67,7 +67,7 @@ const WorkflowInfo = ({ workflow, onChange }: IProps) => {
 
 	return (
 		<WorkflowSiderContainer
-			title={i18n.t('workflow.workflow-info')}
+			title={i18next.t('workflow.workflow-info')}
 			icon="cog"
 			extra={
 				<CommonButton
@@ -75,7 +75,7 @@ const WorkflowInfo = ({ workflow, onChange }: IProps) => {
 					shape="circle"
 					icon={isEdit ? 'save' : 'edit'}
 					onClick={handleClick}
-					tooltipTitle={isEdit ? i18n.t('action.save') : i18n.t('action.modify')}
+					tooltipTitle={isEdit ? i18next.t('action.save') : i18next.t('action.modify')}
 				/>
 			}
 		>

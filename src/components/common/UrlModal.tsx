@@ -1,7 +1,7 @@
 import { Button, Form, Input, Modal } from 'antd';
 import React from 'react';
-import i18n from 'i18next';
 
+import i18next from 'i18next';
 import Icon from '../icon/Icon';
 
 interface UrlModalProps {
@@ -69,7 +69,7 @@ class UrlModal extends React.Component<UrlModalProps, UrlModalState> {
 		const { url, visible, tempUrl } = this.state;
 		const label = (
 			<React.Fragment>
-				<span style={{ marginRight: 8 }}>{i18n.t('common.url')}</span>
+				<span style={{ marginRight: 8 }}>{i18next.t('common.url')}</span>
 				<Button onClick={onClick} shape="circle" className="rde-action-btn">
 					<Icon name="edit" />
 				</Button>
@@ -82,7 +82,7 @@ class UrlModal extends React.Component<UrlModalProps, UrlModalState> {
 					<span style={{ wordBreak: 'break-all' }}>{url}</span>
 				</Form.Item>
 				<Modal onCancel={onCancel} onOk={onOk} open={visible}>
-					<Form.Item label={i18n.t('common.url')} colon={false}>
+					<Form.Item label={i18next.t('common.url')} colon={false}>
 						<Input
 							value={tempUrl}
 							onChange={event => {

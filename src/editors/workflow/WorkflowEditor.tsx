@@ -1,5 +1,5 @@
-import { message, Popconfirm } from 'antd';
-import i18n from 'i18next';
+import { FormInstance, message, Popconfirm } from 'antd';
+import i18next from 'i18next';
 import { debounce } from 'lodash-es';
 import React from 'react';
 import { FabricObject } from '../../canvas';
@@ -37,7 +37,7 @@ class WorkflowEditor extends React.Component {
 	};
 
 	canvasRef!: CanvasInstance;
-	nodeConfigurationRef?: { props: { form: any } };
+	nodeConfigurationRef = React.createRef<FormInstance>();
 	container: HTMLDivElement | null = null;
 
 	componentDidMount() {
@@ -51,7 +51,7 @@ class WorkflowEditor extends React.Component {
 			this.setState({ zoomRatio: zoom });
 		},
 		onAdd: (target: FabricObject & Record<string, any>) => {
-			if (target.type === 'activeSelection') {
+			if (this.canvasRef?.handler.isActiveSelection(target)) {
 				this.canvasHandlers.onSelect(null);
 				return;
 			}
@@ -62,8 +62,8 @@ class WorkflowEditor extends React.Component {
 		},
 		onSelect: (target: any) => {
 			const currentSelectedItem = this.state.selectedItem;
-			this.nodeConfigurationRef?.props.form
-				.validateFields()
+			this.nodeConfigurationRef.current
+				?.validateFields()
 				.then(() => {
 					if (currentSelectedItem) {
 						currentSelectedItem.setErrors(
@@ -78,7 +78,7 @@ class WorkflowEditor extends React.Component {
 				target &&
 				target.id &&
 				target.id !== 'workarea' &&
-				target.type !== 'activeSelection' &&
+				!this.canvasRef?.handler.isActiveSelection(target) &&
 				target.superType !== 'link' &&
 				target.superType !== 'port'
 			) {
@@ -183,7 +183,7 @@ class WorkflowEditor extends React.Component {
 					if (obj.superType === 'node') {
 						if (obj.errors) {
 							throw new NodeConfigurationError(
-								i18n.t('workflow.validate-fields-error'),
+								i18next.t('workflow.validate-fields-error'),
 								obj.id,
 								obj.name,
 							);
@@ -240,12 +240,9 @@ class WorkflowEditor extends React.Component {
 					workflow,
 				});
 			} else {
-				setTimeout(() => {
-					const configurationList = Object.keys(allValues.configuration).map(key => `configuration.${key}`);
-					const errors = this.nodeConfigurationRef.props.form.getFieldsError(
-						configurationList.concat(['name']),
-					);
-					if (Object.values(errors.configuration).filter(error => error).length || errors.name) {
+				setTimeout(async () => {
+					const errors = this.nodeConfigurationRef.current?.getFieldsError();
+					if (Object.values(errors).filter(error => error.errors?.length).length) {
 						selectedItem?.setErrors(true);
 					} else {
 						selectedItem?.setErrors(false);
@@ -298,15 +295,15 @@ class WorkflowEditor extends React.Component {
 					shape="circle"
 					icon="file-download"
 					disabled={!editing}
-					tooltipTitle={i18n.t('action.download')}
+					tooltipTitle={i18next.t('action.download')}
 					onClick={onDownload}
 					tooltipPlacement="bottomRight"
 				/>
 				{editing ? (
 					<Popconfirm
-						title={i18n.t('workflow.workflow-editing-confirm')}
-						okText={i18n.t('action.ok')}
-						cancelText={i18n.t('action.cancel')}
+						title={i18next.t('workflow.workflow-editing-confirm')}
+						okText={i18next.t('action.ok')}
+						cancelText={i18next.t('action.cancel')}
 						onConfirm={onUpload}
 						placement="bottomRight"
 					>
@@ -314,7 +311,7 @@ class WorkflowEditor extends React.Component {
 							className="rde-action-btn"
 							shape="circle"
 							icon="file-upload"
-							tooltipTitle={i18n.t('action.upload')}
+							tooltipTitle={i18next.t('action.upload')}
 							tooltipPlacement="bottomRight"
 						/>
 					</Popconfirm>
@@ -323,7 +320,7 @@ class WorkflowEditor extends React.Component {
 						className="rde-action-btn"
 						shape="circle"
 						icon="file-upload"
-						tooltipTitle={i18n.t('action.upload')}
+						tooltipTitle={i18next.t('action.upload')}
 						tooltipPlacement="bottomRight"
 						onClick={onUpload}
 					/>
@@ -332,7 +329,7 @@ class WorkflowEditor extends React.Component {
 		);
 		const titleContent = (
 			<React.Fragment>
-				<span>{i18n.t('workflow.workflow-editor')}</span>
+				<span>{i18next.t('workflow.workflow-editor')}</span>
 				<span style={{ width: 40, textAlign: 'center' }}>/</span>
 				<span style={{ color: workflow.enabled ? '#49a9ee' : 'rgba(0, 0, 0, 0.65)' }}>{workflow.name}</span>
 			</React.Fragment>
@@ -401,9 +398,7 @@ class WorkflowEditor extends React.Component {
 					/>
 					<div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
 						<WorkflowNodeConfigurations
-							wrappedComponentRef={(c: any) => {
-								this.nodeConfigurationRef = c;
-							}}
+							ref={this.nodeConfigurationRef}
 							selectedItem={selectedItem}
 							workflow={workflow}
 							canvasRef={this.canvasRef}

@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { svgPathProperties } from 'svg-path-properties';
 import { v4 as uuid } from 'uuid';
 import { FabricObject } from '../models';
@@ -234,7 +234,7 @@ class Link extends fabric.Group {
 			if (node.toPort.id === port.id) {
 				return;
 			}
-			port.links.forEach((link, index) => link.set({ fromPort: port, fromPortIndex: index }));
+			port.links.forEach((link: LinkObject, index: number) => link.set({ fromPort: port, fromPortIndex: index }));
 			node.set({ configuration: { outputCount: port.links.length } });
 		}
 	}
@@ -262,7 +262,7 @@ class Link extends fabric.Group {
 		const geometry = Link.calculateGeometry(this.fromNode, fromPort, this.toNode, toPort, this.onlyLeft);
 		this.pathProperties = geometry.properties;
 		this.samplePoints = geometry.samplePoints;
-		this.removeWithUpdate(this.line);
+		this.remove(this.line);
 		this.line = new fabric.Path(geometry.path, {
 			strokeWidth: 2,
 			fill: '',
@@ -274,7 +274,7 @@ class Link extends fabric.Group {
 			strokeLineJoin: 'round',
 			objectCaching: false,
 		});
-		this.addWithUpdate(this.line);
+		this.insertAt(0, this.line);
 		this.arrow.set({ left: geometry.midX - this.left, top: geometry.midY - this.top, angle: geometry.angle });
 		this.arrow.setCoords();
 		this.canvas?.requestRenderAll();
@@ -301,7 +301,7 @@ class Link extends fabric.Group {
 		return false;
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			name: this.get('name'),
@@ -316,7 +316,7 @@ class Link extends fabric.Group {
 		});
 	}
 
-	static fromObject(options: LinkObject, callback?: (obj: LinkObject) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(
 			new Link(options.fromNode, options.fromPort, options.toNode, options.toPort, options),
 			callback,

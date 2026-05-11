@@ -1,4 +1,5 @@
-import { classRegistry, fabric } from 'fabric';
+import * as fabric from 'fabric';
+import { classRegistry } from 'fabric';
 
 class Line extends fabric.Line {
 	static type = 'line';

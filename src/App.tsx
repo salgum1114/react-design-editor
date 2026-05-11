@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Title from './components/layout/Title';
 import FlowContainer from './containers/FlowContainer';
-import { FiberEditor, HexGridEditor, ImageMapEditor, WorkflowEditor } from './editors';
+import { ImageMapEditor, WorkflowEditor } from './editors';
 
 type EditorType = 'imagemap' | 'workflow' | 'hexgrid' | 'fiber';
 
@@ -27,10 +27,8 @@ class App extends React.Component<any, IState> {
 				return <ImageMapEditor />;
 			case 'workflow':
 				return <WorkflowEditor />;
-			case 'hexgrid':
-				return <HexGridEditor />;
-			case 'fiber':
-				return <FiberEditor />;
+			default:
+				return null;
 		}
 	};
 

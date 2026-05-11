@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { fitTextToRect, registerFabricClass, resolveFromObject } from '../../../../canvas';
 import { FromPort, PortObject } from '../../../../canvas/objects';
@@ -8,6 +8,8 @@ class SwitchNode extends LogicNode {
 	portWidth = 80;
 	portHeight = 40;
 	defaultRouteLength = 3;
+	declare configuration: { routes: string[] } & Record<string, any>;
+	declare ports: PortObject[];
 
 	constructor(options: any = {}) {
 		const nextOptions = { ...options };
@@ -108,11 +110,11 @@ class SwitchNode extends LogicNode {
 				originX: 'center',
 				originY: 'center',
 			});
-			label.set({ fontSize, top: -height / 2, left: (rect.center() as any).x });
-			return portLabel;
+			label.set({ fontSize, top: -height / 2, left: rect.getCenterPoint().x });
+			return portLabel as unknown as PortObject;
 		});
 		this.ports.forEach((port: PortObject) => {
-			this.addWithUpdate(port);
+			this.add(port);
 			port.setCoords();
 		});
 		this.fromPort = this.ports.map((port: PortObject, i: number) => {
@@ -147,8 +149,8 @@ class SwitchNode extends LogicNode {
 		return new SwitchNode(options);
 	}
 
-	static fromObject(options: any, callback?: (obj: any) => any) {
-		return resolveFromObject(new SwitchNode(options), callback as any) as Promise<any>;
+	static fromObject(options: any, _abortable?: any) {
+		return resolveFromObject(new SwitchNode(options)) as Promise<any>;
 	}
 }
 

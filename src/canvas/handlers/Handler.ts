@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { union } from 'lodash-es';
 import { v4 as uuid } from 'uuid';
 import warning from 'warning';
@@ -814,7 +814,7 @@ class Handler implements HandlerOptions {
 		// Create canvas object
 		if (obj.type === 'image') {
 			createdObj = this.addImage(newOption);
-		} else if (obj.type === 'group') {
+		} else if (obj.isType?.('Group')) {
 			createdObj = this.addGroup(newOption);
 		} else {
 			createdObj = this.fabricObjects[obj.type].create(newOption);
@@ -886,10 +886,7 @@ class Handler implements HandlerOptions {
 		const { objectOption } = this;
 		const { filters = [], src, file, ...otherOption } = obj;
 		const image = new Image();
-		// if (typeof src === 'string') {
-		// 	image.src = src;
-		// }
-		const createdObj = new fabric.Image(image, {
+		const createdObj = new fabric.FabricImage(image, {
 			...objectOption,
 			...otherOption,
 		}) as FabricImage;
@@ -906,94 +903,98 @@ class Handler implements HandlerOptions {
 	 * @returns {any}
 	 */
 	public remove = (target?: FabricObject) => {
-		const activeObject = target || (this.canvas.getActiveObject() as any);
+		const removeLinks = (links?: LinkObject[], direction?: 'from' | 'to') => {
+			if (!links?.length) {
+				return;
+			}
+
+			// Copy links before removal because linkHandler.remove may mutate the original array.
+			[...links].forEach(link => {
+				this.linkHandler.remove(link, direction);
+			});
+		};
+
+		const removeNodePorts = (node: any) => {
+			if (node.port?.length) {
+				node.port.forEach((port: any) => {
+					this.canvas.remove(port);
+				});
+			}
+
+			if (node.toPort) {
+				removeLinks(node.toPort.links, 'from');
+				this.canvas.remove(node.toPort);
+			}
+
+			if (node.fromPort?.length) {
+				node.fromPort.forEach((port: any) => {
+					removeLinks(port.links, 'to');
+					this.canvas.remove(port);
+				});
+			}
+		};
+
+		const removeObject = (object: any) => {
+			if (object.superType === 'element') {
+				this.elementHandler.removeById(object.id);
+			} else if (object.superType === 'link') {
+				this.linkHandler.remove(object);
+			} else if (object.superType === 'node') {
+				removeNodePorts(object);
+			}
+
+			this.canvas.remove(object);
+		};
+
 		if (this.prevTarget && this.prevTarget.superType === 'link') {
 			this.linkHandler.remove(this.prevTarget as LinkObject);
+
 			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('remove');
 			}
+
 			this.onRemove?.(this.prevTarget);
 			return;
 		}
+
+		const activeObject = target || (this.canvas.getActiveObject() as any);
+
 		if (!activeObject) {
 			return;
 		}
+
 		if (typeof activeObject.deletable !== 'undefined' && !activeObject.deletable) {
 			return;
 		}
-		if (activeObject.type !== 'activeSelection') {
-			this.canvas.discardActiveObject();
-			if (activeObject.superType === 'element') {
-				this.elementHandler.removeById(activeObject.id);
-			}
-			if (activeObject.superType === 'link') {
-				this.linkHandler.remove(activeObject);
-			} else if (activeObject.superType === 'node') {
-				if (activeObject.port?.length) {
-					activeObject.port.forEach((port: any) => {
-						this.canvas.remove(port);
-					});
-				}
-				if (activeObject.toPort) {
-					if (activeObject.toPort.links.length) {
-						activeObject.toPort.links.forEach((link: any) => {
-							this.linkHandler.remove(link, 'from');
-						});
-					}
-					this.canvas.remove(activeObject.toPort);
-				}
-				if (activeObject.fromPort && activeObject.fromPort.length) {
-					activeObject.fromPort.forEach((port: any) => {
-						if (port.links.length) {
-							port.links.forEach((link: any) => {
-								this.linkHandler.remove(link, 'to');
-							});
-						}
-						this.canvas.remove(port);
-					});
-				}
-			}
-			this.canvas.remove(activeObject);
-		} else {
-			const { _objects: activeObjects } = activeObject;
-			const existDeleted = activeObjects.some(
-				(obj: any) => typeof obj.deletable !== 'undefined' && !obj.deletable,
+
+		if (this.isActiveSelection(activeObject)) {
+			const activeObjects = activeObject.getObjects();
+
+			const hasNotDeletableObject = activeObjects.some(
+				(object: any) => typeof object.deletable !== 'undefined' && !object.deletable,
 			);
-			if (existDeleted) {
+
+			if (hasNotDeletableObject) {
 				return;
 			}
+
 			this.canvas.discardActiveObject();
-			activeObjects.forEach((obj: any) => {
-				if (obj.superType === 'element') {
-					this.elementHandler.removeById(obj.id);
-				} else if (obj.superType === 'node') {
-					if (obj.toPort) {
-						if (obj.toPort.links.length) {
-							obj.toPort.links.forEach((link: any) => {
-								this.linkHandler.remove(link, 'from');
-							});
-						}
-						this.canvas.remove(obj.toPort);
-					}
-					if (obj.fromPort && obj.fromPort.length) {
-						obj.fromPort.forEach((port: any) => {
-							if (port.links.length) {
-								port.links.forEach((link: any) => {
-									this.linkHandler.remove(link, 'to');
-								});
-							}
-							this.canvas.remove(port);
-						});
-					}
-				}
-				this.canvas.remove(obj);
+
+			activeObjects.forEach((object: any) => {
+				removeObject(object);
 			});
+		} else {
+			this.canvas.discardActiveObject();
+			removeObject(activeObject);
 		}
+
 		if (!this.transactionHandler.active) {
 			this.transactionHandler.save('remove');
 		}
+
 		this.objects = this.getObjects();
 		this.onRemove?.(activeObject);
+		this.canvas.requestRenderAll();
 	};
 
 	/**
@@ -1042,7 +1043,7 @@ class Handler implements HandlerOptions {
 				top: clonedObj.top + grid,
 				evented: true,
 			});
-			if (clonedObj.type === 'activeSelection') {
+			if (this.isActiveSelection(clonedObj)) {
 				const activeSelection = clonedObj as fabric.ActiveSelection;
 				activeSelection.canvas = this.canvas;
 				activeSelection.forEachObject((obj: any) => {
@@ -1165,7 +1166,7 @@ class Handler implements HandlerOptions {
 			if (typeof activeObject.cloneable !== 'undefined' && !activeObject.cloneable) {
 				return false;
 			}
-			if (activeObject.type === 'activeSelection') {
+			if (this.isActiveSelection(activeObject)) {
 				const activeSelection = activeObject as fabric.ActiveSelection;
 				if (activeSelection.getObjects().some((obj: any) => obj.superType === 'node')) {
 					if (this.canvasActions.clipboard) {
@@ -1269,7 +1270,7 @@ class Handler implements HandlerOptions {
 			return false;
 		}
 		this.isCut = false;
-		if (clipboard.type === 'activeSelection') {
+		if (this.isActiveSelection(clipboard)) {
 			if (clipboard.getObjects().some((obj: any) => obj.superType === 'node')) {
 				this.canvas.discardActiveObject();
 				const objects = [] as any[];
@@ -1356,7 +1357,7 @@ class Handler implements HandlerOptions {
 				id: isCut ? clipboard.id : uuid(),
 				evented: true,
 			});
-			if (clonedObj.type === 'activeSelection') {
+			if (this.isActiveSelection(clonedObj)) {
 				clonedObj.canvas = this.canvas;
 				clonedObj.forEachObject((obj: any) => {
 					obj.set('id', isCut ? obj.id : uuid());
@@ -1656,28 +1657,52 @@ class Handler implements HandlerOptions {
 	 * @returns
 	 */
 	public toGroup = (target?: FabricObject) => {
-		const activeObject = target || (this.canvas.getActiveObject() as fabric.ActiveSelection);
+		const activeObject = target || (this.canvas.getActiveObject() as fabric.ActiveSelection | null);
+
 		if (!activeObject) {
 			return null;
 		}
-		if (activeObject.type !== 'activeSelection') {
+
+		if (!activeObject.isType?.('ActiveSelection')) {
 			return null;
 		}
-		const group = (activeObject as any).toGroup() as FabricObject<fabric.Group>;
-		group.set({
+
+		const activeSelection = activeObject as fabric.ActiveSelection;
+		const objects = activeSelection.getObjects();
+
+		if (!objects.length) {
+			return null;
+		}
+
+		this.canvas.discardActiveObject();
+
+		objects.forEach(object => {
+			this.canvas.remove(object);
+		});
+
+		const group = new fabric.Group(objects, {
 			id: uuid(),
 			name: 'New group',
-			type: 'group',
 			...this.objectOption,
-		});
+		}) as FabricObject<fabric.Group>;
+
+		this.canvas.add(group);
+		this.canvas.setActiveObject(group);
+
+		group.setCoords();
+
 		this.objects = this.getObjects();
+
 		if (!this.transactionHandler.active) {
 			this.transactionHandler.save('group');
 		}
+
 		if (this.onSelect) {
 			this.onSelect(group);
 		}
-		this.canvas.renderAll();
+
+		this.canvas.requestRenderAll();
+
 		return group;
 	};
 
@@ -1686,23 +1711,62 @@ class Handler implements HandlerOptions {
 	 * @returns
 	 */
 	public toActiveSelection = (target?: FabricObject) => {
-		const activeObject = target || (this.canvas.getActiveObject() as fabric.Group);
+		const activeObject = target || (this.canvas.getActiveObject() as fabric.Group | null);
+
 		if (!activeObject) {
-			return;
+			return null;
 		}
-		if (activeObject.type !== 'group') {
-			return;
+
+		if (!activeObject.isType?.('Group', 'group')) {
+			return null;
 		}
-		const activeSelection = (activeObject as any).toActiveSelection();
+
+		const group = activeObject as fabric.Group;
+
+		this.canvas.discardActiveObject();
+
+		const objects = group.removeAll() as FabricObject[];
+
+		if (!objects.length) {
+			this.canvas.remove(group);
+			this.canvas.requestRenderAll();
+			return null;
+		}
+
+		this.canvas.remove(group);
+
+		objects.forEach(object => {
+			this.canvas.add(object);
+			object.setCoords();
+		});
+
+		const activeSelection = new fabric.ActiveSelection(objects, {
+			canvas: this.canvas,
+			...this.activeSelectionOption,
+		}) as FabricObject<fabric.ActiveSelection>;
+
+		this.canvas.setActiveObject(activeSelection);
+
+		activeSelection.setCoords();
+
 		this.objects = this.getObjects();
+
 		if (!this.transactionHandler.active) {
 			this.transactionHandler.save('ungroup');
 		}
+
 		if (this.onSelect) {
 			this.onSelect(activeSelection);
 		}
-		this.canvas.renderAll();
+
+		this.canvas.requestRenderAll();
+
 		return activeSelection;
+	};
+
+	public isActiveSelection = (target?: FabricObject) => {
+		const object = target as fabric.FabricObject | undefined;
+		return !!object?.isType?.('ActiveSelection', 'activeSelection');
 	};
 
 	/**

@@ -54,7 +54,7 @@ class WorkflowConfigurations extends React.Component<IProps, IState> {
 					style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
 				/>
 				<Tabs
-					tabPosition="right"
+					tabPlacement="end"
 					activeKey={activeKey}
 					onChange={this.handlers.onChange}
 					style={{ height: '100%' }}

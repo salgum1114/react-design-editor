@@ -12,6 +12,7 @@
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
+		"baseUrl": ".",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"ignoreDeprecations": "6.0",
@@ -19,6 +20,7 @@
 		"jsx": "react",
 		"module": "esnext",
 		"moduleResolution": "node",
+		"allowArbitraryExtensions": true,
 		"target": "esnext",
 		"lib": ["dom", "dom.iterable", "es2022"]
 	},

@@ -19,9 +19,10 @@ class CurvedLink extends Link {
 
 	_render(ctx: CanvasRenderingContext2D) {
 		// Drawing curved link
-		const { x1, y1, x2, y2 } = this;
+		const { x1, y1, x2, y2 } = this as any;
+		const stroke = typeof this.stroke === 'string' ? this.stroke : '#000';
 		ctx.lineWidth = this.strokeWidth;
-		ctx.strokeStyle = this.stroke;
+		ctx.strokeStyle = stroke;
 		const fp = { x: (x1 - x2) / 2, y: (y1 - y2) / 2 };
 		const sp = { x: (x2 - x1) / 2, y: (y2 - y1) / 2 };
 		ctx.beginPath();
@@ -49,12 +50,12 @@ class CurvedLink extends Link {
 			ctx.lineTo(-5, -5);
 		}
 		ctx.closePath();
-		ctx.fillStyle = this.stroke;
+		ctx.fillStyle = stroke;
 		ctx.fill();
 		ctx.restore();
 	}
 
-	static fromObject(options: LinkObject, callback?: (obj: LinkObject) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(
 			new CurvedLink(options.fromNode, options.fromPort, options.toNode, options.toPort, options),
 			callback,

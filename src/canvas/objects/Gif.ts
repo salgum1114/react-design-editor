@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import 'gifler';
 
 import { registerFabricClass, resolveFromObject } from '../utils';
@@ -37,7 +37,7 @@ class Gif extends fabric.Image {
 		}
 	}
 
-	static fromObject(options: any, callback?: (obj: any) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(new Gif(options), callback);
 	}
 }

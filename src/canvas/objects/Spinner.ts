@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 
@@ -85,7 +85,7 @@ class Spinner extends fabric.Group {
 		this.canvas?.requestRenderAll();
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			superType: this.get('superType'),
@@ -99,8 +99,8 @@ class Spinner extends fabric.Group {
 		});
 	}
 
-	static fromObject(options: any, callback?: (obj: any) => any) {
-		return resolveFromObject(new Spinner(options), callback);
+	static fromObject(options: any, _abortable?: any) {
+		return resolveFromObject(new Spinner(options));
 	}
 }
 

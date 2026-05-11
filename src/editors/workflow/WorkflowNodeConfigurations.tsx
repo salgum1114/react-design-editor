@@ -1,5 +1,5 @@
-import { Divider, Form, Input } from 'antd';
-import i18n from 'i18next';
+import { Divider, Form, FormInstance, Input } from 'antd';
+import i18next from 'i18next';
 import React from 'react';
 import type { CanvasInstance } from '../../canvas';
 import { Scrollbar } from '../../components/common';
@@ -14,19 +14,14 @@ interface IProps {
 	workflow?: any;
 	onChange?: any;
 	descriptors?: any;
-	wrappedComponentRef?: (instance: { props: { form: any } }) => void;
 }
 
-const WorkflowNodeConfigurations = ({ canvasRef, workflow, selectedItem, onChange, wrappedComponentRef }: IProps) => {
+const WorkflowNodeConfigurations = React.forwardRef<FormInstance, IProps>((props, ref) => {
+	const { canvasRef, workflow, selectedItem, onChange } = props;
 	const [form] = Form.useForm();
 
 	React.useEffect(() => {
-		wrappedComponentRef?.({ props: { form } });
-	}, [form, wrappedComponentRef]);
-
-	React.useEffect(() => {
 		if (!selectedItem) {
-			form.resetFields();
 			return;
 		}
 
@@ -37,11 +32,12 @@ const WorkflowNodeConfigurations = ({ canvasRef, workflow, selectedItem, onChang
 		});
 	}, [form, selectedItem]);
 
+	React.useImperativeHandle(ref, () => form);
+
 	return (
 		<Scrollbar>
 			<Form
 				form={form}
-				layout="horizontal"
 				onValuesChange={(changedValues, allValues) => {
 					onChange?.(selectedItem, changedValues, allValues);
 				}}
@@ -51,28 +47,28 @@ const WorkflowNodeConfigurations = ({ canvasRef, workflow, selectedItem, onChang
 						<NodeDescriptor workflow={workflow} selectedItem={selectedItem} />
 						<Flex flexDirection="column" style={{ margin: '8px 16px' }}>
 							<Form.Item
-								label={i18n.t('common.name')}
+								label={i18next.t('common.name')}
 								colon={false}
 								name="name"
 								rules={[
 									{
 										required: true,
-										message: i18n.t('validation.enter-property', {
-											arg: i18n.t('common.name'),
+										message: i18next.t('validation.enter-property', {
+											arg: i18next.t('common.name'),
 										}),
 									},
 								]}
 							>
-								<Input placeholder={i18n.t('workflow.node-name-required')} />
+								<Input placeholder={i18next.t('workflow.node-name-required')} />
 							</Form.Item>
-							<Form.Item label={i18n.t('common.description')} colon={false} name="description">
+							<Form.Item label={i18next.t('common.description')} colon={false} name="description">
 								<Input.TextArea
 									style={{ maxHeight: 200 }}
-									placeholder={i18n.t('workflow.node-description-required')}
+									placeholder={i18next.t('workflow.node-description-required')}
 								/>
 							</Form.Item>
 						</Flex>
-						<Divider>{i18n.t('workflow.node-configuration')}</Divider>
+						<Divider>{i18next.t('workflow.node-configuration')}</Divider>
 						<Flex
 							flexDirection="column"
 							style={{ height: '100%', overflowY: 'hidden', margin: '8px 16px' }}
@@ -90,6 +86,6 @@ const WorkflowNodeConfigurations = ({ canvasRef, workflow, selectedItem, onChang
 			</Form>
 		</Scrollbar>
 	);
-};
+});
 
 export default WorkflowNodeConfigurations;

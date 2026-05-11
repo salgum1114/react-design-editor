@@ -1,6 +1,6 @@
 import { Col, Form, Input, InputNumber, Row, Slider, Switch } from 'antd';
+import i18next from 'i18next';
 import React from 'react';
-import i18n from 'i18next';
 
 type GeneralPropertyData = {
 	locked?: boolean;
@@ -23,7 +23,7 @@ export default {
 				<Row>
 					<Col span={12}>
 						<Form.Item
-							label={i18n.t('common.locked')}
+							label={i18next.t('common.locked')}
 							colon={false}
 							name="locked"
 							initialValue={data.locked}
@@ -35,7 +35,7 @@ export default {
 					</Col>
 					<Col span={12}>
 						<Form.Item
-							label={i18n.t('common.visible')}
+							label={i18next.t('common.visible')}
 							colon={false}
 							name="visible"
 							initialValue={data.visible}
@@ -46,13 +46,13 @@ export default {
 						</Form.Item>
 					</Col>
 				</Row>
-				<Form.Item label={i18n.t('common.name')} colon={false} name="name" initialValue={data.name}>
+				<Form.Item label={i18next.t('common.name')} colon={false} name="name" initialValue={data.name}>
 					<Input />
 				</Form.Item>
 				<Row>
 					<Col span={12}>
 						<Form.Item
-							label={i18n.t('common.width')}
+							label={i18next.t('common.width')}
 							colon={false}
 							name="width"
 							initialValue={parseInt(String(data.width * data.scaleX), 10)}
@@ -63,7 +63,7 @@ export default {
 					</Col>
 					<Col span={12}>
 						<Form.Item
-							label={i18n.t('common.height')}
+							label={i18next.t('common.height')}
 							colon={false}
 							name="height"
 							initialValue={parseInt(String(data.height * data.scaleY), 10)}
@@ -76,7 +76,7 @@ export default {
 				<Row>
 					<Col span={12}>
 						<Form.Item
-							label={i18n.t('common.left')}
+							label={i18next.t('common.left')}
 							colon={false}
 							name="left"
 							initialValue={data.left}
@@ -87,7 +87,7 @@ export default {
 					</Col>
 					<Col span={12}>
 						<Form.Item
-							label={i18n.t('common.top')}
+							label={i18next.t('common.top')}
 							colon={false}
 							name="top"
 							initialValue={data.top}
@@ -99,7 +99,7 @@ export default {
 				</Row>
 				{data.superType === 'element' ? null : (
 					<Form.Item
-						label={i18n.t('common.angle')}
+						label={i18next.t('common.angle')}
 						colon={false}
 						name="angle"
 						initialValue={data.angle}

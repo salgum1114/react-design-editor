@@ -1,5 +1,4 @@
 import { Button, Form, Modal } from 'antd';
-import i18n from 'i18next';
 import React from 'react';
 import AceCodeEditor from '../ace/AceCodeEditor';
 
@@ -7,6 +6,7 @@ import Icon from '../icon/Icon';
 
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-github';
+import i18next from 'i18next';
 
 interface CodeModalProps {
 	value?: string;
@@ -74,7 +74,7 @@ class CodeModal extends React.Component<CodeModalProps, CodeModalState> {
 		const { code, visible, tempCode } = this.state;
 		const label = (
 			<React.Fragment>
-				<span style={{ marginRight: 8 }}>{i18n.t('common.code')}</span>
+				<span style={{ marginRight: 8 }}>{i18next.t('common.code')}</span>
 				<Button onClick={onClick} shape="circle" className="rde-action-btn">
 					<Icon name="edit" />
 				</Button>

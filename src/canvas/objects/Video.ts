@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 import { FabricElement } from '../models';
@@ -22,6 +22,8 @@ class Video extends fabric.Rect {
 	declare container: string;
 	declare videoElement: HTMLVideoElement;
 	declare player: any;
+	declare src: string | null;
+	declare file: File | null;
 
 	constructor(source: string | File, options: any = {}) {
 		super(options);
@@ -58,7 +60,7 @@ class Video extends fabric.Rect {
 		this.player.setSrc(src);
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			src: this.get('src'),
 			file: this.get('file'),
@@ -70,10 +72,16 @@ class Video extends fabric.Rect {
 	_render(ctx: CanvasRenderingContext2D) {
 		super._render(ctx);
 		if (!this.element) {
-			const { id, scaleX, scaleY, width, height, angle, editable, src, file, autoplay, muted, loop } = this;
+			const id = this.get('id') as string;
+			const editable = this.get('editable') as boolean;
+			const autoplay = this.get('autoplay') as boolean;
+			const muted = this.get('muted') as boolean;
+			const loop = this.get('loop') as boolean;
+			const { scaleX, scaleY, width, height, angle, src, file } = this;
 			const zoom = this.canvas.getZoom();
-			const left = this.calcCoords().tl.x;
-			const top = this.calcCoords().tl.y;
+			const { tl } = this.calcOCoords();
+			const left = tl.x;
+			const top = tl.y;
 			const padLeft = (width * scaleX * zoom - width) / 2;
 			const padTop = (height * scaleY * zoom - height) / 2;
 			this.videoElement = createDOMElement('video', {
@@ -115,7 +123,7 @@ class Video extends fabric.Rect {
 		}
 	}
 
-	static fromObject(options: VideoObject, callback?: (obj: VideoObject) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(new Video(options.src || options.file, options), callback);
 	}
 }

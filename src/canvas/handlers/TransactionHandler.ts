@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { sortBy, throttle } from 'lodash-es';
 import { FabricObject } from '../models';
 import { NodeObject } from '../objects/Node';
@@ -209,7 +209,8 @@ class TransactionHandler extends AbstractHandler {
 
 		try {
 			// Always read fresh canvas state first.
-			const objects = (this.handler.canvas as any).toJSON(this.handler.propertiesToInclude).objects as FabricObject[];
+			const objects = (this.handler.canvas as any).toJSON(this.handler.propertiesToInclude)
+				.objects as FabricObject[];
 			const normalized = this.sortObjects(this.normalizeObjects(objects));
 
 			if (type === 'configuration') {
@@ -293,34 +294,37 @@ class TransactionHandler extends AbstractHandler {
 			this.handler.clear();
 			this.handler.canvas.discardActiveObject();
 
-			void fabric.util.enlivenObjects(this.currentObjects).then((enlivenedObjects: FabricObject[]) => {
-				enlivenedObjects.forEach(obj => {
-					const targetIndex = this.handler.canvas._objects.length;
+			void fabric.util
+				.enlivenObjects(this.currentObjects)
+				.then(enlivenedObjects => {
+					(enlivenedObjects as FabricObject[]).forEach(obj => {
+						const targetIndex = this.handler.canvas._objects.length;
 
-					if (obj.superType === 'node') {
-						const node = obj as NodeObject;
-						this.handler.canvas.insertAt(targetIndex, node);
-						this.handler.portHandler.create(node);
-					} else if (obj.superType === 'link') {
-						this.handler.objects = this.handler.getObjects();
-						this.handler.linkHandler.create({
-							type: 'link',
-							fromNodeId: (obj as any).fromNode?.id,
-							fromPortId: (obj as any).fromPort?.id,
-							toNodeId: (obj as any).toNode?.id,
-							toPortId: (obj as any).toPort?.id,
-						});
-					} else {
-						this.handler.canvas.insertAt(targetIndex, obj);
-					}
-				});
+						if (obj.superType === 'node') {
+							const node = obj as NodeObject;
+							this.handler.canvas.insertAt(targetIndex, node);
+							this.handler.portHandler.create(node);
+						} else if (obj.superType === 'link') {
+							this.handler.objects = this.handler.getObjects();
+							this.handler.linkHandler.create({
+								type: 'link',
+								fromNodeId: (obj as any).fromNode?.id,
+								fromPortId: (obj as any).fromPort?.id,
+								toNodeId: (obj as any).toNode?.id,
+								toPortId: (obj as any).toPort?.id,
+							});
+						} else {
+							this.handler.canvas.insertAt(targetIndex, obj);
+						}
+					});
 
-				this.active = false;
-				this.handler.canvas.renderOnAddRemove = true;
-				this.handler.canvas.renderAll();
-				this.handler.objects = this.handler.getObjects();
-				this.handler.onTransaction?.(transaction);
-			}).catch((error: unknown) => console.error(error));
+					this.active = false;
+					this.handler.canvas.renderOnAddRemove = true;
+					this.handler.canvas.renderAll();
+					this.handler.objects = this.handler.getObjects();
+					this.handler.onTransaction?.(transaction);
+				})
+				.catch((error: unknown) => console.error(error));
 		} catch (error) {
 			console.error(error);
 		}

@@ -1,11 +1,11 @@
 import { Button, Form } from 'antd';
-import i18n from 'i18next';
 import React from 'react';
 
+import i18next from 'i18next';
 import { Flex } from '../../../components/flex';
 import Icon from '../../../components/icon/Icon';
-import type { StyleModalHandle } from './StyleModal';
 import StyleList from './StyleList';
+import type { StyleModalHandle } from './StyleModal';
 import StyleModal from './StyleModal';
 
 type StyleItem = Record<string, any>;
@@ -38,7 +38,7 @@ export default function Styles({ onChangeStyles, styles = [] }: StylesProps) {
 			if (!value || !value.length) {
 				return {
 					validateStatus: 'error',
-					help: i18n.t('validation.enter-property', { arg: i18n.t('common.title') }),
+					help: i18next.t('validation.enter-property', { arg: i18next.t('common.title') }),
 				};
 			}
 
@@ -52,7 +52,7 @@ export default function Styles({ onChangeStyles, styles = [] }: StylesProps) {
 
 			return {
 				validateStatus: 'error',
-				help: i18n.t('validation.already-property', { arg: i18n.t('common.title') }),
+				help: i18next.t('validation.already-property', { arg: i18next.t('common.title') }),
 			};
 		},
 		[styles],

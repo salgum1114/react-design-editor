@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricObject } from '../models';
 import { registerFabricClass, resolveFromObject } from '../utils';
 
@@ -73,7 +73,7 @@ class Cube extends fabric.Object {
 		ctx.fill();
 	}
 
-	static fromObject(options: CubeObject, callback?: (obj: CubeObject) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(new Cube(options), callback);
 	}
 }

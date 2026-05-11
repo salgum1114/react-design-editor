@@ -11,7 +11,7 @@ class AlignmentHandler {
 	 */
 	public left = () => {
 		const activeObject = this.handler.canvas.getActiveObject();
-		if (activeObject && activeObject.type === 'activeSelection') {
+		if (activeObject && this.handler.isActiveSelection(activeObject)) {
 			const activeSelection = activeObject as fabric.ActiveSelection;
 			const activeObjectLeft = -(activeObject.width / 2);
 			activeSelection.forEachObject(obj => {
@@ -29,7 +29,7 @@ class AlignmentHandler {
 	 */
 	public center = () => {
 		const activeObject = this.handler.canvas.getActiveObject();
-		if (activeObject && activeObject.type === 'activeSelection') {
+		if (activeObject && this.handler.isActiveSelection(activeObject)) {
 			const activeSelection = activeObject as fabric.ActiveSelection;
 			activeSelection.forEachObject(obj => {
 				obj.set({
@@ -46,7 +46,7 @@ class AlignmentHandler {
 	 */
 	public middle = () => {
 		const activeObject = this.handler.canvas.getActiveObject();
-		if (activeObject && activeObject.type === 'activeSelection') {
+		if (activeObject && this.handler.isActiveSelection(activeObject)) {
 			const activeSelection = activeObject as fabric.ActiveSelection;
 			activeSelection.forEachObject(obj => {
 				obj.set({
@@ -63,7 +63,7 @@ class AlignmentHandler {
 	 */
 	public right = () => {
 		const activeObject = this.handler.canvas.getActiveObject();
-		if (activeObject && activeObject.type === 'activeSelection') {
+		if (activeObject && this.handler.isActiveSelection(activeObject)) {
 			const activeSelection = activeObject as fabric.ActiveSelection;
 			const activeObjectLeft = activeObject.width / 2;
 			activeSelection.forEachObject(obj => {

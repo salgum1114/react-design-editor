@@ -1,7 +1,7 @@
-import React from 'react';
 import { Form, Switch } from 'antd';
-import i18n from 'i18next';
+import React from 'react';
 
+import i18next from 'i18next';
 import CodeModal from '../../../components/common/CodeModal';
 
 type TriggerData = {
@@ -18,7 +18,7 @@ export default {
 		return (
 			<React.Fragment>
 				<Form.Item
-					label={i18n.t('imagemap.trigger.trigger-enabled')}
+					label={i18next.t('imagemap.trigger.trigger-enabled')}
 					colon={false}
 					name={['trigger', 'enabled']}
 					initialValue={data.trigger.enabled}

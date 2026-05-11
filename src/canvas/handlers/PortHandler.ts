@@ -1,4 +1,6 @@
+import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
+import { PortObject } from '../objects/Port';
 import AbstractHandler from './AbstractHandler';
 
 class PortHandler extends AbstractHandler {
@@ -80,8 +82,10 @@ class PortHandler extends AbstractHandler {
 			target.toPort.setPosition(left, top);
 
 			if (target.toPort.links.length) {
-				target.toPort.links.forEach(link => {
-					const fromPort = link.fromNode.fromPort.filter(port => port.id === link.fromPort.id)[0];
+				target.toPort.links.forEach((link: LinkObject) => {
+					const fromPort = link.fromNode.fromPort.filter(
+						(port: PortObject) => port.id === link.fromPort.id,
+					)[0];
 					link.update(fromPort, target.toPort);
 				});
 			}
@@ -93,14 +97,14 @@ class PortHandler extends AbstractHandler {
 				top: target.top + target.height,
 			};
 
-			target.fromPort.forEach(port => {
+			target.fromPort.forEach((port: any) => {
 				const left = port.leftDiff ? fromCoords.left + port.leftDiff : fromCoords.left;
 				const top = port.topDiff ? fromCoords.top + port.topDiff : fromCoords.top;
 
 				port.setPosition(left, top);
 
 				if (port.links.length) {
-					port.links.forEach(link => {
+					port.links.forEach((link: LinkObject) => {
 						link.update(port, link.toNode.toPort);
 					});
 				}
@@ -114,13 +118,13 @@ class PortHandler extends AbstractHandler {
 	 */
 	recreate = (target: NodeObject) => {
 		const { fromPort, toPort, ports } = target;
-		ports?.forEach(port => {
-			target.removeWithUpdate(port);
+		ports?.forEach((port: any) => {
+			target.remove(port);
 			this.handler.canvas.remove(port.fromPort);
 		});
 		this.handler.canvas.remove(target.toPort);
 		if (target.toPort) {
-			target.toPort.links.forEach(link => this.handler.linkHandler.remove(link, 'from'));
+			target.toPort.links.forEach((link: LinkObject) => this.handler.linkHandler.remove(link, 'from'));
 		}
 		if (target.fromPort) {
 			target.fromPort.forEach((port: any) => {
@@ -138,8 +142,8 @@ class PortHandler extends AbstractHandler {
 			this.handler.linkHandler.create(link);
 		});
 		fromPort
-			.filter(op => target.fromPort.some(np => np.id === op.id))
-			.forEach(port => {
+			.filter((op: any) => target.fromPort.some((np: any) => np.id === op.id))
+			.forEach((port: any) => {
 				port.links.forEach((link: any) => {
 					if (link.fromPort.id === port.id) {
 						link.fromNode = port.nodeId;

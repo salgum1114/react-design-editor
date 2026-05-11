@@ -1,11 +1,11 @@
 import { Button, Col, Form, Input, Modal, Row } from 'antd';
 import { debounce } from 'lodash-es';
-import i18n from 'i18next';
 import React from 'react';
 
+import i18next from 'i18next';
 import icons from '../../libs/fontawesome-5.2.0/metadata/icons.json';
-import styles from './IconChooser.module.css';
 import Icon from './Icon';
+import styles from './IconChooser.module.css';
 
 type IconMetadata = {
 	search: {
@@ -118,13 +118,13 @@ class IconChooser extends React.Component<IconChooserProps, IconChooserState> {
 				<Form.Item
 					label={
 						<React.Fragment>
-							<span style={{ marginRight: 8 }}>{i18n.t('common.icon')}</span>
+							<span style={{ marginRight: 8 }}>{i18next.t('common.icon')}</span>
 							<Icon name={selectedName} prefix={this.getPrefix(selectedMetadata.styles[0])} />
 						</React.Fragment>
 					}
 					colon={false}
 				>
-					<Button onClick={onClick}>{i18n.t('imagemap.marker.choose-icon')}</Button>
+					<Button onClick={onClick}>{i18next.t('imagemap.marker.choose-icon')}</Button>
 				</Form.Item>
 				<Modal
 					onOk={onOk}
@@ -137,7 +137,7 @@ class IconChooser extends React.Component<IconChooserProps, IconChooserState> {
 								onChange={event => {
 									onSearch(event.target.value);
 								}}
-								placeholder={i18n.t('imagemap.marker.search-icon', { length: filteredIconsLength })}
+								placeholder={i18next.t('imagemap.marker.search-icon', { length: filteredIconsLength })}
 							/>
 						</div>
 					}

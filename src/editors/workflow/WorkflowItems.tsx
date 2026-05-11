@@ -1,10 +1,11 @@
 import { Collapse, Input } from 'antd';
 import clsx from 'clsx';
-import { fabric } from 'fabric';
-import i18n from 'i18next';
+import * as fabric from 'fabric';
+import i18next from 'i18next';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { CanvasInstance, FabricObject, LinkObject, NodeObject } from '../../canvas';
+import { PortObject } from '../../canvas/objects';
 import { CommonButton, Scrollbar } from '../../components/common';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
@@ -127,7 +128,7 @@ class WorkflowItems extends React.Component<IProps, IState> {
 						selectedNode?.type === 'BroadcastNode'
 							? selectedNode.fromPort![0]
 							: selectedNode?.fromPort
-								? selectedNode?.fromPort?.find(port => !port.links!.length)
+								? selectedNode?.fromPort?.find((port: PortObject) => !port.links!.length)
 								: undefined;
 					if (item.type !== 'TRIGGER' && unusedFromPort) {
 						const createdNode = !centered
@@ -326,7 +327,7 @@ class WorkflowItems extends React.Component<IProps, IState> {
 						{collapse ? null : (
 							<Input
 								style={{ margin: '8px' }}
-								placeholder={i18n.t('action.search-list')}
+								placeholder={i18next.t('action.search-list')}
 								onChange={this.handlers.onSearchNode}
 								value={textSearch}
 								allowClear={true}
@@ -342,21 +343,17 @@ class WorkflowItems extends React.Component<IProps, IState> {
 									style={{ width: '100%' }}
 									activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
 									onChange={this.handlers.onChangeActiveKey}
-								>
-									{Object.keys(descriptors).map(key => {
+									items={Object.keys(descriptors).map(key => {
 										const descriptorKey = key as keyof typeof NODE_COLORS;
-										return (
-											<Collapse.Panel
-												style={{ background: NODE_COLORS[descriptorKey].fill }}
-												key={key}
-												header={collapse ? '' : key}
-												showArrow={!collapse}
-											>
-												{this.renderItems(descriptors[key])}
-											</Collapse.Panel>
-										);
+										return {
+											key,
+											label: collapse ? '' : key,
+											showArrow: !collapse,
+											style: { background: NODE_COLORS[descriptorKey].fill },
+											children: this.renderItems(descriptors[key]),
+										};
 									})}
-								</Collapse>
+								/>
 							)}
 						</Flex>
 					</Scrollbar>

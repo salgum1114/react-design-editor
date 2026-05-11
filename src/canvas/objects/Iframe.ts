@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricElement } from '../models';
 import { createDOMElement, registerFabricClass, resolveFromObject, toObject, wrapDOMElement } from '../utils';
 
@@ -16,6 +16,7 @@ class Iframe extends fabric.Rect {
 	declare element: HTMLDivElement;
 	declare container: string;
 	declare iframeElement: HTMLIFrameElement;
+	declare src: string;
 
 	constructor(src = '', options: any = {}) {
 		super(options);
@@ -37,7 +38,7 @@ class Iframe extends fabric.Rect {
 		}
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			src: this.get('src'),
 			container: this.get('container'),
@@ -48,10 +49,13 @@ class Iframe extends fabric.Rect {
 	_render(ctx: CanvasRenderingContext2D) {
 		super._render(ctx);
 		if (!this.element) {
-			const { id, scaleX, scaleY, width, height, angle, editable, src } = this;
+			const id = this.get('id') as string;
+			const editable = this.get('editable') as boolean;
+			const { scaleX, scaleY, width, height, angle, src } = this;
 			const zoom = this.canvas.getZoom();
-			const left = this.calcCoords().tl.x;
-			const top = this.calcCoords().tl.y;
+			const { tl } = this.calcOCoords();
+			const left = tl.x;
+			const top = tl.y;
 			const padLeft = (width * scaleX * zoom - width) / 2;
 			const padTop = (height * scaleY * zoom - height) / 2;
 			this.iframeElement = createDOMElement('iframe', {
@@ -75,7 +79,7 @@ class Iframe extends fabric.Rect {
 		}
 	}
 
-	static fromObject(options: IframeObject, callback?: (obj: IframeObject) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(new Iframe(options.src, options), callback);
 	}
 }

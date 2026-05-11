@@ -1,6 +1,6 @@
-import i18n from 'i18next';
 import React from 'react';
 
+import i18next from 'i18next';
 import type { CanvasInstance } from '../../canvas';
 import { CommonButton } from '../../components/common';
 import { Flex } from '../../components/flex';
@@ -23,7 +23,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					className="rde-action-btn"
 					shape="circle"
 					icon="layer-group"
-					tooltipTitle={i18n.t('action.canvas-list')}
+					tooltipTitle={i18next.t('action.canvas-list')}
 				/>
 				<div className="rde-canvas-list">
 					<ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} />
@@ -36,7 +36,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.bringForward()}
 					icon="angle-up"
-					tooltipTitle={i18n.t('action.bring-forward')}
+					tooltipTitle={i18next.t('action.bring-forward')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -44,7 +44,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.sendBackwards()}
 					icon="angle-down"
-					tooltipTitle={i18n.t('action.send-backwards')}
+					tooltipTitle={i18next.t('action.send-backwards')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -52,7 +52,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.bringToFront()}
 					icon="angle-double-up"
-					tooltipTitle={i18n.t('action.bring-to-front')}
+					tooltipTitle={i18next.t('action.bring-to-front')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -60,7 +60,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.sendToBack()}
 					icon="angle-double-down"
-					tooltipTitle={i18n.t('action.send-to-back')}
+					tooltipTitle={i18next.t('action.send-to-back')}
 				/>
 			</Flex.Item>
 			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
@@ -70,7 +70,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.alignmentHandler.left()}
 					icon="align-left"
-					tooltipTitle={i18n.t('action.align-left')}
+					tooltipTitle={i18next.t('action.align-left')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -78,7 +78,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.alignmentHandler.center()}
 					icon="align-center"
-					tooltipTitle={i18n.t('action.align-center')}
+					tooltipTitle={i18next.t('action.align-center')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -86,7 +86,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.alignmentHandler.middle()}
 					icon="align-center"
-					tooltipTitle={i18n.t('action.align-middle')}
+					tooltipTitle={i18next.t('action.align-middle')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -94,7 +94,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.alignmentHandler.right()}
 					icon="align-right"
-					tooltipTitle={i18n.t('action.align-right')}
+					tooltipTitle={i18next.t('action.align-right')}
 				/>
 			</Flex.Item>
 			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-group">
@@ -104,7 +104,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.toGroup()}
 					icon="object-group"
-					tooltipTitle={i18n.t('action.object-group')}
+					tooltipTitle={i18next.t('action.object-group')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -112,7 +112,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.toActiveSelection()}
 					icon="object-ungroup"
-					tooltipTitle={i18n.t('action.object-ungroup')}
+					tooltipTitle={i18next.t('action.object-ungroup')}
 				/>
 			</Flex.Item>
 			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-crop">
@@ -122,7 +122,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={canvasRef ? !canvasRef.handler?.cropHandler.validType() : true}
 					onClick={() => canvasRef?.handler?.cropHandler.start()}
 					icon="crop"
-					tooltipTitle={i18n.t('action.crop')}
+					tooltipTitle={i18next.t('action.crop')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -130,7 +130,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={canvasRef ? !canvasRef.handler?.cropHandler.cropRect : true}
 					onClick={() => canvasRef?.handler?.cropHandler.finish()}
 					icon="check"
-					tooltipTitle={i18n.t('action.crop-save')}
+					tooltipTitle={i18next.t('action.crop-save')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -138,7 +138,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={canvasRef ? !canvasRef.handler?.cropHandler.cropRect : true}
 					onClick={() => canvasRef?.handler?.cropHandler.cancel()}
 					icon="times"
-					tooltipTitle={i18n.t('action.crop-cancel')}
+					tooltipTitle={i18next.t('action.crop-cancel')}
 				/>
 			</Flex.Item>
 			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-operation">
@@ -152,7 +152,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 						}
 					}}
 					icon="image"
-					tooltipTitle={i18n.t('action.canvas-save')}
+					tooltipTitle={i18next.t('action.canvas-save')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -160,7 +160,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.duplicate()}
 					icon="clone"
-					tooltipTitle={i18n.t('action.clone')}
+					tooltipTitle={i18next.t('action.clone')}
 				/>
 				<CommonButton
 					className="rde-action-btn"
@@ -168,7 +168,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.remove()}
 					icon="trash"
-					tooltipTitle={i18n.t('action.delete')}
+					tooltipTitle={i18next.t('action.delete')}
 				/>
 			</Flex.Item>
 			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-history">

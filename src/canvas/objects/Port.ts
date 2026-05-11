@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { FabricObject } from '../models';
 import { registerFabricClass, resolveFromObject, toObject } from '../utils';
@@ -34,7 +34,7 @@ class Port extends fabric.Rect {
 		this.canvas?.requestRenderAll();
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			superType: this.get('superType'),
@@ -61,8 +61,8 @@ class Port extends fabric.Rect {
 		}
 	}
 
-	static fromObject(options: PortObject, callback?: (obj: PortObject) => any) {
-		return resolveFromObject(new Port(options), callback);
+	static fromObject(options: any, _abortable?: any) {
+		return resolveFromObject(new Port(options));
 	}
 }
 

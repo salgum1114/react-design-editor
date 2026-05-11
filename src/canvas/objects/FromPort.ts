@@ -1,6 +1,5 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { registerFabricClass, resolveFromObject, toObject } from '../utils';
-import { PortObject } from './Port';
 
 class FromPort extends fabric.Path {
 	static type = 'fromPort';
@@ -19,11 +18,11 @@ class FromPort extends fabric.Path {
 	}
 
 	constructor(options: any = {}) {
-		super(FromPort.createPath(options), options);
+		super(FromPort.createPath(options) as any, options);
 	}
 
 	private updateShape(options: any = {}) {
-		const nextPath = new fabric.Path(FromPort.createPath(options), options);
+		const nextPath = new fabric.Path(FromPort.createPath(options) as any, options);
 		this.set({
 			...options,
 			path: nextPath.path,
@@ -46,7 +45,7 @@ class FromPort extends fabric.Path {
 		this.canvas?.requestRenderAll();
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			superType: this.get('superType'),
@@ -73,7 +72,7 @@ class FromPort extends fabric.Path {
 		}
 	}
 
-	static fromObject(options: PortObject, callback?: (obj: PortObject) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(new FromPort(options), callback);
 	}
 }

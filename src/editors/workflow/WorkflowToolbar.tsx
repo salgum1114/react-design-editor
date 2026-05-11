@@ -1,6 +1,6 @@
-import { Button } from 'antd';
+import { Space } from 'antd';
 import clsx from 'clsx';
-import i18n from 'i18next';
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import { CanvasInstance, LinkObject, NodeObject } from '../../canvas';
 import { code } from '../../canvas/constants';
@@ -84,7 +84,7 @@ class WorkflowToolbar extends Component<IProps, IState> {
 		return (
 			<React.Fragment>
 				<div className={clsx('rde-editor-toolbar', 'interaction')}>
-					<Button.Group>
+					<Space.Compact>
 						<CommonButton
 							type={interactionMode === 'selection' ? 'primary' : 'default'}
 							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
@@ -92,7 +92,7 @@ class WorkflowToolbar extends Component<IProps, IState> {
 								selection();
 							}}
 							icon="mouse-pointer"
-							tooltipTitle={i18n.t('action.selection')}
+							tooltipTitle={i18next.t('action.selection')}
 						/>
 						<CommonButton
 							type={interactionMode === 'grab' ? 'primary' : 'default'}
@@ -100,24 +100,24 @@ class WorkflowToolbar extends Component<IProps, IState> {
 							onClick={() => {
 								grab();
 							}}
-							tooltipTitle={i18n.t('action.grab')}
+							tooltipTitle={i18next.t('action.grab')}
 							icon="hand-rock"
 						/>
-					</Button.Group>
+					</Space.Compact>
 				</div>
 				<div className={clsx('rde-editor-toolbar', 'zoom')}>
-					<Button.Group>
+					<Space.Compact>
 						<CommonButton
 							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 							onClick={() => {
 								instance.handler.zoomHandler.zoomIn();
 							}}
 							icon="search-plus"
-							tooltipTitle={i18n.t('action.zoom-in')}
+							tooltipTitle={i18next.t('action.zoom-in')}
 						/>
 						<CommonButton
 							onClick={() => instance.handler.zoomHandler.zoomToFitWithObject()}
-							tooltipTitle={i18n.t('action.one-to-one')}
+							tooltipTitle={i18next.t('action.one-to-one')}
 						>
 							{`${zoomValue}%`}
 						</CommonButton>
@@ -127,15 +127,15 @@ class WorkflowToolbar extends Component<IProps, IState> {
 								instance.handler.zoomHandler.zoomOut();
 							}}
 							icon="search-minus"
-							tooltipTitle={i18n.t('action.zoom-out')}
+							tooltipTitle={i18next.t('action.zoom-out')}
 						/>
-					</Button.Group>
+					</Space.Compact>
 				</div>
 				<div className={clsx('rde-editor-toolbar', 'layout')}>
-					<Button.Group>
+					<Space.Compact>
 						<CommonButton
 							icon="bezier-curve"
-							tooltipTitle={i18n.t('action.run-layout')}
+							tooltipTitle={i18next.t('action.run-layout')}
 							onClick={async () => {
 								instance.canvas.discardActiveObject();
 								await instance.handler.layoutHandler.runLayout({
@@ -150,7 +150,7 @@ class WorkflowToolbar extends Component<IProps, IState> {
 								instance.handler.zoomHandler.zoomToFitWithObject();
 							}}
 						/>
-					</Button.Group>
+					</Space.Compact>
 				</div>
 			</React.Fragment>
 		);

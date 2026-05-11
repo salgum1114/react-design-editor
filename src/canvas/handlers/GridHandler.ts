@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { FabricObject, GridOption } from '../models';
 import { NodeObject } from '../objects/Node';
@@ -126,7 +126,7 @@ class GridHandler extends AbstractHandler {
 	public setCoords = (target: FabricObject | fabric.ActiveSelection) => {
 		const { enabled, grid, snapToGrid } = this.handler.gridOption;
 		if (enabled && grid && snapToGrid) {
-			if (target.type === 'activeSelection') {
+			if (this.handler.isActiveSelection(target)) {
 				const activeSelection = target as fabric.ActiveSelection;
 				activeSelection.set({
 					left: Math.round(target.left / grid) * grid,

@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { FabricObject } from '../models';
 import { VideoObject } from '../objects/Video';
@@ -30,7 +30,7 @@ class ZoomHandler extends AbstractHandler {
 		this.handler.canvas.zoomToPoint(point, zoomRatio);
 		this.handler.getObjects().forEach(obj => {
 			if (obj.superType === 'element') {
-				const { id, width, height, player } = obj as VideoObject;
+				const { id, width, height, player } = obj as unknown as VideoObject;
 				const el = this.handler.elementHandler.findById(id);
 				// update the element
 				this.handler.elementHandler.setScaleOrAngle(el, obj);

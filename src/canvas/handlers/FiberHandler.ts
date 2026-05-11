@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import CustomHandler from './CustomHandler';
 
 class FiberHandler extends CustomHandler {

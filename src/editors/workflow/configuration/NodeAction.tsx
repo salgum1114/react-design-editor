@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import type { CanvasInstance } from '../../../canvas';
 import { CommonButton } from '../../../components/common';
@@ -22,7 +22,7 @@ class NodeAction extends Component<IProps> {
 							canvasRef.handler.duplicate();
 						}}
 					>
-						{i18n.t('action.clone')}
+						{i18next.t('action.clone')}
 					</CommonButton>
 				</Flex.Item>
 				<Flex.Item alignSelf="flex-end">
@@ -33,7 +33,7 @@ class NodeAction extends Component<IProps> {
 							canvasRef.handler.remove();
 						}}
 					>
-						{i18n.t('action.delete')}
+						{i18next.t('action.delete')}
 					</CommonButton>
 				</Flex.Item>
 			</Flex>

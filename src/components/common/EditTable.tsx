@@ -1,7 +1,7 @@
 import { Button, Form, Input, Modal, Table } from 'antd';
-import i18n from 'i18next';
 import React from 'react';
 
+import i18next from 'i18next';
 import { Flex } from '../flex';
 import Icon from '../icon/Icon';
 
@@ -83,10 +83,10 @@ class EditTable extends React.Component<EditTableProps, EditTableState> {
 				(current === 'modify' && originKey !== value && userProperty[value])
 			) {
 				validateStatus = 'error';
-				help = i18n.t('validation.already-property', { arg: i18n.t('common.key') });
+				help = i18next.t('validation.already-property', { arg: i18next.t('common.key') });
 			} else if (!value.length) {
 				validateStatus = 'error';
-				help = i18n.t('validation.enter-property', { arg: i18n.t('common.key') });
+				help = i18next.t('validation.enter-property', { arg: i18next.t('common.key') });
 			}
 
 			this.setState({ tempKey: value, validateStatus, help });
@@ -158,8 +158,8 @@ class EditTable extends React.Component<EditTableProps, EditTableState> {
 					pagination={{ pageSize: 5 }}
 					columns={
 						[
-							{ title: i18n.t('common.key'), dataIndex: 'key' },
-							{ title: i18n.t('common.value'), dataIndex: 'value' },
+							{ title: i18next.t('common.key'), dataIndex: 'key' },
+							{ title: i18next.t('common.value'), dataIndex: 'value' },
 							{
 								title: '',
 								dataIndex: 'action',
@@ -189,7 +189,7 @@ class EditTable extends React.Component<EditTableProps, EditTableState> {
 				<Modal onCancel={onCancel} onOk={onOk} open={visible}>
 					<Form.Item
 						required
-						label={i18n.t('common.key')}
+						label={i18next.t('common.key')}
 						colon={false}
 						hasFeedback
 						validateStatus={validateStatus}
@@ -197,7 +197,7 @@ class EditTable extends React.Component<EditTableProps, EditTableState> {
 					>
 						<Input value={tempKey} onChange={event => onChangeKey(event.target.value)} />
 					</Form.Item>
-					<Form.Item label={i18n.t('common.value')} colon={false}>
+					<Form.Item label={i18next.t('common.value')} colon={false}>
 						<Input value={tempValue} onChange={event => this.setState({ tempValue: event.target.value })} />
 					</Form.Item>
 				</Modal>

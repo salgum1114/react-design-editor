@@ -1,7 +1,7 @@
-import React from 'react';
 import { Button, Col, Form, InputNumber, Row, Select, Slider, Switch } from 'antd';
-import i18n from 'i18next';
+import React from 'react';
 
+import i18next from 'i18next';
 import ColorPicker from '../../../components/common/ColorPicker';
 import Icon from '../../../components/icon/Icon';
 
@@ -34,7 +34,7 @@ const renderAnimationFields = (type: string, data: AnimationData) => {
 	if (type === 'fade') {
 		return (
 			<Form.Item
-				label={i18n.t('common.opacity')}
+				label={i18next.t('common.opacity')}
 				colon={false}
 				name={['animation', 'opacity']}
 				initialValue={data.animation.opacity || 0}
@@ -49,7 +49,7 @@ const renderAnimationFields = (type: string, data: AnimationData) => {
 		return (
 			<React.Fragment>
 				<Form.Item
-					label={i18n.t('imagemap.animation.bounce-type')}
+					label={i18next.t('imagemap.animation.bounce-type')}
 					colon={false}
 					name={['animation', 'bounce']}
 					initialValue={data.animation.bounce || 'hotizontal'}
@@ -60,7 +60,7 @@ const renderAnimationFields = (type: string, data: AnimationData) => {
 					</Select>
 				</Form.Item>
 				<Form.Item
-					label={i18n.t('common.offset')}
+					label={i18next.t('common.offset')}
 					colon={false}
 					name={['animation', 'offset']}
 					initialValue={data.animation.offset || 1}
@@ -76,18 +76,18 @@ const renderAnimationFields = (type: string, data: AnimationData) => {
 		return (
 			<React.Fragment>
 				<Form.Item
-					label={i18n.t('imagemap.animation.shake-type')}
+					label={i18next.t('imagemap.animation.shake-type')}
 					colon={false}
 					name={['animation', 'shake']}
 					initialValue={data.animation.shake || 'hotizontal'}
 				>
 					<Select>
-						<Select.Option value="hotizontal">{i18n.t('common.horizontal')}</Select.Option>
-						<Select.Option value="vertical">{i18n.t('common.vertical')}</Select.Option>
+						<Select.Option value="hotizontal">{i18next.t('common.horizontal')}</Select.Option>
+						<Select.Option value="vertical">{i18next.t('common.vertical')}</Select.Option>
 					</Select>
 				</Form.Item>
 				<Form.Item
-					label={i18n.t('common.offset')}
+					label={i18next.t('common.offset')}
 					colon={false}
 					name={['animation', 'offset']}
 					initialValue={data.animation.offset || 1}
@@ -102,7 +102,7 @@ const renderAnimationFields = (type: string, data: AnimationData) => {
 	if (type === 'scaling') {
 		return (
 			<Form.Item
-				label={i18n.t('imagemap.animation.scaling')}
+				label={i18next.t('imagemap.animation.scaling')}
 				colon={false}
 				name={['animation', 'scale']}
 				initialValue={data.animation.scale || 2}
@@ -116,7 +116,7 @@ const renderAnimationFields = (type: string, data: AnimationData) => {
 	if (type === 'rotation') {
 		return (
 			<Form.Item
-				label={i18n.t('common.angle')}
+				label={i18next.t('common.angle')}
 				colon={false}
 				name={['animation', 'angle']}
 				initialValue={data.animation.angle || 360}
@@ -132,7 +132,7 @@ const renderAnimationFields = (type: string, data: AnimationData) => {
 			<Row>
 				<Col span={12}>
 					<Form.Item
-						label={i18n.t('imagemap.style.fill-color')}
+						label={i18next.t('imagemap.style.fill-color')}
 						colon={false}
 						name={['animation', 'fill']}
 						initialValue={data.animation.fill || data.fill}
@@ -142,7 +142,7 @@ const renderAnimationFields = (type: string, data: AnimationData) => {
 				</Col>
 				<Col span={12}>
 					<Form.Item
-						label={i18n.t('imagemap.style.stroke-color')}
+						label={i18next.t('imagemap.style.stroke-color')}
 						colon={false}
 						name={['animation', 'stroke']}
 						initialValue={data.animation.stroke || data.stroke}
@@ -158,7 +158,7 @@ const renderAnimationFields = (type: string, data: AnimationData) => {
 		<Row>
 			<Col span={12}>
 				<Form.Item
-					label={i18n.t('common.value')}
+					label={i18next.t('common.value')}
 					colon={false}
 					name={['animation', 'value']}
 					initialValue={data.animation.value || 1}
@@ -182,19 +182,19 @@ export default {
 		return (
 			<React.Fragment>
 				<Form.Item
-					label={i18n.t('imagemap.animation.animation-type')}
+					label={i18next.t('imagemap.animation.animation-type')}
 					colon={false}
 					name={['animation', 'type']}
 					initialValue={type}
 				>
 					<Select>
-						<Select.Option value="none">{i18n.t('imagemap.animation.none')}</Select.Option>
-						<Select.Option value="fade">{i18n.t('imagemap.animation.fade')}</Select.Option>
-						<Select.Option value="bounce">{i18n.t('imagemap.animation.bounce')}</Select.Option>
-						<Select.Option value="shake">{i18n.t('imagemap.animation.shake')}</Select.Option>
-						<Select.Option value="scaling">{i18n.t('imagemap.animation.scaling')}</Select.Option>
-						<Select.Option value="rotation">{i18n.t('imagemap.animation.rotation')}</Select.Option>
-						<Select.Option value="flash">{i18n.t('imagemap.animation.flash')}</Select.Option>
+						<Select.Option value="none">{i18next.t('imagemap.animation.none')}</Select.Option>
+						<Select.Option value="fade">{i18next.t('imagemap.animation.fade')}</Select.Option>
+						<Select.Option value="bounce">{i18next.t('imagemap.animation.bounce')}</Select.Option>
+						<Select.Option value="shake">{i18next.t('imagemap.animation.shake')}</Select.Option>
+						<Select.Option value="scaling">{i18next.t('imagemap.animation.scaling')}</Select.Option>
+						<Select.Option value="rotation">{i18next.t('imagemap.animation.rotation')}</Select.Option>
+						<Select.Option value="flash">{i18next.t('imagemap.animation.flash')}</Select.Option>
 					</Select>
 				</Form.Item>
 				{type === 'none' ? null : (
@@ -202,7 +202,7 @@ export default {
 						<Row>
 							<Col span={12}>
 								<Form.Item
-									label={i18n.t('imagemap.animation.auto-play')}
+									label={i18next.t('imagemap.animation.auto-play')}
 									colon={false}
 									name={['animation', 'autoplay']}
 									initialValue={data.animation.autoplay}
@@ -214,7 +214,7 @@ export default {
 							</Col>
 							<Col span={12}>
 								<Form.Item
-									label={i18n.t('common.loop')}
+									label={i18next.t('common.loop')}
 									colon={false}
 									name={['animation', 'loop']}
 									initialValue={data.animation.loop}
@@ -229,7 +229,7 @@ export default {
 							<Row>
 								<Col span={12}>
 									<Form.Item
-										label={i18n.t('common.delay')}
+										label={i18next.t('common.delay')}
 										colon={false}
 										name={['animation', 'delay']}
 										initialValue={data.animation.delay || 0}
@@ -240,7 +240,7 @@ export default {
 								</Col>
 								<Col span={12}>
 									<Form.Item
-										label={i18n.t('common.duration')}
+										label={i18next.t('common.duration')}
 										colon={false}
 										name={['animation', 'duration']}
 										initialValue={data.animation.duration}
@@ -252,7 +252,7 @@ export default {
 							</Row>
 						) : null}
 						{renderAnimationFields(type, data)}
-						<Form.Item label={i18n.t('imagemap.animation.playback')} colon={false}>
+						<Form.Item label={i18next.t('imagemap.animation.playback')} colon={false}>
 							<Row>
 								<Col span={8}>
 									<Button
@@ -261,7 +261,7 @@ export default {
 										onClick={() => canvasRef.handler.animationHandler.play(data.id)}
 									>
 										<Icon name="play" style={{ marginRight: 8 }} />
-										{i18n.t('action.start')}
+										{i18next.t('action.start')}
 									</Button>
 								</Col>
 								<Col span={8}>
@@ -271,7 +271,7 @@ export default {
 										onClick={() => canvasRef.handler.animationHandler.pause(data.id)}
 									>
 										<Icon name="pause" style={{ marginRight: 8 }} />
-										{i18n.t('action.pause')}
+										{i18next.t('action.pause')}
 									</Button>
 								</Col>
 								<Col span={8}>
@@ -281,7 +281,7 @@ export default {
 										onClick={() => canvasRef.handler.animationHandler.stop(data.id)}
 									>
 										<Icon name="stop" style={{ marginRight: 8 }} />
-										{i18n.t('action.stop')}
+										{i18next.t('action.stop')}
 									</Button>
 								</Col>
 							</Row>

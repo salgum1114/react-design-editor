@@ -1,8 +1,8 @@
 import type { RadioChangeEvent } from 'antd';
 import { Form, Modal, Radio } from 'antd';
-import i18n from 'i18next';
 import React from 'react';
 
+import i18next from 'i18next';
 import { InputHtml } from '.';
 import FileUpload from './FileUpload';
 
@@ -62,22 +62,28 @@ const SVGModal = ({ onCancel, onOk, visible }: SVGModalProps) => {
 	};
 
 	return (
-		<Modal title={i18n.t('imagemap.svg.add-svg')} closable onCancel={handleCancel} onOk={handleOk} open={visible}>
+		<Modal
+			title={i18next.t('imagemap.svg.add-svg')}
+			closable
+			onCancel={handleCancel}
+			onOk={handleOk}
+			open={visible}
+		>
 			<Form form={form} colon={false} initialValues={{ loadType: 'file' }}>
-				<Form.Item label={i18n.t('common.type')} name="loadType">
+				<Form.Item label={i18next.t('common.type')} name="loadType">
 					<Radio.Group onChange={handleChangeSvgType}>
-						<Radio.Button value="file">{i18n.t('common.file')}</Radio.Button>
-						<Radio.Button value="svg">{i18n.t('common.svg')}</Radio.Button>
+						<Radio.Button value="file">{i18next.t('common.file')}</Radio.Button>
+						<Radio.Button value="svg">{i18next.t('common.svg')}</Radio.Button>
 					</Radio.Group>
 				</Form.Item>
 				<Form.Item
-					label={loadType === 'svg' ? i18n.t('common.svg') : i18n.t('common.file')}
+					label={loadType === 'svg' ? i18next.t('common.svg') : i18next.t('common.file')}
 					name="svg"
 					rules={[
 						{
 							required: true,
-							message: i18n.t('validation.enter-property', {
-								arg: loadType === 'svg' ? i18n.t('common.svg') : i18n.t('common.file'),
+							message: i18next.t('validation.enter-property', {
+								arg: loadType === 'svg' ? i18next.t('common.svg') : i18next.t('common.file'),
 							}),
 						},
 					]}

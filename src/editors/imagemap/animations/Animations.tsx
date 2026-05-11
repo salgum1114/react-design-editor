@@ -1,12 +1,12 @@
 import { Button, Form } from 'antd';
-import i18n from 'i18next';
 import React from 'react';
 
+import i18next from 'i18next';
 import Scrollbar from '../../../components/common/Scrollbar';
 import { Flex } from '../../../components/flex';
 import Icon from '../../../components/icon/Icon';
-import type { AnimationModalHandle } from './AnimationModal';
 import AnimationList from './AnimationList';
+import type { AnimationModalHandle } from './AnimationModal';
 import AnimationModal from './AnimationModal';
 
 type AnimationItem = Record<string, any>;
@@ -47,7 +47,7 @@ export default function Animations({ animations = [], onChangeAnimations }: Anim
 			if (!value || !value.length) {
 				return {
 					validateStatus: 'error',
-					help: i18n.t('validation.enter-property', { arg: i18n.t('common.title') }),
+					help: i18next.t('validation.enter-property', { arg: i18next.t('common.title') }),
 				};
 			}
 
@@ -61,7 +61,7 @@ export default function Animations({ animations = [], onChangeAnimations }: Anim
 
 			return {
 				validateStatus: 'error',
-				help: i18n.t('validation.already-property', { arg: i18n.t('common.title') }),
+				help: i18next.t('validation.already-property', { arg: i18next.t('common.title') }),
 			};
 		},
 		[animations],

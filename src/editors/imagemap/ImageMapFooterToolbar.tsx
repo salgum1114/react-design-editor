@@ -1,7 +1,7 @@
-import { Button, Switch, Tooltip } from 'antd';
-import i18n from 'i18next';
+import { Space, Switch, Tooltip } from 'antd';
 import React from 'react';
 
+import i18next from 'i18next';
 import type { CanvasInstance } from '../../canvas';
 import { code } from '../../canvas/constants';
 import CommonButton from '../../components/common/CommonButton';
@@ -91,38 +91,38 @@ export default function ImageMapFooterToolbar({
 	return (
 		<React.Fragment>
 			<div className="rde-editor-footer-toolbar-interaction">
-				<Button.Group>
+				<Space.Compact>
 					<CommonButton
 						type={interactionMode === 'selection' ? 'primary' : 'default'}
 						style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 						onClick={handleSelection}
 						icon="mouse-pointer"
-						tooltipTitle={i18n.t('action.selection')}
+						tooltipTitle={i18next.t('action.selection')}
 					/>
 					<CommonButton
 						type={interactionMode === 'grab' ? 'primary' : 'default'}
 						style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 						onClick={handleGrab}
-						tooltipTitle={i18n.t('action.grab')}
+						tooltipTitle={i18next.t('action.grab')}
 						icon="hand-rock"
 					/>
-				</Button.Group>
+				</Space.Compact>
 			</div>
 			<div className="rde-editor-footer-toolbar-zoom">
-				<Button.Group>
+				<Space.Compact>
 					<CommonButton
 						style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 						onClick={() => {
 							canvasRef.handler.zoomHandler.zoomOut();
 						}}
 						icon="search-minus"
-						tooltipTitle={i18n.t('action.zoom-out')}
+						tooltipTitle={i18next.t('action.zoom-out')}
 					/>
 					<CommonButton
 						onClick={() => {
 							canvasRef.handler.zoomHandler.zoomOneToOne();
 						}}
-						tooltipTitle={i18n.t('action.one-to-one')}
+						tooltipTitle={i18next.t('action.one-to-one')}
 					>
 						{`${zoomValue}%`}
 					</CommonButton>
@@ -130,7 +130,7 @@ export default function ImageMapFooterToolbar({
 						onClick={() => {
 							canvasRef.handler.zoomHandler.zoomToFit();
 						}}
-						tooltipTitle={i18n.t('action.fit')}
+						tooltipTitle={i18next.t('action.fit')}
 						icon="expand"
 					/>
 					<CommonButton
@@ -139,12 +139,12 @@ export default function ImageMapFooterToolbar({
 							canvasRef.handler.zoomHandler.zoomIn();
 						}}
 						icon="search-plus"
-						tooltipTitle={i18n.t('action.zoom-in')}
+						tooltipTitle={i18next.t('action.zoom-in')}
 					/>
-				</Button.Group>
+				</Space.Compact>
 			</div>
 			<div className="rde-editor-footer-toolbar-preview">
-				<Tooltip title={i18n.t('action.preview')}>
+				<Tooltip title={i18next.t('action.preview')}>
 					<Switch checked={preview} onChange={onChangePreview} />
 				</Tooltip>
 			</div>

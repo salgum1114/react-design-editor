@@ -214,10 +214,10 @@ export type FabricImage = FabricObject &
 
 export interface FabricElement extends FabricObject<fabric.Rect> {
 	/**
-	 * Wrapped Element
-	 * @type {HTMLDivElement}
+	 * Container element id
+	 * @type {string}
 	 */
-	container: HTMLDivElement;
+	container: string;
 	/**
 	 * Target Element
 	 * @type {HTMLDivElement}

@@ -1,4 +1,4 @@
-import i18n from 'i18next';
+import i18next from 'i18next';
 
 export const NODE_COLORS = {
 	TRIGGER: {
@@ -27,8 +27,8 @@ export const OUT_PORT_TYPE = {
 } as const;
 
 export const DESCRIPTIONS = {
-	script: i18n.t('common.name'),
-	template: i18n.t('common.name'),
-	json: i18n.t('common.name'),
-	cron: i18n.t('common.name'),
+	script: i18next.t('common.name'),
+	template: i18next.t('common.name'),
+	json: i18next.t('common.name'),
+	cron: i18next.t('common.name'),
 };

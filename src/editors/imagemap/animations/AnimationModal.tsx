@@ -1,7 +1,7 @@
 import { Form, Input, Modal } from 'antd';
-import i18n from 'i18next';
 import React from 'react';
 
+import i18next from 'i18next';
 import Canvas, { type CanvasInstance } from '../../../canvas/Canvas';
 import AnimationProperty from '../properties/AnimationProperty';
 
@@ -140,7 +140,7 @@ const AnimationModal = React.forwardRef<AnimationModalHandle, AnimationModalProp
 				}}
 			>
 				<Form.Item
-					label={i18n.t('common.title')}
+					label={i18next.t('common.title')}
 					required
 					colon={false}
 					hasFeedback

@@ -13,10 +13,14 @@ export const toObject = (
 ) => {
 	const usesLegacySignature = Array.isArray(objectOrPropertiesToInclude);
 	const serialized = usesLegacySignature
-		? serializedOrObject.callSuper?.('toObject') ?? serializedOrObject.toObject?.(objectOrPropertiesToInclude) ?? {}
+		? (serializedOrObject.callSuper?.('toObject') ??
+			serializedOrObject.toObject?.(objectOrPropertiesToInclude) ??
+			{})
 		: serializedOrObject;
 	const obj = usesLegacySignature ? serializedOrObject : objectOrPropertiesToInclude;
-	const propertiesToInclude = (usesLegacySignature ? objectOrPropertiesToInclude : propertiesToIncludeOrProperties) as string[];
+	const propertiesToInclude = (
+		usesLegacySignature ? objectOrPropertiesToInclude : propertiesToIncludeOrProperties
+	) as string[];
 	const extraProperties = (usesLegacySignature ? propertiesToIncludeOrProperties : properties) as
 		| { [key: string]: any }
 		| undefined;
@@ -29,8 +33,10 @@ export const toObject = (
 	);
 };
 
-export const resolveFromObject = <T>(instance: T, callback?: (obj: any) => any) => {
-	callback?.(instance);
+export const resolveFromObject = <T>(instance: T, callback?: any) => {
+	if (typeof callback === 'function') {
+		callback(instance);
+	}
 	return Promise.resolve(instance);
 };
 

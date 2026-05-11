@@ -48,13 +48,15 @@ const MapProperties = ({ canvasRef, onChange, selectedItem }: MapPropertiesProps
 					onChange?.(selectedItem, changedValues, { workarea: allValues });
 				}}
 			>
-				<Collapse bordered={false}>
-					{Object.keys(PropertyDefinition.map).map(key => (
-						<Panel key={key} header={PropertyDefinition.map[key].title} showArrow={showArrow}>
-							{PropertyDefinition.map[key].component.render(canvasRef, form, workarea)}
-						</Panel>
-					))}
-				</Collapse>
+				<Collapse
+					bordered={false}
+					items={Object.keys(PropertyDefinition.map).map(key => ({
+						key,
+						label: PropertyDefinition.map[key].title,
+						showArrow,
+						children: PropertyDefinition.map[key].component.render(canvasRef, form, workarea),
+					}))}
+				/>
 			</Form>
 		</Scrollbar>
 	);

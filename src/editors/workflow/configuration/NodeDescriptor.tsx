@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import i18n from 'i18next';
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import { CommonButton } from '../../../components/common';
 import { Flex } from '../../../components/flex';
@@ -39,7 +39,7 @@ class NodeDescriptor extends Component<IProps, IState> {
 				this.setState({
 					loading: false,
 				});
-				message.success(i18n.t('workflow.virtual-button-execute-success', { name: selectedItem.name }));
+				message.success(i18next.t('workflow.virtual-button-execute-success', { name: selectedItem.name }));
 			} catch (error: unknown) {
 				this.setState({
 					loading: false,
@@ -47,7 +47,7 @@ class NodeDescriptor extends Component<IProps, IState> {
 				const errorMessage = error instanceof Error ? error.message : String(error);
 				console.error(`[ERROR] ${this.constructor.name} triggerVirtualButton()`, error);
 				message.error(
-					`${i18n.t('workflow.virtual-button-execute-failed', { name: selectedItem.name })}, ${errorMessage}`,
+					`${i18next.t('workflow.virtual-button-execute-failed', { name: selectedItem.name })}, ${errorMessage}`,
 				);
 			}
 		},
@@ -70,7 +70,7 @@ class NodeDescriptor extends Component<IProps, IState> {
 						loading={loading}
 						disabled={!workflow.enabled || loading}
 					>
-						{i18n.t('action.execute')}
+						{i18next.t('action.execute')}
 					</CommonButton>
 				</Flex>
 			) : null;

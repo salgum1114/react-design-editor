@@ -1,7 +1,6 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { registerFabricClass, resolveFromObject, toObject } from '../utils';
-import { PortObject } from './Port';
 
 class CirclePort extends fabric.Circle {
 	static type = 'port';
@@ -22,7 +21,7 @@ class CirclePort extends fabric.Circle {
 		this.canvas?.requestRenderAll();
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			superType: this.get('superType'),
@@ -40,7 +39,7 @@ class CirclePort extends fabric.Circle {
 		super._render(ctx);
 	}
 
-	static fromObject(options: PortObject, callback?: (obj: PortObject) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(new CirclePort(options), callback);
 	}
 }

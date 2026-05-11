@@ -1,5 +1,5 @@
 import Color from 'color';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { FabricObject } from '../models';
 import { fitTextToRect, registerFabricClass, resolveFromObject, toObject } from '../utils';
@@ -47,15 +47,20 @@ export type NodeObject = FabricObject<fabric.Group> & {
 class Node extends fabric.Group {
 	static type = 'node';
 	superType = 'node';
+	declare id: string;
 	declare label: fabric.Text;
 	declare rect: fabric.Rect;
 	declare nodeIcon: fabric.Group;
 	declare errorFlag: fabric.Group;
 	declare button?: fabric.Group;
+	declare color?: string;
 	declare descriptor: Record<string, any>;
 	declare customControls?: CustomControlObject[];
 	declare toPort?: PortObject;
 	declare fromPort?: PortObject[];
+	declare originStroke?: string;
+	declare fontSize?: number;
+	declare fontFamily?: string;
 
 	private static createIconBoxPath(options: any, radius: number) {
 		const { width, height, ...other } = options;
@@ -336,7 +341,10 @@ class Node extends fabric.Group {
 	}
 
 	setName(name: string) {
-		const context = this.canvas.getContext('2d');
+		const context = this.canvas?.getContext();
+		if (!context) {
+			return;
+		}
 		const fitted = fitTextToRect(
 			context,
 			name,
@@ -369,7 +377,7 @@ class Node extends fabric.Group {
 		return new Node(options) as unknown as NodeObject;
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			name: this.get('name'),
@@ -397,7 +405,7 @@ class Node extends fabric.Group {
 		super._render(ctx);
 	}
 
-	static fromObject(options: NodeObject, callback?: (obj: NodeObject) => any) {
+	static fromObject(options: any, callback?: any) {
 		return resolveFromObject(new Node(options) as unknown as NodeObject, callback);
 	}
 }

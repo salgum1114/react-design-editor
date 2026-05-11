@@ -46,7 +46,7 @@ class Title extends React.Component<IProps> {
 			>
 				<Flex style={{ marginLeft: 8 }} flex="0 1 auto">
 					<span style={{ color: '#fff', fontSize: 24, fontWeight: 500 }}>React Design Editor</span>
-					<Tooltip title={i18next.t('action.go-github')} overlayStyle={{ fontSize: 16 }}>
+					<Tooltip title={i18next.t('action.go-github')} styles={{ root: { fontSize: 16 } }}>
 						<Button
 							className="rde-action-btn"
 							style={{
@@ -59,7 +59,7 @@ class Title extends React.Component<IProps> {
 							<Icon name="github" prefix="fab" size={1.5} />
 						</Button>
 					</Tooltip>
-					<Tooltip title={i18next.t('action.go-docs')} overlayStyle={{ fontSize: 16 }}>
+					<Tooltip title={i18next.t('action.go-docs')} styles={{ root: { fontSize: 16 } }}>
 						<Button
 							className="rde-action-btn"
 							style={{
@@ -72,7 +72,7 @@ class Title extends React.Component<IProps> {
 							<Icon name="book" prefix="fas" size={1.5} />
 						</Button>
 					</Tooltip>
-					<Tooltip title={i18next.t('action.shortcut-help')} overlayStyle={{ fontSize: 16 }}>
+					<Tooltip title={i18next.t('action.shortcut-help')} styles={{ root: { fontSize: 16 } }}>
 						<Button
 							className="rde-action-btn"
 							style={{
@@ -93,21 +93,11 @@ class Title extends React.Component<IProps> {
 						style={{ background: 'transparent', fontSize: '16px' }}
 						onClick={this.props.onChangeEditor}
 						selectedKeys={[this.props.currentEditor]}
-					>
-						<Menu.Item key="imagemap" style={{ color: '#fff' }}>
-							{i18next.t('imagemap.imagemap')}
-						</Menu.Item>
-						<Menu.Item key="workflow" style={{ color: '#fff' }}>
-							{i18next.t('workflow.workflow')}
-						</Menu.Item>
-						{/* <Menu.Item key="flow" style={{ color: '#fff' }}>{i18n.t('flow.flow')}</Menu.Item> */}
-						{/* <Menu.Item key="hexgrid" style={{ color: '#fff' }}>
-							{i18next.t('hexgrid.hexgrid')}
-						</Menu.Item>
-						<Menu.Item key="fiber" style={{ color: '#fff' }}>
-							{i18next.t('fiber.fiber')}
-						</Menu.Item> */}
-					</Menu>
+						items={[
+							{ key: 'imagemap', label: i18next.t('imagemap.imagemap'), style: { color: '#fff' } },
+							{ key: 'workflow', label: i18next.t('workflow.workflow'), style: { color: '#fff' } },
+						]}
+					/>
 				</Flex>
 				<Flex flex="1" justifyContent="flex-end">
 					<ins

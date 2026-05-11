@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { FabricObject } from '../models';
 import { registerFabricClass, resolveFromObject, toObject } from '../utils';
@@ -30,13 +30,18 @@ class LineLink extends fabric.Line {
 		toPort: Partial<PortObject>,
 		options: Partial<LineLinkObject> = {},
 	) {
-		const coords = [fromPort.left, fromPort.top, toPort.left, toPort.top];
+		const coords: [number, number, number, number] = [
+			fromPort.left ?? 0,
+			fromPort.top ?? 0,
+			toPort.left ?? 0,
+			toPort.top ?? 0,
+		];
 		const nextOptions = {
 			...options,
 			strokeWidth: 4,
 			id: options.id || uuid(),
-			originX: 'center',
-			originY: 'center',
+			originX: 'center' as const,
+			originY: 'center' as const,
 			lockScalingX: true,
 			lockScalingY: true,
 			lockRotation: true,
@@ -81,7 +86,7 @@ class LineLink extends fabric.Line {
 		}
 	}
 
-	toObject(propertiesToInclude: string[] = []) {
+	toObject(propertiesToInclude: any[] = []) {
 		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			name: this.get('name'),
@@ -115,10 +120,9 @@ class LineLink extends fabric.Line {
 		ctx.restore();
 	}
 
-	static fromObject(options: LineLinkObject, callback?: (obj: LineLinkObject) => any) {
+	static fromObject(options: any, _abortable?: any) {
 		return resolveFromObject(
 			new LineLink(options.fromNode, options.fromPort, options.toNode, options.toPort, options),
-			callback,
 		);
 	}
 }
