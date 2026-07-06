@@ -1,7 +1,5 @@
 import 'fabric';
 
-type FabricModule = typeof import('fabric');
-
 declare module 'fabric' {
 	interface FabricObjectProps {
 		id?: string;
@@ -106,22 +104,6 @@ declare module 'fabric' {
 		errors?: any[];
 		[key: string]: any;
 	}
-
-	interface IEvent<E extends Event = TPointerEvent> extends TEvent<E> {
-		target?: FabricObject;
-		transform?: Transform;
-		[key: string]: any;
-	}
-
-	interface IShadowOptions extends SerializedShadowOptions {
-		[key: string]: any;
-	}
-
-	interface IImageOptions extends Partial<ImageProps> {
-		[key: string]: any;
-	}
-
-	interface IBaseFilter extends BaseFilter<string, Record<string, any>> {}
 }
 
 declare module '*.css';
@@ -136,88 +118,7 @@ declare global {
 		readonly env: ImportMetaEnv;
 	}
 
-	namespace fabric {
-		const ActiveSelection: any;
-		const Canvas: any;
-		const Circle: any;
-		const Gradient: any;
-		const Group: any;
-		const Image: any;
-		const IText: any;
-		const Line: any;
-		const Object: any;
-		const Path: any;
-		const Pattern: any;
-		const Point: any;
-		const Polygon: any;
-		const Rect: any;
-		const Shadow: any;
-		const Text: any;
-		const Textbox: any;
-		const Triangle: any;
-		const loadSVGFromString: any;
-		const loadSVGFromURL: any;
-		const util: FabricModule['util'];
-
-		interface ICanvasOptions {
-			backgroundColor?: any;
-			defaultCursor?: string;
-			height?: number;
-			hoverCursor?: string;
-			preserveObjectStacking?: boolean;
-			selection?: boolean;
-			width?: number;
-			[key: string]: any;
-		}
-
-		interface IObjectOptions extends Partial<import('fabric').TFabricObjectProps> {
-			[key: string]: any;
-		}
-
-		type ActiveSelection = import('fabric').ActiveSelection;
-		type Canvas = import('fabric').Canvas;
-		type Circle = import('fabric').Circle;
-		type Gradient = import('fabric').Gradient;
-		type Group = import('fabric').Group;
-		type IBaseFilter = any;
-		type IEvent = any;
-		type IImageOptions = import('fabric').ImageProps & Record<string, any>;
-		type IPathOptions = import('fabric').PathProps & Record<string, any>;
-		type IShadowOptions = import('fabric').SerializedShadowOptions & Record<string, any>;
-		type IText = import('fabric').IText;
-		type IUtil = FabricModule['util'];
-		type Image = import('fabric').FabricImage;
-		type Line = import('fabric').Line;
-		type Object = import('fabric').FabricObject;
-		type Path = import('fabric').Path;
-		type Pattern = import('fabric').Pattern;
-		type Point = import('fabric').Point;
-		type Polygon = import('fabric').Polygon;
-		type Rect = import('fabric').Rect;
-		type Shadow = import('fabric').Shadow;
-		type Text = import('fabric').FabricText;
-		type Textbox = import('fabric').Textbox;
-		type Triangle = import('fabric').Triangle;
-
-		class Gif {}
-		class Arrow {}
-		class Iframe {}
-		class Chart {}
-		class Element {}
-		class Video {}
-		class Node {}
-		class Link {}
-		class CurvedLink {}
-		class OrthogonalLink {}
-		class Cube {}
-		class Svg {}
-		class Spinner {}
-	}
-
-	var fabric: any;
-
 	interface Window {
-		fabric: any;
 		gifler: any;
 		adsbygoogle: any;
 	}

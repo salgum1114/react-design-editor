@@ -1,5 +1,5 @@
 import * as fabric from 'fabric';
-import { classRegistry } from 'fabric';
+import { registerFabricClass } from '../utils';
 
 class Line extends fabric.Line {
 	static type = 'line';
@@ -21,7 +21,6 @@ class Line extends fabric.Line {
 	}
 }
 
-classRegistry.setClass(Line, Line.type);
-window.fabric.Line = Line;
+registerFabricClass('Line', Line, Line.type);
 
 export default Line;

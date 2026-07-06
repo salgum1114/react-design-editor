@@ -401,7 +401,7 @@ class EventHandler extends AbstractHandler {
 				this.handler.interactionMode !== 'link' &&
 				target?.superType === 'node' &&
 				subTargets.length &&
-				actionTarget === target._objects[target._objects.length - 1]
+				actionTarget === (target as fabric.Group).getObjects()[(target as fabric.Group).getObjects().length - 1]
 			) {
 				this.canvas.discardActiveObject();
 				this.canvas.requestRenderAll();
@@ -570,7 +570,7 @@ class EventHandler extends AbstractHandler {
 	 *
 	 * @param {FabricEvent} opt
 	 */
-	public selection = (_opt: FabricEvent<FabricObject<fabric.ActiveSelection>>) => {
+	public selection = (_opt: FabricEvent) => {
 		const { activeSelectionOption } = this.handler;
 		const target = (this.canvas.getActiveObject() as FabricObject) ?? null;
 		if (target && target.isType('ActiveSelection')) {

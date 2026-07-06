@@ -40,7 +40,7 @@ export const resolveFromObject = <T>(instance: T, callback?: any) => {
 	return Promise.resolve(instance);
 };
 
-export const registerFabricClass = <T extends FabricClass>(name: string, ctor: T, ...aliases: string[]) => {
+export const registerFabricClass = <T extends FabricClass>(_name: string, ctor: T, ...aliases: string[]) => {
 	const types = new Set<string>();
 	[ctor.type, ctor.prototype?.type, ...aliases].forEach(type => {
 		if (typeof type === 'string' && type) {
@@ -54,10 +54,6 @@ export const registerFabricClass = <T extends FabricClass>(name: string, ctor: T
 			// Ignore duplicate registrations for overridden Fabric classes.
 		}
 	});
-	if (typeof window !== 'undefined') {
-		window.fabric = window.fabric || {};
-		window.fabric[name] = ctor;
-	}
 	return ctor;
 };
 

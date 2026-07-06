@@ -4,7 +4,7 @@ import { registerFabricClass, resolveFromObject } from '../utils';
 
 export interface CubeObject extends FabricObject {}
 
-class Cube extends fabric.Object {
+class Cube extends fabric.FabricObject {
 	static type = 'cube';
 	superType = 'shape';
 

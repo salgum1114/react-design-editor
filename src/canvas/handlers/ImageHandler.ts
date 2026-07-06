@@ -368,7 +368,11 @@ class ImageHandler {
 	 * @param {number} index
 	 * @param {fabric.IBaseFilter} filter
 	 */
-	public applyFilter = (index: number, filter: fabric.IBaseFilter | boolean, imageObj?: fabric.Image): void => {
+	public applyFilter = (
+		index: number,
+		filter: any,
+		imageObj?: fabric.Image,
+	): void => {
 		const obj = imageObj || (this.handler.canvas.getActiveObject() as any);
 		if (obj.filters) {
 			obj.filters[index] = filter;

@@ -437,7 +437,7 @@ class Handler implements HandlerOptions {
 			return;
 		}
 		if (activeObject.type === 'svg' && (key === 'fill' || key === 'stroke')) {
-			(activeObject as FabricGroup)._objects.forEach(obj => obj.set(key, value));
+			(activeObject as FabricGroup).getObjects().forEach(obj => obj.set(key, value));
 		}
 		activeObject.set(key as any, value);
 		activeObject.setCoords();
@@ -608,7 +608,7 @@ class Handler implements HandlerOptions {
 	 * @param {fabric.Shadow} option
 	 * @returns
 	 */
-	public setShadow = (option: fabric.IShadowOptions) => {
+	public setShadow = (option: fabric.SerializedShadowOptions) => {
 		const activeObject = this.canvas.getActiveObject() as FabricObject;
 		if (!activeObject) {
 			return;
@@ -623,14 +623,14 @@ class Handler implements HandlerOptions {
 	 * @param {FabricImage} obj
 	 * @param {(File | string)} [source]
 	 * @param {boolean} [keepSize] Keep size of previous Image
-	 * @param {fabric.IImageOptions} [options]
+	 * @param {Partial<fabric.ImageProps>} [options]
 	 * @returns
 	 */
 	public setImage = (
 		obj: FabricImage,
 		source?: File | string,
 		keepSize?: boolean,
-		options?: fabric.IImageOptions,
+		options?: Partial<fabric.ImageProps>,
 	): Promise<FabricImage> => {
 		const { height, scaleY } = obj;
 		const renderCallbaack = (imgObj: FabricImage, src: string) => {

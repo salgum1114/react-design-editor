@@ -11,8 +11,6 @@ interface MapPropertiesProps {
 	selectedItem?: any;
 }
 
-const { Panel } = Collapse;
-
 const MapProperties = ({ canvasRef, onChange, selectedItem }: MapPropertiesProps) => {
 	const [form] = Form.useForm();
 	const showArrow = false;

@@ -1,4 +1,4 @@
-import * as fabric from 'fabric';
+import { FabricEvent } from '../models';
 import CustomHandler from './CustomHandler';
 
 class FiberHandler extends CustomHandler {
@@ -6,7 +6,7 @@ class FiberHandler extends CustomHandler {
 		this.handler.canvas.on('mouse:down', this.mousedown);
 	}
 
-	private mousedown(opt: fabric.IEvent) {
+	private mousedown(opt: FabricEvent) {
 		const subTargets = opt.subTargets || [];
 		if (subTargets.length) {
 			const target = subTargets[0];

@@ -1,3 +1,4 @@
+import type { ActiveSelection, FabricObject as NativeFabricObject } from 'fabric';
 import Handler from './Handler';
 
 class AlignmentHandler {
@@ -12,9 +13,9 @@ class AlignmentHandler {
 	public left = () => {
 		const activeObject = this.handler.canvas.getActiveObject();
 		if (activeObject && this.handler.isActiveSelection(activeObject)) {
-			const activeSelection = activeObject as fabric.ActiveSelection;
+			const activeSelection = activeObject as ActiveSelection;
 			const activeObjectLeft = -(activeObject.width / 2);
-			activeSelection.forEachObject(obj => {
+			activeSelection.forEachObject((obj: NativeFabricObject) => {
 				obj.set({
 					left: activeObjectLeft,
 				});
@@ -30,8 +31,8 @@ class AlignmentHandler {
 	public center = () => {
 		const activeObject = this.handler.canvas.getActiveObject();
 		if (activeObject && this.handler.isActiveSelection(activeObject)) {
-			const activeSelection = activeObject as fabric.ActiveSelection;
-			activeSelection.forEachObject(obj => {
+			const activeSelection = activeObject as ActiveSelection;
+			activeSelection.forEachObject((obj: NativeFabricObject) => {
 				obj.set({
 					left: 0 - (obj.width * obj.scaleX) / 2,
 				});
@@ -47,8 +48,8 @@ class AlignmentHandler {
 	public middle = () => {
 		const activeObject = this.handler.canvas.getActiveObject();
 		if (activeObject && this.handler.isActiveSelection(activeObject)) {
-			const activeSelection = activeObject as fabric.ActiveSelection;
-			activeSelection.forEachObject(obj => {
+			const activeSelection = activeObject as ActiveSelection;
+			activeSelection.forEachObject((obj: NativeFabricObject) => {
 				obj.set({
 					top: 0 - (obj.width * obj.scaleX) / 2,
 				});
@@ -64,9 +65,9 @@ class AlignmentHandler {
 	public right = () => {
 		const activeObject = this.handler.canvas.getActiveObject();
 		if (activeObject && this.handler.isActiveSelection(activeObject)) {
-			const activeSelection = activeObject as fabric.ActiveSelection;
+			const activeSelection = activeObject as ActiveSelection;
 			const activeObjectLeft = activeObject.width / 2;
-			activeSelection.forEachObject(obj => {
+			activeSelection.forEachObject((obj: NativeFabricObject) => {
 				obj.set({
 					left: activeObjectLeft - obj.width * obj.scaleX,
 				});

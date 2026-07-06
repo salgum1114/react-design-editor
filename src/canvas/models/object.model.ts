@@ -1,3 +1,15 @@
+import type {
+	Canvas,
+	CanvasOptions,
+	FabricImage as NativeFabricImage,
+	FabricObject as NativeFabricObject,
+	Group,
+	Pattern,
+	Point,
+	Rect,
+	TFabricObjectProps,
+	TPointerEventInfo,
+} from 'fabric';
 import { IFilter } from '../handlers';
 
 export type AnimationType = 'fade' | 'bounce' | 'shake' | 'scaling' | 'rotation' | 'flash' | 'custom' | 'none';
@@ -14,7 +26,7 @@ export interface AnimationProperty {
 	shake?: 'vertical' | 'horizontal';
 	scale?: number;
 	angle?: number;
-	fill?: string | fabric.Pattern;
+	fill?: string | Pattern;
 	stroke?: string;
 }
 
@@ -42,9 +54,9 @@ export interface FabricCanvasOption {
 	wrapperEl?: HTMLElement;
 }
 
-export type FabricCanvas<T extends any = fabric.Canvas> = T & FabricCanvasOption;
+export type FabricCanvas<T extends Canvas = Canvas> = T & FabricCanvasOption;
 
-export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
+export type FabricObjectOption<T extends object = Partial<TFabricObjectProps>> = T & {
 	/**
 	 * Object id
 	 * @type {string}
@@ -88,9 +100,9 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
 	/**
 	 * Original fill color
 	 *
-	 * @type {(string | fabric.Pattern | fabric.Gradient)}
+	 * @type {(string | Pattern | Gradient)}
 	 */
-	originFill?: string | fabric.Pattern | fabric.Gradient;
+	originFill?: string | Pattern | Record<string, any>;
 	/**
 	 * Original stroke color
 	 * @type {string}
@@ -182,9 +194,9 @@ export type FabricObjectOption<T extends any = fabric.IObjectOptions> = T & {
 	[key: string]: any;
 };
 
-export type FabricObject<T extends any = fabric.Object> = T & FabricObjectOption;
+export type FabricObject<T extends NativeFabricObject = NativeFabricObject> = T & FabricObjectOption;
 
-export type FabricGroup = FabricObject<fabric.Group> & {
+export type FabricGroup = FabricObject<Group> & {
 	/**
 	 * Object that config group
 	 * @type {FabricObject[]}
@@ -193,7 +205,7 @@ export type FabricGroup = FabricObject<fabric.Group> & {
 };
 
 export type FabricImage = FabricObject &
-	fabric.Image & {
+	NativeFabricImage & {
 		/**
 		 * Image URL
 		 * @type {string}
@@ -212,7 +224,7 @@ export type FabricImage = FabricObject &
 		_element?: any;
 	};
 
-export interface FabricElement extends FabricObject<fabric.Rect> {
+export interface FabricElement extends FabricObject<Rect> {
 	/**
 	 * Container element id
 	 * @type {string}
@@ -292,7 +304,7 @@ export type WorkareaObject = FabricImage & {
 	workareaHeight?: number;
 };
 
-export interface CanvasOption extends fabric.ICanvasOptions {
+export interface CanvasOption extends Partial<CanvasOptions> {
 	/**
 	 * Unique id of Canvas
 	 * @type {string}
@@ -416,7 +428,7 @@ export interface CanvasActions {
 
 export type InteractionMode = 'selection' | 'grab' | 'polygon' | 'line' | 'arrow' | 'link' | 'crop';
 
-export interface FabricEvent<T extends any = Event> extends Omit<fabric.IEvent, 'e'> {
+export interface FabricEvent<T extends Event = Event> extends Omit<Partial<TPointerEventInfo>, 'e'> {
 	e: T;
 	target?: FabricObject;
 	subTargets?: FabricObject[];
@@ -425,8 +437,8 @@ export interface FabricEvent<T extends any = Event> extends Omit<fabric.IEvent, 
 	button?: number;
 	isClick?: boolean;
 	action?: string;
-	pointer?: fabric.Point;
-	absolutePointer?: fabric.Point;
+	pointer?: Point;
+	absolutePointer?: Point;
 }
 
 export type FabricObjects = {

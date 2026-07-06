@@ -298,7 +298,7 @@ class TransactionHandler extends AbstractHandler {
 				.enlivenObjects(this.currentObjects)
 				.then(enlivenedObjects => {
 					(enlivenedObjects as FabricObject[]).forEach(obj => {
-						const targetIndex = this.handler.canvas._objects.length;
+						const targetIndex = this.handler.canvas.getObjects().length;
 
 						if (obj.superType === 'node') {
 							const node = obj as NodeObject;

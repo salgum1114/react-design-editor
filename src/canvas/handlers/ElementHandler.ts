@@ -116,7 +116,7 @@ class ElementHandler {
 	 * @param {number} top
 	 * @returns
 	 */
-	public setPosition = (el: HTMLElement, obj: fabric.Object) => {
+	public setPosition = (el: HTMLElement, obj: fabric.FabricObject) => {
 		if (!el) {
 			return;
 		}
@@ -130,7 +130,7 @@ class ElementHandler {
 		el.style.top = `${top + padTop}px`;
 	};
 
-	public setPositionByOrigin = (el: HTMLElement, obj: fabric.Object, left: number, top: number) => {
+	public setPositionByOrigin = (el: HTMLElement, obj: fabric.FabricObject, left: number, top: number) => {
 		if (!el) {
 			return;
 		}
@@ -150,7 +150,7 @@ class ElementHandler {
 	 * @param {number} height
 	 * @returns
 	 */
-	public setSize = (el: HTMLElement, obj: fabric.Object) => {
+	public setSize = (el: HTMLElement, obj: fabric.FabricObject) => {
 		if (!el) {
 			return;
 		}
@@ -167,7 +167,7 @@ class ElementHandler {
 	 * @param {number} angle
 	 * @returns
 	 */
-	public setScaleOrAngle = (el: HTMLElement, obj: fabric.Object) => {
+	public setScaleOrAngle = (el: HTMLElement, obj: fabric.FabricObject) => {
 		if (!el) {
 			return;
 		}

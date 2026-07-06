@@ -33,7 +33,7 @@ class Svg extends fabric.Group {
 		const { height, scaleY } = this;
 		const scale = height ? (height * scaleY) / createdObj.height : createdObj.scaleY;
 		this.set({ ...options, scaleX: scale, scaleY: scale });
-		if (this._objects?.length) {
+		if (this.getObjects().length) {
 			this.getObjects().forEach((obj: FabricObject) => {
 				this.remove(obj);
 			});
@@ -56,7 +56,7 @@ class Svg extends fabric.Group {
 			if (options.stroke) {
 				createdObj.set({ stroke: options.stroke });
 			}
-			if (this._objects?.length) {
+			if (this.getObjects().length) {
 				this.getObjects().forEach((obj: FabricObject) => this.remove(obj));
 			}
 			this.add(createdObj);
