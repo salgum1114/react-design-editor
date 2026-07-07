@@ -934,8 +934,8 @@ class Handler implements HandlerOptions {
 			if (activeObject.superType === 'link') {
 				this.linkHandler.remove(activeObject);
 			} else if (activeObject.superType === 'node') {
-				if (activeObject.port?.length) {
-					activeObject.port.forEach((port: any) => {
+				if (activeObject.ports?.length) {
+					activeObject.ports.forEach((port: any) => {
 						this.canvas.remove(port);
 					});
 				}

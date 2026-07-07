@@ -11,6 +11,7 @@ const CirclePort = fabric.util.createClass(fabric.Circle, {
 	},
 	setPosition(left: number, top: number) {
 		this.set({ left, top });
+		this.setCoords();
 	},
 	setConnected(connected?: boolean) {
 		const fill = connected ? this.connectedFill : this.originFill;
