@@ -915,8 +915,8 @@ class Handler implements HandlerOptions {
 		};
 
 		const removeNodePorts = (node: any) => {
-			if (node.port?.length) {
-				node.port.forEach((port: any) => {
+			if (node.ports?.length) {
+				node.ports.forEach((port: any) => {
 					this.canvas.remove(port);
 				});
 			}
@@ -966,7 +966,6 @@ class Handler implements HandlerOptions {
 		if (typeof activeObject.deletable !== 'undefined' && !activeObject.deletable) {
 			return;
 		}
-
 		if (this.isActiveSelection(activeObject)) {
 			const activeObjects = activeObject.getObjects();
 

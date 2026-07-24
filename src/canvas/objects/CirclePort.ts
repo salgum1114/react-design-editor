@@ -12,6 +12,7 @@ class CirclePort extends fabric.Circle {
 
 	setPosition(left: number, top: number) {
 		this.set({ left, top });
+		this.setCoords();
 	}
 
 	setConnected(connected?: boolean) {
