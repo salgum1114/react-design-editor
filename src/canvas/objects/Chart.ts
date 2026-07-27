@@ -20,7 +20,8 @@ class Chart extends fabric.Rect {
 	declare instance: echarts.ECharts;
 
 	constructor(chartOption: echarts.EChartOption, options: any = {}) {
-		super(options);
+		const { type: _type, ...elementOptions } = options;
+		super(elementOptions);
 		this.set({
 			chartOption,
 			fill: 'rgba(255, 255, 255, 0)',

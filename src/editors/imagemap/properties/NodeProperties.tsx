@@ -3,6 +3,7 @@ import React from 'react';
 
 import type { CanvasInstance } from '../../../canvas';
 import Scrollbar from '../../../components/common/Scrollbar';
+import { INSPECTOR_FORM_PROPS } from '../../../components/editor';
 import { Flex } from '../../../components/flex';
 import PropertyDefinition from './PropertyDefinition';
 
@@ -20,8 +21,7 @@ const NodePropertiesForm = ({ canvasRef, selectedItem, onChange }: NodePropertie
 		<Scrollbar>
 			<Form
 				form={form}
-				layout="horizontal"
-				colon={false}
+				{...INSPECTOR_FORM_PROPS}
 				onValuesChange={(changedValues, allValues) => {
 					onChange?.(selectedItem, changedValues, allValues);
 				}}

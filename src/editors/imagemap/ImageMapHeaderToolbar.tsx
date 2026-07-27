@@ -5,7 +5,6 @@ import type { CanvasInstance } from '../../canvas';
 import { CommonButton } from '../../components/common';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
-import ImageMapList from './ImageMapList';
 
 interface ImageMapHeaderToolbarProps {
 	canvasRef?: CanvasInstance | null;
@@ -18,17 +17,6 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 
 	return (
 		<Flex className="rde-editor-header-toolbar-container" flex="1">
-			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-list">
-				<CommonButton
-					className="rde-action-btn"
-					shape="circle"
-					icon="layer-group"
-					tooltipTitle={i18next.t('action.canvas-list')}
-				/>
-				<div className="rde-canvas-list">
-					<ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} />
-				</div>
-			</Flex.Item>
 			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
 				<CommonButton
 					className="rde-action-btn"
@@ -155,7 +143,7 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					tooltipTitle={i18next.t('action.canvas-save')}
 				/>
 				<CommonButton
-					className="rde-action-btn"
+					className="rde-action-btn is-secondary"
 					shape="circle"
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.duplicate()}
@@ -163,8 +151,9 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 					tooltipTitle={i18next.t('action.clone')}
 				/>
 				<CommonButton
-					className="rde-action-btn"
+					className="rde-action-btn is-danger"
 					shape="circle"
+					danger
 					disabled={isCropping}
 					onClick={() => canvasRef?.handler?.remove()}
 					icon="trash"

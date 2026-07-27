@@ -7,6 +7,11 @@ import { v4 as uuid } from 'uuid';
 import { CanvasInstance, FabricObject, LinkObject, NodeObject } from '../../canvas';
 import { PortObject } from '../../canvas/objects';
 import { CommonButton, Scrollbar } from '../../components/common';
+import {
+	EditorPanelHeader,
+	PALETTE_COLLAPSE_PROPS,
+	resolvePaletteActiveKeys,
+} from '../../components/editor';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import { getNode } from './configuration/NodeConfiguration';
@@ -28,7 +33,7 @@ interface IProps {
 }
 
 interface IState {
-	activeKey: string[];
+	activeKey: string[] | null;
 	collapse: boolean;
 	textSearch: string;
 	descriptors: WorkflowDescriptor[];
@@ -37,7 +42,7 @@ interface IState {
 
 class WorkflowItems extends React.Component<IProps, IState> {
 	state: IState = {
-		activeKey: [],
+		activeKey: null,
 		collapse: false,
 		textSearch: '',
 		descriptors: [],
@@ -125,7 +130,7 @@ class WorkflowItems extends React.Component<IProps, IState> {
 				} else {
 					const selectedNode = this.props.selectedItem as (NodeObject & Record<string, any>) | undefined;
 					const unusedFromPort =
-						selectedNode?.type === 'BroadcastNode'
+						selectedNode?.nodeClazz === 'BroadcastNode'
 							? selectedNode.fromPort![0]
 							: selectedNode?.fromPort
 								? selectedNode?.fromPort?.find((port: PortObject) => !port.links!.length)
@@ -310,52 +315,67 @@ class WorkflowItems extends React.Component<IProps, IState> {
 	render() {
 		const { descriptors } = this.props;
 		const { activeKey, filteredDescriptors, collapse, textSearch } = this.state;
-		const className = clsx('rde-editor-items', {
+		const className = clsx('rde-editor-items rde-workflow-items', {
 			minimize: collapse,
 		});
 		return (
 			<div className={className}>
-				<Flex flex="1" flexDirection="column" style={{ height: '100%' }}>
-					<Flex justifyContent="center" alignItems="center" style={{ height: 40 }}>
-						<CommonButton
-							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
-							shape="circle"
-							className="rde-action-btn"
-							style={{ margin: '0 4px' }}
-							onClick={this.handlers.onCollapse}
-						/>
-						{collapse ? null : (
+				<Flex className="rde-editor-items-layout" flex="1" flexDirection="column">
+					<EditorPanelHeader
+						eyebrow={collapse ? undefined : 'Build'}
+						title={collapse ? null : 'Node library'}
+						action={
+							<CommonButton
+								icon={collapse ? 'angle-double-right' : 'angle-double-left'}
+								shape="circle"
+								className="rde-action-btn"
+								onClick={this.handlers.onCollapse}
+							/>
+						}
+					/>
+					{collapse ? null : (
+						<div className="rde-editor-items-search">
 							<Input
-								style={{ margin: '8px' }}
 								placeholder={i18next.t('action.search-list')}
 								onChange={this.handlers.onSearchNode}
 								value={textSearch}
 								allowClear={true}
+								prefix={<Icon name="search" />}
 							/>
-						)}
-					</Flex>
-					<Scrollbar>
-						<Flex flex="1" style={{ overflowY: 'hidden' }}>
+						</div>
+					)}
+					<Scrollbar
+						className="rde-editor-items-scroll"
+						style={{ height: 'auto', minHeight: 0, flex: '1 1 0%' }}
+					>
+						<div className="rde-editor-items-scroll-content">
 							{textSearch.length ? (
 								this.renderItems(filteredDescriptors)
 							) : (
 								<Collapse
 									style={{ width: '100%' }}
-									activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
+									{...PALETTE_COLLAPSE_PROPS}
+									activeKey={resolvePaletteActiveKeys(activeKey, Object.keys(descriptors))}
 									onChange={this.handlers.onChangeActiveKey}
 									items={Object.keys(descriptors).map(key => {
 										const descriptorKey = key as keyof typeof NODE_COLORS;
 										return {
 											key,
-											label: collapse ? '' : key,
+											label: collapse ? (
+												''
+											) : (
+												<span className="rde-editor-items-category">
+													<span style={{ backgroundColor: NODE_COLORS[descriptorKey].fill }} />
+													{key}
+												</span>
+											),
 											showArrow: !collapse,
-											style: { background: NODE_COLORS[descriptorKey].fill },
 											children: this.renderItems(descriptors[key]),
 										};
 									})}
 								/>
 							)}
-						</Flex>
+						</div>
 					</Scrollbar>
 				</Flex>
 			</div>

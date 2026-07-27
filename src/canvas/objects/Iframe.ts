@@ -1,6 +1,12 @@
 import * as fabric from 'fabric';
 import { FabricElement } from '../models';
-import { createDOMElement, registerFabricClass, resolveFromObject, toObject, wrapDOMElement } from '../utils';
+import {
+	createDOMElement,
+	registerFabricClass,
+	resolveFromObject,
+	toObject,
+	wrapDOMElement,
+} from '../utils';
 
 export interface IframeObject extends FabricElement {
 	setSource: (source: string) => void;
@@ -19,7 +25,8 @@ class Iframe extends fabric.Rect {
 	declare src: string;
 
 	constructor(src = '', options: any = {}) {
-		super(options);
+		const { type: _type, ...elementOptions } = options;
+		super(elementOptions);
 		this.set({
 			src,
 			fill: 'rgba(255, 255, 255, 0)',

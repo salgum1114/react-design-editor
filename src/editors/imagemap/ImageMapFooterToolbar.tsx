@@ -94,14 +94,12 @@ export default function ImageMapFooterToolbar({
 				<Space.Compact>
 					<CommonButton
 						type={interactionMode === 'selection' ? 'primary' : 'default'}
-						style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 						onClick={handleSelection}
 						icon="mouse-pointer"
 						tooltipTitle={i18next.t('action.selection')}
 					/>
 					<CommonButton
 						type={interactionMode === 'grab' ? 'primary' : 'default'}
-						style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 						onClick={handleGrab}
 						tooltipTitle={i18next.t('action.grab')}
 						icon="hand-rock"
@@ -111,7 +109,6 @@ export default function ImageMapFooterToolbar({
 			<div className="rde-editor-footer-toolbar-zoom">
 				<Space.Compact>
 					<CommonButton
-						style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 						onClick={() => {
 							canvasRef.handler.zoomHandler.zoomOut();
 						}}
@@ -134,7 +131,6 @@ export default function ImageMapFooterToolbar({
 						icon="expand"
 					/>
 					<CommonButton
-						style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 						onClick={() => {
 							canvasRef.handler.zoomHandler.zoomIn();
 						}}

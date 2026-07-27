@@ -185,7 +185,14 @@ class Link extends fabric.Group {
 		toPort: Partial<PortObject>,
 		options: Partial<LinkObject> = {},
 	) {
-		const { left, top, ...other } = options || {};
+		const {
+			left,
+			top,
+			type: _type,
+			objects: _objects,
+			layoutManager: _layoutManager,
+			...other
+		} = options;
 		const geometry = Link.calculateGeometry(fromNode, fromPort, toNode, toPort, options.onlyLeft);
 		const { line, arrow } = Link.createObjects(geometry, options);
 		Object.assign(other, {

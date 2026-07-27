@@ -87,7 +87,6 @@ class WorkflowToolbar extends Component<IProps, IState> {
 					<Space.Compact>
 						<CommonButton
 							type={interactionMode === 'selection' ? 'primary' : 'default'}
-							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 							onClick={() => {
 								selection();
 							}}
@@ -96,7 +95,6 @@ class WorkflowToolbar extends Component<IProps, IState> {
 						/>
 						<CommonButton
 							type={interactionMode === 'grab' ? 'primary' : 'default'}
-							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 							onClick={() => {
 								grab();
 							}}
@@ -108,12 +106,11 @@ class WorkflowToolbar extends Component<IProps, IState> {
 				<div className={clsx('rde-editor-toolbar', 'zoom')}>
 					<Space.Compact>
 						<CommonButton
-							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 							onClick={() => {
-								instance.handler.zoomHandler.zoomIn();
+								instance.handler.zoomHandler.zoomOut();
 							}}
-							icon="search-plus"
-							tooltipTitle={i18next.t('action.zoom-in')}
+							icon="search-minus"
+							tooltipTitle={i18next.t('action.zoom-out')}
 						/>
 						<CommonButton
 							onClick={() => instance.handler.zoomHandler.zoomToFitWithObject()}
@@ -122,12 +119,11 @@ class WorkflowToolbar extends Component<IProps, IState> {
 							{`${zoomValue}%`}
 						</CommonButton>
 						<CommonButton
-							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 							onClick={() => {
-								instance.handler.zoomHandler.zoomOut();
+								instance.handler.zoomHandler.zoomIn();
 							}}
-							icon="search-minus"
-							tooltipTitle={i18next.t('action.zoom-out')}
+							icon="search-plus"
+							tooltipTitle={i18next.t('action.zoom-in')}
 						/>
 					</Space.Compact>
 				</div>

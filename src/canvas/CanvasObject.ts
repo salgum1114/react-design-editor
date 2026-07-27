@@ -53,7 +53,7 @@ const CanvasObject: CanvasObjectSchema = {
 	},
 	image: {
 		create: ({ element = new Image(), ...option }) =>
-			new fabric.Image(element, {
+			new fabric.FabricImage(element, {
 				...option,
 				crossOrigin: 'anonymous',
 			}),

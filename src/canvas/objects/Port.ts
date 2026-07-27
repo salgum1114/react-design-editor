@@ -19,7 +19,8 @@ class Port extends fabric.Rect {
 	superType = 'port';
 
 	constructor(options: any = {}) {
-		super(options);
+		const { type: _type, ...rectOptions } = options;
+		super(rectOptions);
 	}
 
 	setPosition(left: number, top: number) {

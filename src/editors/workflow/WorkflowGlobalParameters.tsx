@@ -207,6 +207,7 @@ const WorkflowGlobalParameters = ({ workflow, onChange }: IProps) => {
 				}}
 			/>
 			<Modal
+				rootClassName="rde-editor-modal"
 				title={isEdit ? i18next.t('workflow.variables-modify') : i18next.t('workflow.variables-add')}
 				onOk={handleOk}
 				onCancel={() => handleModalVisible(false)}

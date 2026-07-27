@@ -23,15 +23,7 @@ class Content extends Component<IProps> {
 			<Spin spinning={loading}>
 				<Layout className="rde-content-layout">
 					{title}
-					<Layout
-						style={{
-							overflowY: 'auto',
-							overflowX: 'hidden',
-							minHeight: `calc(100vh - ${title ? 98 : 60}px)`,
-							height: `calc(100vh - ${title ? 98 : 60}px)`,
-						}}
-						className={className}
-					>
+					<Layout className={className}>
 						{leftSider}
 						{content || children}
 						{rightSider}

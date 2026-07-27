@@ -3,6 +3,7 @@ import React from 'react';
 
 import type { CanvasInstance } from '../../../canvas';
 import Scrollbar from '../../../components/common/Scrollbar';
+import { INSPECTOR_FORM_PROPS } from '../../../components/editor';
 import PropertyDefinition from './PropertyDefinition';
 
 interface MapPropertiesProps {
@@ -41,7 +42,7 @@ const MapProperties = ({ canvasRef, onChange, selectedItem }: MapPropertiesProps
 		<Scrollbar>
 			<Form
 				form={form}
-				layout="horizontal"
+				{...INSPECTOR_FORM_PROPS}
 				onValuesChange={(changedValues, allValues) => {
 					onChange?.(selectedItem, changedValues, { workarea: allValues });
 				}}

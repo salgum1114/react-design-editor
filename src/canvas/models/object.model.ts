@@ -221,7 +221,6 @@ export type FabricImage = FabricObject &
 		 * @type {IFilter[]}
 		 */
 		filters?: IFilter[];
-		_element?: any;
 	};
 
 export interface FabricElement extends FabricObject<Rect> {
@@ -282,11 +281,6 @@ export type WorkareaObject = FabricImage & {
 	 * @type {WorkareaLayout}
 	 */
 	layout?: WorkareaLayout;
-	/**
-	 * Workarea Image Element
-	 * @type {HTMLImageElement}
-	 */
-	_element?: HTMLImageElement;
 	/**
 	 * Whether exist the element
 	 * @type {boolean}

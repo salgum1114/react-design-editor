@@ -5,13 +5,21 @@ import React from 'react';
 import { FabricObject } from '../../canvas';
 import Canvas, { CanvasInstance } from '../../canvas/Canvas';
 import { CommonButton } from '../../components/common';
+import {
+	EditorActivityRail,
+	EditorStatusBar,
+	resolveInspectorMode,
+	summarizeWorkflow,
+} from '../../components/editor';
 import { Content } from '../../components/layout';
+import Icon from '../../components/icon/Icon';
 import { getNode } from './configuration/NodeConfiguration';
 import { OUT_PORT_TYPE } from './constant/constants';
 import NodeConfigurationError from './error/NodeConfigurationError';
 import Links from './link';
 import Nodes from './node';
 import WorkflowConfigurations from './WorkflowConfigurations';
+import WorkflowDiagnosticsDock, { type WorkflowDockTab } from './WorkflowDiagnosticsDock';
 import WorkflowItems from './WorkflowItems';
 import WorkflowNodeConfigurations from './WorkflowNodeConfigurations';
 import WorkflowTitle from './WorkflowTitle';
@@ -24,6 +32,9 @@ interface IState {
 	selectedItem: any;
 	descriptors: any;
 	editing: boolean;
+	activeActivity: string;
+	dockOpen: boolean;
+	dockTab: WorkflowDockTab;
 }
 
 class WorkflowEditor extends React.Component {
@@ -34,6 +45,9 @@ class WorkflowEditor extends React.Component {
 		selectedItem: null,
 		descriptors: {},
 		editing: false,
+		activeActivity: 'build',
+		dockOpen: true,
+		dockTab: 'overview',
 	};
 
 	canvasRef!: CanvasInstance;
@@ -71,7 +85,10 @@ class WorkflowEditor extends React.Component {
 						);
 					}
 				})
-				.catch(() => {
+				.catch((error: { outOfDate?: boolean }) => {
+					if (error.outOfDate) {
+						return;
+					}
 					currentSelectedItem?.setErrors(true);
 				});
 			if (
@@ -98,6 +115,9 @@ class WorkflowEditor extends React.Component {
 			if (!this.state.editing) {
 				this.changeEditing(true);
 			}
+		},
+		onTransaction: () => {
+			this.forceUpdate();
 		},
 	};
 
@@ -171,6 +191,7 @@ class WorkflowEditor extends React.Component {
 				document.body.appendChild(anchorEl); // required for firefox
 				anchorEl.click();
 				anchorEl.remove();
+				this.changeEditing(false);
 				this.hideLoading();
 			}
 		},
@@ -263,6 +284,17 @@ class WorkflowEditor extends React.Component {
 				this.canvasRef.handler.transactionHandler.save('configuration');
 			}
 		}, 200),
+		onActivityChange: (activeActivity: string) => {
+			if (activeActivity === 'diagnostics') {
+				this.setState({ activeActivity, dockOpen: true, dockTab: 'validation' });
+				return;
+			}
+			if (activeActivity === 'history') {
+				this.setState({ activeActivity, dockOpen: true, dockTab: 'history' });
+				return;
+			}
+			this.setState({ activeActivity, dockOpen: false });
+		},
 	};
 
 	showLoading = () => {
@@ -284,21 +316,36 @@ class WorkflowEditor extends React.Component {
 	};
 
 	render() {
-		const { zoomRatio, workflow, selectedItem, descriptors, loading, editing } = this.state;
+		const {
+			zoomRatio,
+			workflow,
+			selectedItem,
+			descriptors,
+			loading,
+			editing,
+			activeActivity,
+			dockOpen,
+			dockTab,
+		} = this.state;
 		const { onChange, onDownload, onUpload } = this.handlers;
 		const { onZoom, onAdd, onSelect, onRemove, onModified } = this.canvasHandlers;
 		const nodes = Nodes(descriptors);
+		const canvasObjects = this.canvasRef?.handler.getObjects() || [];
+		const summary = summarizeWorkflow(canvasObjects);
+		const transactionHandler = this.canvasRef?.handler.transactionHandler;
+		const inspectorMode = resolveInspectorMode(selectedItem);
 		const action = (
 			<React.Fragment>
 				<CommonButton
 					className="rde-action-btn"
-					shape="circle"
 					icon="file-download"
 					disabled={!editing}
 					tooltipTitle={i18next.t('action.download')}
 					onClick={onDownload}
 					tooltipPlacement="bottomRight"
-				/>
+				>
+					Export
+				</CommonButton>
 				{editing ? (
 					<Popconfirm
 						title={i18next.t('workflow.workflow-editing-confirm')}
@@ -329,74 +376,118 @@ class WorkflowEditor extends React.Component {
 		);
 		const titleContent = (
 			<React.Fragment>
-				<span>{i18next.t('workflow.workflow-editor')}</span>
-				<span style={{ width: 40, textAlign: 'center' }}>/</span>
-				<span style={{ color: workflow.enabled ? '#49a9ee' : 'rgba(0, 0, 0, 0.65)' }}>{workflow.name}</span>
+				<span className="rde-editor-breadcrumb-section">Workflows</span>
+				<span className="rde-editor-breadcrumb-divider">/</span>
+				<strong>{workflow.name || i18next.t('workflow.workflow-editor')}</strong>
+				<span className={`rde-editor-save-state ${editing ? 'editing' : 'saved'}`}>
+					{editing ? 'Unsaved changes' : 'Saved'}
+				</span>
 			</React.Fragment>
 		);
 		const title = <WorkflowTitle title={titleContent} action={action} />;
 		const content = (
-			<div className="rde-editor">
+			<div className="rde-editor rde-operator-editor rde-workflow-editor">
+				<EditorActivityRail
+					label="Workflow workspace"
+					activeKey={activeActivity}
+					onChange={this.handlers.onActivityChange}
+					items={[
+						{ key: 'build', label: 'Build', icon: 'project-diagram' },
+						{ key: 'diagnostics', label: 'Validation', icon: 'tasks', badge: summary.errorCount },
+						{ key: 'history', label: 'History', icon: 'history' },
+					]}
+				/>
 				<WorkflowItems
 					instance={this.canvasRef}
 					selectedItem={this.state.selectedItem}
 					descriptors={descriptors}
 				/>
-				<div
+				<section
 					ref={(c: HTMLDivElement | null) => {
 						this.container = c;
 					}}
-					className="rde-editor-canvas"
+					className="rde-editor-workspace"
 				>
-					<Canvas
-						ref={(c: CanvasInstance | null) => {
-							if (c) {
-								this.canvasRef = c;
-							}
-						}}
-						className="rde-canvas"
-						canvasOption={{ backgroundColor: '#1c2128' }}
-						fabricObjects={{ ...nodes, ...Links } as any}
-						workareaOption={{
-							width: 0,
-							height: 0,
-						}}
-						gridOption={{
-							enabled: true,
-							grid: 20,
-							snapToGrid: true,
-							type: 'dot',
-							dotColor: '#5f646b',
-						}}
-						activeSelectionOption={{
-							hasControls: false,
-							hasBorders: false,
-							perPixelTargetFind: true,
-						}}
-						linkOption={{ stroke: '#c3c9d5', strokeWidth: 2 }}
-						minZoom={30}
-						maxZoom={200}
-						onZoom={onZoom}
-						onSelect={onSelect}
-						onAdd={onAdd}
-						onRemove={onRemove}
-						onModified={onModified}
-						onClick={(_canvas: any, target: any, subTarget: any) => {
-							if (subTarget) {
-								if (target.ports?.length) {
+					<div className="rde-editor-canvas">
+						<Canvas
+							ref={(c: CanvasInstance | null) => {
+								if (c) {
+									this.canvasRef = c;
+								}
+							}}
+							className="rde-canvas"
+							canvasOption={{ backgroundColor: '#1c2128' }}
+							fabricObjects={{ ...nodes, ...Links } as any}
+							workareaOption={{
+								width: 0,
+								height: 0,
+							}}
+							gridOption={{
+								enabled: true,
+								grid: 20,
+								snapToGrid: true,
+								type: 'dot',
+								dotColor: '#5f646b',
+							}}
+							activeSelectionOption={{
+								hasControls: false,
+								hasBorders: false,
+								perPixelTargetFind: true,
+							}}
+							linkOption={{ stroke: '#c3c9d5', strokeWidth: 2 }}
+							minZoom={30}
+							maxZoom={200}
+							onZoom={onZoom}
+							onSelect={onSelect}
+							onAdd={onAdd}
+							onRemove={onRemove}
+							onModified={onModified}
+							onTransaction={this.canvasHandlers.onTransaction}
+							onClick={(_canvas: any, target: any, subTarget: any) => {
+								if (subTarget && target.ports?.length) {
 									const spinner = target.ports.find((p: any) => p.type === 'spinner');
 									spinner?.setVisibility(true);
 									setTimeout(() => {
 										spinner?.setVisibility(false);
 									}, 5000);
 								}
-							}
-						}}
-						canvasActions={{ move: false, transaction: true, clipboard: true }}
-						guidelineOption={{ enabled: false }}
-						shouldHighlightPathOnSelect={true}
+							}}
+							canvasActions={{ move: false, transaction: true, clipboard: true }}
+							guidelineOption={{ enabled: false }}
+							shouldHighlightPathOnSelect={true}
+						/>
+					</div>
+					<WorkflowDiagnosticsDock
+						activeTab={dockTab}
+						canRedo={Boolean(transactionHandler?.canRedo())}
+						canUndo={Boolean(transactionHandler?.canUndo())}
+						editing={editing}
+						open={dockOpen}
+						summary={summary}
+						onChangeTab={nextTab =>
+							this.setState({ dockTab: nextTab, dockOpen: true, activeActivity: 'diagnostics' })
+						}
+						onRedo={() => transactionHandler?.redo()}
+						onToggle={() => this.setState({ dockOpen: !dockOpen })}
+						onUndo={() => transactionHandler?.undo()}
 					/>
-					<div className="rde-editor-properties" style={{ display: selectedItem ? 'block' : 'none' }}>
+					<EditorStatusBar
+						left={<WorkflowToolbar instance={this.canvasRef} zoomRatio={zoomRatio} />}
+						center={
+							<span>
+								{summary.nodeCount} nodes · {summary.linkCount} connections
+							</span>
+						}
+						right={
+							<span className={summary.errorCount ? 'rde-status-issue' : 'rde-status-ok'}>
+								<Icon name={summary.errorCount ? 'exclamation-circle' : 'check-circle'} />
+								{summary.errorCount ? `${summary.errorCount} issues` : 'No issues'}
+							</span>
+						}
+					/>
+				</section>
+				<aside className="rde-editor-inspector">
+					{inspectorMode === 'node' ? (
 						<WorkflowNodeConfigurations
 							ref={this.nodeConfigurationRef}
 							selectedItem={selectedItem}
@@ -405,17 +496,15 @@ class WorkflowEditor extends React.Component {
 							descriptors={descriptors}
 							onChange={onChange}
 						/>
-					</div>
-					<div className="rde-editor-toolbar-container">
-						<WorkflowToolbar instance={this.canvasRef} zoomRatio={zoomRatio} />
-					</div>
-				</div>
-				<WorkflowConfigurations
-					workflow={workflow}
-					selectedItem={selectedItem}
-					canvasRef={this.canvasRef}
-					onChange={onChange}
-				/>
+					) : (
+						<WorkflowConfigurations
+							workflow={workflow}
+							selectedItem={selectedItem}
+							canvasRef={this.canvasRef}
+							onChange={onChange}
+						/>
+					)}
+				</aside>
 			</div>
 		);
 		return <Content title={title} content={content} loading={loading} className="" />;

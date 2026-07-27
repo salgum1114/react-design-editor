@@ -186,7 +186,7 @@ class EditTable extends React.Component<EditTableProps, EditTableState> {
 					}
 					dataSource={this.getDataSource(userProperty)}
 				/>
-				<Modal onCancel={onCancel} onOk={onOk} open={visible}>
+				<Modal rootClassName="rde-editor-modal" onCancel={onCancel} onOk={onOk} open={visible}>
 					<Form.Item
 						required
 						label={i18next.t('common.key')}

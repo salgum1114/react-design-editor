@@ -1,9 +1,11 @@
 import React from 'react';
 
-interface ScrollbarProps {
-	children?: React.ReactNode;
-}
+type ScrollbarProps = React.HTMLAttributes<HTMLDivElement>;
 
-export default function Scrollbar({ children }: ScrollbarProps) {
-	return <div style={{ height: '100%', overflow: 'auto' }}>{children}</div>;
+export default function Scrollbar({ children, style, ...props }: ScrollbarProps) {
+	return (
+		<div {...props} style={{ height: '100%', overflow: 'auto', ...style }}>
+			{children}
+		</div>
+	);
 }

@@ -4,9 +4,10 @@ import { registerFabricClass, resolveFromObject } from '../../../../canvas/utils
 type NodeOptions = Record<string, any>;
 
 class LogicNode extends Node {
+	static type = 'LogicNode';
+
 	constructor(options: NodeOptions = {}) {
-		const type = options.type || 'LogicNode';
-		super({ ...options, type, nodeClazz: options.nodeClazz || type });
+		super({ ...options, nodeClazz: options.nodeClazz || LogicNode.type });
 	}
 
 	static fromObject(options: any, callback?: (obj: any) => any) {
@@ -15,11 +16,5 @@ class LogicNode extends Node {
 }
 
 registerFabricClass('LogicNode', LogicNode, 'DelayNode', 'FunctionNode', 'BroadcastNode');
-
-if (typeof window !== 'undefined') {
-	(window as any).fabric.DelayNode = LogicNode;
-	(window as any).fabric.FunctionNode = LogicNode;
-	(window as any).fabric.BroadcastNode = LogicNode;
-}
 
 export default LogicNode;

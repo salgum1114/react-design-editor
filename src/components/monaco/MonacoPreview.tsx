@@ -1,12 +1,12 @@
 import React from 'react';
 
-interface AcePreviewProps {
+interface MonacoPreviewProps {
 	html?: string;
 	css?: string;
 	js?: string;
 }
 
-export default function AcePreview({ css = '', html = '', js = '' }: AcePreviewProps) {
+export default function MonacoPreview({ css = '', html = '', js = '' }: MonacoPreviewProps) {
 	const containerRef = React.useRef<HTMLDivElement | null>(null);
 
 	React.useEffect(() => {

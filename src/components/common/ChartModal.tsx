@@ -1,11 +1,9 @@
 import { Button, Form, Modal } from 'antd';
 import React from 'react';
-import AceCodeEditor from '../ace/AceCodeEditor';
+import MonacoCodeEditor from '../monaco/MonacoCodeEditor';
 
 import Icon from '../icon/Icon';
 
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-github';
 import i18next from 'i18next';
 
 interface ChartModalProps {
@@ -86,18 +84,20 @@ class ChartModal extends React.Component<ChartModalProps, ChartModalState> {
 				<Form.Item label={label} colon={false}>
 					<pre style={{ wordBreak: 'break-all', lineHeight: '1.2em' }}>{chartOption}</pre>
 				</Form.Item>
-				<Modal onCancel={onCancel} onOk={onOk} open={visible} style={{ minWidth: 800 }}>
+				<Modal
+					rootClassName="rde-editor-modal"
+					onCancel={onCancel}
+					onOk={onOk}
+					open={visible}
+					style={{ minWidth: 800 }}
+				>
 					<Form.Item label={codeLabel} colon={false}>
-						<AceCodeEditor
-							mode="javascript"
-							theme="github"
+						<MonacoCodeEditor
+							language="javascript"
 							width="100%"
 							height="600px"
 							defaultValue={chartOption}
 							value={tempChartOption}
-							editorProps={{
-								$blockScrolling: true,
-							}}
 							onChange={text => {
 								this.setState({ tempChartOption: text });
 							}}

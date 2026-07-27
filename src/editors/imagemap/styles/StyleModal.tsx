@@ -4,6 +4,7 @@ import React from 'react';
 import i18next from 'i18next';
 import Canvas, { type CanvasInstance } from '../../../canvas/Canvas';
 import StyleProperty from '../properties/StyleProperty';
+import { initializeStylePreview } from './stylePreview';
 
 type ValidateTitle = {
 	help?: string;
@@ -26,24 +27,6 @@ export interface StyleModalHandle {
 	resetFields: () => void;
 }
 
-const previewOption = {
-	type: 'i-text',
-	text: '\uf3c5',
-	fontFamily: 'Font Awesome 5 Free',
-	fontWeight: 900,
-	fontSize: 60,
-	width: 30,
-	height: 30,
-	editable: false,
-	name: 'New marker',
-	tooltip: {
-		enabled: false,
-	},
-	left: 200,
-	top: 50,
-	id: 'styles',
-};
-
 const defaultStyle: StyleValue = {
 	fill: 'rgba(0, 0, 0, 1)',
 	opacity: 1,
@@ -57,7 +40,6 @@ const StyleModal = React.forwardRef<StyleModalHandle, StyleModalProps>((props, r
 	const [size, setSize] = React.useState({ width: 150, height: 150 });
 	const canvasRef = React.useRef<CanvasInstance | null>(null);
 	const containerRef = React.useRef<HTMLDivElement | null>(null);
-	const initializedRef = React.useRef(false);
 	const canvasApi = React.useMemo(
 		() => ({
 			get handler() {
@@ -91,16 +73,11 @@ const StyleModal = React.forwardRef<StyleModalHandle, StyleModalProps>((props, r
 		let timeoutId: number | undefined;
 		const syncPreview = () => {
 			const container = containerRef.current;
-			const canvas = canvasRef.current;
-			if (container && canvas) {
+			if (container) {
 				setSize({
 					width: container.clientWidth,
 					height: container.clientHeight,
 				});
-				if (!initializedRef.current) {
-					canvas.handler.add(previewOption as any);
-					initializedRef.current = true;
-				}
 				return;
 			}
 			timeoutId = window.setTimeout(syncPreview, 5);
@@ -142,7 +119,7 @@ const StyleModal = React.forwardRef<StyleModalHandle, StyleModalProps>((props, r
 	}, [form, nextStyle, visible]);
 
 	return (
-		<Modal onOk={onOk} onCancel={onCancel} open={visible}>
+		<Modal rootClassName="rde-editor-modal" onOk={onOk} onCancel={onCancel} open={visible}>
 			<Form
 				form={form}
 				layout="vertical"
@@ -163,12 +140,17 @@ const StyleModal = React.forwardRef<StyleModalHandle, StyleModalProps>((props, r
 				</Form.Item>
 				{StyleProperty.render(canvasApi, form, nextStyle)}
 			</Form>
-			<div ref={containerRef}>
+			<div ref={containerRef} className="rde-editor-modal-preview">
 				<Canvas
 					ref={canvasRef}
 					editable={false}
 					canvasOption={{ width: size.width, height: size.height, backgroundColor: '#f3f3f3' }}
 					workareaOption={{ backgroundColor: 'transparent' }}
+					onLoad={(handler, canvas) => {
+						if (canvas) {
+							initializeStylePreview(handler, canvas, nextStyle);
+						}
+					}}
 				/>
 			</div>
 		</Modal>

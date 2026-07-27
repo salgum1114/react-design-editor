@@ -9,7 +9,8 @@ class Cube extends fabric.FabricObject {
 	superType = 'shape';
 
 	constructor(options: any = {}) {
-		super(options);
+		const { type: _type, ...objectOptions } = options;
+		super(objectOptions);
 	}
 
 	shadeColor(color: string, percent: number) {

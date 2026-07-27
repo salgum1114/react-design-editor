@@ -110,7 +110,7 @@ export default class NodeConfiguration extends Component<IProps, IState> {
 			case 'script':
 				component = <InputScript onValidate={this.handlers.onValidate} disabled={disabled} />;
 				// @ts-ignore
-				rules.push({ required: true, validator: this.handlers.aceEditorValidator });
+				rules.push({ required: true, validator: this.handlers.editorValidator });
 				break;
 			case 'template':
 				component = <InputTemplate showLineNumbers={false} newLineMode={false} disabled={disabled} />;
@@ -121,13 +121,13 @@ export default class NodeConfiguration extends Component<IProps, IState> {
 			case 'json':
 				component = <InputJson onValidate={this.handlers.onValidate} disabled={disabled} />;
 				// @ts-ignore
-				rules.push({ required: true, validator: this.handlers.aceEditorValidator });
+				rules.push({ required: true, validator: this.handlers.editorValidator });
 				break;
 			case 'tags':
 				component = (
 					<Select
 						mode="tags"
-						dropdownStyle={{ display: 'none' }}
+						styles={{ popup: { root: { display: 'none' } } }}
 						placeholder={placeholder}
 						disabled={disabled}
 					>
@@ -154,23 +154,19 @@ export default class NodeConfiguration extends Component<IProps, IState> {
 			default:
 				component = <Input minLength={min} maxLength={max} placeholder={placeholder} disabled={disabled} />;
 		}
-		const label =
-			description && description.length ? (
-				<React.Fragment>
-					{icon ? <Icon name={icon} /> : null}
-					<span>{formConfig.label}</span>
+		const label = (
+			<span className="rde-inspector-field-label">
+				{icon ? <Icon name={icon} /> : null}
+				<span>{formConfig.label}</span>
+				{description && description.length ? (
 					<Tooltip title={description} placement="topRight">
-						<span style={{ float: 'right', marginLeft: 280 }}>
+						<span className="rde-inspector-label-help">
 							<Icon name="question-circle" />
 						</span>
 					</Tooltip>
-				</React.Fragment>
-			) : (
-				<React.Fragment>
-					{icon ? <Icon name={icon} /> : null}
-					<span>{formConfig.label}</span>
-				</React.Fragment>
-			);
+				) : null}
+			</span>
+		);
 		return (
 			<React.Fragment key={key}>
 				<Col key={key} span={span || 24}>
@@ -220,7 +216,7 @@ export default class NodeConfiguration extends Component<IProps, IState> {
 				errors,
 			});
 		},
-		aceEditorValidator: (_rule: any, _value: any, callback: (errors?: any) => void) => {
+		editorValidator: (_rule: any, _value: any, callback: (errors?: any) => void) => {
 			const { errors } = this.state;
 			if (errors && errors.length) {
 				callback(errors);

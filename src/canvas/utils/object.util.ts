@@ -6,27 +6,14 @@ type FabricClass = (new (...args: any[]) => any) & {
 };
 
 export const toObject = (
-	serializedOrObject: any,
-	objectOrPropertiesToInclude: any,
-	propertiesToIncludeOrProperties: string[] | { [key: string]: any } = [],
+	serialized: any,
+	obj: any,
+	propertiesToInclude: string[] = [],
 	properties?: { [key: string]: any },
 ) => {
-	const usesLegacySignature = Array.isArray(objectOrPropertiesToInclude);
-	const serialized = usesLegacySignature
-		? (serializedOrObject.callSuper?.('toObject') ??
-			serializedOrObject.toObject?.(objectOrPropertiesToInclude) ??
-			{})
-		: serializedOrObject;
-	const obj = usesLegacySignature ? serializedOrObject : objectOrPropertiesToInclude;
-	const propertiesToInclude = (
-		usesLegacySignature ? objectOrPropertiesToInclude : propertiesToIncludeOrProperties
-	) as string[];
-	const extraProperties = (usesLegacySignature ? propertiesToIncludeOrProperties : properties) as
-		| { [key: string]: any }
-		| undefined;
 	return Object.assign(
 		serialized,
-		extraProperties ?? {},
+		properties ?? {},
 		...propertiesToInclude.map(property => ({
 			[property]: obj.get(property),
 		})),
@@ -40,9 +27,9 @@ export const resolveFromObject = <T>(instance: T, callback?: any) => {
 	return Promise.resolve(instance);
 };
 
-export const registerFabricClass = <T extends FabricClass>(_name: string, ctor: T, ...aliases: string[]) => {
+export const registerFabricClass = <T extends FabricClass>(name: string, ctor: T, ...aliases: string[]) => {
 	const types = new Set<string>();
-	[ctor.type, ctor.prototype?.type, ...aliases].forEach(type => {
+	[name, ctor.type, ...aliases].forEach(type => {
 		if (typeof type === 'string' && type) {
 			types.add(type);
 		}

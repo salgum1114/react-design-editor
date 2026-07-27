@@ -8,6 +8,12 @@ class Spinner extends fabric.Group {
 	animationFrameId: ReturnType<typeof setTimeout> | null = null;
 
 	constructor(options: any = {}) {
+		const {
+			type: _type,
+			objects: _objects,
+			layoutManager: _layoutManager,
+			...groupOptions
+		} = options;
 		const radius = options.radius || 15;
 		const fill = options.fill || '#FFD700';
 		const baseCircle = new fabric.Circle({
@@ -42,7 +48,7 @@ class Spinner extends fabric.Group {
 			selectable: false,
 			evented: false,
 			visible: false,
-			...options,
+			...groupOptions,
 		});
 	}
 

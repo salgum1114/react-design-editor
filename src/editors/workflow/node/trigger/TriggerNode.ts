@@ -4,9 +4,10 @@ import { registerFabricClass, resolveFromObject } from '../../../../canvas/utils
 type NodeOptions = Record<string, any>;
 
 class TriggerNode extends Node {
+	static type = 'TriggerNode';
+
 	constructor(options: NodeOptions = {}) {
-		const type = options.type || 'TriggerNode';
-		super({ ...options, type, nodeClazz: options.nodeClazz || type });
+		super({ ...options, nodeClazz: options.nodeClazz || TriggerNode.type });
 	}
 
 	_render(ctx: CanvasRenderingContext2D) {
@@ -19,9 +20,5 @@ class TriggerNode extends Node {
 }
 
 registerFabricClass('TriggerNode', TriggerNode, 'TimerNode');
-
-if (typeof window !== 'undefined') {
-	(window as any).fabric.TimerNode = TriggerNode;
-}
 
 export default TriggerNode;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form } from 'antd';
 
-import AceModal from '../../../components/ace/AceModal';
+import MonacoModal from '../../../components/monaco/MonacoModal';
 
 type ElementData = {
 	code?: {
@@ -19,7 +19,7 @@ export default {
 
 		return (
 			<Form.Item name="code" initialValue={data.code} rules={[{ required: true, message: 'Please input code' }]}>
-				<AceModal />
+				<MonacoModal />
 			</Form.Item>
 		);
 	},

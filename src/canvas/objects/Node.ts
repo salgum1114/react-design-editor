@@ -2,7 +2,12 @@ import Color from 'color';
 import * as fabric from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { FabricObject } from '../models';
-import { fitTextToRect, registerFabricClass, resolveFromObject, toObject } from '../utils';
+import {
+	fitTextToRect,
+	registerFabricClass,
+	resolveFromObject,
+	toObject,
+} from '../utils';
 import { CustomControlObject } from './CustomControl';
 import FromPort from './FromPort';
 import { LinkObject } from './Link';
@@ -200,7 +205,13 @@ class Node extends fabric.Group {
 			subTargetCheck: !!options.descriptor?.actionButton,
 			originStroke: options.stroke,
 		});
-		super(node, nextOptions);
+		const {
+			type: _type,
+			objects: _objects,
+			layoutManager: _layoutManager,
+			...groupOptions
+		} = nextOptions;
+		super(node, groupOptions);
 		this.label = label;
 		this.rect = rect;
 		this.nodeIcon = nodeIcon;
@@ -277,7 +288,6 @@ class Node extends fabric.Group {
 		if (this.descriptor.inEnabled) {
 			this.toPort = new ToPort({
 				id: 'defaultInPort',
-				type: 'toPort',
 				...this.toPortOption(),
 				left,
 				top,
@@ -295,7 +305,6 @@ class Node extends fabric.Group {
 				const targetLeft = index === 0 ? left - offset : left + offset;
 				const port = new FromPort({
 					id: outPort,
-					type: 'fromPort',
 					left: targetLeft,
 					top,
 					leftDiff: index === 0 ? -offset : offset,
@@ -318,7 +327,6 @@ class Node extends fabric.Group {
 		} else {
 			const port = new FromPort({
 				id: 'defaultFromPort',
-				type: 'fromPort',
 				...this.fromPortOption(),
 				left,
 				top,
@@ -374,7 +382,8 @@ class Node extends fabric.Group {
 		const options = this.toObject();
 		options.id = uuid();
 		options.name = `${options.name}_clone`;
-		return new Node(options) as unknown as NodeObject;
+		const NodeConstructor = this.constructor as typeof Node;
+		return new NodeConstructor(options) as unknown as NodeObject;
 	}
 
 	toObject(propertiesToInclude: any[] = []) {

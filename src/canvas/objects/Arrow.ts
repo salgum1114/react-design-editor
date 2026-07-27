@@ -8,7 +8,8 @@ class Arrow extends fabric.Line {
 
 	constructor(points: any, options: any = {}) {
 		const nextPoints = points ?? [options.x1, options.y1, options.x2, options.y2];
-		super(nextPoints, options);
+		const { type: _type, ...lineOptions } = options;
+		super(nextPoints, lineOptions);
 	}
 
 	_render(ctx: CanvasRenderingContext2D) {

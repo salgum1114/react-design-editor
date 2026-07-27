@@ -134,7 +134,7 @@ const DataSourceModal = React.forwardRef<DataSourceModalHandle, DataSourceModalP
 	}, [dataSource, form, visible]);
 
 	return (
-		<Modal onOk={onOk} onCancel={onCancel} open={visible}>
+		<Modal rootClassName="rde-editor-modal" onOk={onOk} onCancel={onCancel} open={visible}>
 			<Form
 				form={form}
 				layout="vertical"
@@ -157,7 +157,7 @@ const DataSourceModal = React.forwardRef<DataSourceModalHandle, DataSourceModalP
 				</Form.Item>
 				{DataSourceProperty.render(canvasApi, form, { animation: dataSource, id: 'datasources' })}
 			</Form>
-			<div ref={containerRef}>
+			<div ref={containerRef} className="rde-editor-modal-preview">
 				<Canvas
 					ref={canvasRef}
 					editable={false}

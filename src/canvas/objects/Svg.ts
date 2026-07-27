@@ -22,17 +22,26 @@ export interface SvgOption extends FabricObjectOption {
 
 class Svg extends fabric.Group {
 	static type = 'svg';
+	loadPromise: Promise<SvgObject>;
 
 	constructor(option: SvgOption = {}) {
-		super([], option);
-		void this.loadSvg(option);
+		const {
+			type: _type,
+			objects: _objects,
+			layoutManager: _layoutManager,
+			...groupOptions
+		} = option;
+		super([], groupOptions);
+		this.loadPromise = this.loadSvg(option);
 	}
 
 	addSvgElements(objects: FabricObject[], options: SvgOption) {
+		const center = this.getCenterPoint();
 		const createdObj = fabric.util.groupSVGElements(objects, options) as SvgObject;
 		const { height, scaleY } = this;
 		const scale = height ? (height * scaleY) / createdObj.height : createdObj.scaleY;
-		this.set({ ...options, scaleX: scale, scaleY: scale });
+		const { type: _type, ...svgOptions } = options;
+		this.set({ ...svgOptions, scaleX: scale, scaleY: scale });
 		if (this.getObjects().length) {
 			this.getObjects().forEach((obj: FabricObject) => {
 				this.remove(obj);
@@ -61,6 +70,7 @@ class Svg extends fabric.Group {
 			}
 			this.add(createdObj);
 		}
+		this.setPositionByOrigin(center, 'center', 'center');
 		this.setCoords();
 		this.canvas?.requestRenderAll();
 		return this as unknown as SvgObject;
@@ -70,7 +80,8 @@ class Svg extends fabric.Group {
 		const { src, svg, loadType, fill, stroke } = option;
 		const result =
 			loadType === 'svg' ? await fabric.loadSVGFromString(svg || src) : await fabric.loadSVGFromURL(svg || src);
-		return this.addSvgElements(result.objects as FabricObject[], { ...result.options, fill, stroke });
+		const objects = result.objects.filter((obj): obj is FabricObject => Boolean(obj));
+		return this.addSvgElements(objects, { ...result.options, fill, stroke });
 	}
 
 	setFill(value: string, filter: (obj: FabricObject) => boolean = () => true) {
@@ -101,7 +112,8 @@ class Svg extends fabric.Group {
 	}
 
 	static fromObject(option: any, _abortable?: any) {
-		return resolveFromObject(new Svg(option));
+		const instance = new Svg(option);
+		return instance.loadPromise.then(() => resolveFromObject(instance));
 	}
 }
 

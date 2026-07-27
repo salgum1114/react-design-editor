@@ -6,9 +6,10 @@ import LogicNode from './LogicNode';
 type NodeOptions = Record<string, any>;
 
 class FilterNode extends LogicNode {
+	static type = 'FilterNode';
+
 	constructor(options: NodeOptions = {}) {
-		const type = options.type || 'FilterNode';
-		super({ ...options, type, nodeClazz: options.nodeClazz || type });
+		super({ ...options, nodeClazz: options.nodeClazz || FilterNode.type });
 	}
 
 	duplicate(): any {

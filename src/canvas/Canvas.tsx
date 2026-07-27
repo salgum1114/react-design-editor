@@ -7,10 +7,7 @@ import { defaults } from './constants';
 import { Handler, HandlerOptions } from './handlers';
 import { FabricCanvas } from './models';
 
-import './styles/canvas.css';
-import './styles/contextmenu.css';
-import './styles/fabricjs.css';
-import './styles/tooltip.css';
+import './styles/react-design-editor.css';
 
 export interface CanvasInstance {
 	handler: Handler;

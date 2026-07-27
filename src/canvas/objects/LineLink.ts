@@ -36,8 +36,9 @@ class LineLink extends fabric.Line {
 			toPort.left ?? 0,
 			toPort.top ?? 0,
 		];
+		const { type: _type, ...lineOptions } = options;
 		const nextOptions = {
-			...options,
+			...lineOptions,
 			strokeWidth: 4,
 			id: options.id || uuid(),
 			originX: 'center' as const,
@@ -66,7 +67,7 @@ class LineLink extends fabric.Line {
 	}
 
 	setPort(fromNode: NodeObject, fromPort: PortObject, _toNode: NodeObject, toPort: PortObject) {
-		const resolvedPort = fromNode.type === 'BroadcastNode' ? fromNode.fromPort[0] : fromPort;
+		const resolvedPort = fromNode.nodeClazz === 'BroadcastNode' ? fromNode.fromPort[0] : fromPort;
 		resolvedPort.links.push(this as any);
 		toPort.links.push(this as any);
 		this.setPortEnabled(fromNode, resolvedPort, false);

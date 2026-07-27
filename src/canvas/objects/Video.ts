@@ -2,7 +2,13 @@ import * as fabric from 'fabric';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 import { FabricElement } from '../models';
-import { createDOMElement, registerFabricClass, resolveFromObject, toObject, wrapDOMElement } from '../utils';
+import {
+	createDOMElement,
+	registerFabricClass,
+	resolveFromObject,
+	toObject,
+	wrapDOMElement,
+} from '../utils';
 
 export interface VideoObject extends FabricElement {
 	setSource: (source: string | File) => void;
@@ -26,7 +32,8 @@ class Video extends fabric.Rect {
 	declare file: File | null;
 
 	constructor(source: string | File, options: any = {}) {
-		super(options);
+		const { type: _type, ...elementOptions } = options;
+		super(elementOptions);
 		if (source instanceof File) {
 			this.set({ file: source, src: null });
 		} else {

@@ -5,9 +5,10 @@ import TriggerNode from './TriggerNode';
 type NodeOptions = Record<string, any>;
 
 class VirtualButtonNode extends TriggerNode {
+	static type = 'VirtualButtonNode';
+
 	constructor(options: NodeOptions = {}) {
-		const type = options.type || 'VirtualButtonNode';
-		super({ ...options, type, nodeClazz: options.nodeClazz || type });
+		super({ ...options, nodeClazz: options.nodeClazz || VirtualButtonNode.type });
 	}
 
 	static fromObject(options: any, callback?: (obj: any) => any) {

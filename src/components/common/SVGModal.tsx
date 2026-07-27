@@ -63,6 +63,7 @@ const SVGModal = ({ onCancel, onOk, visible }: SVGModalProps) => {
 
 	return (
 		<Modal
+			rootClassName="rde-editor-modal"
 			title={i18next.t('imagemap.svg.add-svg')}
 			closable
 			onCancel={handleCancel}

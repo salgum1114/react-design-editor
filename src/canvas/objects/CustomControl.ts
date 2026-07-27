@@ -14,13 +14,19 @@ class CustomControl extends fabric.Group {
 	superType = 'control';
 
 	constructor(options: any = {}) {
+		const {
+			type: _type,
+			objects: _objects,
+			layoutManager: _layoutManager,
+			...groupOptions
+		} = options;
 		super([], {
 			originX: 'center',
 			originY: 'center',
 			selectable: false,
 			evented: false,
 			visible: false,
-			...options,
+			...groupOptions,
 		});
 	}
 

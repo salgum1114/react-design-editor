@@ -8,7 +8,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
 import { i18nClient } from './i18n';
 import { register } from './serviceWorker';
-import './styles/react-design-editor.css';
+import './styles/app.css';
 
 const antResources: Record<string, typeof koKR> = {
 	ko: koKR,

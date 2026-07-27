@@ -3,7 +3,7 @@ import 'gifler';
 
 import { registerFabricClass, resolveFromObject } from '../utils';
 
-class Gif extends fabric.Image {
+class Gif extends fabric.FabricImage {
 	static type = 'gif';
 	superType = 'image';
 	gifCanvas: HTMLCanvasElement;
@@ -12,7 +12,8 @@ class Gif extends fabric.Image {
 
 	constructor(options: any = {}) {
 		const gifCanvas = document.createElement('canvas');
-		super(gifCanvas, options);
+		const { type: _type, ...imageOptions } = options;
+		super(gifCanvas, imageOptions);
 		this.gifCanvas = gifCanvas;
 	}
 

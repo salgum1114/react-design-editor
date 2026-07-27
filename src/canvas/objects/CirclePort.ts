@@ -7,7 +7,8 @@ class CirclePort extends fabric.Circle {
 	superType = 'port';
 
 	constructor(options: any = {}) {
-		super(options);
+		const { type: _type, ...circleOptions } = options;
+		super(circleOptions);
 	}
 
 	setPosition(left: number, top: number) {

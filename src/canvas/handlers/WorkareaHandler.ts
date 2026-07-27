@@ -19,10 +19,12 @@ class WorkareaHandler {
 	 */
 	public initialize() {
 		const { workareaOption } = this.handler;
+		const fabricOptions = { ...workareaOption };
+		delete (fabricOptions as Record<string, any>).type;
 		const image = new Image(workareaOption.width, workareaOption.height);
 		image.width = workareaOption.width;
 		image.height = workareaOption.height;
-		this.handler.workarea = new fabric.Image(image, workareaOption) as WorkareaObject;
+		this.handler.workarea = new fabric.FabricImage(image, fabricOptions) as WorkareaObject;
 		this.handler.canvas.add(this.handler.workarea);
 		this.handler.objects = this.handler.getObjects();
 		this.handler.canvas.centerObject(this.handler.workarea);
@@ -36,7 +38,8 @@ class WorkareaHandler {
 	 */
 	public setLayout = (layout: WorkareaLayout) => {
 		this.handler.workarea.set('layout', layout);
-		const { _element, isElement, workareaWidth, workareaHeight } = this.handler.workarea;
+		const { isElement, workareaWidth, workareaHeight } = this.handler.workarea;
+		const element = this.handler.workarea.getElement();
 		const { canvas } = this.handler;
 		let scaleX = 1;
 		let scaleY = 1;
@@ -45,15 +48,15 @@ class WorkareaHandler {
 		const isFullscreen = layout === 'fullscreen';
 		if (isElement) {
 			if (isFixed) {
-				scaleX = workareaWidth / _element.width;
-				scaleY = workareaHeight / _element.height;
+				scaleX = workareaWidth / element.width;
+				scaleY = workareaHeight / element.height;
 			} else if (isResponsive) {
 				const scales = this.calculateScale();
 				scaleX = scales.scaleX;
 				scaleY = scales.scaleY;
 			} else {
-				scaleX = canvas.getWidth() / _element.width;
-				scaleY = canvas.getHeight() / _element.height;
+				scaleX = canvas.getWidth() / element.width;
+				scaleY = canvas.getHeight() / element.height;
 			}
 		}
 		this.handler.getObjects().forEach(obj => {
@@ -102,8 +105,8 @@ class WorkareaHandler {
 		}
 		if (isElement) {
 			this.handler.workarea.set({
-				width: _element.width,
-				height: _element.height,
+				width: element.width,
+				height: element.height,
 				scaleX,
 				scaleY,
 			});
@@ -140,16 +143,14 @@ class WorkareaHandler {
 	 */
 	public setResponsiveImage = async (source: string | File, loaded?: boolean) => {
 		const imageFromUrl = async (src: string = '') => {
-			const img = await fabric.Image.fromURL(src);
+			const img = await fabric.FabricImage.fromURL(src);
 			const { canvas, workarea, editable } = this.handler;
 			const { workareaWidth, workareaHeight } = workarea;
 			const { scaleX, scaleY } = this.calculateScale(img);
-			if (img._element) {
-				workarea.set({
-					...img,
-					isElement: true,
-					selectable: false,
-				});
+			const element = img.getElement();
+			if (element) {
+				workarea.setElement(element);
+				workarea.set({ isElement: true, selectable: false });
 			} else {
 				const image = new Image(workareaWidth, workareaHeight);
 				workarea.setElement(image);
@@ -220,7 +221,7 @@ class WorkareaHandler {
 			return this.setResponsiveImage(source, loaded);
 		}
 		const imageFromUrl = async (src: string) => {
-			const img = await fabric.Image.fromURL(src, { crossOrigin: 'anonymous' });
+			const img = await fabric.FabricImage.fromURL(src, { crossOrigin: 'anonymous' });
 			let width = canvas.getWidth();
 			let height = canvas.getHeight();
 			if (workarea.layout === 'fixed') {
@@ -229,17 +230,16 @@ class WorkareaHandler {
 			}
 			let scaleX = 1;
 			let scaleY = 1;
-			if (img._element) {
+			const element = img.getElement();
+			if (element) {
 				scaleX = width / img.width;
 				scaleY = height / img.height;
-				img.set({
+				workarea.setElement(element);
+				workarea.set({
 					originX: 'left',
 					originY: 'top',
 					scaleX,
 					scaleY,
-				});
-				workarea.set({
-					...img,
 					isElement: true,
 					selectable: false,
 				});
@@ -282,11 +282,22 @@ class WorkareaHandler {
 			return workarea;
 		};
 		if (!source) {
+			const image = new Image(workarea.width, workarea.height);
+			image.width = workarea.width;
+			image.height = workarea.height;
+			workarea.setElement(image);
 			workarea.set({
 				src: null,
 				file: null,
+				isElement: false,
 			});
-			return imageFromUrl(source as string);
+			canvas.centerObject(workarea);
+			const center = canvas.getCenter();
+			const zoom = loaded ? 1 : canvas.getZoom();
+			canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
+			this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
+			canvas.renderAll();
+			return workarea;
 		}
 		if (source instanceof File) {
 			return new Promise<WorkareaObject>(resolve => {
@@ -316,9 +327,9 @@ class WorkareaHandler {
 	public calculateScale = (image?: FabricImage | fabric.FabricImage) => {
 		const { canvas, workarea } = this.handler;
 		const { workareaWidth, workareaHeight } = workarea;
-		const { _element } = image || workarea;
-		const width = _element?.width || workareaWidth;
-		const height = _element?.height || workareaHeight;
+		const element = (image || workarea).getElement();
+		const width = element?.width || workareaWidth;
+		const height = element?.height || workareaHeight;
 		let scaleX = canvas.getWidth() / width;
 		let scaleY = canvas.getHeight() / height;
 		if (height >= width) {

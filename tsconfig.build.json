@@ -9,5 +9,5 @@
 		"rootDir": "./src/canvas"
 	},
 	"include": ["src/canvas/**/*"],
-	"exclude": ["node_modules", "dist", "docs"]
+	"exclude": ["node_modules", "dist", "docs", "src/**/*.test.ts", "src/**/*.test.tsx"]
 }

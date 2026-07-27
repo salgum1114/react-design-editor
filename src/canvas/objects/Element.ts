@@ -31,7 +31,8 @@ class Element extends fabric.Rect {
 	declare code: Code;
 
 	constructor(code = initialCode, options: any = {}) {
-		super(options);
+		const { type: _type, ...elementOptions } = options;
+		super(elementOptions);
 		this.set({
 			code,
 			fill: 'rgba(255, 255, 255, 0)',

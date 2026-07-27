@@ -56,7 +56,6 @@ class App extends React.Component<any, IState> {
                         gtag('config', 'G-EH7WWSK514');
                         `}
 					</script>
-					<script async={true} src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
 				</Helmet>
 				<div className="rde-title">
 					<Title onChangeEditor={this.handleChangeEditor} currentEditor={activeEditor} />

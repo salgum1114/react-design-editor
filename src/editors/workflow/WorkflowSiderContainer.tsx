@@ -16,13 +16,12 @@ class WorkflowSiderContainer extends Component<IProps> {
 	render() {
 		const { children, title, content, icon, extra, titleStyle, contentStyle } = this.props;
 		return (
-			<Flex flexDirection="column" style={{ height: '100%' }}>
-				<Flex style={Object.assign({}, { background: '#f5f4f3', height: '40px' }, titleStyle)}>
+			<Flex className="rde-workflow-sider-section" flexDirection="column" style={{ height: '100%' }}>
+				<Flex className="rde-workflow-sider-section-header" style={titleStyle}>
 					<Flex
 						flex="1"
 						justifyContent="flex-start"
 						alignItems="center"
-						style={{ marginLeft: '8px', color: '#4d5360' }}
 					>
 						<Icon name={icon} style={{ marginRight: 8 }} />
 						<h4 style={{ marginBottom: 0 }}>{title}</h4>
@@ -34,8 +33,9 @@ class WorkflowSiderContainer extends Component<IProps> {
 					) : null}
 				</Flex>
 				<Flex
+					className="rde-workflow-sider-section-content"
 					flexDirection="column"
-					style={Object.assign({}, { height: '100%', margin: '8px 16px' }, contentStyle)}
+					style={contentStyle}
 				>
 					{children || content}
 				</Flex>

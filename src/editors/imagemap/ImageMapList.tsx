@@ -65,16 +65,15 @@ export default function ImageMapList({ canvasRef, selectedItem }: ImageMapListPr
 		}) || [];
 
 	return (
-		<Flex style={{ height: '100%' }} flexDirection="column">
+		<Flex className="rde-canvas-list" style={{ height: '100%' }} flexDirection="column">
 			<Flex.Item className="rde-canvas-list-actions" flex="0 1 auto">
 				<Flex>
 					<Input.Search placeholder={i18next.t('placeholder.search-node')} />
 				</Flex>
-				<Flex justifyContent="space-between" alignItems="center">
+				<Flex className="rde-canvas-list-order-actions" justifyContent="space-between" alignItems="center">
 					<Flex flex="1" justifyContent="center">
 						<Button
-							className="rde-action-btn"
-							style={{ width: '100%', height: 30 }}
+							className="rde-action-btn is-order"
 							disabled={isCropping}
 							onClick={() => canvasRef?.handler.sendBackwards()}
 						>
@@ -83,8 +82,7 @@ export default function ImageMapList({ canvasRef, selectedItem }: ImageMapListPr
 					</Flex>
 					<Flex flex="1" justifyContent="center">
 						<Button
-							className="rde-action-btn"
-							style={{ width: '100%', height: 30 }}
+							className="rde-action-btn is-order"
 							disabled={isCropping}
 							onClick={() => canvasRef?.handler.bringForward()}
 						>
@@ -120,7 +118,7 @@ export default function ImageMapList({ canvasRef, selectedItem }: ImageMapListPr
 								<div className="rde-canvas-list-item-text">{title}</div>
 								<Flex className="rde-canvas-list-item-actions" flex="1" justifyContent="flex-end">
 									<Button
-										className="rde-action-btn"
+										className="rde-action-btn is-secondary"
 										shape="circle"
 										disabled={isCropping}
 										onClick={event => {
@@ -131,8 +129,9 @@ export default function ImageMapList({ canvasRef, selectedItem }: ImageMapListPr
 										<Icon name="clone" />
 									</Button>
 									<Button
-										className="rde-action-btn"
+										className="rde-action-btn is-danger"
 										shape="circle"
+										danger
 										disabled={isCropping}
 										onClick={event => {
 											event.stopPropagation();

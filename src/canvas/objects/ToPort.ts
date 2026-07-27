@@ -18,13 +18,15 @@ class ToPort extends fabric.Path {
 	}
 
 	constructor(options: any = {}) {
-		super(ToPort.createPath(options) as any, options);
+		const { type: _type, ...pathOptions } = options;
+		super(ToPort.createPath(pathOptions) as any, pathOptions);
 	}
 
 	private updateShape(options: any = {}) {
-		const nextPath = new fabric.Path(ToPort.createPath(options) as any, options);
+		const { type: _type, ...pathOptions } = options;
+		const nextPath = new fabric.Path(ToPort.createPath(pathOptions) as any, pathOptions);
 		this.set({
-			...options,
+			...pathOptions,
 			path: nextPath.path,
 			width: nextPath.width,
 			height: nextPath.height,
@@ -37,6 +39,7 @@ class ToPort extends fabric.Path {
 			left,
 			top: top - ((this as any).connected ? 0 : this.height + (this.strokeWidth ?? 0)),
 		});
+		this.setCoords();
 	}
 
 	setConnected(connected?: boolean) {

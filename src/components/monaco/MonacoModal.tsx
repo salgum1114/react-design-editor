@@ -1,35 +1,29 @@
-import { Button, Form, Modal, notification } from 'antd';
+import { Button, Form, Modal } from 'antd';
 import React from 'react';
-
 import Icon from '../icon/Icon';
-import AceEditor from './AceEditor';
+import MonacoEditor from './MonacoEditor';
 
-notification.config({
-	top: 80,
-	duration: 1,
-});
-
-interface AceCodeValue {
+interface MonacoCodeValue {
 	html?: string;
 	css?: string;
 	js?: string;
 }
 
-interface AceModalProps {
-	value?: AceCodeValue;
-	onChange?: (value: AceCodeValue) => void;
+interface MonacoModalProps {
+	value?: MonacoCodeValue;
+	onChange?: (value: MonacoCodeValue) => void;
 	form?: any;
 }
 
-interface AceModalState {
-	code: Required<AceCodeValue>;
+interface MonacoModalState {
+	code: Required<MonacoCodeValue>;
 	visible: boolean;
 }
 
-class AceModal extends React.Component<AceModalProps, AceModalState> {
-	private aceRef: any;
+class MonacoModal extends React.Component<MonacoModalProps, MonacoModalState> {
+	private monacoRef: MonacoEditor | null = null;
 
-	state: AceModalState = {
+	state: MonacoModalState = {
 		code: {
 			html: this.props.value?.html || '',
 			css: this.props.value?.css || '',
@@ -38,7 +32,7 @@ class AceModal extends React.Component<AceModalProps, AceModalState> {
 		visible: false,
 	};
 
-	componentDidUpdate(prevProps: AceModalProps) {
+	componentDidUpdate(prevProps: MonacoModalProps) {
 		if (prevProps.value !== this.props.value) {
 			this.setState({
 				code: {
@@ -52,37 +46,19 @@ class AceModal extends React.Component<AceModalProps, AceModalState> {
 
 	handlers = {
 		onOk: () => {
-			const { onChange } = this.props;
-			const code = this.aceRef.handlers.getCodes();
-			onChange?.(code);
-			this.setState({
-				visible: false,
-				code,
-			});
+			const code = this.monacoRef?.handlers.getCodes() || this.state.code;
+			this.props.onChange?.(code);
+			this.setState({ visible: false, code });
 		},
 		onCancel: () => {
-			this.modalHandlers.onHide();
+			this.setState({ visible: false });
 		},
 		onClick: () => {
-			this.modalHandlers.onShow();
-		},
-	};
-
-	modalHandlers = {
-		onShow: () => {
-			this.setState({
-				visible: true,
-			});
-		},
-		onHide: () => {
-			this.setState({
-				visible: false,
-			});
+			this.setState({ visible: true });
 		},
 	};
 
 	render() {
-		const { onOk, onCancel, onClick } = this.handlers;
 		const {
 			code: { html, css, js },
 			visible,
@@ -90,7 +66,7 @@ class AceModal extends React.Component<AceModalProps, AceModalState> {
 		const label = (
 			<React.Fragment>
 				<span style={{ marginRight: 8 }}>Code Editor</span>
-				<Button onClick={onClick} shape="circle">
+				<Button onClick={this.handlers.onClick} shape="circle">
 					<Icon name="code" />
 				</Button>
 			</React.Fragment>
@@ -110,10 +86,16 @@ class AceModal extends React.Component<AceModalProps, AceModalState> {
 				<Form.Item label="JS" colon={false}>
 					<pre style={{ wordBreak: 'break-all', lineHeight: '1.2em' }}>{js}</pre>
 				</Form.Item>
-				<Modal onCancel={onCancel} onOk={onOk} open={visible} width="80%">
-					<AceEditor
+				<Modal
+					rootClassName="rde-editor-modal"
+					onCancel={this.handlers.onCancel}
+					onOk={this.handlers.onOk}
+					open={visible}
+					width="80%"
+				>
+					<MonacoEditor
 						ref={instance => {
-							this.aceRef = instance;
+							this.monacoRef = instance;
 						}}
 						html={html}
 						css={css}
@@ -125,4 +107,4 @@ class AceModal extends React.Component<AceModalProps, AceModalState> {
 	}
 }
 
-export default AceModal;
+export default MonacoModal;

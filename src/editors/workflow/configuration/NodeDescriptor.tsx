@@ -62,7 +62,7 @@ class NodeDescriptor extends Component<IProps, IState> {
 		const { onTrigger } = this.handlers;
 		const descriptorType = selectedItem.descriptor.type as keyof typeof NODE_COLORS;
 		const virtualButton =
-			selectedItem.type === 'VirtualButtonNode' ? (
+			selectedItem.nodeClazz === 'VirtualButtonNode' ? (
 				<Flex justifyContent="center" alignItems="center" flex="1" style={{ marginTop: 24 }}>
 					<CommonButton
 						icon="play"

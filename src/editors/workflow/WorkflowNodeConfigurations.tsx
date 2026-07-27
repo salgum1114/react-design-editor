@@ -1,8 +1,9 @@
-import { Divider, Form, FormInstance, Input } from 'antd';
+import { Divider, Form, FormInstance, Input, Row } from 'antd';
 import i18next from 'i18next';
 import React from 'react';
 import type { CanvasInstance } from '../../canvas';
 import { Scrollbar } from '../../components/common';
+import { INSPECTOR_FORM_PROPS } from '../../components/editor';
 import { Flex } from '../../components/flex';
 import NodeAction from './configuration/NodeAction';
 import NodeConfiguration from './configuration/NodeConfiguration';
@@ -35,17 +36,19 @@ const WorkflowNodeConfigurations = React.forwardRef<FormInstance, IProps>((props
 	React.useImperativeHandle(ref, () => form);
 
 	return (
-		<Scrollbar>
-			<Form
-				form={form}
-				onValuesChange={(changedValues, allValues) => {
-					onChange?.(selectedItem, changedValues, allValues);
-				}}
-			>
-				{selectedItem ? (
-					<React.Fragment>
-						<NodeDescriptor workflow={workflow} selectedItem={selectedItem} />
-						<Flex flexDirection="column" style={{ margin: '8px 16px' }}>
+		<div className="rde-workflow-node-configurations">
+			<Scrollbar>
+				<Form
+					form={form}
+					{...INSPECTOR_FORM_PROPS}
+					onValuesChange={(changedValues, allValues) => {
+						onChange?.(selectedItem, changedValues, allValues);
+					}}
+				>
+					{selectedItem ? (
+						<React.Fragment>
+							<NodeDescriptor workflow={workflow} selectedItem={selectedItem} />
+							<Flex className="rde-inspector-form-section" flexDirection="column">
 							<Form.Item
 								label={i18next.t('common.name')}
 								colon={false}
@@ -68,23 +71,23 @@ const WorkflowNodeConfigurations = React.forwardRef<FormInstance, IProps>((props
 								/>
 							</Form.Item>
 						</Flex>
-						<Divider>{i18next.t('workflow.node-configuration')}</Divider>
-						<Flex
-							flexDirection="column"
-							style={{ height: '100%', overflowY: 'hidden', margin: '8px 16px' }}
-						>
+						<Divider className="rde-inspector-divider">
+							{i18next.t('workflow.node-configuration')}
+						</Divider>
+						<Row className="rde-inspector-form-section rde-inspector-field-grid" gutter={8}>
 							<NodeConfiguration
 								canvasRef={canvasRef}
 								form={form}
 								selectedItem={selectedItem}
 								workflow={workflow}
 							/>
-						</Flex>
+						</Row>
 						<NodeAction workflow={workflow} selectedItem={selectedItem} canvasRef={canvasRef} />
-					</React.Fragment>
-				) : null}
-			</Form>
-		</Scrollbar>
+						</React.Fragment>
+					) : null}
+				</Form>
+			</Scrollbar>
+		</div>
 	);
 });
 

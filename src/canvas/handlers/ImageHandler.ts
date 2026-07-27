@@ -35,7 +35,7 @@ export interface GammaFilter {
 }
 
 export interface BlendImageFilter {
-	image?: fabric.Image;
+	image?: fabric.FabricImage;
 	mode?: 'multiply' | 'mask';
 	alpha?: number;
 }
@@ -59,7 +59,7 @@ export interface TintFilter {
 }
 
 export interface MaskFilter {
-	mask?: fabric.Image;
+	mask?: fabric.FabricImage;
 	/**
 	 * Rgb channel (0, 1, 2 or 3)
 	 * @default 0
@@ -341,9 +341,9 @@ class ImageHandler {
 	 * Apply filter by type
 	 * @param {string} type
 	 * @param {*} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyFilterByType = (type: string, apply = true, value?: any, imageObj?: fabric.Image): void => {
+	public applyFilterByType = (type: string, apply = true, value?: any, imageObj?: fabric.FabricImage): void => {
 		const obj = imageObj || (this.handler.canvas.getActiveObject() as any);
 		const normalizedType = normalizeFilterType(type);
 		const findIndex = FILTER_TYPES.findIndex(ft => ft === normalizedType);
@@ -364,14 +364,14 @@ class ImageHandler {
 
 	/**
 	 * Apply filter in image
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 * @param {number} index
 	 * @param {fabric.IBaseFilter} filter
 	 */
 	public applyFilter = (
 		index: number,
 		filter: any,
-		imageObj?: fabric.Image,
+		imageObj?: fabric.FabricImage,
 	): void => {
 		const obj = imageObj || (this.handler.canvas.getActiveObject() as any);
 		if (obj.filters) {
@@ -383,13 +383,13 @@ class ImageHandler {
 
 	/**
 	 * Apply filter value in image
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 * @param {number} index
 	 * @param {string} prop
 	 * @param {any} value
 	 */
-	public applyFilterValue = (index: number, prop: string, value: any, imageObj?: fabric.Image): void => {
-		const obj = imageObj || (this.handler.canvas.getActiveObject() as fabric.Image);
+	public applyFilterValue = (index: number, prop: string, value: any, imageObj?: fabric.FabricImage): void => {
+		const obj = imageObj || (this.handler.canvas.getActiveObject() as fabric.FabricImage);
 		if (obj.filters) {
 			const filter = obj.filters[index] as any;
 			if (filter) {
@@ -408,11 +408,15 @@ class ImageHandler {
 
 	/**
 	 * Apply grayscale in image
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 * @param {boolean} [grayscale=false]
 	 * @param {GrayscaleModeType} [value]
 	 */
-	public applyGrayscale = (grayscale = false, value?: GrayscaleModeType, imageObj?: fabric.Image): void => {
+	public applyGrayscale = (
+		grayscale = false,
+		value?: GrayscaleModeType,
+		imageObj?: fabric.FabricImage,
+	): void => {
 		this.applyFilter(
 			0,
 			grayscale &&
@@ -429,38 +433,38 @@ class ImageHandler {
 
 	/**
 	 * Apply invert in image
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 * @param {boolean} [invert=false]
 	 */
-	public applyInvert = (invert = false, imageObj?: fabric.Image): void => {
+	public applyInvert = (invert = false, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(1, invert && new fabric.filters.Invert(), imageObj);
 	};
 
 	/**
 	 * Apply remove color in image
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 * @param {boolean} [removeColor=false]
 	 * @param {RemoveColorFilter} [value]
 	 */
-	// public applyRemoveColor = (removeColor = false, value?: RemoveColorFilter, imageObj?: fabric.Image): void => {
+	// public applyRemoveColor = (removeColor = false, value?: RemoveColorFilter, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(2, removeColor && new fabric.filters.RemoveColor(value), imageObj);
 	// }
 
 	/**
 	 * Apply sepia in image
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 * @param {boolean} [sepia=false]
 	 */
-	public applySepia = (sepia = false, imageObj?: fabric.Image): void => {
+	public applySepia = (sepia = false, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(3, sepia && new fabric.filters.Sepia(), imageObj);
 	};
 
 	/**
 	 * Apply brownie in image
 	 * @param {boolean} [brownie=false]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	// public applyBrownie = (brownie = false, imageObj?: fabric.Image): void => {
+	// public applyBrownie = (brownie = false, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(4, brownie && new fabric.filters.Brownie(), imageObj);
 	// }
 
@@ -468,9 +472,9 @@ class ImageHandler {
 	 * Apply brightness in image
 	 * @param {boolean} [brightness=false]
 	 * @param {number} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyBrightness = (brightness = false, value?: number, imageObj?: fabric.Image): void => {
+	public applyBrightness = (brightness = false, value?: number, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(
 			5,
 			brightness &&
@@ -489,9 +493,9 @@ class ImageHandler {
 	 * Apply contrast in image
 	 * @param {boolean} [contrast=false]
 	 * @param {number} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyContrast = (contrast = false, value?: number, imageObj?: fabric.Image): void => {
+	public applyContrast = (contrast = false, value?: number, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(
 			6,
 			contrast &&
@@ -510,9 +514,9 @@ class ImageHandler {
 	 * Apply saturation in image
 	 * @param {boolean} [saturation=false]
 	 * @param {number} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applySaturation = (saturation = false, value?: number, imageObj?: fabric.Image): void => {
+	public applySaturation = (saturation = false, value?: number, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(
 			7,
 			saturation &&
@@ -531,9 +535,9 @@ class ImageHandler {
 	 * Apply noise in image
 	 * @param {boolean} [noise=false]
 	 * @param {number} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyNoise = (noise = false, value?: number, imageObj?: fabric.Image): void => {
+	public applyNoise = (noise = false, value?: number, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(
 			8,
 			noise &&
@@ -551,9 +555,9 @@ class ImageHandler {
 	/**
 	 * Apply vintage in image
 	 * @param {boolean} [vintage=false]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	// public applyVintage = (vintage = false, imageObj?: fabric.Image): void => {
+	// public applyVintage = (vintage = false, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(9, vintage && new fabric.filters.Vintage(), imageObj);
 	// }
 
@@ -561,9 +565,9 @@ class ImageHandler {
 	 * Apply pixelate in image
 	 * @param {boolean} [pixelate=false]
 	 * @param {number} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyPixelate = (pixelate = false, value?: number, imageObj?: fabric.Image): void => {
+	public applyPixelate = (pixelate = false, value?: number, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(
 			10,
 			pixelate &&
@@ -582,9 +586,9 @@ class ImageHandler {
 	 * Apply blur in image
 	 * @param {boolean} [blur=false]
 	 * @param {number} [value]
-	 * @param {fabric.Image} imageObj
+	 * @param {fabric.FabricImage} imageObj
 	 */
-	// public applyBlur = (blur = false, value?: number, imageObj?: fabric.Image): void => {
+	// public applyBlur = (blur = false, value?: number, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(11, blur && new fabric.filters.Blur(value ? {
 	//         value,
 	//     } : undefined), imageObj);
@@ -594,9 +598,13 @@ class ImageHandler {
 	 * Apply sharpen in image
 	 * @param {boolean} [sharpen=false]
 	 * @param {number[]} [value=[0, -1,  0, -1,  5, -1, 0, -1,  0]]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applySharpen = (sharpen = false, value: number[] = SHARPEN_MATRIX, imageObj?: fabric.Image): void => {
+	public applySharpen = (
+		sharpen = false,
+		value: number[] = SHARPEN_MATRIX,
+		imageObj?: fabric.FabricImage,
+	): void => {
 		this.applyFilter(
 			12,
 			sharpen &&
@@ -615,9 +623,13 @@ class ImageHandler {
 	 * Apply emboss in image
 	 * @param {boolean} [emboss=false]
 	 * @param {number[]} [value=[1, 1, 1, 1, 0.7, -1, -1, -1, -1]]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyEmboss = (emboss = false, value: number[] = EMBOSS_MATRIX, imageObj?: fabric.Image): void => {
+	public applyEmboss = (
+		emboss = false,
+		value: number[] = EMBOSS_MATRIX,
+		imageObj?: fabric.FabricImage,
+	): void => {
 		this.applyFilter(
 			13,
 			emboss &&
@@ -635,18 +647,18 @@ class ImageHandler {
 	/**
 	 * Apply technicolor in image
 	 * @param {boolean} [technicolor=false]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	// public applyTechnicolor = (technicolor = false, imageObj?: fabric.Image): void => {
+	// public applyTechnicolor = (technicolor = false, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(14, technicolor && new fabric.filters.Technicolor(), imageObj);
 	// }
 
 	/**
 	 * Apply polaroid in image
 	 * @param {boolean} [polaroid=false]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	// public applyPolaroid = (polaroid = false, imageObj?: fabric.Image): void => {
+	// public applyPolaroid = (polaroid = false, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(15, polaroid && new fabric.filters.Polaroid(), imageObj);
 	// }
 
@@ -654,9 +666,9 @@ class ImageHandler {
 	 * Apply blend color in image
 	 * @param {boolean} [blend=false]
 	 * @param {BlendColorFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyBlendColor = (blend = false, value?: BlendColorFilter, imageObj?: fabric.Image): void => {
+	public applyBlendColor = (blend = false, value?: BlendColorFilter, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(16, blend && this.createBlendColorFilter(value), imageObj);
 	};
 
@@ -664,27 +676,27 @@ class ImageHandler {
 	 * Apply gamma in image
 	 * @param {boolean} [gamma=false]
 	 * @param {GammaFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	// public applyGamma = (gamma = false, value?: GammaFilter, imageObj?: fabric.Image): void => {
+	// public applyGamma = (gamma = false, value?: GammaFilter, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(17, gamma && new fabric.filters.Gamma(value), imageObj);
 	// }
 
 	/**
 	 * Apply kodachrome in image
 	 * @param {boolean} [kodachrome=false]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	// public applyKodachrome = (kodachrome = false, imageObj?: fabric.Image): void => {
+	// public applyKodachrome = (kodachrome = false, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(18, kodachrome && new fabric.filters.Kodachrome(), imageObj);
 	// }
 
 	/**
 	 * Apply black white in image
 	 * @param {boolean} [blackWhite=false]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	// public applyBlackWhite = (blackWhite = false, imageObj?: fabric.Image): void => {
+	// public applyBlackWhite = (blackWhite = false, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(19, blackWhite && new fabric.filters.BlackWhite(), imageObj);
 	// }
 
@@ -692,9 +704,9 @@ class ImageHandler {
 	 * Apply blend image in image
 	 * @param {boolean} [blendImage=false]
 	 * @param {BlendImageFilter} value
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyBlendImage = (blendImage = false, value?: BlendImageFilter, imageObj?: fabric.Image): void => {
+	public applyBlendImage = (blendImage = false, value?: BlendImageFilter, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(20, blendImage && this.createBlendImageFilter(value), imageObj);
 	};
 
@@ -702,9 +714,9 @@ class ImageHandler {
 	 * Apply hue rotation in image
 	 * @param {boolean} [hue=false]
 	 * @param {HueRotationFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	// public applyHue = (hue = false, value?: HueRotationFilter, imageObj?: fabric.Image): void => {
+	// public applyHue = (hue = false, value?: HueRotationFilter, imageObj?: fabric.FabricImage): void => {
 	//     this.applyFilter(21, hue && new fabric.filters.HueRotation(value ? {
 	//         rotation: value,
 	//     } : undefined), imageObj);
@@ -714,9 +726,9 @@ class ImageHandler {
 	 * Apply resize in image
 	 * @param {boolean} [resize=false]
 	 * @param {ResizeFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyResize = (resize = false, value?: ResizeFilter, imageObj?: fabric.Image): void => {
+	public applyResize = (resize = false, value?: ResizeFilter, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(22, resize && new fabric.filters.Resize(value), imageObj);
 	};
 
@@ -724,9 +736,9 @@ class ImageHandler {
 	 * Apply tint in image
 	 * @param {boolean} [tint=false]
 	 * @param {TintFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyTint = (tint = false, value?: TintFilter, imageObj?: fabric.Image): void => {
+	public applyTint = (tint = false, value?: TintFilter, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(23, tint && this.createTintFilter(value), imageObj);
 	};
 
@@ -734,9 +746,9 @@ class ImageHandler {
 	 * Apply mask in image
 	 * @param {boolean} [mask=false]
 	 * @param {MaskFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyMask = (mask = false, value?: MaskFilter, imageObj?: fabric.Image): void => {
+	public applyMask = (mask = false, value?: MaskFilter, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(24, mask && this.createMaskFilter(value), imageObj);
 	};
 
@@ -744,18 +756,18 @@ class ImageHandler {
 	 * Apply multiply in image
 	 * @param {boolean} [multiply=false]
 	 * @param {MultiplyFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyMultiply = (multiply = false, value?: MultiplyFilter, imageObj?: fabric.Image): void => {
+	public applyMultiply = (multiply = false, value?: MultiplyFilter, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(25, multiply && this.createMultiplyFilter(value), imageObj);
 	};
 
 	/**
 	 * Apply sepia2 in image
 	 * @param {boolean} [sepia2=false]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applySepia2 = (sepia2 = false, imageObj?: fabric.Image): void => {
+	public applySepia2 = (sepia2 = false, imageObj?: fabric.FabricImage): void => {
 		this.applyFilter(26, sepia2 && this.createSepia2Filter(), imageObj);
 	};
 
@@ -763,12 +775,12 @@ class ImageHandler {
 	 * Apply gradient transparency in image
 	 * @param {boolean} [gradientTransparency=false]
 	 * @param {GradientTransparencyFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
 	public applyGradientTransparency = (
 		gradientTransparency = false,
 		_value?: GradientTransparencyFilter,
-		imageObj?: fabric.Image,
+		imageObj?: fabric.FabricImage,
 	): void => {
 		this.applyFilter(27, gradientTransparency && this.createGradientTransparencyFilter(), imageObj);
 	};
@@ -777,9 +789,13 @@ class ImageHandler {
 	 * Apply color matrix in image
 	 * @param {boolean} [colorMatrix=false]
 	 * @param {ColorMatrixFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyColorMatrix = (colorMatrix = false, value?: ColorMatrixFilter, imageObj?: fabric.Image): void => {
+	public applyColorMatrix = (
+		colorMatrix = false,
+		value?: ColorMatrixFilter,
+		imageObj?: fabric.FabricImage,
+	): void => {
 		this.applyFilter(28, colorMatrix && new fabric.filters.ColorMatrix(value), imageObj);
 	};
 
@@ -787,9 +803,13 @@ class ImageHandler {
 	 * Apply remove white in image
 	 * @param {boolean} [removeWhite=false]
 	 * @param {RemoveWhiteFilter} [value]
-	 * @param {fabric.Image} [imageObj]
+	 * @param {fabric.FabricImage} [imageObj]
 	 */
-	public applyRemoveWhite = (removeWhite = false, value?: RemoveWhiteFilter, imageObj?: fabric.Image): void => {
+	public applyRemoveWhite = (
+		removeWhite = false,
+		value?: RemoveWhiteFilter,
+		imageObj?: fabric.FabricImage,
+	): void => {
 		this.applyFilter(29, removeWhite && this.createRemoveWhiteFilter(value), imageObj);
 	};
 }

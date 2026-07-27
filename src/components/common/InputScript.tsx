@@ -1,9 +1,7 @@
 import { debounce } from 'lodash-es';
 import React from 'react';
-import AceCodeEditor from '../ace/AceCodeEditor';
-
-import 'ace-builds/src-noconflict/mode-javascript';
-import 'ace-builds/src-noconflict/theme-github';
+import MonacoCodeEditor from '../monaco/MonacoCodeEditor';
+import { markersToErrors } from '../monaco/monacoEditor.model';
 
 interface InputScriptProps {
 	defaultValue?: string;
@@ -25,8 +23,8 @@ export default function InputScript({
 	width = '100%',
 }: InputScriptProps) {
 	const [text, setText] = React.useState(value || '');
-	const aceRef = React.useRef<any>(null);
 	const textRef = React.useRef(text);
+	const errorsRef = React.useRef<Error[]>([]);
 	const debouncedValidateRef = React.useRef<any>(null);
 
 	React.useEffect(() => {
@@ -48,30 +46,21 @@ export default function InputScript({
 	const handleChange = (nextValue: string) => {
 		textRef.current = nextValue;
 		setText(nextValue);
-		debouncedValidateRef.current?.();
+		debouncedValidateRef.current?.(errorsRef.current.length ? errorsRef.current : undefined);
 	};
 
-	const handleValidate = (annotations: any[]) => {
-		if (annotations.length) {
-			const errors = annotations
-				.filter(annotation => annotation.type === 'error')
-				.map(annotation => new Error(`${annotation.row}:${annotation.column} ${annotation.text} error`));
-			debouncedValidateRef.current?.(errors);
-		}
+	const handleValidate: React.ComponentProps<typeof MonacoCodeEditor>['onValidate'] = markers => {
+		errorsRef.current = markersToErrors(markers || []);
+		debouncedValidateRef.current?.(errorsRef.current.length ? errorsRef.current : undefined);
 	};
 
 	return (
-		<AceCodeEditor
-			ref={aceRef}
-			mode="javascript"
-			theme="github"
+		<MonacoCodeEditor
+			language="javascript"
 			width={typeof width === 'number' ? `${width}px` : width}
 			height={typeof height === 'number' ? `${height}px` : height}
 			defaultValue={defaultValue || text}
 			value={text}
-			editorProps={{
-				$blockScrolling: true,
-			}}
 			onChange={handleChange}
 			onValidate={handleValidate}
 			readOnly={disabled}

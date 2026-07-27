@@ -127,6 +127,7 @@ class IconChooser extends React.Component<IconChooserProps, IconChooserState> {
 					<Button onClick={onClick}>{i18next.t('imagemap.marker.choose-icon')}</Button>
 				</Form.Item>
 				<Modal
+					rootClassName="rde-editor-modal"
 					onOk={onOk}
 					onCancel={onCancel}
 					width="80%"

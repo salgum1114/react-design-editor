@@ -407,14 +407,14 @@ class EventHandler extends AbstractHandler {
 				this.canvas.requestRenderAll();
 				return;
 			}
-			if (target && target.type === 'fromPort') {
+			if (target?.isType('fromPort')) {
 				this.handler.linkHandler.init(target as any);
 				return;
 			}
 			if (
 				target &&
 				this.handler.interactionMode === 'link' &&
-				(target.type === 'toPort' || target.superType === 'node')
+				(target.isType('toPort') || target.superType === 'node')
 			) {
 				let toPort;
 				if (target.superType === 'node') {
@@ -577,6 +577,7 @@ class EventHandler extends AbstractHandler {
 			target.set({ ...activeSelectionOption });
 		}
 		this.currentTarget = target;
+		this.handler.transactionHandler.rememberSelection(target);
 		this.handler.onSelect?.(target);
 	};
 

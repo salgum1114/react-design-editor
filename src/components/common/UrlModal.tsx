@@ -81,7 +81,7 @@ class UrlModal extends React.Component<UrlModalProps, UrlModalState> {
 				<Form.Item label={label} colon={false}>
 					<span style={{ wordBreak: 'break-all' }}>{url}</span>
 				</Form.Item>
-				<Modal onCancel={onCancel} onOk={onOk} open={visible}>
+				<Modal rootClassName="rde-editor-modal" onCancel={onCancel} onOk={onOk} open={visible}>
 					<Form.Item label={i18next.t('common.url')} colon={false}>
 						<Input
 							value={tempUrl}

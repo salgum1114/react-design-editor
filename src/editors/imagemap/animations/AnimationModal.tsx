@@ -131,7 +131,7 @@ const AnimationModal = React.forwardRef<AnimationModalHandle, AnimationModalProp
 	}, [animation, form, visible]);
 
 	return (
-		<Modal onOk={onOk} onCancel={onCancel} open={visible}>
+		<Modal rootClassName="rde-editor-modal" onOk={onOk} onCancel={onCancel} open={visible}>
 			<Form
 				form={form}
 				layout="vertical"
@@ -152,7 +152,7 @@ const AnimationModal = React.forwardRef<AnimationModalHandle, AnimationModalProp
 				</Form.Item>
 				{AnimationProperty.render(canvasApi, form, { animation, id: 'animations' })}
 			</Form>
-			<div ref={containerRef}>
+			<div ref={containerRef} className="rde-editor-modal-preview">
 				<Canvas
 					ref={canvasRef}
 					editable={false}

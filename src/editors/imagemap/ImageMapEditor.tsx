@@ -6,6 +6,8 @@ import i18next from 'i18next';
 import type { CanvasInstance } from '../../canvas';
 import Canvas from '../../canvas/Canvas';
 import CommonButton from '../../components/common/CommonButton';
+import { EditorActivityRail, EditorStatusBar, summarizeImageMap } from '../../components/editor';
+import Icon from '../../components/icon/Icon';
 import { Content } from '../../components/layout';
 import SandBox from '../../components/sandbox/SandBox';
 import ImageMapConfigurations from './ImageMapConfigurations';
@@ -87,6 +89,7 @@ interface ImageMapEditorState {
 	editing: boolean;
 	descriptors: DescriptorMap;
 	objects?: any[];
+	activeActivity: string;
 }
 
 class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorState> {
@@ -105,6 +108,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 		editing: false,
 		descriptors: {},
 		objects: undefined,
+		activeActivity: 'assets',
 	};
 
 	componentDidMount() {
@@ -132,7 +136,6 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 		},
 		onSelect: (target: any) => {
 			const { selectedItem } = this.state;
-			console.log(target, selectedItem);
 			if (target && target.id && target.id !== 'workarea' && !this.canvasRef?.handler.isActiveSelection(target)) {
 				if (selectedItem && target.id === selectedItem.id) {
 					return;
@@ -533,6 +536,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 			document.body.appendChild(anchorEl);
 			anchorEl.click();
 			anchorEl.remove();
+			this.changeEditing(false);
 			this.showLoading(false);
 		},
 		onChangeAnimations: (animations: any[]) => {
@@ -555,6 +559,9 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 		},
 		onSaveImage: () => {
 			this.canvasRef?.handler.saveCanvasImage();
+		},
+		onActivityChange: (activeActivity: string) => {
+			this.setState({ activeActivity });
 		},
 	};
 
@@ -580,6 +587,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 			editing,
 			descriptors,
 			objects,
+			activeActivity,
 		} = this.state;
 		const {
 			onAdd,
@@ -602,18 +610,21 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 			onChangeDataSources,
 			onSaveImage,
 		} = this.handlers;
+		const canvasObjects = this.canvasRef?.handler.getObjects() || [];
+		const summary = summarizeImageMap(canvasObjects, selectedItem);
 
 		const action = (
 			<React.Fragment>
 				<CommonButton
 					className="rde-action-btn"
-					shape="circle"
 					icon="file-download"
 					disabled={!editing}
 					tooltipTitle={i18next.t('action.download')}
 					onClick={onDownload}
 					tooltipPlacement="bottomRight"
-				/>
+				>
+					Export
+				</CommonButton>
 				{editing ? (
 					<Popconfirm
 						title={i18next.t('imagemap.imagemap-editing-confirm')}
@@ -651,18 +662,43 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 			</React.Fragment>
 		);
 
-		const title = <ImageMapTitle title={<span>{i18next.t('imagemap.imagemap-editor')}</span>} action={action} />;
+		const title = (
+			<ImageMapTitle
+				title={
+					<React.Fragment>
+						<span className="rde-editor-breadcrumb-section">Image maps</span>
+						<span className="rde-editor-breadcrumb-divider">/</span>
+						<strong>{this.canvasRef?.handler.workarea?.name || i18next.t('imagemap.imagemap-editor')}</strong>
+						<span className={`rde-editor-save-state ${editing ? 'editing' : 'saved'}`}>
+							{editing ? 'Unsaved changes' : 'Saved'}
+						</span>
+					</React.Fragment>
+				}
+				action={action}
+			/>
+		);
 
 		const content = (
-			<div className="rde-editor">
+			<div className="rde-editor rde-operator-editor rde-imagemap-editor">
+				<EditorActivityRail
+					label="Image map workspace"
+					activeKey={activeActivity}
+					onChange={this.handlers.onActivityChange}
+					items={[
+						{ key: 'assets', label: 'Assets', icon: 'shapes' },
+						{ key: 'layers', label: 'Layers', icon: 'layer-group' },
+					]}
+				/>
 				<ImageMapItems
 					ref={(ref: ImageMapItemsHandle | null) => {
 						this.itemsRef = ref;
 					}}
 					canvasRef={this.canvasRef}
 					descriptors={descriptors}
+					mode={activeActivity === 'layers' ? 'layers' : 'assets'}
+					selectedItem={selectedItem}
 				/>
-				<div className="rde-editor-canvas-container">
+				<section className="rde-editor-workspace rde-imagemap-workspace">
 					<div className="rde-editor-header-toolbar">
 						<ImageMapHeaderToolbar canvasRef={this.canvasRef} selectedItem={selectedItem} />
 					</div>
@@ -685,30 +721,42 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 							onContext={onContext}
 							onTransaction={onTransaction}
 							canvasOption={{
+								backgroundColor: '#1c2128',
 								selectionColor: 'rgba(8, 151, 156, 0.3)',
 							}}
 						/>
 					</div>
-					<div className="rde-editor-footer-toolbar">
-						<ImageMapFooterToolbar
-							canvasRef={this.canvasRef}
-							preview={preview}
-							onChangePreview={onChangePreview}
-							zoomRatio={zoomRatio}
-						/>
-					</div>
-				</div>
-				<ImageMapConfigurations
-					canvasRef={this.canvasRef}
-					onChange={onChange}
-					selectedItem={selectedItem}
-					onChangeAnimations={onChangeAnimations}
-					onChangeStyles={onChangeStyles}
-					onChangeDataSources={onChangeDataSources}
-					animations={animations}
-					styles={styles}
-					dataSources={dataSources}
-				/>
+					<EditorStatusBar
+						left={
+							<ImageMapFooterToolbar
+								canvasRef={this.canvasRef}
+								preview={preview}
+								onChangePreview={onChangePreview}
+								zoomRatio={zoomRatio}
+							/>
+						}
+						center={<span>{summary.objectCount} objects</span>}
+						right={
+							<span className={summary.hasSelection ? 'rde-status-selected' : 'rde-status-ok'}>
+								<Icon name={summary.hasSelection ? 'mouse-pointer' : 'check-circle'} />
+								{summary.hasSelection ? `${summary.selectedType} selected` : 'Map ready'}
+							</span>
+						}
+					/>
+				</section>
+				<aside className="rde-editor-inspector">
+					<ImageMapConfigurations
+						canvasRef={this.canvasRef}
+						onChange={onChange}
+						selectedItem={selectedItem}
+						onChangeAnimations={onChangeAnimations}
+						onChangeStyles={onChangeStyles}
+						onChangeDataSources={onChangeDataSources}
+						animations={animations}
+						styles={styles}
+						dataSources={dataSources}
+					/>
+				</aside>
 				<ImageMapPreview
 					preview={preview}
 					onChangePreview={() => onChangePreview(false)}

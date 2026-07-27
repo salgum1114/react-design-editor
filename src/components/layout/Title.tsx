@@ -15,12 +15,6 @@ class Title extends React.Component<IProps> {
 		visible: false,
 	};
 
-	componentDidMount() {
-		if (typeof window !== 'undefined') {
-			(window.adsbygoogle = window.adsbygoogle || []).push({});
-		}
-	}
-
 	handlers = {
 		goGithub: () => {
 			window.open('https://github.com/salgum1114/react-design-editor');
@@ -38,76 +32,54 @@ class Title extends React.Component<IProps> {
 	render() {
 		const { visible } = this.state;
 		return (
-			<Flex
-				style={{ background: 'linear-gradient(141deg,#23303e,#404040 51%,#23303e 75%)' }}
-				flexWrap="wrap"
-				flex="1"
-				alignItems="center"
-			>
-				<Flex style={{ marginLeft: 8 }} flex="0 1 auto">
-					<span style={{ color: '#fff', fontSize: 24, fontWeight: 500 }}>React Design Editor</span>
+			<Flex className="rde-appbar" flex="1" alignItems="center">
+				<Flex className="rde-appbar-brand" flex="0 1 auto" alignItems="center">
+					<span className="rde-appbar-brand-name">React Design Editor</span>
+				</Flex>
+				<Flex className="rde-appbar-navigation">
+					<Menu
+						mode="horizontal"
+						theme="dark"
+						className="rde-appbar-menu"
+						onClick={this.props.onChangeEditor}
+						selectedKeys={[this.props.currentEditor]}
+						items={[
+							{ key: 'imagemap', label: i18next.t('imagemap.imagemap') },
+							{ key: 'workflow', label: i18next.t('workflow.workflow') },
+						]}
+					/>
+				</Flex>
+				<Flex className="rde-appbar-actions" flex="1" justifyContent="flex-end">
 					<Tooltip title={i18next.t('action.go-github')} styles={{ root: { fontSize: 16 } }}>
 						<Button
-							className="rde-action-btn"
-							style={{
-								color: 'white',
-							}}
+							className="rde-action-btn rde-appbar-action"
 							shape="circle"
-							size="large"
 							onClick={this.handlers.goGithub}
 						>
-							<Icon name="github" prefix="fab" size={1.5} />
+							<Icon name="github" prefix="fab" />
 						</Button>
 					</Tooltip>
 					<Tooltip title={i18next.t('action.go-docs')} styles={{ root: { fontSize: 16 } }}>
 						<Button
-							className="rde-action-btn"
-							style={{
-								color: 'white',
-							}}
+							className="rde-action-btn rde-appbar-action"
 							shape="circle"
-							size="large"
 							onClick={this.handlers.goDocs}
 						>
-							<Icon name="book" prefix="fas" size={1.5} />
+							<Icon name="book" prefix="fas" />
 						</Button>
 					</Tooltip>
 					<Tooltip title={i18next.t('action.shortcut-help')} styles={{ root: { fontSize: 16 } }}>
 						<Button
-							className="rde-action-btn"
-							style={{
-								color: 'white',
-							}}
+							className="rde-action-btn rde-appbar-action"
 							shape="circle"
-							size="large"
 							onClick={this.handlers.showHelp}
 						>
-							<Icon name="question" prefix="fas" size={1.5} />
+							<Icon name="question" prefix="fas" />
 						</Button>
 					</Tooltip>
 				</Flex>
-				<Flex style={{ marginLeft: 88 }}>
-					<Menu
-						mode="horizontal"
-						theme="dark"
-						style={{ background: 'transparent', fontSize: '16px' }}
-						onClick={this.props.onChangeEditor}
-						selectedKeys={[this.props.currentEditor]}
-						items={[
-							{ key: 'imagemap', label: i18next.t('imagemap.imagemap'), style: { color: '#fff' } },
-							{ key: 'workflow', label: i18next.t('workflow.workflow'), style: { color: '#fff' } },
-						]}
-					/>
-				</Flex>
-				<Flex flex="1" justifyContent="flex-end">
-					<ins
-						className="adsbygoogle"
-						style={{ display: 'inline-block', width: 600, height: 60 }}
-						data-ad-client="ca-pub-8569372752842198"
-						data-ad-slot="5790685139"
-					/>
-				</Flex>
 				<Modal
+					rootClassName="rde-editor-modal"
 					open={visible}
 					onCancel={() => this.setState({ visible: false })}
 					closable={true}

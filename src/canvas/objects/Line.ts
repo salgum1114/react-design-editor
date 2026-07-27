@@ -7,17 +7,16 @@ class Line extends fabric.Line {
 
 	constructor(points: any, options: any = {}) {
 		const nextPoints = points ?? [options.x1, options.y1, options.x2, options.y2];
-		super(nextPoints, options);
+		const { type: _type, ...lineOptions } = options;
+		super(nextPoints, lineOptions);
 	}
 
 	_render(ctx: CanvasRenderingContext2D) {
 		super._render(ctx);
 	}
 
-	static fromObject(options: any, callback?: (obj: Line) => void) {
-		const instance = new Line([options.x1, options.y1, options.x2, options.y2], options);
-		callback?.(instance);
-		return Promise.resolve(instance);
+	static fromObject(options: any, _abortable?: { signal?: AbortSignal }) {
+		return Promise.resolve(new Line([options.x1, options.y1, options.x2, options.y2], options));
 	}
 }
 

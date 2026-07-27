@@ -7,8 +7,15 @@ import i18next from 'i18next';
 import type { CanvasInstance } from '../../canvas';
 import CommonButton from '../../components/common/CommonButton';
 import Scrollbar from '../../components/common/Scrollbar';
+import {
+	EditorPanelHeader,
+	PALETTE_COLLAPSE_PROPS,
+	resolvePaletteActiveKeys,
+} from '../../components/editor';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
+import ImageMapList from './ImageMapList';
+import { getImageMapPaletteAccent } from './imagemapPalette.model';
 
 notification.config({
 	top: 80,
@@ -31,6 +38,8 @@ type DescriptorMap = Record<string, DescriptorItem[]>;
 interface ImageMapItemsProps {
 	canvasRef?: CanvasInstance | null;
 	descriptors?: DescriptorMap;
+	mode?: 'assets' | 'layers';
+	selectedItem?: any;
 }
 
 type DragItem = DescriptorItem | null;
@@ -40,10 +49,10 @@ export interface ImageMapItemsHandle {
 }
 
 const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(function ImageMapItems(
-	{ canvasRef, descriptors = {} }: ImageMapItemsProps,
+	{ canvasRef, descriptors = {}, mode = 'assets', selectedItem }: ImageMapItemsProps,
 	ref,
 ) {
-	const [activeKey, setActiveKey] = React.useState<string[]>([]);
+	const [activeKey, setActiveKey] = React.useState<string[] | null>(null);
 	const [collapse, setCollapse] = React.useState(false);
 	const [textSearch, setTextSearch] = React.useState('');
 	const dragItemRef = React.useRef<DragItem>(null);
@@ -198,7 +207,16 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 		}
 	};
 
-	const renderItem = (item: DescriptorItem, centered?: boolean) => {
+	const getDescriptorCategory = (item: DescriptorItem) =>
+		Object.entries(descriptors).find(([, items]) => items.includes(item))?.[0] || '';
+
+	const renderItem = (item: DescriptorItem, centered?: boolean, category = '') => {
+		const accent = getImageMapPaletteAccent(category || getDescriptorCategory(item));
+		const itemStyle = {
+			justifyContent: collapse ? 'center' : undefined,
+			'--rde-palette-accent': accent,
+		} as React.CSSProperties;
+
 		if (item.type === 'drawing') {
 			return (
 				<div
@@ -206,10 +224,14 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 					draggable
 					onClick={() => handleDrawingItem(item)}
 					className="rde-editor-items-item"
-					style={{ justifyContent: collapse ? 'center' : undefined }}
+					style={itemStyle}
 				>
 					<span className="rde-editor-items-item-icon">
-						<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
+						<Icon
+							name={item.icon.name}
+							prefix={item.icon.prefix}
+							style={{ ...item.icon.style, color: accent }}
+						/>
 					</span>
 					{collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
 				</div>
@@ -230,19 +252,19 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 					event.currentTarget.classList.remove('dragging');
 				}}
 				className="rde-editor-items-item"
-				style={{ justifyContent: collapse ? 'center' : undefined }}
+				style={itemStyle}
 			>
 				<span className="rde-editor-items-item-icon">
-					<Icon name={item.icon.name} prefix={item.icon.prefix} style={item.icon.style} />
+					<Icon name={item.icon.name} prefix={item.icon.prefix} style={{ ...item.icon.style, color: accent }} />
 				</span>
 				{collapse ? null : <div className="rde-editor-items-item-text">{item.name}</div>}
 			</div>
 		);
 	};
 
-	const renderItems = (items: DescriptorItem[]) => (
+	const renderItems = (items: DescriptorItem[], category?: string) => (
 		<Flex flexWrap="wrap" flexDirection="column" style={{ width: '100%' }}>
-			{items.map(item => renderItem(item))}
+			{items.map(item => renderItem(item, undefined, category || getDescriptorCategory(item)))}
 		</Flex>
 	);
 
@@ -254,34 +276,48 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 		[collapse, canvasRef],
 	);
 
-	const className = clsx('rde-editor-items', {
+	const className = clsx('rde-editor-items rde-imagemap-items', `mode-${mode}`, {
 		minimize: collapse,
 	});
 
 	return (
 		<div className={className}>
-			<Flex flex="1" flexDirection="column" style={{ height: '100%' }}>
-				<Flex justifyContent="center" alignItems="center" style={{ height: 40 }}>
-					<CommonButton
-						icon={collapse ? 'angle-double-right' : 'angle-double-left'}
-						shape="circle"
-						className="rde-action-btn"
-						style={{ margin: '0 4px' }}
-						onClick={() => setCollapse(prevState => !prevState)}
-					/>
-					{collapse ? null : (
+			<Flex className="rde-editor-items-layout" flex="1" flexDirection="column">
+				<EditorPanelHeader
+					eyebrow={collapse ? undefined : mode === 'assets' ? 'Create' : 'Canvas'}
+					title={collapse ? null : mode === 'assets' ? 'Asset library' : 'Layers'}
+					action={
+						<CommonButton
+							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
+							shape="circle"
+							className="rde-action-btn"
+							onClick={() => setCollapse(prevState => !prevState)}
+						/>
+					}
+				/>
+				{collapse || mode === 'layers' ? null : (
+					<div className="rde-editor-items-search">
 						<Input
-							style={{ margin: '8px' }}
 							placeholder={i18next.t('action.search-list')}
 							onChange={event => setTextSearch(event.target.value)}
 							value={textSearch}
 							allowClear
+							prefix={<Icon name="search" />}
 						/>
-					)}
-				</Flex>
-				<Scrollbar>
-					<Flex flex="1" style={{ overflowY: 'hidden' }}>
-						{textSearch.length ? (
+					</div>
+				)}
+				<Scrollbar
+					className={clsx('rde-editor-items-scroll', { 'is-layer-list': mode === 'layers' })}
+					style={{ height: 'auto', minHeight: 0, flex: '1 1 0%' }}
+				>
+					<div
+						className={clsx('rde-editor-items-scroll-content', {
+							'fill-height': mode === 'layers',
+						})}
+					>
+						{mode === 'layers' ? (
+							<ImageMapList canvasRef={canvasRef} selectedItem={selectedItem} />
+						) : textSearch.length ? (
 							renderItems(filteredDescriptors)
 						) : collapse ? (
 							<Flex
@@ -295,18 +331,26 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 						) : (
 							<Collapse
 								style={{ width: '100%' }}
-								bordered={false}
-								activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
+								{...PALETTE_COLLAPSE_PROPS}
+								activeKey={resolvePaletteActiveKeys(activeKey, Object.keys(descriptors))}
 								onChange={keys => setActiveKey(Array.isArray(keys) ? keys : [keys])}
-								items={Object.keys(descriptors).map(key => ({
-									key,
-									label: key,
-									showArrow: !collapse,
-									children: renderItems(descriptors[key]),
-								}))}
+								items={Object.keys(descriptors).map(key => {
+									const accent = getImageMapPaletteAccent(key);
+									return {
+										key,
+										label: (
+											<span className="rde-editor-items-category">
+												<span style={{ backgroundColor: accent }} />
+												{key}
+											</span>
+										),
+										showArrow: !collapse,
+										children: renderItems(descriptors[key], key),
+									};
+								})}
 							/>
 						)}
-					</Flex>
+					</div>
 				</Scrollbar>
 			</Flex>
 		</div>

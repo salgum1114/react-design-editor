@@ -2,6 +2,7 @@ import { Divider, Form, Input, Switch } from 'antd';
 import i18next from 'i18next';
 import React from 'react';
 import { CommonButton } from '../../components/common';
+import { INSPECTOR_FORM_PROPS } from '../../components/editor';
 import WorkflowSiderContainer from './WorkflowSiderContainer';
 
 interface IProps {
@@ -14,7 +15,7 @@ const WorkflowInfo = ({ workflow, onChange }: IProps) => {
 	const [isEdit, setIsEdit] = React.useState(false);
 
 	React.useEffect(() => {
-		if (!workflow) {
+		if (!workflow || !isEdit) {
 			return;
 		}
 		form.setFieldsValue({
@@ -22,7 +23,7 @@ const WorkflowInfo = ({ workflow, onChange }: IProps) => {
 			description: workflow.description,
 			enabled: workflow.enabled,
 		});
-	}, [form, workflow]);
+	}, [form, isEdit, workflow]);
 
 	const handleClick = async () => {
 		if (!isEdit) {
@@ -36,7 +37,7 @@ const WorkflowInfo = ({ workflow, onChange }: IProps) => {
 	};
 
 	const component = isEdit ? (
-		<Form form={form}>
+		<Form form={form} {...INSPECTOR_FORM_PROPS}>
 			<Form.Item
 				label={i18next.t('common.name')}
 				colon={false}

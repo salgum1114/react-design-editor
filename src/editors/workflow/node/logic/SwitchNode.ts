@@ -5,6 +5,8 @@ import { FromPort, PortObject } from '../../../../canvas/objects';
 import LogicNode from './LogicNode';
 
 class SwitchNode extends LogicNode {
+	static type = 'SwitchNode';
+
 	portWidth = 80;
 	portHeight = 40;
 	defaultRouteLength = 3;
@@ -13,7 +15,6 @@ class SwitchNode extends LogicNode {
 
 	constructor(options: any = {}) {
 		const nextOptions = { ...options };
-		const type = nextOptions.type ?? 'SwitchNode';
 		const routeLength = nextOptions.configuration?.routes?.length ?? 0;
 		if (nextOptions.__baseLeft == null) {
 			nextOptions.__baseLeft = nextOptions.left ?? 0;
@@ -24,8 +25,7 @@ class SwitchNode extends LogicNode {
 		super({
 			...nextOptions,
 			left: nextOptions.__baseLeft + shift,
-			type,
-			nodeClazz: nextOptions.nodeClazz ?? type,
+			nodeClazz: nextOptions.nodeClazz ?? SwitchNode.type,
 		});
 	}
 
@@ -75,6 +75,8 @@ class SwitchNode extends LogicNode {
 			const rect = new fabric.Rect({
 				width: this.portWidth,
 				height: this.portHeight,
+				originX: 'center',
+				originY: 'center',
 				fill: '#272e38',
 				// @ts-ignore
 				originFill: '#272e38',
@@ -82,12 +84,14 @@ class SwitchNode extends LogicNode {
 				rx: 12,
 				ry: 12,
 			});
-			const { text, fontSize, height } = fitTextToRect(context, outPort, this.fontSize, this.fontFamily, 72, 32);
+			const { text, fontSize } = fitTextToRect(context, outPort, this.fontSize, this.fontFamily, 72, 32);
 			const label = new fabric.Text(text, {
 				fontSize,
 				fontFamily: 'Noto Sans',
 				fontWeight: 400,
 				fill: '#fff',
+				originX: 'center',
+				originY: 'center',
 			});
 			let coords;
 			if (isEven) {
@@ -110,7 +114,6 @@ class SwitchNode extends LogicNode {
 				originX: 'center',
 				originY: 'center',
 			});
-			label.set({ fontSize, top: -height / 2, left: rect.getCenterPoint().x });
 			return portLabel as unknown as PortObject;
 		});
 		this.ports.forEach((port: PortObject) => {
@@ -128,7 +131,6 @@ class SwitchNode extends LogicNode {
 			const top = y + height;
 			port.fromPort = new FromPort({
 				id: port.id,
-				type: 'fromPort',
 				left: coords.left,
 				top,
 				leftDiff: coords.leftDiff,
