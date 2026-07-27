@@ -1,26 +1,34 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { v4 as uuid } from 'uuid';
-import { fitTextToRect } from '../../../../canvas';
+import { fitTextToRect, registerFabricClass, resolveFromObject } from '../../../../canvas';
 import { FromPort, PortObject } from '../../../../canvas/objects';
 import LogicNode from './LogicNode';
 
-const SwitchNode = fabric.util.createClass(LogicNode, {
-	portWidth: 80,
-	portHeight: 40,
-	defaultRouteLength: 3,
-	initialize(options: any) {
-		options = options || {};
-		const routeLength = options.configuration?.routes?.length ?? 0;
+class SwitchNode extends LogicNode {
+	static type = 'SwitchNode';
 
-		if (options.__baseLeft == null) options.__baseLeft = options.left ?? 0;
+	portWidth = 80;
+	portHeight = 40;
+	defaultRouteLength = 3;
+	declare configuration: { routes: string[] } & Record<string, any>;
+	declare ports: PortObject[];
 
+	constructor(options: any = {}) {
+		const nextOptions = { ...options };
+		const routeLength = nextOptions.configuration?.routes?.length ?? 0;
+		if (nextOptions.__baseLeft == null) {
+			nextOptions.__baseLeft = nextOptions.left ?? 0;
+		}
 		const nodeWidth = 240;
-		const portsWidth = routeLength * this.portWidth;
+		const portsWidth = routeLength * 80;
 		const shift = Math.max(0, (portsWidth - nodeWidth) / 2);
-		options.left = options.__baseLeft + shift;
+		super({
+			...nextOptions,
+			left: nextOptions.__baseLeft + shift,
+			nodeClazz: nextOptions.nodeClazz ?? SwitchNode.type,
+		});
+	}
 
-		this.callSuper('initialize', options);
-	},
 	createFromPort(x: number, y: number) {
 		const isEven = this.configuration.routes.length % 2 === 0;
 		const calcOdd = (port: PortObject, i: number) => {
@@ -67,6 +75,8 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 			const rect = new fabric.Rect({
 				width: this.portWidth,
 				height: this.portHeight,
+				originX: 'center',
+				originY: 'center',
 				fill: '#272e38',
 				// @ts-ignore
 				originFill: '#272e38',
@@ -74,12 +84,14 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 				rx: 12,
 				ry: 12,
 			});
-			const { text, fontSize, height } = fitTextToRect(context, outPort, this.fontSize, this.fontFamily, 72, 32);
+			const { text, fontSize } = fitTextToRect(context, outPort, this.fontSize, this.fontFamily, 72, 32);
 			const label = new fabric.Text(text, {
 				fontSize,
 				fontFamily: 'Noto Sans',
 				fontWeight: 400,
 				fill: '#fff',
+				originX: 'center',
+				originY: 'center',
 			});
 			let coords;
 			if (isEven) {
@@ -102,11 +114,10 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 				originX: 'center',
 				originY: 'center',
 			});
-			label.set({ fontSize, top: -height / 2, left: (rect.center() as any).x });
-			return portLabel;
+			return portLabel as unknown as PortObject;
 		});
 		this.ports.forEach((port: PortObject) => {
-			this.addWithUpdate(port);
+			this.add(port);
 			port.setCoords();
 		});
 		this.fromPort = this.ports.map((port: PortObject, i: number) => {
@@ -120,7 +131,6 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 			const top = y + height;
 			port.fromPort = new FromPort({
 				id: port.id,
-				type: 'fromPort',
 				left: coords.left,
 				top,
 				leftDiff: coords.leftDiff,
@@ -131,22 +141,21 @@ const SwitchNode = fabric.util.createClass(LogicNode, {
 			return port.fromPort;
 		});
 		return this.fromPort;
-	},
-	duplicate() {
+	}
+
+	duplicate(): any {
 		const options = this.toObject();
 		options.id = uuid();
 		options.name = `${options.name}_clone`;
 		options.__baseLeft = options.left ?? 0;
-		const clonedObj = new SwitchNode(options);
-		return clonedObj;
-	},
-});
+		return new SwitchNode(options);
+	}
 
-SwitchNode.fromObject = function (options: any, callback: any) {
-	return callback(new SwitchNode(options));
-};
+	static fromObject(options: any, _abortable?: any) {
+		return resolveFromObject(new SwitchNode(options)) as Promise<any>;
+	}
+}
 
-// @ts-ignore
-window.fabric.SwitchNode = SwitchNode;
+registerFabricClass('SwitchNode', SwitchNode);
 
 export default SwitchNode;

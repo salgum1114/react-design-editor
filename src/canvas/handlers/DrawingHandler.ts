@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { FabricEvent, FabricObject } from '../models';
 import { Arrow, Line } from '../objects';
@@ -59,7 +59,7 @@ class DrawingHandler {
 					fill: 'red',
 				});
 			}
-			const points = [x, y, x, y];
+			const points: [number, number, number, number] = [x, y, x, y];
 			const line = new fabric.Line(points, {
 				strokeWidth: 1,
 				fill: '#999999',
@@ -75,7 +75,7 @@ class DrawingHandler {
 				class: 'line',
 			});
 			if (this.handler.activeShape) {
-				const position = this.handler.canvas.getPointer(e);
+				const position = this.handler.canvas.getPointer(e as any);
 				const activeShapePoints = this.handler.activeShape.get('points') as Array<{ x: number; y: number }>;
 				activeShapePoints.push({
 					x: position.x,
@@ -129,7 +129,8 @@ class DrawingHandler {
 			this.handler.lineArray.forEach(line => {
 				this.handler.canvas.remove(line);
 			});
-			this.handler.canvas.remove(this.handler.activeShape).remove(this.handler.activeLine);
+			this.handler.canvas.remove(this.handler.activeShape);
+			this.handler.canvas.remove(this.handler.activeLine);
 			const option = {
 				id,
 				points,

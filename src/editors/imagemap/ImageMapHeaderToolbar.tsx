@@ -1,0 +1,183 @@
+import React from 'react';
+
+import i18next from 'i18next';
+import type { CanvasInstance } from '../../canvas';
+import { CommonButton } from '../../components/common';
+import { Flex } from '../../components/flex';
+import Icon from '../../components/icon/Icon';
+
+interface ImageMapHeaderToolbarProps {
+	canvasRef?: CanvasInstance | null;
+	selectedItem?: { id?: string } | null;
+}
+
+export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: ImageMapHeaderToolbarProps) {
+	const isCropping = canvasRef ? canvasRef.handler?.interactionMode === 'crop' : false;
+	const saveTarget = (selectedItem as any) || canvasRef?.canvas.getActiveObject() || canvasRef?.handler?.workarea;
+
+	return (
+		<Flex className="rde-editor-header-toolbar-container" flex="1">
+			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.bringForward()}
+					icon="angle-up"
+					tooltipTitle={i18next.t('action.bring-forward')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.sendBackwards()}
+					icon="angle-down"
+					tooltipTitle={i18next.t('action.send-backwards')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.bringToFront()}
+					icon="angle-double-up"
+					tooltipTitle={i18next.t('action.bring-to-front')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.sendToBack()}
+					icon="angle-double-down"
+					tooltipTitle={i18next.t('action.send-to-back')}
+				/>
+			</Flex.Item>
+			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-alignment">
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.alignmentHandler.left()}
+					icon="align-left"
+					tooltipTitle={i18next.t('action.align-left')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.alignmentHandler.center()}
+					icon="align-center"
+					tooltipTitle={i18next.t('action.align-center')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.alignmentHandler.middle()}
+					icon="align-center"
+					tooltipTitle={i18next.t('action.align-middle')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.alignmentHandler.right()}
+					icon="align-right"
+					tooltipTitle={i18next.t('action.align-right')}
+				/>
+			</Flex.Item>
+			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-group">
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.toGroup()}
+					icon="object-group"
+					tooltipTitle={i18next.t('action.object-group')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.toActiveSelection()}
+					icon="object-ungroup"
+					tooltipTitle={i18next.t('action.object-ungroup')}
+				/>
+			</Flex.Item>
+			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-crop">
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={canvasRef ? !canvasRef.handler?.cropHandler.validType() : true}
+					onClick={() => canvasRef?.handler?.cropHandler.start()}
+					icon="crop"
+					tooltipTitle={i18next.t('action.crop')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={canvasRef ? !canvasRef.handler?.cropHandler.cropRect : true}
+					onClick={() => canvasRef?.handler?.cropHandler.finish()}
+					icon="check"
+					tooltipTitle={i18next.t('action.crop-save')}
+				/>
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={canvasRef ? !canvasRef.handler?.cropHandler.cropRect : true}
+					onClick={() => canvasRef?.handler?.cropHandler.cancel()}
+					icon="times"
+					tooltipTitle={i18next.t('action.crop-cancel')}
+				/>
+			</Flex.Item>
+			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-operation">
+				<CommonButton
+					className="rde-action-btn"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => {
+						if (canvasRef && saveTarget) {
+							canvasRef.handler.saveImage(saveTarget as any);
+						}
+					}}
+					icon="image"
+					tooltipTitle={i18next.t('action.canvas-save')}
+				/>
+				<CommonButton
+					className="rde-action-btn is-secondary"
+					shape="circle"
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.duplicate()}
+					icon="clone"
+					tooltipTitle={i18next.t('action.clone')}
+				/>
+				<CommonButton
+					className="rde-action-btn is-danger"
+					shape="circle"
+					danger
+					disabled={isCropping}
+					onClick={() => canvasRef?.handler?.remove()}
+					icon="trash"
+					tooltipTitle={i18next.t('action.delete')}
+				/>
+			</Flex.Item>
+			<Flex.Item className="rde-canvas-toolbar rde-canvas-toolbar-history">
+				<CommonButton
+					className="rde-action-btn"
+					disabled={isCropping || (!!canvasRef && !canvasRef.handler?.transactionHandler.canUndo())}
+					onClick={() => canvasRef?.handler?.transactionHandler.undo()}
+				>
+					<Icon name="undo-alt" style={{ marginRight: 8 }} />
+					Undo
+				</CommonButton>
+				<CommonButton
+					className="rde-action-btn"
+					disabled={isCropping || (!!canvasRef && !canvasRef.handler?.transactionHandler.canRedo())}
+					onClick={() => canvasRef?.handler?.transactionHandler.redo()}
+				>
+					Redo
+					<Icon name="redo-alt" style={{ marginLeft: 8 }} />
+				</CommonButton>
+			</Flex.Item>
+		</Flex>
+	);
+}

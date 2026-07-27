@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { sortBy, throttle } from 'lodash-es';
 import { FabricObject } from '../models';
 import { NodeObject } from '../objects/Node';
@@ -55,6 +55,7 @@ class TransactionHandler extends AbstractHandler {
 	private readonly MAX_HISTORY_SIZE = 30;
 
 	private currentObjects: FabricObject[] = [];
+	private selectedObjectId?: string;
 	redos: TransactionEvent[];
 	undos: TransactionEvent[];
 	active: boolean = false;
@@ -75,6 +76,7 @@ class TransactionHandler extends AbstractHandler {
 		this.redos = [];
 		this.undos = [];
 		this.currentObjects = [];
+		this.selectedObjectId = undefined;
 		this.active = false;
 		this.latestNodeSticky.clear();
 	};
@@ -89,6 +91,7 @@ class TransactionHandler extends AbstractHandler {
 	public setDefaultObjects = (objects: FabricObject[]) => {
 		this.undos = [];
 		this.redos = [];
+		this.selectedObjectId = undefined;
 
 		const normalized = this.sortObjects(this.normalizeObjects(objects));
 
@@ -96,6 +99,12 @@ class TransactionHandler extends AbstractHandler {
 		this.captureLatestStickyFromSnapshot(normalized);
 
 		this.currentObjects = normalized;
+	};
+
+	public rememberSelection = (target?: FabricObject | null) => {
+		if (!this.active) {
+			this.selectedObjectId = target?.id;
+		}
 	};
 
 	private normalizeObjects = (objects: FabricObject[]) => {
@@ -209,7 +218,8 @@ class TransactionHandler extends AbstractHandler {
 
 		try {
 			// Always read fresh canvas state first.
-			const objects = this.handler.canvas.toJSON(this.handler.propertiesToInclude).objects as FabricObject[];
+			const objects = this.handler.canvas.toObject(this.handler.propertiesToInclude)
+				.objects as FabricObject[];
 			const normalized = this.sortObjects(this.normalizeObjects(objects));
 
 			if (type === 'configuration') {
@@ -282,6 +292,11 @@ class TransactionHandler extends AbstractHandler {
 		try {
 			const parsed = JSON.parse(transaction.json) as FabricObject[];
 			const normalized = this.normalizeObjects(parsed);
+			const activeObjectId =
+				(this.handler.canvas.getActiveObject() as FabricObject | undefined)?.id ?? this.selectedObjectId;
+			if (activeObjectId) {
+				this.selectedObjectId = activeObjectId;
+			}
 
 			// Enforce sticky fields (configuration/name/description) before enlivening
 			this.applyLatestStickyToSnapshot(normalized);
@@ -289,19 +304,20 @@ class TransactionHandler extends AbstractHandler {
 			this.currentObjects = normalized;
 
 			this.active = true;
-			this.handler.canvas.renderOnAddRemove = false;
-			this.handler.clear();
-			this.handler.canvas.discardActiveObject();
 
-			fabric.util.enlivenObjects(
-				this.currentObjects,
-				(enlivenObjects: FabricObject[]) => {
-					enlivenObjects.forEach(obj => {
-						const targetIndex = this.handler.canvas._objects.length;
+			void fabric.util
+				.enlivenObjects(this.currentObjects)
+				.then(enlivenedObjects => {
+					this.handler.canvas.renderOnAddRemove = false;
+					this.handler.clear();
+					this.handler.canvas.discardActiveObject();
+
+					(enlivenedObjects as FabricObject[]).forEach(obj => {
+						const targetIndex = this.handler.canvas.getObjects().length;
 
 						if (obj.superType === 'node') {
 							const node = obj as NodeObject;
-							this.handler.canvas.insertAt(node, targetIndex, false);
+							this.handler.canvas.insertAt(targetIndex, node);
 							this.handler.portHandler.create(node);
 						} else if (obj.superType === 'link') {
 							this.handler.objects = this.handler.getObjects();
@@ -313,18 +329,23 @@ class TransactionHandler extends AbstractHandler {
 								toPortId: (obj as any).toPort?.id,
 							});
 						} else {
-							this.handler.canvas.insertAt(obj, targetIndex, false);
+							this.handler.canvas.insertAt(targetIndex, obj);
 						}
 					});
 
 					this.active = false;
 					this.handler.canvas.renderOnAddRemove = true;
-					this.handler.canvas.renderAll();
 					this.handler.objects = this.handler.getObjects();
+					const restoredActiveObject = activeObjectId
+						? this.handler.objects.find(object => object.id === activeObjectId)
+						: undefined;
+					if (restoredActiveObject) {
+						this.handler.canvas.setActiveObject(restoredActiveObject);
+					}
+					this.handler.canvas.renderAll();
 					this.handler.onTransaction?.(transaction);
-				},
-				null,
-			);
+				})
+				.catch((error: unknown) => console.error(error));
 		} catch (error) {
 			console.error(error);
 		}

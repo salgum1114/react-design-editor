@@ -5,6 +5,7 @@ interface IProps {
 	title?: React.ReactNode;
 	content?: React.ReactNode;
 	action?: React.ReactNode;
+	children?: React.ReactNode;
 }
 
 class WorkflowTitle extends Component<IProps> {

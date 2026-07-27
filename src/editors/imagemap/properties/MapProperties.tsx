@@ -1,0 +1,64 @@
+import { Collapse, Form } from 'antd';
+import React from 'react';
+
+import type { CanvasInstance } from '../../../canvas';
+import Scrollbar from '../../../components/common/Scrollbar';
+import { INSPECTOR_FORM_PROPS } from '../../../components/editor';
+import PropertyDefinition from './PropertyDefinition';
+
+interface MapPropertiesProps {
+	canvasRef?: CanvasInstance;
+	onChange?: (selectedItem: any, changedValues: Record<string, any>, allValues: Record<string, any>) => void;
+	selectedItem?: any;
+}
+
+const MapProperties = ({ canvasRef, onChange, selectedItem }: MapPropertiesProps) => {
+	const [form] = Form.useForm();
+	const showArrow = false;
+	const workarea = canvasRef?.handler?.workarea;
+
+	React.useEffect(() => {
+		if (!workarea) {
+			form.resetFields();
+			return;
+		}
+
+		form.setFieldsValue({
+			name: workarea.name || '',
+			layout: workarea.layout || 'fixed',
+			width: workarea.width * workarea.scaleX,
+			height: workarea.height * workarea.scaleY,
+			imageLoadType: workarea.imageLoadType || 'file',
+			file: workarea.file,
+			src: workarea.src,
+		});
+	}, [form, workarea]);
+
+	if (!canvasRef) {
+		return null;
+	}
+
+	return (
+		<Scrollbar>
+			<Form
+				form={form}
+				{...INSPECTOR_FORM_PROPS}
+				onValuesChange={(changedValues, allValues) => {
+					onChange?.(selectedItem, changedValues, { workarea: allValues });
+				}}
+			>
+				<Collapse
+					bordered={false}
+					items={Object.keys(PropertyDefinition.map).map(key => ({
+						key,
+						label: PropertyDefinition.map[key].title,
+						showArrow,
+						children: PropertyDefinition.map[key].component.render(canvasRef, form, workarea),
+					}))}
+				/>
+			</Form>
+		</Scrollbar>
+	);
+};
+
+export default MapProperties;

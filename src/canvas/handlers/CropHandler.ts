@@ -1,7 +1,7 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { Handler } from '.';
-import { FabricImage } from '../models';
+import { FabricEvent, FabricImage } from '../models';
 
 class CropHandler {
 	handler: Handler;
@@ -95,7 +95,7 @@ class CropHandler {
 	 *
 	 * @param {FabricEvent} opt
 	 */
-	public resize = (opt: fabric.IEvent) => {
+	public resize = (opt: FabricEvent) => {
 		const {
 			target,
 			transform: { original, corner },
@@ -233,7 +233,7 @@ class CropHandler {
 	 *
 	 * @param {FabricEvent} opt
 	 */
-	public moving = (opt: fabric.IEvent) => {
+	public moving = (opt: FabricEvent) => {
 		const { target } = opt;
 		const { left, top, width, height, scaleX, scaleY } = target;
 		const {

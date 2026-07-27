@@ -1,10 +1,10 @@
 {
 	"compilerOptions": {
+		"noEmit": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noImplicitReturns": true,
 		"noImplicitAny": true,
-		"declaration": true,
 		"skipLibCheck": true,
 		"strict": true,
 		"strictNullChecks": false,
@@ -12,17 +12,18 @@
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
+		"baseUrl": ".",
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
+		"ignoreDeprecations": "6.0",
 		"useDefineForClassFields": false,
-		"allowJs": true,
 		"jsx": "react",
-		"module": "commonjs",
-		"moduleResolution": "node",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"allowArbitraryExtensions": true,
 		"target": "esnext",
-		"outDir": "lib",
-		"lib": ["dom", "esnext", "ESNext.String"]
+		"lib": ["dom", "dom.iterable", "es2022"]
 	},
-	"include": ["src/canvas/index.tsx", "src/canvas/global.d.ts"],
-	"exclude": ["node_modules", "dist", "lib"]
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "docs", "lib", "src/editors/workflow/FlowItems.tsx"]
 }

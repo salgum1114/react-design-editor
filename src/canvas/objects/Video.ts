@@ -1,8 +1,14 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import 'mediaelement';
 import 'mediaelement/build/mediaelementplayer.min.css';
 import { FabricElement } from '../models';
-import { toObject } from '../utils';
+import {
+	createDOMElement,
+	registerFabricClass,
+	resolveFromObject,
+	toObject,
+	wrapDOMElement,
+} from '../utils';
 
 export interface VideoObject extends FabricElement {
 	setSource: (source: string | File) => void;
@@ -14,72 +20,78 @@ export interface VideoObject extends FabricElement {
 	player?: any;
 }
 
-const Video = fabric.util.createClass(fabric.Rect, {
-	type: 'video',
-	superType: 'element',
-	hasRotatingPoint: false,
-	initialize(source: string | File, options: any) {
-		options = options || {};
-		this.callSuper('initialize', options);
+class Video extends fabric.Rect {
+	static type = 'video';
+	superType = 'element';
+	hasRotatingPoint = false;
+	declare element: HTMLDivElement;
+	declare container: string;
+	declare videoElement: HTMLVideoElement;
+	declare player: any;
+	declare src: string | null;
+	declare file: File | null;
+
+	constructor(source: string | File, options: any = {}) {
+		const { type: _type, ...elementOptions } = options;
+		super(elementOptions);
 		if (source instanceof File) {
-			this.set({
-				file: source,
-				src: null,
-			});
+			this.set({ file: source, src: null });
 		} else {
-			this.set({
-				file: null,
-				src: source,
-			});
+			this.set({ file: null, src: source });
 		}
 		this.set({
 			fill: 'rgba(255, 255, 255, 0)',
 			stroke: 'rgba(255, 255, 255, 0)',
 		});
-	},
+	}
+
 	setSource(source: any) {
 		if (source instanceof File) {
 			this.setFile(source);
 		} else {
 			this.setSrc(source);
 		}
-	},
+	}
+
 	setFile(file: File) {
-		this.set({
-			file,
-			src: null,
-		});
+		this.set({ file, src: null });
 		const reader = new FileReader();
 		reader.onload = () => {
 			this.player.setSrc(reader.result);
 		};
 		reader.readAsDataURL(file);
-	},
+	}
+
 	setSrc(src: string) {
-		this.set({
-			file: null,
-			src,
-		});
+		this.set({ file: null, src });
 		this.player.setSrc(src);
-	},
-	toObject(propertiesToInclude: string[]) {
-		return toObject(this, propertiesToInclude, {
+	}
+
+	toObject(propertiesToInclude: any[] = []) {
+		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			src: this.get('src'),
 			file: this.get('file'),
 			container: this.get('container'),
 			editable: this.get('editable'),
 		});
-	},
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
-		this.callSuper('_render', ctx);
+		super._render(ctx);
 		if (!this.element) {
-			const { id, scaleX, scaleY, width, height, angle, editable, src, file, autoplay, muted, loop } = this;
+			const id = this.get('id') as string;
+			const editable = this.get('editable') as boolean;
+			const autoplay = this.get('autoplay') as boolean;
+			const muted = this.get('muted') as boolean;
+			const loop = this.get('loop') as boolean;
+			const { scaleX, scaleY, width, height, angle, src, file } = this;
 			const zoom = this.canvas.getZoom();
-			const left = this.calcCoords().tl.x;
-			const top = this.calcCoords().tl.y;
+			const { tl } = this.calcOCoords();
+			const left = tl.x;
+			const top = tl.y;
 			const padLeft = (width * scaleX * zoom - width) / 2;
 			const padTop = (height * scaleY * zoom - height) / 2;
-			this.videoElement = fabric.util.makeElement('video', {
+			this.videoElement = createDOMElement('video', {
 				id,
 				autoplay: editable ? false : autoplay,
 				muted: editable ? false : muted,
@@ -87,7 +99,7 @@ const Video = fabric.util.createClass(fabric.Rect, {
 				preload: 'none',
 				controls: false,
 			});
-			this.element = fabric.util.wrapElement(this.videoElement, 'div', {
+			this.element = wrapDOMElement(this.videoElement, 'div', {
 				id: `${id}_container`,
 				style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
                         width: ${width}px;
@@ -98,8 +110,7 @@ const Video = fabric.util.createClass(fabric.Rect, {
                         user-select: ${editable ? 'none' : 'auto'};
                         pointer-events: ${editable ? 'none' : 'auto'};`,
 			}) as HTMLDivElement;
-			const container = document.getElementById(this.container);
-			container.appendChild(this.element);
+			document.getElementById(this.container)?.appendChild(this.element);
 			this.player = new MediaElementPlayer(id, {
 				pauseOtherPlayers: false,
 				videoWidth: '100%',
@@ -117,14 +128,13 @@ const Video = fabric.util.createClass(fabric.Rect, {
 				this.setFile(file);
 			}
 		}
-	},
-});
+	}
 
-Video.fromObject = (options: VideoObject, callback: (obj: VideoObject) => any) => {
-	return callback(new Video(options.src || options.file, options));
-};
+	static fromObject(options: any, callback?: any) {
+		return resolveFromObject(new Video(options.src || options.file, options), callback);
+	}
+}
 
-// @ts-ignore
-window.fabric.Video = Video;
+registerFabricClass('Video', Video);
 
 export default Video;

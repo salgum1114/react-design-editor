@@ -1,26 +1,26 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { FabricObject } from './models';
 import {
-	Arrow,
-	Chart,
-	Cube,
-	CurvedLink,
-	Element,
-	Gif,
-	Iframe,
-	Line,
-	LineLink,
-	Link,
-	Node,
-	OrthogonalLink,
-	Video,
+    Arrow,
+    Chart,
+    Cube,
+    CurvedLink,
+    Element,
+    Gif,
+    Iframe,
+    Line,
+    LineLink,
+    Link,
+    Node,
+    OrthogonalLink,
+    Video
 } from './objects';
 import { Code } from './objects/Element';
 import Svg, { SvgOption } from './objects/Svg';
 
 export interface ObjectSchema {
-	create: (...option: any) => fabric.Object;
+	create: (...option: any) => any;
 }
 
 export interface CanvasObjectSchema {
@@ -53,7 +53,7 @@ const CanvasObject: CanvasObjectSchema = {
 	},
 	image: {
 		create: ({ element = new Image(), ...option }) =>
-			new fabric.Image(element, {
+			new fabric.FabricImage(element, {
 				...option,
 				crossOrigin: 'anonymous',
 			}),

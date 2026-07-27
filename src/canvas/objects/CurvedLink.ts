@@ -1,26 +1,28 @@
-import { fabric } from 'fabric';
+import { registerFabricClass, resolveFromObject } from '../utils';
 import Link, { LinkObject } from './Link';
 import { NodeObject } from './Node';
 import { PortObject } from './Port';
 
-const CurvedLink = fabric.util.createClass(Link, {
-	type: 'curvedLink',
-	superType: 'link',
-	initialize(
+class CurvedLink extends Link {
+	static type = 'curvedLink';
+	superType = 'link';
+
+	constructor(
 		fromNode: Partial<NodeObject>,
 		fromPort: Partial<PortObject>,
 		toNode: Partial<NodeObject>,
 		toPort: Partial<PortObject>,
-		options: Partial<LinkObject>,
+		options: Partial<LinkObject> = {},
 	) {
-		options = options || {};
-		this.callSuper('initialize', fromNode, fromPort, toNode, toPort, options);
-	},
+		super(fromNode, fromPort, toNode, toPort, options);
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
 		// Drawing curved link
-		const { x1, y1, x2, y2 } = this;
+		const { x1, y1, x2, y2 } = this as any;
+		const stroke = typeof this.stroke === 'string' ? this.stroke : '#000';
 		ctx.lineWidth = this.strokeWidth;
-		ctx.strokeStyle = this.stroke;
+		ctx.strokeStyle = stroke;
 		const fp = { x: (x1 - x2) / 2, y: (y1 - y2) / 2 };
 		const sp = { x: (x2 - x1) / 2, y: (y2 - y1) / 2 };
 		ctx.beginPath();
@@ -48,18 +50,19 @@ const CurvedLink = fabric.util.createClass(Link, {
 			ctx.lineTo(-5, -5);
 		}
 		ctx.closePath();
-		ctx.fillStyle = this.stroke;
+		ctx.fillStyle = stroke;
 		ctx.fill();
 		ctx.restore();
-	},
-});
+	}
 
-CurvedLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
-	const { fromNode, fromPort, toNode, toPort } = options;
-	return callback(new CurvedLink(fromNode, fromPort, toNode, toPort, options));
-};
+	static fromObject(options: any, callback?: any) {
+		return resolveFromObject(
+			new CurvedLink(options.fromNode, options.fromPort, options.toNode, options.toPort, options),
+			callback,
+		);
+	}
+}
 
-// @ts-ignore
-window.fabric.CurvedLink = CurvedLink;
+registerFabricClass('CurvedLink', CurvedLink);
 
 export default CurvedLink;

@@ -14,7 +14,7 @@ class CustomControlHandler extends AbstractHandler {
 		const customControls = target.createCustomControls?.(target.left!, target.top!);
 		customControls?.forEach(p => {
 			this.handler.canvas.add(p);
-			this.handler.canvas.bringToFront(p);
+			this.handler.canvas.bringObjectToFront(p);
 			p.setCoords();
 		});
 	};

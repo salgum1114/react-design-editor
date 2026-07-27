@@ -1,7 +1,6 @@
-import { Button } from 'antd';
+import { Space } from 'antd';
 import clsx from 'clsx';
-import i18n from 'i18next';
-import PropTypes from 'prop-types';
+import i18next from 'i18next';
 import React, { Component } from 'react';
 import { CanvasInstance, LinkObject, NodeObject } from '../../canvas';
 import { code } from '../../canvas/constants';
@@ -11,17 +10,15 @@ interface IProps {
 	instance: CanvasInstance;
 	zoomRatio: number;
 	debugEnabled?: boolean;
-	setDebugEnabled?: any;
+	setDebugEnabled?: unknown;
 }
 
-class WorkflowToolbar extends Component<IProps> {
-	static propTypes = {
-		instance: PropTypes.any,
-		selectedItem: PropTypes.object,
-		zoomRatio: PropTypes.number,
-	};
+interface IState {
+	interactionMode: 'selection' | 'grab';
+}
 
-	state = {
+class WorkflowToolbar extends Component<IProps, IState> {
+	state: IState = {
 		interactionMode: 'selection',
 	};
 
@@ -47,7 +44,7 @@ class WorkflowToolbar extends Component<IProps> {
 	};
 
 	events = {
-		keydown: e => {
+		keydown: (e: KeyboardEvent) => {
 			if (this.props.instance.canvas.wrapperEl !== document.activeElement) {
 				return false;
 			}
@@ -56,10 +53,11 @@ class WorkflowToolbar extends Component<IProps> {
 			} else if (e.code === code.KEY_W) {
 				this.handlers.grab();
 			}
+			return undefined;
 		},
 	};
 
-	waitForCanvasRender = canvas => {
+	waitForCanvasRender = (canvas?: CanvasInstance) => {
 		setTimeout(() => {
 			if (canvas) {
 				this.attachEventListener(canvas);
@@ -70,74 +68,70 @@ class WorkflowToolbar extends Component<IProps> {
 		}, 5);
 	};
 
-	attachEventListener = instance => {
+	attachEventListener = (instance: CanvasInstance) => {
 		instance.canvas.wrapperEl.addEventListener('keydown', this.events.keydown, false);
 	};
 
-	detachEventListener = instance => {
+	detachEventListener = (instance: CanvasInstance) => {
 		instance.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
 	};
 
 	render() {
-		const { instance, zoomRatio, debugEnabled, setDebugEnabled } = this.props;
+		const { instance, zoomRatio } = this.props;
 		const { interactionMode } = this.state;
 		const { selection, grab } = this.handlers;
 		const zoomValue = parseInt((zoomRatio * 100).toFixed(2), 10);
 		return (
 			<React.Fragment>
 				<div className={clsx('rde-editor-toolbar', 'interaction')}>
-					<Button.Group>
+					<Space.Compact>
 						<CommonButton
 							type={interactionMode === 'selection' ? 'primary' : 'default'}
-							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
 							onClick={() => {
 								selection();
 							}}
 							icon="mouse-pointer"
-							tooltipTitle={i18n.t('action.selection')}
+							tooltipTitle={i18next.t('action.selection')}
 						/>
 						<CommonButton
 							type={interactionMode === 'grab' ? 'primary' : 'default'}
-							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 							onClick={() => {
 								grab();
 							}}
-							tooltipTitle={i18n.t('action.grab')}
+							tooltipTitle={i18next.t('action.grab')}
 							icon="hand-rock"
 						/>
-					</Button.Group>
+					</Space.Compact>
 				</div>
 				<div className={clsx('rde-editor-toolbar', 'zoom')}>
-					<Button.Group>
+					<Space.Compact>
 						<CommonButton
-							style={{ borderBottomLeftRadius: '8px', borderTopLeftRadius: '8px' }}
-							onClick={() => {
-								instance.handler.zoomHandler.zoomIn();
-							}}
-							icon="search-plus"
-							tooltipTitle={i18n.t('action.zoom-in')}
-						/>
-						<CommonButton
-							onClick={() => instance.handler.zoomHandler.zoomToFitWithObject()}
-							tooltipTitle={i18n.t('action.one-to-one')}
-						>
-							{`${zoomValue}%`}
-						</CommonButton>
-						<CommonButton
-							style={{ borderBottomRightRadius: '8px', borderTopRightRadius: '8px' }}
 							onClick={() => {
 								instance.handler.zoomHandler.zoomOut();
 							}}
 							icon="search-minus"
-							tooltipTitle={i18n.t('action.zoom-out')}
+							tooltipTitle={i18next.t('action.zoom-out')}
 						/>
-					</Button.Group>
+						<CommonButton
+							onClick={() => instance.handler.zoomHandler.zoomToFitWithObject()}
+							tooltipTitle={i18next.t('action.one-to-one')}
+						>
+							{`${zoomValue}%`}
+						</CommonButton>
+						<CommonButton
+							onClick={() => {
+								instance.handler.zoomHandler.zoomIn();
+							}}
+							icon="search-plus"
+							tooltipTitle={i18next.t('action.zoom-in')}
+						/>
+					</Space.Compact>
 				</div>
 				<div className={clsx('rde-editor-toolbar', 'layout')}>
-					<Button.Group>
+					<Space.Compact>
 						<CommonButton
 							icon="bezier-curve"
-							tooltipTitle={i18n.t('action.run-layout')}
+							tooltipTitle={i18next.t('action.run-layout')}
 							onClick={async () => {
 								instance.canvas.discardActiveObject();
 								await instance.handler.layoutHandler.runLayout({
@@ -152,7 +146,7 @@ class WorkflowToolbar extends Component<IProps> {
 								instance.handler.zoomHandler.zoomToFitWithObject();
 							}}
 						/>
-					</Button.Group>
+					</Space.Compact>
 				</div>
 			</React.Fragment>
 		);

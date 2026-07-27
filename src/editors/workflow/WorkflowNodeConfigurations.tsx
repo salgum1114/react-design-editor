@@ -1,96 +1,94 @@
-import { Divider, Form, Input } from 'antd';
-import { FormComponentProps } from 'antd/lib/form';
-import i18n from 'i18next';
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Divider, Form, FormInstance, Input, Row } from 'antd';
+import i18next from 'i18next';
+import React from 'react';
+import type { CanvasInstance } from '../../canvas';
 import { Scrollbar } from '../../components/common';
+import { INSPECTOR_FORM_PROPS } from '../../components/editor';
 import { Flex } from '../../components/flex';
 import NodeAction from './configuration/NodeAction';
 import NodeConfiguration from './configuration/NodeConfiguration';
 import NodeDescriptor from './configuration/NodeDescriptor';
 
-interface IProps extends FormComponentProps {
-	canvasRef?: Canvas;
+interface IProps {
+	canvasRef?: CanvasInstance;
 	selectedItem?: any;
 	workflow?: any;
 	onChange?: any;
 	descriptors?: any;
 }
 
-class WorkflowNodeConfigurations extends Component<IProps> {
-	static propTypes = {
-		canvasRef: PropTypes.any,
-		selectedItem: PropTypes.object,
-		workflow: PropTypes.object,
-		descriptors: PropTypes.object,
-		onChange: PropTypes.func,
-	};
+const WorkflowNodeConfigurations = React.forwardRef<FormInstance, IProps>((props, ref) => {
+	const { canvasRef, workflow, selectedItem, onChange } = props;
+	const [form] = Form.useForm();
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
-		if (this.props.selectedItem && nextProps.selectedItem) {
-			if (this.props.selectedItem.id !== nextProps.selectedItem.id) {
-				nextProps.form.resetFields();
-			}
+	React.useEffect(() => {
+		if (!selectedItem) {
+			return;
 		}
-	}
 
-	render() {
-		const { canvasRef, workflow, selectedItem, form } = this.props;
-		return (
+		form.setFieldsValue({
+			name: selectedItem.name,
+			description: selectedItem.description,
+			configuration: selectedItem.configuration,
+		});
+	}, [form, selectedItem]);
+
+	React.useImperativeHandle(ref, () => form);
+
+	return (
+		<div className="rde-workflow-node-configurations">
 			<Scrollbar>
-				<Form layout="horizontal">
+				<Form
+					form={form}
+					{...INSPECTOR_FORM_PROPS}
+					onValuesChange={(changedValues, allValues) => {
+						onChange?.(selectedItem, changedValues, allValues);
+					}}
+				>
 					{selectedItem ? (
 						<React.Fragment>
 							<NodeDescriptor workflow={workflow} selectedItem={selectedItem} />
-							<Flex flexDirection="column" style={{ margin: '8px 16px' }}>
-								<Form.Item label={i18n.t('common.name')} colon={false}>
-									{form.getFieldDecorator('name', {
-										initialValue: selectedItem.name,
-										rules: [
-											{
-												required: true,
-												message: i18n.t('validation.enter-property', {
-													arg: i18n.t('common.name'),
-												}),
-											},
-										],
-									})(<Input placeholder={i18n.t('workflow.node-name-required')} />)}
-								</Form.Item>
-								<Form.Item label={i18n.t('common.description')} colon={false}>
-									{form.getFieldDecorator('description', {
-										initialValue: selectedItem.description,
-									})(
-										<Input.TextArea
-											style={{ maxHeight: 200 }}
-											placeholder={i18n.t('workflow.node-description-required')}
-										/>,
-									)}
-								</Form.Item>
-							</Flex>
-							<Divider>{i18n.t('workflow.node-configuration')}</Divider>
-							<Flex
-								flexDirection="column"
-								style={{ height: '100%', overflowY: 'hidden', margin: '8px 16px' }}
+							<Flex className="rde-inspector-form-section" flexDirection="column">
+							<Form.Item
+								label={i18next.t('common.name')}
+								colon={false}
+								name="name"
+								rules={[
+									{
+										required: true,
+										message: i18next.t('validation.enter-property', {
+											arg: i18next.t('common.name'),
+										}),
+									},
+								]}
 							>
-								<NodeConfiguration
-									canvasRef={canvasRef}
-									form={form}
-									selectedItem={selectedItem}
-									workflow={workflow}
+								<Input placeholder={i18next.t('workflow.node-name-required')} />
+							</Form.Item>
+							<Form.Item label={i18next.t('common.description')} colon={false} name="description">
+								<Input.TextArea
+									style={{ maxHeight: 200 }}
+									placeholder={i18next.t('workflow.node-description-required')}
 								/>
-							</Flex>
-							<NodeAction workflow={workflow} selectedItem={selectedItem} canvasRef={canvasRef} />
+							</Form.Item>
+						</Flex>
+						<Divider className="rde-inspector-divider">
+							{i18next.t('workflow.node-configuration')}
+						</Divider>
+						<Row className="rde-inspector-form-section rde-inspector-field-grid" gutter={8}>
+							<NodeConfiguration
+								canvasRef={canvasRef}
+								form={form}
+								selectedItem={selectedItem}
+								workflow={workflow}
+							/>
+						</Row>
+						<NodeAction workflow={workflow} selectedItem={selectedItem} canvasRef={canvasRef} />
 						</React.Fragment>
 					) : null}
 				</Form>
 			</Scrollbar>
-		);
-	}
-}
+		</div>
+	);
+});
 
-export default Form.create<IProps>({
-	onValuesChange: (props: IProps, changedValues, allValues) => {
-		const { onChange, selectedItem } = props;
-		onChange(selectedItem, changedValues, allValues);
-	},
-})(WorkflowNodeConfigurations);
+export default WorkflowNodeConfigurations;

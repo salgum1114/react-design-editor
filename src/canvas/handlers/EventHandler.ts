@@ -1,5 +1,5 @@
 import anime from 'animejs';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { code } from '../constants';
 import { FabricEvent, FabricObject } from '../models';
 import { NodeObject } from '../objects/Node';
@@ -28,7 +28,6 @@ class EventHandler extends AbstractHandler {
 	 */
 	protected initialize() {
 		if (this.handler.editable) {
-			// @ts-ignore
 			this.canvas.on({
 				'object:modified': this.modified,
 				'object:scaling': this.scaling,
@@ -42,16 +41,15 @@ class EventHandler extends AbstractHandler {
 				'selection:cleared': this.selection,
 				'selection:created': this.selection,
 				'selection:updated': this.selection,
-			});
+			} as any);
 		} else {
-			// @ts-ignore
 			this.canvas.on({
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
 				'mouse:out': this.mouseout,
 				'mouse:up': this.mouseup,
 				'mouse:wheel': this.mousewheel,
-			});
+			} as any);
 		}
 		this.canvas.wrapperEl.tabIndex = 1000;
 		this.canvas.wrapperEl.addEventListener('keydown', this.keydown, false);
@@ -83,7 +81,7 @@ class EventHandler extends AbstractHandler {
 				'selection:cleared': this.selection,
 				'selection:created': this.selection,
 				'selection:updated': this.selection,
-			});
+			} as any);
 		} else {
 			this.canvas.off({
 				'mouse:down': this.mousedown,
@@ -91,7 +89,7 @@ class EventHandler extends AbstractHandler {
 				'mouse:out': this.mouseout,
 				'mouse:up': this.mouseup,
 				'mouse:wheel': this.mousewheel,
-			});
+			} as any);
 			this.handler.getObjects().forEach(object => {
 				object.off('mousedown', this.handler.eventHandler.object.mousedown);
 				if (object.anime) {
@@ -183,7 +181,7 @@ class EventHandler extends AbstractHandler {
 			if (this.handler.editable && this.handler.guidelineOption.enabled) {
 				this.handler.guidelineHandler.movingGuidelines(target);
 			}
-			if (target.type === 'activeSelection') {
+			if (this.handler.isActiveSelection(target)) {
 				const activeSelection = target as fabric.ActiveSelection;
 				activeSelection.getObjects().forEach((obj: any) => {
 					const left = obj.left + target.left + target.width / 2;
@@ -403,20 +401,20 @@ class EventHandler extends AbstractHandler {
 				this.handler.interactionMode !== 'link' &&
 				target?.superType === 'node' &&
 				subTargets.length &&
-				actionTarget === target._objects[target._objects.length - 1]
+				actionTarget === (target as fabric.Group).getObjects()[(target as fabric.Group).getObjects().length - 1]
 			) {
 				this.canvas.discardActiveObject();
 				this.canvas.requestRenderAll();
 				return;
 			}
-			if (target && target.type === 'fromPort') {
-				this.handler.linkHandler.init(target);
+			if (target?.isType('fromPort')) {
+				this.handler.linkHandler.init(target as any);
 				return;
 			}
 			if (
 				target &&
 				this.handler.interactionMode === 'link' &&
-				(target.type === 'toPort' || target.superType === 'node')
+				(target.isType('toPort') || target.superType === 'node')
 			) {
 				let toPort;
 				if (target.superType === 'node') {
@@ -572,13 +570,14 @@ class EventHandler extends AbstractHandler {
 	 *
 	 * @param {FabricEvent} opt
 	 */
-	public selection = (_opt: FabricEvent<FabricObject<fabric.ActiveSelection>>) => {
+	public selection = (_opt: FabricEvent) => {
 		const { activeSelectionOption } = this.handler;
 		const target = (this.canvas.getActiveObject() as FabricObject) ?? null;
-		if (target && target.type === 'activeSelection') {
+		if (target && target.isType('ActiveSelection')) {
 			target.set({ ...activeSelectionOption });
 		}
 		this.currentTarget = target;
+		this.handler.transactionHandler.rememberSelection(target);
 		this.handler.onSelect?.(target);
 	};
 
@@ -590,11 +589,10 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public resize = (nextWidth: number, nextHeight: number) => {
-		this.canvas.setWidth(nextWidth).setHeight(nextHeight);
-		this.canvas.setBackgroundColor(
-			this.handler.canvasOption.backgroundColor,
-			this.canvas.renderAll.bind(this.canvas),
-		);
+		this.canvas.setWidth(nextWidth);
+		this.canvas.setHeight(nextHeight);
+		this.canvas.backgroundColor = this.handler.canvasOption.backgroundColor;
+		this.canvas.renderAll();
 		if (!this.handler.workarea) {
 			return;
 		}
@@ -899,8 +897,8 @@ class EventHandler extends AbstractHandler {
 		e.preventDefault();
 		const { editable, onContext } = this.handler;
 		if (editable && onContext) {
-			const target = this.canvas.findTarget(e, false) as FabricObject;
-			if (target && target.type !== 'activeSelection') {
+			const target = this.canvas.findTarget(e as any) as FabricObject;
+			if (target && !this.handler.isActiveSelection(target)) {
 				this.handler.select(target);
 			}
 			this.handler.contextmenuHandler.show(e, target);

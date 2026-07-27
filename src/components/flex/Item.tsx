@@ -9,7 +9,7 @@ export interface ItemProps extends React.HTMLAttributes<any> {
 	flex?: number | string;
 }
 
-const Item: React.SFC<ItemProps> = props => {
+const Item: React.FC<ItemProps> = (props: ItemProps) => {
 	const { alignSelf, order, flexGrow, flexShrink, flexBasis, flex, style, children, ...other } = props;
 	const newStyle = Object.assign(
 		{},

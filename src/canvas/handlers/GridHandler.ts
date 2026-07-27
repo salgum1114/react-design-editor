@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 
 import { FabricObject, GridOption } from '../models';
 import { NodeObject } from '../objects/Node';
@@ -80,7 +80,8 @@ class GridHandler extends AbstractHandler {
 		const image = new Image();
 		image.src = patternCanvas.toDataURL();
 		const pattern = new fabric.Pattern({ source: image, repeat: 'repeat' });
-		this.handler.canvas.setBackgroundColor(pattern, this.handler.canvas.renderAll.bind(this.handler.canvas));
+		this.handler.canvas.backgroundColor = pattern;
+		this.handler.canvas.renderAll();
 		this.handler.canvasOption.backgroundColor = pattern;
 	};
 
@@ -112,7 +113,8 @@ class GridHandler extends AbstractHandler {
 		const image = new Image();
 		image.src = patternCanvas.toDataURL();
 		const pattern = new fabric.Pattern({ source: image, repeat: 'repeat' });
-		this.handler.canvas.setBackgroundColor(pattern, this.handler.canvas.renderAll.bind(this.handler.canvas));
+		this.handler.canvas.backgroundColor = pattern;
+		this.handler.canvas.renderAll();
 		this.handler.canvasOption.backgroundColor = pattern;
 	};
 
@@ -124,7 +126,7 @@ class GridHandler extends AbstractHandler {
 	public setCoords = (target: FabricObject | fabric.ActiveSelection) => {
 		const { enabled, grid, snapToGrid } = this.handler.gridOption;
 		if (enabled && grid && snapToGrid) {
-			if (target.type === 'activeSelection') {
+			if (this.handler.isActiveSelection(target)) {
 				const activeSelection = target as fabric.ActiveSelection;
 				activeSelection.set({
 					left: Math.round(target.left / grid) * grid,

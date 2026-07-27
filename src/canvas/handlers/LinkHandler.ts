@@ -60,7 +60,7 @@ class LinkHandler {
 		this.handler.interactionHandler.linking();
 		const { left, top } = port;
 		const toPort = { left, top };
-		const fromNode = this.handler.objectMap[this.port.nodeId];
+		const fromNode = this.handler.objectMap[this.port.nodeId] as unknown as Partial<NodeObject>;
 		this.handler.activeLine = new Link(fromNode, this.port, toPort, toPort, {
 			strokeWidth: this.handler.linkOption?.strokeWidth || 2,
 			stroke: this.handler.linkOption?.stroke || '#000',
@@ -127,12 +127,13 @@ class LinkHandler {
 	 * @returns
 	 */
 	create = (option: LinkOption, loaded = false) => {
+		const { type, ...linkOptions } = option;
 		const fromNode = this.handler.objectMap[option.fromNodeId] as NodeObject;
-		const fromPort = fromNode?.fromPort.filter(port => port.id === option.fromPortId || !port.id)[0];
+		const fromPort = fromNode?.fromPort.filter((port: PortObject) => port.id === option.fromPortId || !port.id)[0];
 		const toNode = this.handler.objectMap[option.toNodeId] as NodeObject;
 		const { toPort } = toNode;
-		const link = this.handler.fabricObjects[option.type].create(fromNode, fromPort, toNode, toPort, {
-			...option,
+		const link = this.handler.fabricObjects[type].create(fromNode, fromPort, toNode, toPort, {
+			...linkOptions,
 		}) as LinkObject;
 		this.handler.canvas.add(link);
 		this.handler.objects = this.handler.getObjects();
@@ -147,7 +148,7 @@ class LinkHandler {
 		this.handler.portHandler.setCoords(fromNode);
 		this.handler.portHandler.setCoords(toNode);
 		this.handler.canvas.requestRenderAll();
-		this.handler.canvas.sendToBack(link);
+		this.handler.canvas.sendObjectToBack(link);
 		return link;
 	};
 

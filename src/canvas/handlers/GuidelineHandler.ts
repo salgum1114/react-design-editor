@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import { FabricEvent, FabricObject, WorkareaObject } from '../models';
 import type Handler from './Handler';
 
@@ -26,16 +26,15 @@ class GuidelineHandler {
 	 */
 	public initialize() {
 		if (this.handler.guidelineOption.enabled) {
-			// @ts-ignore
 			this.handler.canvas.on({
 				'before:render': this.beforeRender,
 				'after:render': this.afterRender,
-			});
+			} as any);
 		} else {
 			this.handler.canvas.off({
 				'before:render': this.beforeRender,
 				'after:render': this.afterRender,
-			});
+			} as any);
 		}
 		this.ctx = this.handler.canvas.getSelectionContext();
 		this.aligningLineOffset = 5;
@@ -57,7 +56,7 @@ class GuidelineHandler {
 		this.handler.canvas.off({
 			'before:render': this.beforeRender,
 			'after:render': this.afterRender,
-		});
+		} as any);
 	}
 
 	/**

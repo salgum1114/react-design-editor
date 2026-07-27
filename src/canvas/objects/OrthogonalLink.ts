@@ -1,26 +1,28 @@
-import { fabric } from 'fabric';
+import { registerFabricClass, resolveFromObject } from '../utils';
 import Link, { LinkObject } from './Link';
 import { NodeObject } from './Node';
 import { PortObject } from './Port';
 
-const OrthogonalLink = fabric.util.createClass(Link, {
-	type: 'OrthogonalLink',
-	superType: 'link',
-	initialize(
+class OrthogonalLink extends Link {
+	static type = 'orthogonalLink';
+	superType = 'link';
+
+	constructor(
 		fromNode: Partial<NodeObject>,
 		fromPort: Partial<PortObject>,
 		toNode: Partial<NodeObject>,
 		toPort: Partial<PortObject>,
-		options: Partial<LinkObject>,
+		options: Partial<LinkObject> = {},
 	) {
-		options = options || {};
-		this.callSuper('initialize', fromNode, fromPort, toNode, toPort, options);
-	},
+		super(fromNode, fromPort, toNode, toPort, options);
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
 		// Drawing orthogonal link
-		const { x1, y1, x2, y2 } = this;
+		const { x1, y1, x2, y2 } = this as any;
+		const stroke = typeof this.stroke === 'string' ? this.stroke : '#000';
 		ctx.lineWidth = this.strokeWidth;
-		ctx.strokeStyle = this.stroke;
+		ctx.strokeStyle = stroke;
 		const fp = { x: (x1 - x2) / 2, y: (y1 - y2) / 2 };
 		const sp = { x: (x2 - x1) / 2, y: (y2 - y1) / 2 };
 		ctx.lineJoin = 'round';
@@ -38,10 +40,10 @@ const OrthogonalLink = fabric.util.createClass(Link, {
 			)[0].originFill;
 			ctx.fillText(this.fromPort.id.toUpperCase(), (fp.x + sp.x) / 2 + 10, (fp.y + sp.y) / 2 - 10);
 		}
-		const xDiff = this.x2 - this.x1;
-		const yDiff = this.y2 - this.y1;
+		const xDiff = x2 - x1;
+		const yDiff = y2 - y1;
 		const angle = Math.atan2(yDiff, xDiff);
-		ctx.translate((this.x2 - this.x1) / 2, (this.y2 - this.y1) / 2);
+		ctx.translate((x2 - x1) / 2, (y2 - y1) / 2);
 		ctx.rotate(angle >= 0 ? 1.57 : -1.57);
 		ctx.beginPath();
 		if (this.arrow) {
@@ -51,18 +53,19 @@ const OrthogonalLink = fabric.util.createClass(Link, {
 			ctx.lineTo(-5, -5);
 		}
 		ctx.closePath();
-		ctx.fillStyle = this.stroke;
+		ctx.fillStyle = stroke;
 		ctx.fill();
 		ctx.restore();
-	},
-});
+	}
 
-OrthogonalLink.fromObject = (options: LinkObject, callback: (obj: LinkObject) => any) => {
-	const { fromNode, fromPort, toNode, toPort } = options;
-	return callback(new OrthogonalLink(fromNode, fromPort, toNode, toPort, options));
-};
+	static fromObject(options: any, callback?: any) {
+		return resolveFromObject(
+			new OrthogonalLink(options.fromNode, options.fromPort, options.toNode, options.toPort, options),
+			callback,
+		);
+	}
+}
 
-// @ts-ignore
-window.fabric.OrthogonalLink = OrthogonalLink;
+registerFabricClass('OrthogonalLink', OrthogonalLink, 'OrthogonalLink');
 
 export default OrthogonalLink;

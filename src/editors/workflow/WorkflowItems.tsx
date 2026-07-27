@@ -1,49 +1,66 @@
 import { Collapse, Input } from 'antd';
 import clsx from 'clsx';
-import { fabric } from 'fabric';
-import i18n from 'i18next';
-import PropTypes from 'prop-types';
+import * as fabric from 'fabric';
+import i18next from 'i18next';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { CanvasInstance, FabricObject, LinkObject, NodeObject } from '../../canvas';
+import { PortObject } from '../../canvas/objects';
 import { CommonButton, Scrollbar } from '../../components/common';
+import {
+	EditorPanelHeader,
+	PALETTE_COLLAPSE_PROPS,
+	resolvePaletteActiveKeys,
+} from '../../components/editor';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import { getNode } from './configuration/NodeConfiguration';
 import { NODE_COLORS } from './constant/constants';
 
+type WorkflowDescriptor = {
+	name: string;
+	icon?: string;
+	type: keyof typeof NODE_COLORS;
+	nodeClazz: string;
+	defaultConfiguration?: Record<string, any>;
+	[key: string]: any;
+};
+
 interface IProps {
 	instance: CanvasInstance;
-	descriptors: any[];
+	descriptors: Record<string, WorkflowDescriptor[]>;
 	selectedItem?: FabricObject;
 }
 
-class WorkflowItems extends React.Component<IProps> {
-	static propTypes = {
-		canvasRef: PropTypes.any,
-		descriptors: PropTypes.object,
-	};
+interface IState {
+	activeKey: string[] | null;
+	collapse: boolean;
+	textSearch: string;
+	descriptors: WorkflowDescriptor[];
+	filteredDescriptors: WorkflowDescriptor[];
+}
 
-	state = {
-		activeKey: [],
+class WorkflowItems extends React.Component<IProps, IState> {
+	state: IState = {
+		activeKey: null,
 		collapse: false,
 		textSearch: '',
 		descriptors: [],
 		filteredDescriptors: [],
 	};
 
-	private item: any;
-	private intersectedLink?: LinkObject;
-	private links: LinkObject[] = [];
+	private item: WorkflowDescriptor | null = null;
+	private intersectedLink?: LinkObject & Record<string, any>;
+	private links: Array<LinkObject & Record<string, any>> = [];
 
 	componentDidMount() {
 		const { instance } = this.props;
 		this.waitForCanvasRender(instance);
 	}
 
-	UNSAFE_componentWillReceiveProps(nextProps) {
+	UNSAFE_componentWillReceiveProps(nextProps: IProps) {
 		if (JSON.stringify(this.props.descriptors) !== JSON.stringify(nextProps.descriptors)) {
-			const descriptors = Object.keys(nextProps.descriptors).reduce((prev, key) => {
+			const descriptors = Object.keys(nextProps.descriptors).reduce<WorkflowDescriptor[]>((prev, key) => {
 				return prev.concat(nextProps.descriptors[key]);
 			}, []);
 			this.setState({
@@ -52,7 +69,7 @@ class WorkflowItems extends React.Component<IProps> {
 		}
 	}
 
-	shouldComponentUpdate(nextProps, nextState) {
+	shouldComponentUpdate(nextProps: IProps, nextState: IState) {
 		if (JSON.stringify(this.props.descriptors) !== JSON.stringify(nextProps.descriptors)) {
 			return true;
 		} else if (JSON.stringify(this.state.filteredDescriptors) !== JSON.stringify(nextState.filteredDescriptors)) {
@@ -73,7 +90,7 @@ class WorkflowItems extends React.Component<IProps> {
 	}
 
 	handlers = {
-		addItem: (item, centered?: boolean) => {
+		addItem: (item: WorkflowDescriptor, centered?: boolean) => {
 			const { instance } = this.props;
 			if (instance.handler.interactionMode === 'selection') {
 				const id = uuid();
@@ -88,7 +105,7 @@ class WorkflowItems extends React.Component<IProps> {
 				instance.handler
 					.getObjects()
 					.filter(obj => obj.type === 'link')
-					.forEach(link => {
+					.forEach((link: any) => {
 						link.setColor(link.originStroke || '#999');
 						link.set({ strokeDashArray: undefined });
 						instance.canvas.requestRenderAll();
@@ -111,12 +128,12 @@ class WorkflowItems extends React.Component<IProps> {
 						});
 					}
 				} else {
-					const selectedNode = this.props.selectedItem as NodeObject;
+					const selectedNode = this.props.selectedItem as (NodeObject & Record<string, any>) | undefined;
 					const unusedFromPort =
-						selectedNode?.type === 'BroadcastNode'
+						selectedNode?.nodeClazz === 'BroadcastNode'
 							? selectedNode.fromPort![0]
 							: selectedNode?.fromPort
-								? selectedNode?.fromPort?.find(port => !port.links!.length)
+								? selectedNode?.fromPort?.find((port: PortObject) => !port.links!.length)
 								: undefined;
 					if (item.type !== 'TRIGGER' && unusedFromPort) {
 						const createdNode = !centered
@@ -164,9 +181,9 @@ class WorkflowItems extends React.Component<IProps> {
 				instance.canvas.requestRenderAll();
 			}
 		},
-		onChangeActiveKey: activeKey => {
+		onChangeActiveKey: (activeKey: string | string[]) => {
 			this.setState({
-				activeKey,
+				activeKey: Array.isArray(activeKey) ? activeKey : [activeKey],
 			});
 		},
 		onCollapse: () => {
@@ -174,7 +191,7 @@ class WorkflowItems extends React.Component<IProps> {
 				collapse: !this.state.collapse,
 			});
 		},
-		onSearchNode: e => {
+		onSearchNode: (e: React.ChangeEvent<HTMLInputElement>) => {
 			const { descriptors } = this.state;
 			const filteredDescriptors = descriptors.filter(descriptor =>
 				descriptor.name.toLowerCase().includes(e.target.value.toLowerCase()),
@@ -187,17 +204,19 @@ class WorkflowItems extends React.Component<IProps> {
 	};
 
 	events = {
-		onDragStart: (e, item) => {
+		onDragStart: (e: React.DragEvent<HTMLDivElement>, item: WorkflowDescriptor) => {
 			this.item = item;
 			const { target } = e;
-			target.classList.add('dragging');
+			(target as HTMLDivElement).classList.add('dragging');
 			this.links = this.props.instance.handler.getObjects().filter(obj => obj.type === 'link') as LinkObject[];
 		},
-		onDragOver: e => {
+		onDragOver: (e: DragEvent) => {
 			if (e.preventDefault) {
 				e.preventDefault();
 			}
-			e.dataTransfer.dropEffect = 'copy';
+			if (e.dataTransfer) {
+				e.dataTransfer.dropEffect = 'copy';
+			}
 			if (this.item?.type !== 'TRIGGER') {
 				const pointer = this.props.instance.canvas.getPointer(e);
 				this.links.forEach(link => {
@@ -218,16 +237,15 @@ class WorkflowItems extends React.Component<IProps> {
 			}
 			return false;
 		},
-		onDragEnter: e => {
+		onDragEnter: (e: DragEvent) => {
 			const { target } = e;
-			target.classList.add('over');
+			(target as HTMLDivElement).classList.add('over');
 		},
-		onDragLeave: e => {
+		onDragLeave: (e: DragEvent) => {
 			const { target } = e;
-			target.classList.remove('over');
+			(target as HTMLDivElement).classList.remove('over');
 		},
-		onDrop: e => {
-			e = e || window.event;
+		onDrop: (e: DragEvent) => {
 			if (e.preventDefault) {
 				e.preventDefault();
 			}
@@ -239,13 +257,13 @@ class WorkflowItems extends React.Component<IProps> {
 			this.handlers.addItem(option, false);
 			return false;
 		},
-		onDragEnd: (e: any, item?: any) => {
+		onDragEnd: (e: React.DragEvent<HTMLDivElement>) => {
 			this.item = null;
-			e.target.classList.remove('dragging');
+			(e.target as HTMLDivElement).classList.remove('dragging');
 		},
 	};
 
-	waitForCanvasRender = canvas => {
+	waitForCanvasRender = (canvas?: CanvasInstance) => {
 		setTimeout(() => {
 			if (canvas) {
 				this.attachEventListener(canvas);
@@ -256,29 +274,29 @@ class WorkflowItems extends React.Component<IProps> {
 		}, 5);
 	};
 
-	attachEventListener = canvasRef => {
+	attachEventListener = (canvasRef: CanvasInstance) => {
 		canvasRef.canvas.wrapperEl.addEventListener('dragenter', this.events.onDragEnter, false);
 		canvasRef.canvas.wrapperEl.addEventListener('dragover', this.events.onDragOver, false);
 		canvasRef.canvas.wrapperEl.addEventListener('dragleave', this.events.onDragLeave, false);
 		canvasRef.canvas.wrapperEl.addEventListener('drop', this.events.onDrop, false);
 	};
 
-	detachEventListener = canvasRef => {
+	detachEventListener = (canvasRef: CanvasInstance) => {
 		canvasRef.canvas.wrapperEl.removeEventListener('dragenter', this.events.onDragEnter);
 		canvasRef.canvas.wrapperEl.removeEventListener('dragover', this.events.onDragOver);
 		canvasRef.canvas.wrapperEl.removeEventListener('dragleave', this.events.onDragLeave);
 		canvasRef.canvas.wrapperEl.removeEventListener('drop', this.events.onDrop);
 	};
 
-	renderItems = items => (
+	renderItems = (items: WorkflowDescriptor[]) => (
 		<Flex flexWrap="wrap" flexDirection="column" style={{ width: '100%' }}>
 			{items.map(item => (
 				<div
 					key={item.name}
 					draggable={true}
-					onClick={e => this.handlers.addItem(item, true)}
+					onClick={() => this.handlers.addItem(item, true)}
 					onDragStart={e => this.events.onDragStart(e, item)}
-					onDragEnd={e => this.events.onDragEnd(e, item)}
+					onDragEnd={e => this.events.onDragEnd(e)}
 					className="rde-editor-items-item"
 					style={{ justifyContent: this.state.collapse ? 'center' : undefined }}
 				>
@@ -297,53 +315,67 @@ class WorkflowItems extends React.Component<IProps> {
 	render() {
 		const { descriptors } = this.props;
 		const { activeKey, filteredDescriptors, collapse, textSearch } = this.state;
-		const className = clsx('rde-editor-items', {
+		const className = clsx('rde-editor-items rde-workflow-items', {
 			minimize: collapse,
 		});
 		return (
 			<div className={className}>
-				<Flex flex="1" flexDirection="column" style={{ height: '100%' }}>
-					<Flex justifyContent="center" alignItems="center" style={{ height: 40 }}>
-						<CommonButton
-							icon={collapse ? 'angle-double-right' : 'angle-double-left'}
-							shape="circle"
-							className="rde-action-btn"
-							style={{ margin: '0 4px' }}
-							onClick={this.handlers.onCollapse}
-						/>
-						{collapse ? null : (
+				<Flex className="rde-editor-items-layout" flex="1" flexDirection="column">
+					<EditorPanelHeader
+						eyebrow={collapse ? undefined : 'Build'}
+						title={collapse ? null : 'Node library'}
+						action={
+							<CommonButton
+								icon={collapse ? 'angle-double-right' : 'angle-double-left'}
+								shape="circle"
+								className="rde-action-btn"
+								onClick={this.handlers.onCollapse}
+							/>
+						}
+					/>
+					{collapse ? null : (
+						<div className="rde-editor-items-search">
 							<Input
-								style={{ margin: '8px' }}
-								placeholder={i18n.t('action.search-list')}
+								placeholder={i18next.t('action.search-list')}
 								onChange={this.handlers.onSearchNode}
 								value={textSearch}
 								allowClear={true}
+								prefix={<Icon name="search" />}
 							/>
-						)}
-					</Flex>
-					<Scrollbar>
-						<Flex flex="1" style={{ overflowY: 'hidden' }}>
+						</div>
+					)}
+					<Scrollbar
+						className="rde-editor-items-scroll"
+						style={{ height: 'auto', minHeight: 0, flex: '1 1 0%' }}
+					>
+						<div className="rde-editor-items-scroll-content">
 							{textSearch.length ? (
 								this.renderItems(filteredDescriptors)
 							) : (
 								<Collapse
 									style={{ width: '100%' }}
-									activeKey={activeKey.length ? activeKey : Object.keys(descriptors)}
+									{...PALETTE_COLLAPSE_PROPS}
+									activeKey={resolvePaletteActiveKeys(activeKey, Object.keys(descriptors))}
 									onChange={this.handlers.onChangeActiveKey}
-								>
-									{Object.keys(descriptors).map(key => (
-										<Collapse.Panel
-											style={{ background: NODE_COLORS[key].fill }}
-											key={key}
-											header={collapse ? '' : key}
-											showArrow={!collapse}
-										>
-											{this.renderItems(descriptors[key])}
-										</Collapse.Panel>
-									))}
-								</Collapse>
+									items={Object.keys(descriptors).map(key => {
+										const descriptorKey = key as keyof typeof NODE_COLORS;
+										return {
+											key,
+											label: collapse ? (
+												''
+											) : (
+												<span className="rde-editor-items-category">
+													<span style={{ backgroundColor: NODE_COLORS[descriptorKey].fill }} />
+													{key}
+												</span>
+											),
+											showArrow: !collapse,
+											children: this.renderItems(descriptors[key]),
+										};
+									})}
+								/>
 							)}
-						</Flex>
+						</div>
 					</Scrollbar>
 				</Flex>
 			</div>

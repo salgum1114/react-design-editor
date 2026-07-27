@@ -1,42 +1,39 @@
+import i18next from 'i18next';
 import React, { Component } from 'react';
-import i18n from 'i18next';
-import { Canvas } from '../../../canvas';
-import { Flex } from '../../../components/flex';
+import type { CanvasInstance } from '../../../canvas';
 import { CommonButton } from '../../../components/common';
 
 interface IProps {
-	canvasRef?: Canvas;
+	canvasRef?: CanvasInstance;
 	selectedItem?: any;
 	workflow?: any;
 }
 
 class NodeAction extends Component<IProps> {
 	render() {
-		const { canvasRef, selectedItem } = this.props;
+		const { canvasRef } = this.props;
 		return (
-			<Flex justifyContent="center" alignItems="flex-end" flex="1">
-				<Flex.Item alignSelf="flex-start">
-					<CommonButton
-						icon="clone"
-						onClick={() => {
-							canvasRef.handler.duplicate();
-						}}
-					>
-						{i18n.t('action.clone')}
-					</CommonButton>
-				</Flex.Item>
-				<Flex.Item alignSelf="flex-end">
-					<CommonButton
-						icon="trash"
-						type="danger"
-						onClick={() => {
-							canvasRef.handler.remove();
-						}}
-					>
-						{i18n.t('action.delete')}
-					</CommonButton>
-				</Flex.Item>
-			</Flex>
+			<div className="rde-inspector-actions">
+				<CommonButton
+					className="rde-inspector-action is-secondary"
+					icon="clone"
+					onClick={() => {
+						canvasRef?.handler.duplicate();
+					}}
+				>
+					{i18next.t('action.clone')}
+				</CommonButton>
+				<CommonButton
+					className="rde-inspector-action is-danger"
+					icon="trash"
+					danger
+					onClick={() => {
+						canvasRef?.handler.remove();
+					}}
+				>
+					{i18next.t('action.delete')}
+				</CommonButton>
+			</div>
 		);
 	}
 }

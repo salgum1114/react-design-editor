@@ -1,4 +1,5 @@
 import anime from 'animejs';
+import type { FabricObject as NativeFabricObject, Group } from 'fabric';
 import warning from 'warning';
 import { Handler } from '.';
 import { FabricObject } from '../models';
@@ -165,7 +166,7 @@ class AnimationHandler {
 			});
 		} else if (type === 'flash') {
 			if (obj.type === 'svg') {
-				(obj as fabric.Group)._objects.forEach(child =>
+				(obj as Group).getObjects().forEach((child: NativeFabricObject) =>
 					this.handler.setByPartial(child, {
 						fill: (child as FabricObject).originFill,
 						stroke: (child as FabricObject).originStroke,
@@ -313,10 +314,10 @@ class AnimationHandler {
 		} else if (type === 'flash') {
 			const { fill = obj.fill, stroke = obj.stroke } = other;
 			if (obj.type === 'svg') {
-				(obj as fabric.Group)._objects.forEach(child =>
+				(obj as Group).getObjects().forEach((child: NativeFabricObject) =>
 					this.handler.setByPartial(child, {
 						originFill: child.fill,
-						originStroke: child.stroke,
+						originStroke: typeof child.stroke === 'string' ? child.stroke : undefined,
 					}),
 				);
 			}

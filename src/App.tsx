@@ -1,8 +1,8 @@
 import React from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import Title from './components/layout/Title';
 import FlowContainer from './containers/FlowContainer';
-import { FiberEditor, HexGridEditor, ImageMapEditor, WorkflowEditor } from './editors';
+import { ImageMapEditor, WorkflowEditor } from './editors';
 
 type EditorType = 'imagemap' | 'workflow' | 'hexgrid' | 'fiber';
 
@@ -15,9 +15,9 @@ class App extends React.Component<any, IState> {
 		activeEditor: 'workflow',
 	};
 
-	handleChangeEditor = ({ key }) => {
+	handleChangeEditor = ({ key }: { key: string }) => {
 		this.setState({
-			activeEditor: key,
+			activeEditor: key as EditorType,
 		});
 	};
 
@@ -27,10 +27,8 @@ class App extends React.Component<any, IState> {
 				return <ImageMapEditor />;
 			case 'workflow':
 				return <WorkflowEditor />;
-			case 'hexgrid':
-				return <HexGridEditor />;
-			case 'fiber':
-				return <FiberEditor />;
+			default:
+				return null;
 		}
 	};
 
@@ -58,7 +56,6 @@ class App extends React.Component<any, IState> {
                         gtag('config', 'G-EH7WWSK514');
                         `}
 					</script>
-					<script async={true} src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" />
 				</Helmet>
 				<div className="rde-title">
 					<Title onChangeEditor={this.handleChangeEditor} currentEditor={activeEditor} />

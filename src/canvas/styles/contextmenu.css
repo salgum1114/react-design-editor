@@ -1,0 +1,29 @@
+.rde-contextmenu {
+  position: fixed;
+  -moz-animation: visibility 0.3s linear;
+  -webkit-animation: visibility 0.3s linear;
+  animation: visibility 0.3s linear;
+  z-index: 600000;
+}
+.rde-contextmenu-right {
+  position: relative;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 14px;
+  padding: 8px;
+  margin-left: 12px;
+}
+.rde-contextmenu-left {
+  position: relative;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 14px;
+  padding: 8px;
+}
+.rde-contextmenu.contextmenu-hidden {
+  display: none;
+  top: 0;
+  left: 0;
+}

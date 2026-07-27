@@ -1,12 +1,13 @@
-import { fabric } from 'fabric';
-import { PortObject } from './Port';
+import * as fabric from 'fabric';
+import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 
-const FromPort = fabric.util.createClass(fabric.Path, {
-	type: 'FromPort',
-	superType: 'port',
-	initialize(options: any = {}) {
+class FromPort extends fabric.Path {
+	static type = 'fromPort';
+	superType = 'port';
+
+	private static createPath(options: any = {}) {
 		const { radius = 12, connected } = options;
-		const path = connected
+		return connected
 			? [
 					['M', -radius, 0],
 					['A', radius, radius, 0, 1, 0, radius, 0],
@@ -14,21 +15,41 @@ const FromPort = fabric.util.createClass(fabric.Path, {
 					['Z'],
 				]
 			: [['M', -radius, 0], ['A', radius, radius * 0.75, 0, 0, 0, radius, 0], ['L', 0, 0], ['Z']];
-		this.callSuper('initialize', path, options);
-	},
+	}
+
+	constructor(options: any = {}) {
+		const { type: _type, ...pathOptions } = options;
+		super(FromPort.createPath(pathOptions) as any, pathOptions);
+	}
+
+	private updateShape(options: any = {}) {
+		const { type: _type, ...pathOptions } = options;
+		const nextPath = new fabric.Path(FromPort.createPath(pathOptions) as any, pathOptions);
+		this.set({
+			...pathOptions,
+			path: nextPath.path,
+			width: nextPath.width,
+			height: nextPath.height,
+			pathOffset: nextPath.pathOffset,
+		});
+	}
+
 	setPosition(left: number, top: number) {
-		this.set({ left, top: top + (this.connected ? 0 : this.height + (this.strokeWidth ?? 0)) });
-	},
+		this.set({ left, top: top + ((this as any).connected ? 0 : this.height + (this.strokeWidth ?? 0)) });
+		this.setCoords();
+	}
+
 	setConnected(connected?: boolean) {
 		const radius = connected ? 4 : 12;
 		const strokeWidth = connected ? 0 : 2;
-		const fill = connected ? this.connectedFill : this.originFill;
-		this.initialize({ ...this.toObject(), connected, radius, strokeWidth, fill });
+		const fill = connected ? (this as any).connectedFill : (this as any).originFill;
+		this.updateShape({ ...this.toObject(), connected, radius, strokeWidth, fill });
 		this.setCoords();
-		this.canvas.requestRenderAll();
-	},
-	toObject() {
-		return fabric.util.object.extend(this.callSuper('toObject'), {
+		this.canvas?.requestRenderAll();
+	}
+
+	toObject(propertiesToInclude: any[] = []) {
+		return toObject(super.toObject(propertiesToInclude), this, propertiesToInclude, {
 			id: this.get('id'),
 			superType: this.get('superType'),
 			enabled: this.get('enabled'),
@@ -39,26 +60,26 @@ const FromPort = fabric.util.createClass(fabric.Path, {
 			color: this.get('color'),
 			connected: this.get('connected'),
 		});
-	},
+	}
+
 	_render(ctx: CanvasRenderingContext2D) {
-		this.callSuper('_render', ctx);
-		if (this.label) {
+		super._render(ctx);
+		if ((this as any).label) {
 			ctx.save();
-			ctx.font = `${this.fontSize || 12}px ${this.fontFamily || 'Helvetica'}`;
-			ctx.fillStyle = this.color || '#000';
-			const { width } = ctx.measureText(this.label);
+			ctx.font = `${(this as any).fontSize || 12}px ${(this as any).fontFamily || 'Helvetica'}`;
+			ctx.fillStyle = (this as any).color || '#000';
+			const { width } = ctx.measureText((this as any).label);
 			ctx.rotate((360 - this.angle) * (Math.PI / 180));
-			ctx.fillText(this.label, -width / 2, this.height + 14);
+			ctx.fillText((this as any).label, -width / 2, this.height + 14);
 			ctx.restore();
 		}
-	},
-});
+	}
 
-FromPort.fromObject = (options: PortObject, callback: (obj: PortObject) => any) => {
-	return callback(new FromPort(options));
-};
+	static fromObject(options: any, callback?: any) {
+		return resolveFromObject(new FromPort(options), callback);
+	}
+}
 
-// @ts-ignore
-window.fabric.FromPort = FromPort;
+registerFabricClass('FromPort', FromPort, 'FromPort');
 
 export default FromPort;

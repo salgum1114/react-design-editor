@@ -1,10 +1,7 @@
 import { Tabs } from 'antd';
-import clsx from 'clsx';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { CanvasInstance, FabricObject } from '../../canvas';
-import { CommonButton } from '../../components/common';
-import Icon from '../../components/icon/Icon';
+import { EditorPanelHeader } from '../../components/editor';
 import WorkflowGlobalParameters from './WorkflowGlobalParameters';
 import WorkflowInfo from './WorkflowInfo';
 
@@ -12,29 +9,20 @@ interface IProps {
 	canvasRef?: CanvasInstance;
 	selectedItem?: FabricObject;
 	workflow?: FabricObject;
-	onChange?: any;
+	onChange?: (...args: any[]) => void;
 }
 
-class WorkflowConfigurations extends React.Component<IProps> {
-	static propTypes = {
-		canvasRef: PropTypes.any,
-		selectedItem: PropTypes.object,
-		workflow: PropTypes.object,
-		onChange: PropTypes.func,
-	};
+interface IState {
+	activeKey: string;
+}
 
-	state = {
-		collapse: false,
+class WorkflowConfigurations extends React.Component<IProps, IState> {
+	state: IState = {
 		activeKey: 'info',
 	};
 
 	handlers = {
-		onCollapse: () => {
-			this.setState({
-				collapse: !this.state.collapse,
-			});
-		},
-		onChange: activeKey => {
+		onChange: (activeKey: string) => {
 			this.setState({
 				activeKey,
 			});
@@ -42,34 +30,33 @@ class WorkflowConfigurations extends React.Component<IProps> {
 	};
 
 	render() {
-		const { canvasRef, selectedItem, workflow, onChange } = this.props;
-		const { collapse, activeKey } = this.state;
-		const className = clsx('rde-editor-configurations', {
-			minimize: collapse,
-		});
+		const { workflow, onChange } = this.props;
+		const { activeKey } = this.state;
 		return (
-			<div className={className}>
-				<CommonButton
-					className="rde-action-btn"
-					shape="circle"
-					icon={collapse ? 'angle-double-left' : 'angle-double-right'}
-					onClick={this.handlers.onCollapse}
-					style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
+			<div className="rde-editor-configurations rde-workflow-configurations">
+				<EditorPanelHeader
+					eyebrow="Workflow"
+					title="Workflow settings"
+					description="Metadata and reusable variables"
 				/>
 				<Tabs
-					tabPosition="right"
+					tabPlacement="top"
 					activeKey={activeKey}
 					onChange={this.handlers.onChange}
-					style={{ height: '100%' }}
-					tabBarStyle={{ marginTop: 60 }}
-				>
-					<Tabs.TabPane tab={<Icon name="cog" />} key="info">
-						<WorkflowInfo workflow={workflow} onChange={onChange} />
-					</Tabs.TabPane>
-					<Tabs.TabPane tab={<Icon name="globe" />} key="variables">
-						<WorkflowGlobalParameters workflow={workflow} onChange={onChange} />
-					</Tabs.TabPane>
-				</Tabs>
+					className="rde-inspector-tabs"
+					items={[
+						{
+							key: 'info',
+							label: 'General',
+							children: <WorkflowInfo workflow={workflow} onChange={onChange} />,
+						},
+						{
+							key: 'variables',
+							label: 'Variables',
+							children: <WorkflowGlobalParameters workflow={workflow} onChange={onChange} />,
+						},
+					]}
+				/>
 			</div>
 		);
 	}
