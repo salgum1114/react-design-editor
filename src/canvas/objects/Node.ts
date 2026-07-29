@@ -49,6 +49,16 @@ export type NodeObject = FabricObject<fabric.Group> & {
 	duplicate?: () => NodeObject;
 };
 
+export const serializeNodeThemeProperties = (node: { get(key: string): unknown }) => ({
+	actionButtonColor: node.get('actionButtonColor'),
+	actionButtonIconColor: node.get('actionButtonIconColor'),
+	labelColor: node.get('labelColor'),
+	portFill: node.get('portFill'),
+	routeFill: node.get('routeFill'),
+	routeStroke: node.get('routeStroke'),
+	routeTextColor: node.get('routeTextColor'),
+});
+
 class Node extends fabric.Group {
 	static type = 'node';
 	superType = 'node';
@@ -66,6 +76,13 @@ class Node extends fabric.Group {
 	declare originStroke?: string;
 	declare fontSize?: number;
 	declare fontFamily?: string;
+	declare actionButtonColor?: string;
+	declare actionButtonIconColor?: string;
+	declare labelColor?: string;
+	declare portFill?: string;
+	declare routeFill?: string;
+	declare routeStroke?: string;
+	declare routeTextColor?: string;
 
 	private static createIconBoxPath(options: any, radius: number) {
 		const { width, height, ...other } = options;
@@ -126,7 +143,7 @@ class Node extends fabric.Group {
 		return new fabric.Group([box, icon], { left: 0, top: 0 });
 	}
 
-	private static createActionButton() {
+	private static createActionButton(options: any) {
 		const width = 24;
 		const height = 60;
 		const radius = 12;
@@ -140,12 +157,12 @@ class Node extends fabric.Group {
 			`L 0 ${height}`,
 			'Z',
 		].join(' ');
-		const box = new fabric.Path(path, { fill: '#5f646b' });
+		const box = new fabric.Path(path, { fill: options.actionButtonColor || '#5f646b' });
 		const icon = new fabric.IText('\uf04b', {
 			fontFamily: 'Font Awesome 5 Free',
 			fontWeight: 900,
 			fontSize: 14,
-			fill: '#fff',
+			fill: options.actionButtonIconColor || '#fff',
 		});
 		icon.set({ left: box.width / 2 - icon.width / 2, top: box.height / 2 - icon.height / 2 });
 		return new fabric.Group([box, icon], { hoverCursor: 'pointer' });
@@ -173,7 +190,7 @@ class Node extends fabric.Group {
 			fontSize,
 			fontFamily,
 			fontWeight: 400,
-			fill: '#fff',
+			fill: options.labelColor || '#fff',
 		});
 		const rect = new fabric.Rect({
 			rx: 12,
@@ -187,7 +204,7 @@ class Node extends fabric.Group {
 		const nodeIcon = Node.createNodeIcon(options);
 		const errorFlag = Node.createErrorFlag();
 		const node = [rect, nodeIcon, label, errorFlag];
-		const button = options.descriptor?.actionButton ? Node.createActionButton() : undefined;
+		const button = options.descriptor?.actionButton ? Node.createActionButton(options) : undefined;
 		if (button) {
 			node.push(button);
 		}
@@ -232,6 +249,7 @@ class Node extends fabric.Group {
 	}
 
 	defaultPortOption() {
+		const portFill = this.portFill || '#5f646b';
 		return {
 			nodeId: this.id,
 			hasBorders: false,
@@ -243,14 +261,14 @@ class Node extends fabric.Group {
 			lockScalingX: true,
 			lockScalingY: true,
 			superType: 'port',
-			connectedFill: this.color || '#fff',
+			connectedFill: this.color || portFill,
 			disabledFill: 'red',
 			enabledFill: 'green',
-			originFill: '#5f646b',
-			fill: '#5f646b',
+			originFill: portFill,
+			fill: portFill,
 			hoverCursor: 'pointer',
 			strokeWidth: 2,
-			stroke: this.stroke,
+			stroke: portFill,
 			links: [] as LinkObject[],
 			enabled: true,
 		};
@@ -301,7 +319,7 @@ class Node extends fabric.Group {
 		if (this.descriptor.outPortType === OUT_PORT_TYPE.STATIC) {
 			const offset = 60;
 			this.fromPort = this.descriptor.outPorts.map((outPort: string, index: number) => {
-				const fill = index === 0 ? '#ff3030' : '#15cc08';
+				const labelColor = index === 0 ? '#ff3030' : '#15cc08';
 				const targetLeft = index === 0 ? left - offset : left + offset;
 				const port = new FromPort({
 					id: outPort,
@@ -309,10 +327,8 @@ class Node extends fabric.Group {
 					top,
 					leftDiff: index === 0 ? -offset : offset,
 					...this.fromPortOption(),
-					fill,
-					originFill: fill,
 					label: outPort,
-					color: fill,
+					color: labelColor,
 					fontSize: 14,
 					fontFamily: 'Noto Sans',
 				});
@@ -407,6 +423,7 @@ class Node extends fabric.Group {
 			fromPort: this.get('fromPort'),
 			toPort: this.get('toPort'),
 			errors: this.get('errors'),
+			...serializeNodeThemeProperties(this),
 		});
 	}
 

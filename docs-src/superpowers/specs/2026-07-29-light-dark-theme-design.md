@@ -24,7 +24,8 @@ The light theme follows the approved Cool IDE concept:
 - Error: `#D95252`
 - Information blue: `#3D73D9`
 
-The existing dark theme remains available. Workflow node shapes and node-specific colors do not change in either theme.
+The existing dark theme remains available. Workflow node shapes and category accent colors do not
+change. Node surfaces, labels, ports, links, and route rows follow the active editor theme.
 
 ## Architecture
 

@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { markersToErrors, normalizeMonacoLanguage } from './monacoEditor.model';
+import {
+	markersToErrors,
+	normalizeMonacoLanguage,
+	resolveMonacoTheme,
+} from './monacoEditor.model';
 
 describe('normalizeMonacoLanguage', () => {
 	it('uses Monaco HTML support for handlebars templates', () => {
@@ -25,5 +29,16 @@ describe('markersToErrors', () => {
 
 	it('returns an empty list when Monaco reports no errors', () => {
 		expect(markersToErrors([])).toEqual([]);
+	});
+});
+
+describe('resolveMonacoTheme', () => {
+	it('maps the app theme to Monaco defaults', () => {
+		expect(resolveMonacoTheme('light')).toBe('vs');
+		expect(resolveMonacoTheme('dark')).toBe('vs-dark');
+	});
+
+	it('keeps an explicitly configured Monaco theme', () => {
+		expect(resolveMonacoTheme('light', 'custom-theme')).toBe('custom-theme');
 	});
 });

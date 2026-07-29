@@ -13,6 +13,13 @@ import {
 } from '../../components/editor';
 import { Content } from '../../components/layout';
 import Icon from '../../components/icon/Icon';
+import {
+	applyWorkflowCanvasTheme,
+	EditorThemeContext,
+	getEditorCanvasTheme,
+	getWorkflowCanvasTheme,
+	type EditorTheme,
+} from '../../theme';
 import { getNode } from './configuration/NodeConfiguration';
 import { OUT_PORT_TYPE } from './constant/constants';
 import NodeConfigurationError from './error/NodeConfigurationError';
@@ -38,6 +45,11 @@ interface IState {
 }
 
 class WorkflowEditor extends React.Component {
+	static contextType = EditorThemeContext;
+	declare context: React.ContextType<typeof EditorThemeContext>;
+
+	private appliedTheme: EditorTheme | null = null;
+
 	state: IState = {
 		loading: true,
 		zoomRatio: 1,
@@ -55,9 +67,25 @@ class WorkflowEditor extends React.Component {
 	container: HTMLDivElement | null = null;
 
 	componentDidMount() {
+		this.appliedTheme = this.context.theme;
 		import('./Descriptors.json').then(descriptors => {
 			this.setState({ descriptors: descriptors.default }, () => this.hideLoading());
 		});
+	}
+
+	componentDidUpdate() {
+		if (this.appliedTheme === this.context.theme || !this.canvasRef?.handler) {
+			return;
+		}
+		this.appliedTheme = this.context.theme;
+		const canvasTheme = getEditorCanvasTheme(this.context.theme);
+		const nodes = Nodes(this.state.descriptors, this.context.theme);
+		const links = Links(this.context.theme);
+		this.canvasRef.canvas.selectionColor = canvasTheme.selectionColor;
+		this.canvasRef.handler.setFabricObjects({ ...nodes, ...links });
+		this.canvasRef.handler.gridHandler.initialize();
+		applyWorkflowCanvasTheme(this.canvasRef.handler.getObjects(), this.context.theme);
+		this.canvasRef.canvas.requestRenderAll();
 	}
 
 	canvasHandlers = {
@@ -117,6 +145,8 @@ class WorkflowEditor extends React.Component {
 			}
 		},
 		onTransaction: () => {
+			applyWorkflowCanvasTheme(this.canvasRef.handler.getObjects(), this.context.theme);
+			this.canvasRef.canvas.requestRenderAll();
 			this.forceUpdate();
 		},
 	};
@@ -316,6 +346,8 @@ class WorkflowEditor extends React.Component {
 	};
 
 	render() {
+		const canvasTheme = getEditorCanvasTheme(this.context.theme);
+		const workflowCanvasTheme = getWorkflowCanvasTheme(this.context.theme);
 		const {
 			zoomRatio,
 			workflow,
@@ -329,7 +361,8 @@ class WorkflowEditor extends React.Component {
 		} = this.state;
 		const { onChange, onDownload, onUpload } = this.handlers;
 		const { onZoom, onAdd, onSelect, onRemove, onModified } = this.canvasHandlers;
-		const nodes = Nodes(descriptors);
+		const nodes = Nodes(descriptors, this.context.theme);
+		const links = Links(this.context.theme);
 		const canvasObjects = this.canvasRef?.handler.getObjects() || [];
 		const summary = summarizeWorkflow(canvasObjects);
 		const transactionHandler = this.canvasRef?.handler.transactionHandler;
@@ -416,8 +449,11 @@ class WorkflowEditor extends React.Component {
 								}
 							}}
 							className="rde-canvas"
-							canvasOption={{ backgroundColor: '#1c2128' }}
-							fabricObjects={{ ...nodes, ...Links } as any}
+							canvasOption={{
+								backgroundColor: canvasTheme.backgroundColor,
+								selectionColor: canvasTheme.selectionColor,
+							}}
+							fabricObjects={{ ...nodes, ...links } as any}
 							workareaOption={{
 								width: 0,
 								height: 0,
@@ -427,14 +463,14 @@ class WorkflowEditor extends React.Component {
 								grid: 20,
 								snapToGrid: true,
 								type: 'dot',
-								dotColor: '#5f646b',
+								dotColor: canvasTheme.dotColor,
 							}}
 							activeSelectionOption={{
 								hasControls: false,
 								hasBorders: false,
 								perPixelTargetFind: true,
 							}}
-							linkOption={{ stroke: '#c3c9d5', strokeWidth: 2 }}
+							linkOption={{ stroke: workflowCanvasTheme.linkColor, strokeWidth: 2 }}
 							minZoom={30}
 							maxZoom={200}
 							onZoom={onZoom}

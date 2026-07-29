@@ -1,45 +1,49 @@
 import { CurvedLink, Link, OrthogonalLink } from '../../../canvas/objects';
+import { getWorkflowCanvasTheme, type EditorTheme } from '../../../theme';
 
-const defaultOption = {
-	fill: 'rgba(0, 0, 0, 0)',
-	stroke: '#c3c9d5',
-	strokeWidth: 4,
-	originStroke: '#c3c9d5',
-	action: {
-		enabled: false,
-	},
-	tooltip: {
-		enabled: true,
-	},
-	animation: {
-		type: 'none',
-	},
-	userProperty: {},
-	trigger: {
-		enabled: false,
-	},
-};
+export default (theme: EditorTheme = 'dark') => {
+	const canvasTheme = getWorkflowCanvasTheme(theme);
+	const defaultOption = {
+		fill: 'rgba(0, 0, 0, 0)',
+		stroke: canvasTheme.linkColor,
+		strokeWidth: 4,
+		originStroke: canvasTheme.linkColor,
+		action: {
+			enabled: false,
+		},
+		tooltip: {
+			enabled: true,
+		},
+		animation: {
+			type: 'none',
+		},
+		userProperty: {},
+		trigger: {
+			enabled: false,
+		},
+	};
 
-export default {
-	link: {
-		create: (fromNode: any, fromPort: any, toNode: any, toPort: any, option: any) =>
-			new Link(fromNode, fromPort, toNode, toPort, {
-				...defaultOption,
-				...option,
-			}),
-	},
-	curvedLink: {
-		create: (fromNode: any, fromPort: any, toNode: any, toPort: any, option: any) =>
-			new CurvedLink(fromNode, fromPort, toNode, toPort, {
-				...defaultOption,
-				...option,
-			}),
-	},
-	orthogonalLink: {
-		create: (fromNode: any, fromPort: any, toNode: any, toPort: any, option: any) =>
-			new OrthogonalLink(fromNode, fromPort, toNode, toPort, {
-				...defaultOption,
-				...option,
-			}),
-	},
+	return {
+		link: {
+			create: (fromNode: any, fromPort: any, toNode: any, toPort: any, option: any) =>
+				new Link(fromNode, fromPort, toNode, toPort, {
+					...defaultOption,
+					...option,
+				}),
+		},
+		curvedLink: {
+			create: (fromNode: any, fromPort: any, toNode: any, toPort: any, option: any) =>
+				new CurvedLink(fromNode, fromPort, toNode, toPort, {
+					...defaultOption,
+					...option,
+				}),
+		},
+		orthogonalLink: {
+			create: (fromNode: any, fromPort: any, toNode: any, toPort: any, option: any) =>
+				new OrthogonalLink(fromNode, fromPort, toNode, toPort, {
+					...defaultOption,
+					...option,
+				}),
+		},
+	};
 };

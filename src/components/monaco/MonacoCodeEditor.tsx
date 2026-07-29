@@ -1,7 +1,8 @@
 import Editor, { type EditorProps, type Monaco, type OnMount } from '@monaco-editor/react';
 import React from 'react';
+import { useEditorTheme } from '../../theme';
 import './monacoEnvironment';
-import { normalizeMonacoLanguage } from './monacoEditor.model';
+import { normalizeMonacoLanguage, resolveMonacoTheme } from './monacoEditor.model';
 
 type MonacoEditorInstance = Parameters<OnMount>[0];
 
@@ -39,12 +40,13 @@ const MonacoCodeEditor = React.forwardRef<MonacoCodeEditorHandle, MonacoCodeEdit
 			options,
 			readOnly = false,
 			singleLine = false,
-			theme = 'vs-dark',
+			theme,
 			value,
 			width = '100%',
 		},
 		ref,
 	) {
+		const { theme: editorTheme } = useEditorTheme();
 		const editorRef = React.useRef<MonacoEditorInstance | null>(null);
 		const monacoRef = React.useRef<Monaco | null>(null);
 
@@ -99,7 +101,7 @@ const MonacoCodeEditor = React.forwardRef<MonacoCodeEditorHandle, MonacoCodeEdit
 						tabSize: 2,
 						...options,
 					}}
-					theme={theme}
+					theme={resolveMonacoTheme(editorTheme, theme)}
 					value={value}
 					width="100%"
 				/>

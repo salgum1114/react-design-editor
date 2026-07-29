@@ -10,6 +10,11 @@ import { EditorActivityRail, EditorStatusBar, summarizeImageMap } from '../../co
 import Icon from '../../components/icon/Icon';
 import { Content } from '../../components/layout';
 import SandBox from '../../components/sandbox/SandBox';
+import {
+	EditorThemeContext,
+	getEditorCanvasTheme,
+	type EditorTheme,
+} from '../../theme';
 import ImageMapConfigurations from './ImageMapConfigurations';
 import ImageMapFooterToolbar from './ImageMapFooterToolbar';
 import ImageMapHeaderToolbar from './ImageMapHeaderToolbar';
@@ -93,6 +98,10 @@ interface ImageMapEditorState {
 }
 
 class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorState> {
+	static contextType = EditorThemeContext;
+	declare context: React.ContextType<typeof EditorThemeContext>;
+
+	private appliedTheme: EditorTheme | null = null;
 	private canvasRef: CanvasInstance | null = null;
 	private itemsRef: ImageMapItemsHandle | null = null;
 
@@ -112,6 +121,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 	};
 
 	componentDidMount() {
+		this.appliedTheme = this.context.theme;
 		this.showLoading(true);
 		import('./Descriptors.json').then(descriptors => {
 			this.setState({ descriptors: descriptors.default }, () => this.showLoading(false));
@@ -119,6 +129,15 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 		this.setState({
 			selectedItem: null,
 		});
+	}
+
+	componentDidUpdate() {
+		if (this.appliedTheme === this.context.theme || !this.canvasRef) {
+			return;
+		}
+		this.appliedTheme = this.context.theme;
+		this.canvasRef.canvas.selectionColor = getEditorCanvasTheme(this.context.theme).selectionColor;
+		this.canvasRef.canvas.requestRenderAll();
 	}
 
 	canvasHandlers = {
@@ -576,6 +595,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 	};
 
 	render() {
+		const canvasTheme = getEditorCanvasTheme(this.context.theme);
 		const {
 			preview,
 			selectedItem,
@@ -617,6 +637,7 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 			<React.Fragment>
 				<CommonButton
 					className="rde-action-btn"
+					variant="text"
 					icon="file-download"
 					disabled={!editing}
 					tooltipTitle={i18next.t('action.download')}
@@ -721,8 +742,8 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 							onContext={onContext}
 							onTransaction={onTransaction}
 							canvasOption={{
-								backgroundColor: '#1c2128',
-								selectionColor: 'rgba(8, 151, 156, 0.3)',
+								backgroundColor: canvasTheme.backgroundColor,
+								selectionColor: canvasTheme.selectionColor,
 							}}
 						/>
 					</div>

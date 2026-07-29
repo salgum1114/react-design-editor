@@ -31,6 +31,9 @@ describe('library stylesheet boundary', () => {
 		expect(appStylesheet).not.toContain("@import './react-design-editor.css';");
 		expect(existsSync(new URL('./react-design-editor.css', import.meta.url))).toBe(false);
 		expect(existsSync(new URL('./index.css', import.meta.url))).toBe(false);
+		expect(editorStylesheet).not.toContain('data-rde-theme');
+		expect(editorStylesheet).not.toContain('rde-theme-switch');
+		expect(editorStylesheet).not.toContain('--rde-shell-950');
 	});
 
 	it('excludes test files from published type declarations', () => {

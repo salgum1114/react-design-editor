@@ -87,6 +87,7 @@ export default function ImageMapFooterToolbar({
 	};
 
 	const zoomValue = parseInt((zoomRatio * 100).toFixed(2), 10);
+	const previewLabel = String(i18next.t('action.preview'));
 
 	return (
 		<React.Fragment>
@@ -140,8 +141,9 @@ export default function ImageMapFooterToolbar({
 				</Space.Compact>
 			</div>
 			<div className="rde-editor-footer-toolbar-preview">
-				<Tooltip title={i18next.t('action.preview')}>
-					<Switch checked={preview} onChange={onChangePreview} />
+				<span className="rde-editor-footer-toolbar-preview-label">{previewLabel}</span>
+				<Tooltip title={previewLabel}>
+					<Switch size="small" checked={preview} onChange={onChangePreview} aria-label={previewLabel} />
 				</Tooltip>
 			</div>
 		</React.Fragment>

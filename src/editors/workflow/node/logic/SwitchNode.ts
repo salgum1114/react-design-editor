@@ -30,6 +30,9 @@ class SwitchNode extends LogicNode {
 	}
 
 	createFromPort(x: number, y: number) {
+		const routeFill = (this as any).routeFill || '#272e38';
+		const routeStroke = (this as any).routeStroke || '#5f646b';
+		const routeTextColor = (this as any).routeTextColor || '#fff';
 		const isEven = this.configuration.routes.length % 2 === 0;
 		const calcOdd = (port: PortObject, i: number) => {
 			const centerIndex = Math.ceil(this.configuration.routes.length / 2);
@@ -77,10 +80,10 @@ class SwitchNode extends LogicNode {
 				height: this.portHeight,
 				originX: 'center',
 				originY: 'center',
-				fill: '#272e38',
+				fill: routeFill,
 				// @ts-ignore
-				originFill: '#272e38',
-				stroke: '#5f646b',
+				originFill: routeFill,
+				stroke: routeStroke,
 				rx: 12,
 				ry: 12,
 			});
@@ -89,7 +92,7 @@ class SwitchNode extends LogicNode {
 				fontSize,
 				fontFamily: 'Noto Sans',
 				fontWeight: 400,
-				fill: '#fff',
+				fill: routeTextColor,
 				originX: 'center',
 				originY: 'center',
 			});
@@ -110,7 +113,7 @@ class SwitchNode extends LogicNode {
 				top: y + 20,
 				leftDiff: coords.leftDiff,
 				topDiff: 20,
-				fill: '#2c2d3a',
+				fill: routeFill,
 				originX: 'center',
 				originY: 'center',
 			});

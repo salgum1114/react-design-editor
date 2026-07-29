@@ -490,20 +490,19 @@ video {
 }
 .rde-action-btn {
   background: transparent;
-  border: transparent;
+  border-color: transparent;
 }
 .rde-action-btn button {
   background: transparent !important;
   border-color: transparent !important;
-  border: unset;
 }
 .rde-action-btn:hover {
   background: transparent;
-  border: transparent;
+  border-color: transparent;
 }
 .rde-action-btn:focus {
   background: transparent;
-  border: transparent;
+  border-color: transparent;
 }
 .rde-icon-container {
   border-radius: 4px;
@@ -966,28 +965,100 @@ video {
 
 /* Operator editor shell */
 :root {
-  --rde-shell-950: #0d1413;
-  --rde-shell-900: #111918;
-  --rde-shell-850: #151e1c;
-  --rde-shell-800: #1a2422;
-  --rde-shell-750: #202c29;
-  --rde-shell-700: #293633;
-  --rde-shell-border: #34413e;
-  --rde-shell-text: #edf4f1;
-  --rde-shell-muted: #91a09a;
-  --rde-shell-subtle: #64716c;
-  --rde-mint: #5ee0bd;
-  --rde-mint-strong: #32c9a3;
-  --rde-mint-soft: rgba(94, 224, 189, 0.14);
-  --rde-blue: #4e82f1;
-  --rde-amber: #f0ac4c;
-  --rde-red: #ef6a5b;
+  --rde-shell-950: #F4F7FA;
+  --rde-shell-900: #EEF3F7;
+  --rde-shell-850: #FFFFFF;
+  --rde-shell-800: #F7FAFC;
+  --rde-shell-750: #E8F0F4;
+  --rde-shell-700: #DDE7EC;
+  --rde-shell-border: #D7E0E7;
+  --rde-shell-text: #172A2D;
+  --rde-shell-muted: #64748B;
+  --rde-shell-subtle: #8A99A6;
+  --rde-mint: #0F8F77;
+  --rde-mint-strong: #0B745F;
+  --rde-mint-soft: #DDF7EF;
+  --rde-blue: #3D73D9;
+  --rde-amber: #C98724;
+  --rde-red: #D95252;
+  --rde-canvas-background: #EEF3F7;
+  --rde-active-surface: #DDF7EF;
+  --rde-control-background: #FFFFFF;
+  --rde-section-background: #F7FAFC;
+  --rde-appbar-glow: rgba(43, 201, 165, 0.07);
+  --rde-hover-overlay: rgba(23, 42, 45, 0.045);
+  --rde-divider-faint: rgba(23, 42, 45, 0.07);
+  --rde-focus-border: rgba(15, 143, 119, 0.5);
+  --rde-focus-shadow: rgba(15, 143, 119, 0.1);
+  --rde-primary-border: rgba(15, 143, 119, 0.34);
+  --rde-primary-border-hover: rgba(15, 143, 119, 0.54);
+  --rde-primary-text-hover: #086451;
+  --rde-primary-background-hover: #C9EFE4;
+  --rde-danger-border: rgba(217, 82, 82, 0.34);
+  --rde-danger-border-hover: rgba(217, 82, 82, 0.54);
+  --rde-danger-text: #B63B3B;
+  --rde-danger-text-hover: #962E2E;
+  --rde-danger-background: rgba(217, 82, 82, 0.08);
+  --rde-danger-background-hover: rgba(217, 82, 82, 0.14);
+  --rde-on-danger: #FFFFFF;
+  --rde-elevated-shadow: rgba(23, 42, 45, 0.16);
+  --rde-modal-mask: rgba(23, 42, 45, 0.42);
+  --rde-modal-shadow: rgba(23, 42, 45, 0.22);
+  --rde-panel-translucent: rgba(255, 255, 255, 0.98);
+  --rde-monaco-background: #FFFFFF;
+  --rde-status-selected: #3D73D9;
+  --rde-warning-ring: rgba(201, 135, 36, 0.12);
   --rde-appbar-height: 54px;
   --rde-commandbar-height: 44px;
   --rde-statusbar-height: 38px;
   --rde-rail-width: 58px;
   --rde-library-width: 252px;
   --rde-inspector-width: clamp(310px, 22vw, 370px);
+}
+
+[data-rde-theme='dark'] {
+  --rde-shell-950: #0D1413;
+  --rde-shell-900: #111918;
+  --rde-shell-850: #151E1C;
+  --rde-shell-800: #1A2422;
+  --rde-shell-750: #202C29;
+  --rde-shell-700: #293633;
+  --rde-shell-border: #34413E;
+  --rde-shell-text: #EDF4F1;
+  --rde-shell-muted: #91A09A;
+  --rde-shell-subtle: #64716C;
+  --rde-mint: #5EE0BD;
+  --rde-mint-strong: #32C9A3;
+  --rde-mint-soft: rgba(94, 224, 189, 0.14);
+  --rde-blue: #4E82F1;
+  --rde-amber: #F0AC4C;
+  --rde-red: #EF6A5B;
+  --rde-canvas-background: #1C2128;
+  --rde-active-surface: rgba(94, 224, 189, 0.14);
+  --rde-control-background: #111918;
+  --rde-section-background: #151E1C;
+  --rde-appbar-glow: rgba(94, 224, 189, 0.03);
+  --rde-hover-overlay: rgba(255, 255, 255, 0.035);
+  --rde-divider-faint: rgba(255, 255, 255, 0.035);
+  --rde-focus-border: rgba(94, 224, 189, 0.55);
+  --rde-focus-shadow: rgba(94, 224, 189, 0.08);
+  --rde-primary-border: rgba(94, 224, 189, 0.38);
+  --rde-primary-border-hover: rgba(94, 224, 189, 0.58);
+  --rde-primary-text-hover: #B9FFEA;
+  --rde-primary-background-hover: rgba(94, 224, 189, 0.18);
+  --rde-danger-border: rgba(255, 83, 92, 0.34);
+  --rde-danger-border-hover: rgba(255, 83, 92, 0.54);
+  --rde-danger-text: #E78085;
+  --rde-danger-text-hover: #FF9BA0;
+  --rde-danger-background: rgba(255, 83, 92, 0.08);
+  --rde-danger-background-hover: rgba(255, 83, 92, 0.14);
+  --rde-elevated-shadow: rgba(0, 0, 0, 0.35);
+  --rde-modal-mask: rgba(5, 10, 9, 0.76);
+  --rde-modal-shadow: rgba(0, 0, 0, 0.48);
+  --rde-panel-translucent: rgba(17, 25, 24, 0.98);
+  --rde-monaco-background: #1E1E1E;
+  --rde-status-selected: #84A9F7;
+  --rde-warning-ring: rgba(240, 172, 76, 0.1);
 }
 
 body {
@@ -1029,7 +1100,7 @@ body {
   height: 100%;
   padding: 0 16px;
   background:
-    linear-gradient(90deg, rgba(94, 224, 189, 0.03), transparent 26%),
+    linear-gradient(90deg, var(--rde-appbar-glow), transparent 26%),
     var(--rde-shell-950);
 }
 
@@ -1059,7 +1130,7 @@ body {
   line-height: var(--rde-appbar-height);
 }
 
-.rde-appbar-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-item {
+.rde-appbar-menu.ant-menu-horizontal > .ant-menu-item {
   height: 100%;
   margin-inline: 2px;
   padding-inline: 17px;
@@ -1067,13 +1138,13 @@ body {
   border-radius: 0;
 }
 
-.rde-appbar-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-item:hover,
-.rde-appbar-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-item-selected {
+.rde-appbar-menu.ant-menu-horizontal > .ant-menu-item:hover,
+.rde-appbar-menu.ant-menu-horizontal > .ant-menu-item-selected {
   color: var(--rde-shell-text);
   background: transparent;
 }
 
-.rde-appbar-menu.ant-menu-dark.ant-menu-horizontal > .ant-menu-item-selected::after {
+.rde-appbar-menu.ant-menu-horizontal > .ant-menu-item-selected::after {
   right: 14px;
   bottom: 0;
   left: 14px;
@@ -1081,7 +1152,68 @@ body {
 }
 
 .rde-appbar-actions {
+  align-items: center;
   gap: 3px;
+}
+
+.rde-theme-switch.ant-segmented {
+  width: 148px;
+  min-width: 148px;
+  height: 28px;
+  flex: 0 0 148px;
+  box-sizing: border-box;
+  padding: 2px;
+  border: 1px solid var(--rde-shell-border);
+  margin-right: 8px;
+  color: var(--rde-shell-muted);
+  background: var(--rde-shell-800);
+  box-shadow: none;
+  transition: none;
+}
+
+.rde-theme-switch .ant-segmented-group {
+  width: 100%;
+  min-width: 0;
+}
+
+.rde-theme-switch .ant-segmented-item {
+  min-width: 0;
+  flex: 1 1 0;
+  color: var(--rde-shell-muted);
+  transition: none;
+}
+
+.rde-theme-switch .ant-segmented-item-label {
+  width: 100%;
+  min-height: 22px;
+  padding: 0 6px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 9px;
+  line-height: 22px;
+}
+
+.rde-theme-switch-label {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.rde-theme-switch-icon {
+  width: 11px;
+  text-align: center;
+}
+
+.rde-theme-switch .ant-segmented-item-selected {
+  color: var(--rde-mint);
+  background: var(--rde-shell-850);
+  box-shadow: 0 1px 3px var(--rde-elevated-shadow);
+}
+
+.rde-theme-switch .ant-segmented-thumb,
+.rde-theme-switch .ant-segmented-item::after {
+  transition: none !important;
 }
 
 .rde-appbar-action.ant-btn {
@@ -1189,9 +1321,9 @@ body {
 }
 
 .rde-content-layout-title-action .ant-btn:not(:disabled):hover {
-  border-color: rgba(94, 224, 189, 0.45);
+  border-color: var(--rde-primary-border-hover);
   color: var(--rde-shell-text);
-  background: #263430;
+  background: var(--rde-shell-700);
 }
 
 .rde-editor.rde-operator-editor {
@@ -1227,7 +1359,7 @@ body {
 }
 
 .rde-operator-editor .ant-btn-primary {
-  border-color: rgba(94, 224, 189, 0.38);
+  border-color: var(--rde-primary-border);
   color: var(--rde-mint);
   background: var(--rde-mint-soft);
 }
@@ -1235,23 +1367,23 @@ body {
 .rde-operator-editor .ant-btn-primary:not(:disabled):hover,
 .rde-operator-editor .ant-btn-primary:not(:disabled):focus,
 .rde-operator-editor .ant-btn-primary:not(:disabled):active {
-  border-color: rgba(94, 224, 189, 0.58);
-  color: #b9ffea;
-  background: rgba(94, 224, 189, 0.18);
+  border-color: var(--rde-primary-border-hover);
+  color: var(--rde-primary-text-hover);
+  background: var(--rde-primary-background-hover);
 }
 
 .rde-operator-editor .ant-btn-dangerous {
-  border-color: rgba(255, 83, 92, 0.34);
-  color: #e78085;
-  background: rgba(255, 83, 92, 0.08);
+  border-color: var(--rde-danger-border);
+  color: var(--rde-danger-text);
+  background: var(--rde-danger-background);
 }
 
 .rde-operator-editor .ant-btn-dangerous:not(:disabled):hover,
 .rde-operator-editor .ant-btn-dangerous:not(:disabled):focus,
 .rde-operator-editor .ant-btn-dangerous:not(:disabled):active {
-  border-color: rgba(255, 83, 92, 0.54);
-  color: #ff9ba0;
-  background: rgba(255, 83, 92, 0.14);
+  border-color: var(--rde-danger-border-hover);
+  color: var(--rde-danger-text-hover);
+  background: var(--rde-danger-background-hover);
 }
 
 .rde-operator-editor .ant-btn:disabled {
@@ -1308,13 +1440,13 @@ body {
 
 .rde-activity-rail-button:hover {
   color: var(--rde-shell-text);
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--rde-hover-overlay);
 }
 
 .rde-activity-rail-button.active {
   border-left-color: var(--rde-mint);
   color: var(--rde-mint);
-  background: linear-gradient(90deg, var(--rde-mint-soft), transparent);
+  background: var(--rde-active-surface);
 }
 
 .rde-activity-rail-icon {
@@ -1342,7 +1474,7 @@ body {
   padding: 0 3px;
   border: 2px solid var(--rde-shell-950);
   border-radius: 999px;
-  color: #fff;
+  color: var(--rde-on-danger);
   background: var(--rde-red);
   font-family: 'Roboto Mono', monospace;
   font-size: 8px;
@@ -1355,7 +1487,7 @@ body {
   justify-content: space-between;
   padding: 9px 11px 8px 13px;
   border-bottom: 1px solid var(--rde-shell-border);
-  background: var(--rde-shell-850);
+  background: var(--rde-section-background);
 }
 
 .rde-editor-panel-header-copy {
@@ -1426,8 +1558,14 @@ body {
   min-height: 0;
   overscroll-behavior: contain;
   scrollbar-color: var(--rde-shell-border) transparent;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: auto;
   scrollbar-width: thin;
+}
+
+.rde-editor-items-scroll,
+.rde-editor-items-scroll-content {
+  margin: 0;
+  padding: 0;
 }
 
 .rde-editor-items-scroll.is-layer-list {
@@ -1468,7 +1606,7 @@ body {
 .rde-editor-items-search {
   padding: 9px 10px;
   border-bottom: 1px solid var(--rde-shell-border);
-  background: var(--rde-shell-850);
+  background: var(--rde-section-background);
 }
 
 .rde-editor-items-search .ant-input-affix-wrapper {
@@ -1476,7 +1614,7 @@ body {
   border: 1px solid var(--rde-shell-border);
   border-radius: 6px;
   color: var(--rde-shell-text);
-  background: var(--rde-shell-900);
+  background: var(--rde-control-background);
   box-shadow: none;
 }
 
@@ -1499,6 +1637,13 @@ body {
   border: 0;
   border-radius: 0;
   background: transparent;
+}
+
+.rde-operator-editor .rde-editor-items .ant-collapse > .ant-collapse-item,
+.rde-operator-editor .rde-editor-items .ant-collapse > .ant-collapse-item > .ant-collapse-header,
+.rde-operator-editor .rde-editor-items .ant-collapse > .ant-collapse-item > .ant-collapse-panel,
+.rde-operator-editor .rde-editor-items .ant-collapse > .ant-collapse-item > .ant-collapse-content {
+  border-radius: 0 !important;
 }
 
 .rde-operator-editor .rde-editor-items .ant-collapse > .ant-collapse-item {
@@ -1539,7 +1684,7 @@ body {
 
 .rde-operator-editor .rde-editor-items .ant-collapse-item-active > .ant-collapse-header {
   color: var(--rde-shell-text);
-  background: #16211f;
+  background: var(--rde-active-surface);
 }
 
 .rde-editor-items-category {
@@ -1556,7 +1701,7 @@ body {
 
 .rde-operator-editor .rde-editor-items-item {
   height: 36px;
-  color: #cbd5d1;
+  color: var(--rde-shell-text);
   background: transparent;
   transition: background 140ms ease, color 140ms ease;
 }
@@ -1566,7 +1711,7 @@ body {
   left: 10px;
   width: auto;
   height: 1px;
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--rde-divider-faint);
 }
 
 .rde-operator-editor .rde-editor-items-item:hover {
@@ -1609,7 +1754,7 @@ body {
   min-height: 160px;
   flex: 1;
   overflow: hidden;
-  background: #1c2128;
+  background: var(--rde-canvas-background);
 }
 
 .rde-operator-editor .rde-editor-canvas .rde-canvas {
@@ -1655,7 +1800,7 @@ body {
   margin: 0;
   padding: 0 12px;
   border-bottom: 1px solid var(--rde-shell-border);
-  background: var(--rde-shell-900);
+  background: var(--rde-section-background);
 }
 
 .rde-inspector-tabs > .ant-tabs-nav::before {
@@ -1777,7 +1922,7 @@ body {
   border: 1px solid var(--rde-shell-border);
   border-radius: 5px;
   color: var(--rde-shell-text);
-  background: var(--rde-shell-900);
+  background: var(--rde-control-background);
   box-shadow: none;
 }
 
@@ -1790,8 +1935,8 @@ body {
 .rde-editor-inspector .ant-select-focused .ant-select-selector,
 .rde-editor-inspector .ant-picker:hover,
 .rde-editor-inspector .ant-picker-focused {
-  border-color: rgba(94, 224, 189, 0.55);
-  box-shadow: 0 0 0 2px rgba(94, 224, 189, 0.08);
+  border-color: var(--rde-focus-border);
+  box-shadow: 0 0 0 2px var(--rde-focus-shadow);
 }
 
 .rde-editor-inspector textarea.ant-input {
@@ -1808,19 +1953,20 @@ body {
 .rde-editor-inspector .ant-select-input,
 .rde-editor-inspector .ant-picker input {
   color: var(--rde-shell-text);
+  background: transparent;
 }
 
 .rde-editor-inspector .ant-select {
   border-color: var(--rde-shell-border);
   color: var(--rde-shell-text);
-  background: var(--rde-shell-900);
+  background: var(--rde-control-background);
   box-shadow: none;
 }
 
 .rde-editor-inspector .ant-select:hover,
 .rde-editor-inspector .ant-select-focused {
-  border-color: rgba(94, 224, 189, 0.55);
-  box-shadow: 0 0 0 2px rgba(94, 224, 189, 0.08);
+  border-color: var(--rde-focus-border);
+  box-shadow: 0 0 0 2px var(--rde-focus-shadow);
 }
 
 .rde-editor-inspector .ant-select-arrow,
@@ -1832,7 +1978,7 @@ body {
   border: 1px solid var(--rde-shell-border);
   color: var(--rde-shell-text);
   background: var(--rde-shell-850);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 12px 28px var(--rde-elevated-shadow);
 }
 
 .ant-select-dropdown.ant-select-css-var {
@@ -1858,7 +2004,7 @@ body {
 .rde-editor-inspector .ant-radio-button-wrapper {
   border-color: var(--rde-shell-border);
   color: var(--rde-shell-muted);
-  background: var(--rde-shell-900);
+  background: var(--rde-control-background);
   box-shadow: none;
 }
 
@@ -1871,7 +2017,7 @@ body {
 }
 
 .rde-editor-inspector .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
-  border-color: rgba(94, 224, 189, 0.55);
+  border-color: var(--rde-focus-border);
   color: var(--rde-mint);
   background: var(--rde-mint-soft);
 }
@@ -1879,11 +2025,11 @@ body {
 .rde-editor-inspector .ant-upload-drag {
   border-color: var(--rde-shell-border);
   color: var(--rde-shell-text);
-  background: var(--rde-shell-900);
+  background: var(--rde-control-background);
 }
 
 .rde-editor-inspector .ant-upload-wrapper .ant-upload-drag:hover {
-  border-color: rgba(94, 224, 189, 0.55);
+  border-color: var(--rde-focus-border);
 }
 
 .rde-editor-inspector .ant-upload-drag .ant-upload-drag-icon,
@@ -1903,7 +2049,7 @@ body {
 }
 
 .rde-editor-inspector .rde-action-btn.ant-btn:not(:disabled):hover {
-  border-color: rgba(94, 224, 189, 0.45);
+  border-color: var(--rde-primary-border-hover);
   color: var(--rde-mint);
   background: var(--rde-mint-soft);
 }
@@ -1946,7 +2092,7 @@ body {
   margin: 0 !important;
   padding: 14px 16px;
   border-bottom: 1px solid var(--rde-shell-border);
-  background: var(--rde-shell-900);
+  background: var(--rde-section-background);
 }
 
 .rde-workflow-node-configurations form > div:first-child h2 {
@@ -1968,7 +2114,7 @@ body {
   padding: 14px;
   border-top: 1px solid var(--rde-shell-border);
   margin-top: 12px;
-  background: var(--rde-shell-900);
+  background: var(--rde-section-background);
   gap: 8px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -1990,21 +2136,21 @@ body {
 }
 
 .rde-inspector-action.ant-btn.is-secondary:not(:disabled):hover {
-  border-color: rgba(94, 224, 189, 0.45);
+  border-color: var(--rde-primary-border-hover);
   color: var(--rde-mint);
   background: var(--rde-mint-soft);
 }
 
 .rde-inspector-action.ant-btn.is-danger {
-  border-color: rgba(255, 105, 112, 0.32);
-  color: #ff8b91;
-  background: rgba(255, 83, 92, 0.08);
+  border-color: var(--rde-danger-border);
+  color: var(--rde-danger-text);
+  background: var(--rde-danger-background);
 }
 
 .rde-inspector-action.ant-btn.is-danger:not(:disabled):hover {
-  border-color: rgba(255, 105, 112, 0.58);
-  color: #ffb2b6;
-  background: rgba(255, 83, 92, 0.14);
+  border-color: var(--rde-danger-border-hover);
+  color: var(--rde-danger-text-hover);
+  background: var(--rde-danger-background-hover);
 }
 
 .rde-workflow-sider-section-header {
@@ -2032,7 +2178,7 @@ body {
   flex: 0 0 auto;
   border-top: 1px solid var(--rde-shell-border);
   color: var(--rde-shell-text);
-  background: rgba(17, 25, 24, 0.98);
+  background: var(--rde-panel-translucent);
 }
 
 .rde-workflow-dock-header {
@@ -2094,7 +2240,7 @@ body {
   height: 15px;
   place-items: center;
   border-radius: 999px;
-  color: #fff;
+  color: var(--rde-on-danger);
   background: var(--rde-red);
   font-family: 'Roboto Mono', monospace;
   font-size: 8px;
@@ -2191,7 +2337,7 @@ body {
 
 .rde-workflow-validation-icon.issues {
   color: var(--rde-red);
-  background: rgba(239, 106, 91, 0.13);
+  background: var(--rde-danger-background-hover);
 }
 
 .rde-workflow-dock-validation > div,
@@ -2227,7 +2373,7 @@ body {
   height: 8px;
   border-radius: 50%;
   background: var(--rde-amber);
-  box-shadow: 0 0 0 4px rgba(240, 172, 76, 0.1);
+  box-shadow: 0 0 0 4px var(--rde-warning-ring);
 }
 
 .rde-workflow-history-actions {
@@ -2297,7 +2443,7 @@ body {
 }
 
 .rde-status-selected {
-  color: #84a9f7;
+  color: var(--rde-status-selected);
 }
 
 .rde-editor-statusbar .rde-editor-toolbar {
@@ -2316,8 +2462,7 @@ body {
   border-left: 1px solid var(--rde-shell-border);
 }
 
-.rde-editor-statusbar .ant-btn,
-.rde-editor-statusbar .ant-switch {
+.rde-editor-statusbar .ant-btn {
   height: 25px;
   border-color: var(--rde-shell-border);
   border-radius: 5px !important;
@@ -2342,7 +2487,7 @@ body {
 }
 
 .rde-editor-statusbar .ant-btn-primary {
-  border-color: rgba(94, 224, 189, 0.38);
+  border-color: var(--rde-primary-border);
   color: var(--rde-mint);
   background: var(--rde-mint-soft);
 }
@@ -2361,14 +2506,6 @@ body {
   color: var(--rde-shell-muted);
   background: var(--rde-shell-900);
   box-shadow: none;
-  transition: none;
-}
-
-.rde-imagemap-workspace .rde-editor-header-toolbar *,
-.rde-imagemap-workspace .rde-editor-header-toolbar *::before,
-.rde-imagemap-workspace .rde-editor-header-toolbar *::after {
-  animation: none !important;
-  transition: none !important;
 }
 
 .rde-editor-header-toolbar-container {
@@ -2415,12 +2552,12 @@ body {
 }
 
 .rde-editor-header-toolbar-container .rde-canvas-toolbar .ant-btn.is-danger {
-  color: #e78085;
+  color: var(--rde-danger-text);
 }
 
 .rde-editor-header-toolbar-container .rde-canvas-toolbar .ant-btn.is-danger:not(:disabled):hover {
-  color: #ff9ba0;
-  background: rgba(255, 83, 92, 0.1);
+  color: var(--rde-danger-text-hover);
+  background: var(--rde-danger-background-hover);
 }
 
 .rde-imagemap-workspace .rde-editor-footer-toolbar-interaction,
@@ -2439,6 +2576,19 @@ body {
   margin-left: 5px;
   padding-left: 5px;
   border-left: 1px solid var(--rde-shell-border);
+}
+
+.rde-imagemap-workspace .rde-editor-footer-toolbar-preview {
+  height: 25px;
+  align-items: center;
+  gap: 6px;
+}
+
+.rde-editor-footer-toolbar-preview-label {
+  color: var(--rde-shell-muted);
+  font-size: 9px;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .rde-imagemap-items .rde-canvas-list {
@@ -2473,7 +2623,7 @@ body {
 .rde-imagemap-items .rde-canvas-list-actions .ant-input-search .ant-input:hover,
 .rde-imagemap-items .rde-canvas-list-actions .ant-input-search .ant-input:focus,
 .rde-imagemap-items .rde-canvas-list-actions .ant-input-search .ant-input-search-btn:not(:disabled):hover {
-  border-color: rgba(94, 224, 189, 0.45);
+  border-color: var(--rde-primary-border-hover);
   color: var(--rde-mint);
   background: var(--rde-shell-750);
 }
@@ -2515,7 +2665,7 @@ body {
   margin: 0 7px;
   padding: 0 7px;
   border-radius: 5px;
-  color: #cbd5d1;
+  color: var(--rde-shell-text);
 }
 
 .rde-imagemap-items .rde-canvas-list-item::after {
@@ -2524,7 +2674,7 @@ body {
   bottom: 0;
   left: 7px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--rde-divider-faint);
   content: '';
 }
 
@@ -2554,12 +2704,12 @@ body {
 }
 
 .rde-imagemap-items .rde-canvas-list-item-actions .ant-btn.is-danger {
-  color: #e78085;
+  color: var(--rde-danger-text);
 }
 
 .rde-imagemap-items .rde-canvas-list-item-actions .ant-btn.is-danger:not(:disabled):hover {
-  color: #ff9ba0;
-  background: rgba(255, 83, 92, 0.1);
+  color: var(--rde-danger-text-hover);
+  background: var(--rde-danger-background-hover);
 }
 .rde-imagemap-configurations .ant-collapse,
 .rde-workflow-configurations .ant-collapse {
@@ -2575,7 +2725,7 @@ body {
 .rde-imagemap-configurations .ant-collapse-header,
 .rde-workflow-configurations .ant-collapse-header {
   color: var(--rde-shell-text) !important;
-  background: var(--rde-shell-900);
+  background: var(--rde-section-background);
 }
 
 .rde-imagemap-configurations .ant-collapse-content,
@@ -2598,7 +2748,7 @@ body {
 
 .rde-editor-inspector .ant-table-thead > tr > th {
   color: var(--rde-shell-muted);
-  background: var(--rde-shell-900);
+  background: var(--rde-section-background);
 }
 
 .rde-editor-inspector .ant-empty-description,
@@ -2607,7 +2757,7 @@ body {
 }
 
 .rde-editor-modal.ant-modal-root .ant-modal-mask {
-  background: rgba(5, 10, 9, 0.76);
+  background: var(--rde-modal-mask);
   backdrop-filter: blur(2px);
 }
 
@@ -2616,7 +2766,7 @@ body {
   border-radius: 8px;
   color: var(--rde-shell-text);
   background: var(--rde-shell-850);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
+  box-shadow: 0 24px 70px var(--rde-modal-shadow);
 }
 
 .rde-editor-modal .ant-modal-header {
@@ -2673,7 +2823,7 @@ body {
 .rde-editor-modal .ant-select {
   border-color: var(--rde-shell-border) !important;
   color: var(--rde-shell-text);
-  background: var(--rde-shell-900) !important;
+  background: var(--rde-control-background) !important;
   box-shadow: none !important;
 }
 
@@ -2693,7 +2843,7 @@ body {
 .rde-editor-modal .ant-select-focused .ant-select-selector,
 .rde-editor-modal .ant-select:hover,
 .rde-editor-modal .ant-select-focused {
-  border-color: rgba(94, 224, 189, 0.45) !important;
+  border-color: var(--rde-primary-border-hover) !important;
 }
 
 .rde-editor-modal .ant-select,
@@ -2712,11 +2862,11 @@ body {
 .rde-editor-modal .ant-radio-button-wrapper {
   border-color: var(--rde-shell-border);
   color: var(--rde-shell-muted);
-  background: var(--rde-shell-900);
+  background: var(--rde-control-background);
 }
 
 .rde-editor-modal .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
-  border-color: rgba(94, 224, 189, 0.45);
+  border-color: var(--rde-primary-border-hover);
   color: var(--rde-mint);
   background: var(--rde-mint-soft);
   box-shadow: none;
@@ -2735,7 +2885,7 @@ body {
 .rde-editor-modal .ant-table-thead > tr > th {
   border-color: var(--rde-shell-border);
   color: var(--rde-shell-muted);
-  background: var(--rde-shell-900);
+  background: var(--rde-section-background);
 }
 
 .rde-editor-modal .ant-empty-description,
@@ -2765,7 +2915,7 @@ body {
 }
 
 .rde-editor-modal .ant-btn-primary {
-  border-color: rgba(94, 224, 189, 0.38);
+  border-color: var(--rde-primary-border);
   color: var(--rde-mint);
   background: var(--rde-mint-soft);
 }
@@ -2773,9 +2923,9 @@ body {
 .rde-editor-modal .ant-btn-primary:not(:disabled):hover,
 .rde-editor-modal .ant-btn-primary:not(:disabled):focus,
 .rde-editor-modal .ant-btn-primary:not(:disabled):active {
-  border-color: rgba(94, 224, 189, 0.62);
-  color: #c9fff0;
-  background: rgba(94, 224, 189, 0.18);
+  border-color: var(--rde-primary-border-hover);
+  color: var(--rde-primary-text-hover);
+  background: var(--rde-primary-background-hover);
 }
 
 .rde-editor-modal-preview {
@@ -2785,7 +2935,7 @@ body {
   border: 1px solid var(--rde-shell-border);
   border-radius: 6px;
   margin-top: 14px;
-  background: #f3f3f3;
+  background: var(--rde-canvas-background);
 }
 
 .rde-editor-modal-preview > .rde-canvas {
@@ -2797,7 +2947,7 @@ body {
   overflow: hidden;
   border: 1px solid var(--rde-shell-border);
   border-radius: 6px;
-  background: #1e1e1e;
+  background: var(--rde-monaco-background);
 }
 
 .rde-editor-inspector .rde-monaco-editor {
@@ -2927,14 +3077,14 @@ body {
     grid-column: 2;
   }
 
-  .rde-editor-inspector {
+.rde-editor-inspector {
     position: absolute;
     z-index: 600;
     top: 0;
     right: 0;
     bottom: 0;
     width: var(--rde-inspector-width);
-    box-shadow: -12px 0 30px rgba(0, 0, 0, 0.28);
+    box-shadow: -12px 0 30px var(--rde-elevated-shadow);
   }
 
   .rde-workflow-dock-content {
@@ -2957,4 +3107,3 @@ body {
     grid-template-columns: 1fr auto;
   }
 }
-

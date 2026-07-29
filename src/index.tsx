@@ -9,6 +9,7 @@ import App from './App';
 import { i18nClient } from './i18n';
 import { register } from './serviceWorker';
 import './styles/app.css';
+import { EditorThemeProvider } from './theme';
 
 const antResources: Record<string, typeof koKR> = {
 	ko: koKR,
@@ -34,7 +35,9 @@ const render = (Component: React.ElementType) => {
 	root.render(
 		<HelmetProvider>
 			<ConfigProvider locale={antResources[i18next.language] || enUS}>
-				<Component />
+				<EditorThemeProvider>
+					<Component />
+				</EditorThemeProvider>
 			</ConfigProvider>
 		</HelmetProvider>,
 	);

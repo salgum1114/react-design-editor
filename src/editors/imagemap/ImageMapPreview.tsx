@@ -48,7 +48,7 @@ export default function ImageMapPreview({
 					onClick={onClick}
 					maxZoom={500}
 				/>
-				<Button className="rde-action-btn rde-preview-close-btn" onClick={onChangePreview}>
+				<Button className="rde-action-btn rde-preview-close-btn" variant="text" onClick={onChangePreview}>
 					<Icon name="times" size={1.5} />
 				</Button>
 			</div>
