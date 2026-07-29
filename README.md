@@ -16,6 +16,9 @@ Try it out today - the project is being continually developed to support a varie
 # Feature List
 
 - [x] Add, remove, resize, reorder, clone, copy/paste and drag/drop elements
+- [x] Build workflows with configurable trigger, logic, data and action nodes
+- [x] Connect workflow nodes with labeled ports, multiple routes and automatic layout
+- [x] Review workflow validation, canvas status and undo/redo history
 - [x] Drawing capability, with polygon, line, arrows and link support
 - [x] Preview mode, tooltips, group/ungroup and zoom functionality
 - [x] Upload (with drag/drop), import and export to JSON or image
@@ -24,11 +27,12 @@ Try it out today - the project is being continually developed to support a varie
 - [x] Various icons in icon picker and fonts from Google Fonts (20)
 - [x] HTML/CSS/JS Element, iFrame element
 - [x] Animation support, with Fade / Bounce / Shake / Scaling / Rotation / Flash effects
-- [x] Code Editor with HTML / CSS / JS / Preview
+- [x] Monaco code editor with HTML / CSS / JavaScript preview
 - [x] Various interaction modes, including grasp, selection, ctrl + drag grab
 - [x] Multiple layouts, with fixed, responsive, fullscreen and grid modes
 - [x] SVG, Chart and GIF elements
 - [x] Undo/Redo support
+- [x] Light and dark editor themes
 - [ ] Wireframes - in development
 - [ ] Multiple Map - in development
 - [ ] Ruler - in development
@@ -58,9 +62,71 @@ Library builds run with Vite only:
 - `npm run build:lib` builds the package into `dist` and emits declarations
 - `npm run serve` previews the demo build locally
 
-# Ask AI
+# Using the Canvas Component
 
-[React Design Editor](https://codeparrot.ai/oracle?owner=salgum1114&repo=react-design-editor) AI will help you understand this repository better.
+The published package provides the `Canvas` component and its canvas handlers. Toolbars, palettes and property panels shown in the demo can be built around this component as needed.
+
+```tsx
+import { useRef } from 'react';
+import { Canvas, type CanvasInstance } from 'react-design-editor';
+import 'react-design-editor/react-design-editor.css';
+
+export default function DesignCanvas() {
+	const canvasRef = useRef<CanvasInstance | null>(null);
+
+	const addRectangle = () => {
+		canvasRef.current?.handler.add({
+			type: 'rect',
+			name: 'Rectangle',
+			width: 160,
+			height: 90,
+			fill: '#5ee0bd',
+			rx: 8,
+			ry: 8,
+		});
+	};
+
+	const saveCanvas = () => {
+		const objects = canvasRef.current?.handler.exportJSON() ?? [];
+		localStorage.setItem('design', JSON.stringify(objects));
+	};
+
+	const loadCanvas = async () => {
+		const saved = localStorage.getItem('design');
+		if (saved) {
+			await canvasRef.current?.handler.importJSON(JSON.parse(saved));
+		}
+	};
+
+	return (
+		<div>
+			<button type="button" onClick={addRectangle}>Add rectangle</button>
+			<button type="button" onClick={saveCanvas}>Save</button>
+			<button type="button" onClick={loadCanvas}>Load</button>
+
+			<Canvas
+				ref={canvasRef}
+				style={{ width: '100%', height: 600 }}
+				canvasOption={{ backgroundColor: '#f4f7f9' }}
+				workareaOption={{
+					width: 800,
+					height: 500,
+					backgroundColor: '#ffffff',
+				}}
+				canvasActions={{
+					clipboard: true,
+					transaction: true,
+				}}
+				onSelect={object => {
+					console.log('Selected object:', object);
+				}}
+			/>
+		</div>
+	);
+}
+```
+
+Use `canvasRef.current.handler` to add or remove objects, change the selection, control zoom, run undo/redo operations and import or export canvas data. The parent element or the `style` prop must provide a visible height when responsive sizing is enabled.
 
 # Screenshots
 
