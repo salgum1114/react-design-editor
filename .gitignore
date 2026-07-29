@@ -8,3 +8,8 @@ lib/
 .vscode/
 docs/
 .DS_Store
+
+# Local planning and agent artifacts
+docs-src/
+.superpowers/
+superpowers/
