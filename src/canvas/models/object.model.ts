@@ -338,15 +338,71 @@ export interface GridOption {
 	dotColor?: string;
 }
 
+export interface RulerOption {
+	enabled?: boolean;
+	unit?: 'px';
+	size?: number;
+	backgroundColor?: string;
+	lineColor?: string;
+	textColor?: string;
+}
+
 export interface GuidelineOption {
 	/**
 	 * When have moved object, whether should show guideline
 	 * @type {boolean}
 	 */
 	enabled?: boolean;
+	/**
+	 * Object spacing measurement and equal-spacing snap options
+	 */
+	spacing?: SpacingGuidelineOption;
+}
+
+export interface SpacingGuidelineOption {
+	/**
+	 * Distance guideline color
+	 */
+	color?: string;
+	/**
+	 * Whether spacing measurement is enabled
+	 */
+	enabled?: boolean;
+	/**
+	 * Distance label background color
+	 */
+	labelBackgroundColor?: string;
+	/**
+	 * Distance label text color
+	 */
+	labelTextColor?: string;
+	/**
+	 * Whether objects snap to equal spacing
+	 */
+	snap?: boolean;
+	/**
+	 * Equal-spacing snap tolerance in screen pixels
+	 */
+	snapMargin?: number;
+	/**
+	 * Automatic measurement distance in screen pixels
+	 */
+	threshold?: number;
 }
 
 export interface CanvasActions {
+	/**
+	 * Duplicate selected objects while dragging with Ctrl/Cmd
+	 * @type {boolean}
+	 */
+	dragDuplicate?: boolean;
+
+	/**
+	 * Constrain object dragging to the dominant axis while Shift is pressed
+	 * @type {boolean}
+	 */
+	axisLock?: boolean;
+
 	/**
 	 * Move selected objects (Arrow keys)
 	 * @type {boolean}

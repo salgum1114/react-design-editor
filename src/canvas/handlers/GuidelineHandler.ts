@@ -1,5 +1,5 @@
 import * as fabric from 'fabric';
-import { FabricEvent, FabricObject, WorkareaObject } from '../models';
+import { FabricEvent, FabricObject } from '../models';
 import type Handler from './Handler';
 
 class GuidelineHandler {
@@ -7,13 +7,12 @@ class GuidelineHandler {
 	verticalLines: { x?: number; y1?: number; y2?: number }[];
 	horizontalLines: { y?: number; x1?: number; x2?: number }[];
 	ctx: CanvasRenderingContext2D;
-	viewportTransform: number[];
+	private transformKeys = new WeakMap<FabricObject, number[]>();
 
 	aligningLineOffset = 5;
 	aligningLineMargin = 4;
 	aligningLineWidth = 1;
 	aligningLineColor = 'rgb(255, 0, 0)';
-	zoom = 1;
 
 	constructor(handler: Handler) {
 		this.handler = handler;
@@ -41,8 +40,6 @@ class GuidelineHandler {
 		this.aligningLineMargin = 4;
 		this.aligningLineWidth = 1;
 		this.aligningLineColor = 'rgb(255, 0, 0)';
-		this.viewportTransform = this.handler.canvas.viewportTransform;
-		this.zoom = 1;
 		this.verticalLines = [];
 		this.horizontalLines = [];
 	}
@@ -86,9 +83,9 @@ class GuidelineHandler {
 
 	drawVerticalLine = (coords: { x?: number; y1?: number; y2?: number }) => {
 		this.drawLine(
-			coords.x + 0.5,
+			coords.x,
 			coords.y1 > coords.y2 ? coords.y2 : coords.y1,
-			coords.x + 0.5,
+			coords.x,
 			coords.y2 > coords.y1 ? coords.y2 : coords.y1,
 		);
 	};
@@ -96,44 +93,68 @@ class GuidelineHandler {
 	drawHorizontalLine = (coords: { y?: number; x1?: number; x2?: number }) => {
 		this.drawLine(
 			coords.x1 > coords.x2 ? coords.x2 : coords.x1,
-			coords.y + 0.5,
+			coords.y,
 			coords.x2 > coords.x1 ? coords.x2 : coords.x1,
-			coords.y + 0.5,
+			coords.y,
 		);
 	};
 
 	drawLine = (x1: number, y1: number, x2: number, y2: number) => {
-		const { ctx, aligningLineWidth, aligningLineColor, viewportTransform, zoom } = this;
+		const { ctx, aligningLineWidth, aligningLineColor } = this;
+		const { viewportTransform } = this.handler.canvas;
+		const zoom = this.handler.canvas.getZoom() || 1;
 		ctx.save();
-		ctx.lineWidth = aligningLineWidth;
+		ctx.transform(...viewportTransform);
+		ctx.lineWidth = aligningLineWidth / zoom;
 		ctx.strokeStyle = aligningLineColor;
 		ctx.beginPath();
-		ctx.moveTo(x1 * zoom + viewportTransform[4], y1 * zoom + viewportTransform[5]);
-		ctx.lineTo(x2 * zoom + viewportTransform[4], y2 * zoom + viewportTransform[5]);
+		ctx.moveTo(x1, y1);
+		ctx.lineTo(x2, y2);
 		ctx.stroke();
 		ctx.restore();
 	};
 
 	isInRange = (v1: number, v2: number) => {
 		const { aligningLineMargin } = this;
-		v1 = Math.round(v1);
-		v2 = Math.round(v2);
-		for (let i = v1 - aligningLineMargin, len = v1 + aligningLineMargin; i <= len; i++) {
-			if (i === v2) {
-				return true;
-			}
+		const zoom = this.handler.canvas.getZoom() || 1;
+		return Math.abs(v1 - v2) <= aligningLineMargin / zoom;
+	};
+
+	private getBoundingRect = (object: FabricObject) => {
+		const transformKey = [...object.transformMatrixKey(), Number(object.strokeUniform)];
+		const previousKey = this.transformKeys.get(object);
+		if (
+			!previousKey ||
+			previousKey.length !== transformKey.length ||
+			transformKey.some((value, index) => value !== previousKey[index])
+		) {
+			object.setCoords();
+			this.transformKeys.set(object, transformKey);
 		}
-		return false;
+		return object.getBoundingRect();
+	};
+
+	private setCenterX = (target: FabricObject, x: number) => {
+		const center = target.getCenterPoint();
+		target.setPositionByOrigin(new fabric.Point(x, center.y), 'center', 'center');
+	};
+
+	private setCenterY = (target: FabricObject, y: number) => {
+		const center = target.getCenterPoint();
+		target.setPositionByOrigin(new fabric.Point(center.x, y), 'center', 'center');
 	};
 
 	movingGuidelines = (target: FabricObject) => {
 		const canvasObjects = this.handler.canvas.getObjects() as FabricObject[];
-		const activeObjectCenter = target.getCenterPoint();
-		const activeObjectLeft = activeObjectCenter.x;
-		const activeObjectTop = activeObjectCenter.y;
+		const selectionObjects = target.isType('ActiveSelection')
+			? new Set((target as fabric.ActiveSelection).getObjects())
+			: undefined;
+		target.setCoords();
 		const activeObjectBoundingRect = target.getBoundingRect();
-		const activeObjectHeight = activeObjectBoundingRect.height / this.viewportTransform[3];
-		const activeObjectWidth = activeObjectBoundingRect.width / this.viewportTransform[0];
+		const activeObjectHeight = activeObjectBoundingRect.height;
+		const activeObjectWidth = activeObjectBoundingRect.width;
+		const activeObjectLeft = activeObjectBoundingRect.left + activeObjectWidth / 2;
+		const activeObjectTop = activeObjectBoundingRect.top + activeObjectHeight / 2;
 		let horizontalInTheRange = false;
 		let verticalInTheRange = false;
 		const { _currentTransform: transform } = this.handler.canvas as any;
@@ -147,6 +168,7 @@ class GuidelineHandler {
 		for (let i = canvasObjects.length; i--; ) {
 			if (
 				canvasObjects[i] === target ||
+				selectionObjects?.has(canvasObjects[i]) ||
 				canvasObjects[i].superType === 'port' ||
 				canvasObjects[i].superType === 'link' ||
 				!canvasObjects[i].evented
@@ -154,12 +176,11 @@ class GuidelineHandler {
 				continue;
 			}
 
-			const objectCenter = canvasObjects[i].getCenterPoint();
-			const objectLeft = objectCenter.x;
-			const objectTop = objectCenter.y;
-			const objectBoundingRect = canvasObjects[i].getBoundingRect();
-			const objectHeight = objectBoundingRect.height / this.viewportTransform[3];
-			const objectWidth = objectBoundingRect.width / this.viewportTransform[0];
+			const objectBoundingRect = this.getBoundingRect(canvasObjects[i]);
+			const objectHeight = objectBoundingRect.height;
+			const objectWidth = objectBoundingRect.width;
+			const objectLeft = objectBoundingRect.left + objectWidth / 2;
+			const objectTop = objectBoundingRect.top + objectHeight / 2;
 
 			// snap by the horizontal center line
 			if (this.isInRange(objectLeft, activeObjectLeft)) {
@@ -185,22 +206,17 @@ class GuidelineHandler {
 								: activeObjectTop - activeObjectHeight / 2 - this.aligningLineOffset,
 					});
 				}
-				target.setPositionByOrigin(new fabric.Point(objectLeft, activeObjectTop), 'center', 'center');
+				this.setCenterX(target, objectLeft);
 			}
 
 			// snap by the left edge
 			if (this.isInRange(objectLeft - objectWidth / 2, activeObjectLeft - activeObjectWidth / 2)) {
 				verticalInTheRange = true;
 				if (canvasObjects[i].id === 'workarea') {
-					const workarea = canvasObjects[i] as WorkareaObject;
 					const y1 = -5000;
 					const y2 = 5000;
-					let x = objectLeft - objectWidth / 2;
-					if (workarea.layout === 'fullscreen') {
-						x = 0;
-					}
 					this.verticalLines.push({
-						x,
+						x: objectLeft - objectWidth / 2,
 						y1,
 						y2,
 					});
@@ -217,26 +233,17 @@ class GuidelineHandler {
 								: activeObjectTop - activeObjectHeight / 2 - this.aligningLineOffset,
 					});
 				}
-				target.setPositionByOrigin(
-					new fabric.Point(objectLeft - objectWidth / 2 + activeObjectWidth / 2, activeObjectTop),
-					'center',
-					'center',
-				);
+				this.setCenterX(target, objectLeft - objectWidth / 2 + activeObjectWidth / 2);
 			}
 
 			// snap by the right edge
 			if (this.isInRange(objectLeft + objectWidth / 2, activeObjectLeft + activeObjectWidth / 2)) {
 				verticalInTheRange = true;
 				if (canvasObjects[i].id === 'workarea') {
-					const workarea = canvasObjects[i] as WorkareaObject;
 					const y1 = -5000;
 					const y2 = 5000;
-					let x = objectLeft + objectWidth / 2;
-					if (workarea.layout === 'fullscreen') {
-						x = this.handler.canvas.getWidth();
-					}
 					this.verticalLines.push({
-						x,
+						x: objectLeft + objectWidth / 2,
 						y1,
 						y2,
 					});
@@ -253,11 +260,7 @@ class GuidelineHandler {
 								: activeObjectTop - activeObjectHeight / 2 - this.aligningLineOffset,
 					});
 				}
-				target.setPositionByOrigin(
-					new fabric.Point(objectLeft + objectWidth / 2 - activeObjectWidth / 2, activeObjectTop),
-					'center',
-					'center',
-				);
+				this.setCenterX(target, objectLeft + objectWidth / 2 - activeObjectWidth / 2);
 			}
 
 			// snap by the vertical center line
@@ -284,22 +287,17 @@ class GuidelineHandler {
 								: activeObjectLeft - activeObjectWidth / 2 - this.aligningLineOffset,
 					});
 				}
-				target.setPositionByOrigin(new fabric.Point(activeObjectLeft, objectTop), 'center', 'center');
+				this.setCenterY(target, objectTop);
 			}
 
 			// snap by the top edge
 			if (this.isInRange(objectTop - objectHeight / 2, activeObjectTop - activeObjectHeight / 2)) {
 				horizontalInTheRange = true;
 				if (canvasObjects[i].id === 'workarea') {
-					const workarea = canvasObjects[i] as WorkareaObject;
 					const x1 = -5000;
 					const x2 = 5000;
-					let y = objectTop - objectHeight / 2;
-					if (workarea.layout === 'fullscreen') {
-						y = 0;
-					}
 					this.horizontalLines.push({
-						y,
+						y: objectTop - objectHeight / 2,
 						x1,
 						x2,
 					});
@@ -316,26 +314,17 @@ class GuidelineHandler {
 								: activeObjectLeft - activeObjectWidth / 2 - this.aligningLineOffset,
 					});
 				}
-				target.setPositionByOrigin(
-					new fabric.Point(activeObjectLeft, objectTop - objectHeight / 2 + activeObjectHeight / 2),
-					'center',
-					'center',
-				);
+				this.setCenterY(target, objectTop - objectHeight / 2 + activeObjectHeight / 2);
 			}
 
 			// snap by the bottom edge
 			if (this.isInRange(objectTop + objectHeight / 2, activeObjectTop + activeObjectHeight / 2)) {
 				horizontalInTheRange = true;
 				if (canvasObjects[i].id === 'workarea') {
-					const workarea = canvasObjects[i] as WorkareaObject;
 					const x1 = -5000;
 					const x2 = 5000;
-					let y = objectTop + objectHeight / 2;
-					if (workarea.layout === 'fullscreen') {
-						y = this.handler.canvas.getHeight();
-					}
 					this.horizontalLines.push({
-						y,
+						y: objectTop + objectHeight / 2,
 						x1,
 						x2,
 					});
@@ -352,11 +341,7 @@ class GuidelineHandler {
 								: activeObjectLeft - activeObjectWidth / 2 - this.aligningLineOffset,
 					});
 				}
-				target.setPositionByOrigin(
-					new fabric.Point(activeObjectLeft, objectTop + objectHeight / 2 - activeObjectHeight / 2),
-					'center',
-					'center',
-				);
+				this.setCenterY(target, objectTop + objectHeight / 2 - activeObjectHeight / 2);
 			}
 		}
 

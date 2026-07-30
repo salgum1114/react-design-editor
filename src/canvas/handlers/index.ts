@@ -22,3 +22,11 @@ export type {
 	ValuesOf,
 } from './ImageHandler';
 export type { LayoutDirection, LayoutOptions, LayoutType } from './LayoutHandler';
+export { default as RulerHandler } from './RulerHandler';
+export {
+	default as SpacingGuidelineHandler,
+	type SpacingAxis,
+	type SpacingGuide,
+	type SpacingGuideKind,
+	type SpacingGuidelineConstraints,
+} from './SpacingGuidelineHandler';

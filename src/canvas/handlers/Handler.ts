@@ -17,6 +17,7 @@ import {
 	GridOption,
 	GuidelineOption,
 	InteractionMode,
+	RulerOption,
 	WorkareaObject,
 	WorkareaOption,
 } from '../models';
@@ -41,11 +42,14 @@ import LayoutHandler from './LayoutHandler';
 import LinkHandler, { LinkOption } from './LinkHandler';
 import NodeHandler from './NodeHandler';
 import PortHandler from './PortHandler';
+import RulerHandler from './RulerHandler';
 import ShortcutHandler from './ShortcutHandler';
+import SpacingGuidelineHandler from './SpacingGuidelineHandler';
 import TooltipHandler from './TooltipHandler';
 import TransactionHandler, { TransactionEvent } from './TransactionHandler';
 import WorkareaHandler from './WorkareaHandler';
 import ZoomHandler from './ZoomHandler';
+import { resolveFabricObjectType } from './resolveFabricObjectType';
 
 export interface HandlerCallback {
 	/**
@@ -175,6 +179,11 @@ export interface HandlerOption {
 	 */
 	gridOption?: GridOption;
 	/**
+	 * Canvas ruler option
+	 * @type {RulerOption}
+	 */
+	rulerOption?: RulerOption;
+	/**
 	 * Default option for Fabric Object
 	 * @type {FabricObjectOption}
 	 */
@@ -241,6 +250,7 @@ class Handler implements HandlerOptions {
 	public workareaOption?: WorkareaOption = defaults.workareaOption;
 	public canvasOption?: CanvasOption = defaults.canvasOption;
 	public gridOption?: GridOption = defaults.gridOption;
+	public rulerOption?: RulerOption = defaults.rulerOption;
 	public objectOption?: FabricObjectOption = defaults.objectOption;
 	public linkOption?: FabricObjectOption;
 	public guidelineOption?: GuidelineOption = defaults.guidelineOption;
@@ -248,14 +258,6 @@ class Handler implements HandlerOptions {
 	public activeSelectionOption?: Partial<FabricObjectOption<fabric.ActiveSelection>> = defaults.activeSelectionOption;
 	public fabricObjects?: FabricObjects = CanvasObject;
 
-	private resolveFabricObjectType = (type?: string) => {
-		const normalizedType = String(type ?? '')
-			.replace(/[-_]/g, '')
-			.toLowerCase();
-		return Object.keys(this.fabricObjects ?? {}).find(
-			key => key.replace(/[-_]/g, '').toLowerCase() === normalizedType,
-		);
-	};
 	public width?: number;
 	public height?: number;
 
@@ -285,11 +287,13 @@ class Handler implements HandlerOptions {
 	public interactionHandler: InteractionHandler;
 	public transactionHandler: TransactionHandler;
 	public gridHandler: GridHandler;
+	public rulerHandler: RulerHandler;
 	public portHandler: PortHandler;
 	public linkHandler: LinkHandler;
 	public nodeHandler: NodeHandler;
 	public alignmentHandler: AlignmentHandler;
 	public guidelineHandler: GuidelineHandler;
+	public spacingGuidelineHandler: SpacingGuidelineHandler;
 	public eventHandler: EventHandler;
 	public drawingHandler: DrawingHandler;
 	public shortcutHandler: ShortcutHandler;
@@ -356,6 +360,7 @@ class Handler implements HandlerOptions {
 		this.setCanvasOption(options.canvasOption);
 		this.setCanvasActions(options.canvasActions);
 		this.setGridOption(options.gridOption);
+		this.setRulerOption(options.rulerOption);
 		this.setObjectOption(options.objectOption);
 		this.setLinkOption(options.linkOption);
 		this.setFabricObjects(options.fabricObjects);
@@ -400,15 +405,18 @@ class Handler implements HandlerOptions {
 		this.interactionHandler = new InteractionHandler(this);
 		this.transactionHandler = new TransactionHandler(this);
 		this.gridHandler = new GridHandler(this);
+		this.rulerHandler = new RulerHandler(this);
 		this.portHandler = new PortHandler(this);
 		this.linkHandler = new LinkHandler(this);
 		this.nodeHandler = new NodeHandler(this);
 		this.alignmentHandler = new AlignmentHandler(this);
 		this.guidelineHandler = new GuidelineHandler(this);
+		this.spacingGuidelineHandler = new SpacingGuidelineHandler(this);
 		this.eventHandler = new EventHandler(this);
 		this.drawingHandler = new DrawingHandler(this);
 		this.shortcutHandler = new ShortcutHandler(this);
 		this.layoutHandler = new LayoutHandler(this);
+		this.rulerHandler.layoutViewport();
 	};
 
 	/**
@@ -796,7 +804,7 @@ class Handler implements HandlerOptions {
 			lockMovementY: !editable,
 			hoverCursor: !editable ? 'pointer' : 'move',
 		};
-		const objectType = this.resolveFabricObjectType(obj.type);
+		const objectType = resolveFabricObjectType(this.fabricObjects, obj);
 		if (objectType === 'i-text') {
 			option.editable = false;
 		} else {
@@ -2045,8 +2053,10 @@ class Handler implements HandlerOptions {
 	 *
 	 */
 	public destroy = () => {
+		this.rulerHandler.destroy();
 		this.eventHandler.destroy();
 		this.guidelineHandler.destroy();
+		this.spacingGuidelineHandler.destroy();
 		this.contextmenuHandler.destroy();
 		this.tooltipHandler.destroy();
 		this.clear(true);
@@ -2121,9 +2131,14 @@ class Handler implements HandlerOptions {
 	 * @param {GuidelineOption} guidelineOption
 	 */
 	public setGuidelineOption = (guidelineOption: GuidelineOption) => {
-		this.guidelineOption = Object.assign({}, this.guidelineOption, guidelineOption);
+		this.guidelineOption = Object.assign({}, this.guidelineOption, guidelineOption, {
+			spacing: Object.assign({}, this.guidelineOption?.spacing, guidelineOption?.spacing),
+		});
 		if (this.guidelineHandler) {
 			this.guidelineHandler.initialize();
+		}
+		if (this.spacingGuidelineHandler) {
+			this.spacingGuidelineHandler.initialize();
 		}
 	};
 
@@ -2134,6 +2149,16 @@ class Handler implements HandlerOptions {
 	 */
 	public setGridOption = (gridOption: GridOption) => {
 		this.gridOption = Object.assign({}, this.gridOption, gridOption);
+	};
+
+	/**
+	 * Set ruler option
+	 *
+	 * @param {RulerOption} rulerOption
+	 */
+	public setRulerOption = (rulerOption: RulerOption) => {
+		this.rulerOption = Object.assign({}, this.rulerOption, rulerOption);
+		this.rulerHandler?.setOptions(this.rulerOption);
 	};
 
 	/**

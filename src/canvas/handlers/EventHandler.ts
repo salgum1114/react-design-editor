@@ -1,10 +1,41 @@
 import anime from 'animejs';
 import * as fabric from 'fabric';
+import { v4 as uuid } from 'uuid';
 import { code } from '../constants';
 import { FabricEvent, FabricObject } from '../models';
+import { LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
+import { PortObject } from '../objects/Port';
 import { VideoObject } from '../objects/Video';
 import AbstractHandler from './AbstractHandler';
+import type { SpacingAxis } from './SpacingGuidelineHandler';
+
+type MovementAxis = 'horizontal' | 'vertical';
+
+interface MovementConstraint {
+	axis?: MovementAxis;
+	left: number;
+	target: FabricObject;
+	top: number;
+}
+
+interface DragDuplicateSession {
+	cancelled: boolean;
+	copyMode: boolean;
+	linkPreviews?: fabric.FabricObject[];
+	portPreviews?: fabric.FabricObject[];
+	portStartTransforms?: Map<PortObject, ReturnType<typeof fabric.util.saveObjectTransform>>;
+	preview?: fabric.FabricObject;
+	relatedLinks?: LinkObject[];
+	startBounds: ReturnType<FabricObject['getBoundingRect']>;
+	startTransform: ReturnType<typeof fabric.util.saveObjectTransform>;
+	target: FabricObject;
+}
+
+interface DragDuplicateResult {
+	activate: () => FabricObject;
+	nodeMap: Map<string, NodeObject>;
+}
 
 /**
  * Event Handler Class
@@ -16,6 +47,8 @@ class EventHandler extends AbstractHandler {
 	panning: boolean;
 	currentTarget: FabricObject | null;
 	isSpacePanning: boolean;
+	private dragDuplicateSession?: DragDuplicateSession;
+	private movementConstraint?: MovementConstraint;
 
 	constructor(handler: any) {
 		super(handler);
@@ -33,6 +66,7 @@ class EventHandler extends AbstractHandler {
 				'object:scaling': this.scaling,
 				'object:moving': this.moving,
 				'object:rotating': this.rotating,
+				'after:render': this.renderDragDuplicatePreview,
 				'mouse:wheel': this.mousewheel,
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
@@ -73,6 +107,7 @@ class EventHandler extends AbstractHandler {
 				'object:scaling': this.scaling,
 				'object:moving': this.moving,
 				'object:rotating': this.rotating,
+				'after:render': this.renderDragDuplicatePreview,
 				'mouse:wheel': this.mousewheel,
 				'mouse:down': this.mousedown,
 				'mouse:move': this.mousemove,
@@ -143,10 +178,16 @@ class EventHandler extends AbstractHandler {
 	public modified = (opt: FabricEvent) => {
 		const { target } = opt;
 		if (!target) {
-			return;
+			return undefined;
 		}
 		if (target.type === 'circle' && target.parentId) {
-			return;
+			return undefined;
+		}
+		if (opt.action === 'drag') {
+			const dragDuplicate = this.completeDragDuplicate(target, opt.e as MouseEvent);
+			if (dragDuplicate) {
+				return dragDuplicate;
+			}
 		}
 		switch (opt.action) {
 			case 'drag':
@@ -165,6 +206,7 @@ class EventHandler extends AbstractHandler {
 				break;
 		}
 		this.handler.onModified?.(target);
+		return undefined;
 	};
 
 	/**
@@ -178,34 +220,554 @@ class EventHandler extends AbstractHandler {
 		if (this.handler.interactionMode === 'crop') {
 			this.handler.cropHandler.moving(opt);
 		} else {
-			if (this.handler.editable && this.handler.guidelineOption.enabled) {
-				this.handler.guidelineHandler.movingGuidelines(target);
-			}
-			if (this.handler.isActiveSelection(target)) {
-				const activeSelection = target as fabric.ActiveSelection;
-				activeSelection.getObjects().forEach((obj: any) => {
-					const left = obj.left + target.left + target.width / 2;
-					const top = obj.top + target.top + target.height / 2;
-					if (obj.superType === 'node') {
-						this.handler.portHandler.setCoords({ ...obj, left, top });
-					} else if (obj.superType === 'element') {
-						const { id } = obj;
-						const el = this.handler.elementHandler.findById(id);
-						// TODO... Element object incorrect position
-						this.handler.elementHandler.setPositionByOrigin(el, obj, left, top);
-					}
-				});
+			if (this.restoreCancelledDrag(target)) {
 				return;
 			}
-			if (target.superType === 'node') {
-				this.handler.portHandler.setCoords(target);
-			} else if (target.superType === 'element') {
-				const { id } = target;
-				const el = this.handler.elementHandler.findById(id);
-				this.handler.elementHandler.setPosition(el, target);
+			this.updateDragDuplicateMode(opt.e as MouseEvent);
+			this.constrainMovement(opt as FabricEvent<MouseEvent>);
+			if (this.handler.editable && this.handler.guidelineOption.enabled) {
+				this.handler.guidelineHandler.movingGuidelines(target);
+				this.restoreLockedCoordinate(target);
+				this.handler.spacingGuidelineHandler.movingGuidelines(target, opt.e as MouseEvent, {
+					disabledSnapAxes: this.getDisabledSpacingSnapAxes(target),
+				});
+				this.restoreLockedCoordinate(target);
+			}
+			if (
+				this.dragDuplicateSession?.copyMode &&
+				this.dragDuplicateSession.target === target
+			) {
+				this.canvas.requestRenderAll();
+				return;
+			}
+			if (this.syncMovingTarget(target)) {
+				return;
 			}
 			this.handler.onMoving?.(target);
 		}
+	};
+
+	private syncMovingTarget = (target: FabricObject) => {
+		if (this.handler.isActiveSelection(target)) {
+			const activeSelection = target as fabric.ActiveSelection;
+			activeSelection.getObjects().forEach((obj: any) => {
+				const left = obj.left + target.left + target.width / 2;
+				const top = obj.top + target.top + target.height / 2;
+				if (obj.superType === 'node') {
+					this.handler.portHandler.setCoords({ ...obj, left, top });
+				} else if (obj.superType === 'element') {
+					const { id } = obj;
+					const el = this.handler.elementHandler.findById(id);
+					this.handler.elementHandler.setPositionByOrigin(el, obj, left, top);
+				}
+			});
+			return true;
+		}
+		if (target.superType === 'node') {
+			this.handler.portHandler.setCoords(target as NodeObject);
+		} else if (target.superType === 'element') {
+			const { id } = target;
+			const el = this.handler.elementHandler.findById(id);
+			this.handler.elementHandler.setPosition(el, target);
+		}
+		return false;
+	};
+
+	private beginMovement = (target?: FabricObject) => {
+		if (!target) {
+			this.movementConstraint = undefined;
+			return;
+		}
+		this.movementConstraint = {
+			left: target.left,
+			target,
+			top: target.top,
+		};
+	};
+
+	private canDragDuplicate = (target: FabricObject) => {
+		const isCloneable = (object: FabricObject) =>
+			object.id !== 'workarea' &&
+			object.superType !== 'link' &&
+			object.superType !== 'port' &&
+			object.cloneable !== false;
+
+		if (!isCloneable(target)) {
+			return false;
+		}
+		if (!this.handler.isActiveSelection(target)) {
+			return true;
+		}
+		const objects = (target as fabric.ActiveSelection).getObjects() as FabricObject[];
+		return objects.length > 0 && objects.every(isCloneable);
+	};
+
+	private createDragPreview = (
+		object: FabricObject,
+		bounds: ReturnType<FabricObject['getBoundingRect']> = object.getBoundingRect(),
+	) => {
+		const preview = object.cloneAsImage({
+			enableRetinaScaling: false,
+			withoutShadow: false,
+		});
+		preview.set({
+			evented: false,
+			excludeFromExport: true,
+			left: bounds.left,
+			originX: 'left',
+			originY: 'top',
+			selectable: false,
+			top: bounds.top,
+		});
+		preview.setCoords();
+		return preview;
+	};
+
+	private getDraggedNodes = (target: FabricObject) => {
+		const objects = this.handler.isActiveSelection(target)
+			? ((target as fabric.ActiveSelection).getObjects() as FabricObject[])
+			: [target];
+		return objects.filter((object): object is NodeObject => object.superType === 'node');
+	};
+
+	private getNodePorts = (nodes: NodeObject[]) => {
+		const ports = nodes.flatMap(node => [
+			...(node.toPort ? [node.toPort] : []),
+			...(node.fromPort ?? []),
+		]);
+		return [...new Set(ports)] as PortObject[];
+	};
+
+	private createPortPreview = (port: PortObject, connected: boolean) => {
+		const originalConnected = !!port.connected;
+		if (originalConnected === connected || !port.setConnected) {
+			return this.createDragPreview(port);
+		}
+
+		const originalTransform = fabric.util.saveObjectTransform(port);
+		const normalizedType = String(port.type).toLowerCase();
+		const strokeWidth = port.strokeWidth ?? 0;
+		let anchorTop = originalTransform.top;
+		if (!originalConnected && normalizedType === 'fromport') {
+			anchorTop -= port.height + strokeWidth;
+		} else if (!originalConnected && normalizedType === 'toport') {
+			anchorTop += port.height + strokeWidth;
+		}
+
+		port.setConnected(connected);
+		port.setPosition?.(originalTransform.left, anchorTop);
+		const preview = this.createDragPreview(port);
+		port.setConnected(originalConnected);
+		port.set(originalTransform);
+		port.setCoords();
+		return preview;
+	};
+
+	private captureDragRelations = (session: DragDuplicateSession) => {
+		const nodes = this.getDraggedNodes(session.target);
+		if (!nodes.length) {
+			return;
+		}
+		const ports = this.getNodePorts(nodes);
+		const links = new Set<LinkObject>();
+		ports.forEach(port => port.links?.forEach(link => links.add(link)));
+		session.relatedLinks = [...links];
+		const nodeIds = new Set(nodes.map(node => node.id));
+		const internalLinks = session.relatedLinks.filter(link => (
+				!!link.fromNode?.id &&
+				!!link.toNode?.id &&
+				nodeIds.has(link.fromNode.id) &&
+				nodeIds.has(link.toNode.id)
+			));
+		const connectedPorts = new Set(
+			internalLinks.flatMap(link => [link.fromPort, link.toPort]).filter(Boolean),
+		);
+		session.linkPreviews = internalLinks.map(link => this.createDragPreview(link));
+		session.portPreviews = ports.map(port => this.createPortPreview(port, connectedPorts.has(port)));
+		session.portStartTransforms = new Map(
+			ports.map(port => [port, fabric.util.saveObjectTransform(port)]),
+		);
+	};
+
+	private restoreDragRelations = (session: DragDuplicateSession) => {
+		session.portStartTransforms?.forEach((transform, port) => {
+			port.set(transform);
+			port.setCoords();
+		});
+		session.relatedLinks?.forEach(link => {
+			if (link.fromPort && link.toPort) {
+				link.update(link.fromPort, link.toPort);
+			}
+		});
+	};
+
+	private beginDragDuplicate = (target: FabricObject | undefined, event: MouseEvent) => {
+		this.dragDuplicateSession = undefined;
+		if (
+			!target ||
+			!this.handler.canvasActions.dragDuplicate ||
+			!this.canDragDuplicate(target)
+		) {
+			return;
+		}
+		this.dragDuplicateSession = {
+			cancelled: false,
+			copyMode: false,
+			startBounds: target.getBoundingRect(),
+			startTransform: fabric.util.saveObjectTransform(target),
+			target,
+		};
+		this.captureDragRelations(this.dragDuplicateSession);
+		this.updateDragDuplicateMode(event);
+	};
+
+	private updateDragDuplicateMode = (
+		event: Pick<MouseEvent | KeyboardEvent, 'ctrlKey' | 'metaKey'>,
+	) => {
+		const session = this.dragDuplicateSession;
+		if (!session || session.cancelled) {
+			return;
+		}
+		const copyMode = !!(event.ctrlKey || event.metaKey);
+		if (session.copyMode === copyMode && (!copyMode || session.preview)) {
+			return;
+		}
+		session.copyMode = copyMode;
+		if (copyMode && !session.preview) {
+			session.preview = this.createDragPreview(session.target, session.startBounds);
+		}
+		if (copyMode) {
+			this.restoreDragRelations(session);
+		} else {
+			this.syncMovingTarget(session.target);
+		}
+		this.canvas.requestRenderAll();
+	};
+
+	private renderDragDuplicatePreview = ({ ctx }: { ctx: CanvasRenderingContext2D }) => {
+		const session = this.dragDuplicateSession;
+		if (!session?.copyMode || session.cancelled || !session.preview) {
+			return;
+		}
+		const viewportTransform = this.canvas.viewportTransform || fabric.iMatrix;
+		ctx.save();
+		ctx.transform(...viewportTransform);
+		session.preview.render(ctx);
+		ctx.save();
+		ctx.translate(
+			session.target.left - session.startTransform.left,
+			session.target.top - session.startTransform.top,
+		);
+		session.linkPreviews?.forEach(preview => preview.render(ctx));
+		session.portPreviews?.forEach(preview => preview.render(ctx));
+		ctx.restore();
+		ctx.restore();
+	};
+
+	private restoreDragStart = (session: DragDuplicateSession) => {
+		session.target.set(session.startTransform);
+		session.target.setCoords();
+		this.syncMovingTarget(session.target);
+	};
+
+	private restoreCancelledDrag = (target: FabricObject) => {
+		const session = this.dragDuplicateSession;
+		if (!session?.cancelled || session.target !== target) {
+			return false;
+		}
+		this.restoreDragStart(session);
+		this.canvas.requestRenderAll();
+		return true;
+	};
+
+	private cancelDrag = () => {
+		const session = this.dragDuplicateSession;
+		if (!session) {
+			return false;
+		}
+		session.cancelled = true;
+		session.copyMode = false;
+		session.preview = undefined;
+		this.restoreDragStart(session);
+		this.canvas.requestRenderAll();
+		return true;
+	};
+
+	private bindDuplicateObjectEvents = (object: FabricObject) => {
+		if (object.dblclick) {
+			object.on('mousedblclick', this.object.mousedblclick);
+		}
+	};
+
+	private resetDuplicatedNodeRelations = (node: NodeObject) => {
+		node.fromPort = undefined;
+		node.toPort = undefined;
+		node.ports = undefined;
+	};
+
+	private addDragDuplicate = (
+		sourceObject: FabricObject,
+		clonedObject: FabricObject,
+		destinationTransform: ReturnType<typeof fabric.util.saveObjectTransform>,
+	): DragDuplicateResult => {
+		const nodeMap = new Map<string, NodeObject>();
+		clonedObject.set(destinationTransform);
+		clonedObject.setCoords();
+
+		if (this.handler.isActiveSelection(clonedObject)) {
+			const sourceObjects = (sourceObject as fabric.ActiveSelection).getObjects() as FabricObject[];
+			const clonedSelection = clonedObject as fabric.ActiveSelection;
+			const clonedObjects = clonedSelection.removeAll() as FabricObject[];
+
+			clonedObjects.forEach((object, index) => {
+				const source = sourceObjects[index];
+				object.set({ evented: true, id: uuid() });
+				object.setCoords();
+				this.handler.canvas.add(object);
+				this.bindDuplicateObjectEvents(object);
+				if (object.superType === 'node') {
+					const node = object as NodeObject;
+					this.resetDuplicatedNodeRelations(node);
+					this.handler.portHandler.create(node);
+					if (source?.superType === 'node' && source.id) {
+						nodeMap.set(source.id, node);
+					}
+				}
+			});
+
+			this.handler.objects = this.handler.getObjects();
+			return {
+				activate: () => {
+					const activeSelection = new fabric.ActiveSelection(clonedObjects, {
+						canvas: this.canvas,
+						...this.handler.activeSelectionOption,
+					}) as FabricObject;
+					activeSelection.setCoords();
+					(activeSelection as fabric.ActiveSelection).getObjects().forEach(object => object.setCoords());
+					this.canvas.setActiveObject(activeSelection);
+					this.handler.onAdd?.(activeSelection);
+					return activeSelection;
+				},
+				nodeMap,
+			};
+		}
+
+		clonedObject.set({ evented: true, id: uuid() });
+		this.canvas.add(clonedObject);
+		this.bindDuplicateObjectEvents(clonedObject);
+		if (clonedObject.superType === 'node') {
+			const node = clonedObject as NodeObject;
+			this.resetDuplicatedNodeRelations(node);
+			this.handler.portHandler.create(node);
+			if (sourceObject.superType === 'node' && sourceObject.id) {
+				nodeMap.set(sourceObject.id, node);
+			}
+		}
+		clonedObject.setCoords();
+		this.handler.objects = this.handler.getObjects();
+		return {
+			activate: () => {
+				this.canvas.setActiveObject(clonedObject);
+				this.handler.onAdd?.(clonedObject);
+				return clonedObject;
+			},
+			nodeMap,
+		};
+	};
+
+	private duplicateDragLinks = (links: LinkObject[], nodeMap: Map<string, NodeObject>) => {
+		links.forEach(link => {
+			const sourceFromNode = link.fromNode as NodeObject | undefined;
+			const sourceToNode = link.toNode as NodeObject | undefined;
+			if (!sourceFromNode?.id || !sourceToNode?.id) {
+				return;
+			}
+			const fromNode = nodeMap.get(sourceFromNode.id);
+			const toNode = nodeMap.get(sourceToNode.id);
+			if (!fromNode?.id || !toNode?.id || !link.fromPort?.id || !link.toPort?.id) {
+				return;
+			}
+			const serialized = link.toObject([
+				...(this.handler.propertiesToInclude ?? []),
+				'onlyLeft',
+				'originStroke',
+				'selectedStroke',
+			]) as Record<string, any>;
+			const {
+				fromNode: _fromNode,
+				fromNodeId: _fromNodeId,
+				fromPort: _fromPort,
+				id: _id,
+				toNode: _toNode,
+				toNodeId: _toNodeId,
+				toPort: _toPort,
+				type,
+				...linkProperties
+			} = serialized;
+			const linkOption = {
+				...linkProperties,
+				fromNodeId: fromNode.id,
+				fromPortId: link.fromPort.id,
+				id: uuid(),
+				toNodeId: toNode.id,
+				toPortId: link.toPort.id,
+				type: type || link.type,
+			};
+			this.handler.linkHandler.create(linkOption);
+		});
+	};
+
+	private rollbackDragDuplicate = (
+		existingObjects: Set<FabricObject>,
+		target: FabricObject,
+	) => {
+		const addedObjects = (this.canvas.getObjects() as FabricObject[]).filter(
+			object => !existingObjects.has(object),
+		);
+		addedObjects
+			.filter(object => object.superType === 'link')
+			.forEach(link => this.handler.linkHandler.remove(link as LinkObject));
+		addedObjects
+			.filter(object => object.superType !== 'link')
+			.forEach(object => this.canvas.remove(object));
+		this.handler.objects = this.handler.getObjects();
+		this.canvas.setActiveObject(target);
+		this.canvas.requestRenderAll();
+	};
+
+	private createDragDuplicate = async (
+		session: DragDuplicateSession,
+		target: FabricObject,
+		destinationTransform: ReturnType<typeof fabric.util.saveObjectTransform>,
+		existingObjects: Set<FabricObject>,
+	) => {
+		try {
+			const clonedObject = (await (target as any).clone(
+				this.handler.propertiesToInclude,
+			)) as FabricObject;
+			const { activate, nodeMap } = this.addDragDuplicate(
+				session.target,
+				clonedObject,
+				destinationTransform,
+			);
+			this.duplicateDragLinks(session.relatedLinks ?? [], nodeMap);
+			const duplicate = activate();
+			if (!this.handler.transactionHandler.active) {
+				this.handler.transactionHandler.save('duplicate');
+			}
+			this.handler.onModified?.(duplicate);
+			this.canvas.requestRenderAll();
+			return true;
+		} catch (error) {
+			this.rollbackDragDuplicate(existingObjects, session.target);
+			console.error('[EventHandler] Drag duplication failed:', error);
+			return true;
+		}
+	};
+
+	private completeDragDuplicate = (target: FabricObject, event: MouseEvent) => {
+		const session = this.dragDuplicateSession;
+		if (!session || session.target !== target) {
+			return false;
+		}
+		this.updateDragDuplicateMode(event);
+		if (session.cancelled) {
+			this.dragDuplicateSession = undefined;
+			this.restoreDragStart(session);
+			this.canvas.requestRenderAll();
+			return true;
+		}
+		if (!session.copyMode) {
+			this.dragDuplicateSession = undefined;
+			this.canvas.requestRenderAll();
+			return false;
+		}
+		this.dragDuplicateSession = undefined;
+
+		const destinationTransform = fabric.util.saveObjectTransform(target);
+		const snappedPosition = this.handler.gridHandler.getSnappedPosition(target);
+		destinationTransform.left = snappedPosition.left;
+		destinationTransform.top = snappedPosition.top;
+		const constraint = this.movementConstraint;
+		if (event.shiftKey && constraint?.target === target) {
+			if (constraint.axis === 'horizontal') {
+				destinationTransform.top = constraint.top;
+			} else if (constraint.axis === 'vertical') {
+				destinationTransform.left = constraint.left;
+			}
+		}
+		this.restoreDragStart(session);
+		this.canvas.requestRenderAll();
+		const existingObjects = new Set(this.canvas.getObjects() as FabricObject[]);
+		return this.createDragDuplicate(
+			session,
+			target,
+			destinationTransform,
+			existingObjects,
+		);
+	};
+
+	private restoreLockedCoordinate = (target?: FabricObject) => {
+		const constraint = this.movementConstraint;
+		if (!target || !constraint?.axis || constraint.target !== target) {
+			return;
+		}
+		if (constraint.axis === 'horizontal') {
+			target.set({ top: constraint.top });
+		} else {
+			target.set({ left: constraint.left });
+		}
+		target.setCoords();
+	};
+
+	private getDisabledSpacingSnapAxes = (target: FabricObject): SpacingAxis[] => {
+		const disabledAxes = new Set<SpacingAxis>();
+		if (this.handler.guidelineHandler.verticalLines.length) {
+			disabledAxes.add('horizontal');
+		}
+		if (this.handler.guidelineHandler.horizontalLines.length) {
+			disabledAxes.add('vertical');
+		}
+		const constraint = this.movementConstraint;
+		if (constraint?.target === target && constraint.axis === 'horizontal') {
+			disabledAxes.add('vertical');
+		} else if (constraint?.target === target && constraint.axis === 'vertical') {
+			disabledAxes.add('horizontal');
+		}
+		return (['horizontal', 'vertical'] as SpacingAxis[]).filter(axis => disabledAxes.has(axis));
+	};
+
+	public constrainMovement = (opt: FabricEvent<MouseEvent>) => {
+		const { e, target } = opt;
+		if (!this.handler.canvasActions.axisLock || !target) {
+			return;
+		}
+		if (!e.shiftKey) {
+			if (this.movementConstraint?.target === target) {
+				this.movementConstraint.axis = undefined;
+			}
+			return;
+		}
+
+		if (!this.movementConstraint || this.movementConstraint.target !== target) {
+			const original = (opt as any).transform?.original;
+			this.movementConstraint = {
+				left: original?.left ?? target.left,
+				target,
+				top: original?.top ?? target.top,
+			};
+		}
+
+		const constraint = this.movementConstraint;
+		if (!constraint.axis) {
+			const deltaX = target.left - constraint.left;
+			const deltaY = target.top - constraint.top;
+			if (deltaX === 0 && deltaY === 0) {
+				return;
+			}
+			constraint.axis = Math.abs(deltaX) >= Math.abs(deltaY) ? 'horizontal' : 'vertical';
+		}
+		this.restoreLockedCoordinate(target);
 	};
 
 	/**
@@ -216,6 +778,10 @@ class EventHandler extends AbstractHandler {
 	public moved = (opt: FabricEvent) => {
 		const { target } = opt;
 		this.handler.gridHandler.setCoords(target);
+		if ((opt.e as MouseEvent).shiftKey) {
+			this.restoreLockedCoordinate(target);
+			this.syncMovingTarget(target);
+		}
 		if (!this.handler.transactionHandler.active) {
 			this.handler.transactionHandler.save('moved');
 		}
@@ -382,6 +948,8 @@ class EventHandler extends AbstractHandler {
 	public mousedown = (opt: FabricEvent) => {
 		const { target, subTargets = [] } = opt as FabricEvent<MouseEvent>;
 		const actionTarget = subTargets[0];
+		this.beginMovement(target);
+		this.beginDragDuplicate(target, opt.e as MouseEvent);
 		if (target) {
 			this.handler.onClick?.(this.canvas, target, actionTarget);
 		}
@@ -425,8 +993,6 @@ class EventHandler extends AbstractHandler {
 				this.handler.linkHandler.generate(toPort);
 				return;
 			}
-			this.handler.guidelineHandler.viewportTransform = this.canvas.viewportTransform;
-			this.handler.guidelineHandler.zoom = this.canvas.getZoom();
 			if (this.handler.interactionMode === 'selection') {
 				if (target && target.superType === 'link') {
 					target.line.set({ stroke: target.selectedStroke || 'green' });
@@ -526,11 +1092,12 @@ class EventHandler extends AbstractHandler {
 		if (this.handler.interactionMode === 'grab') {
 			this.panning = false;
 			this.handler.interactionHandler.setCursor('grab');
+			this.movementConstraint = undefined;
 			return;
 		}
 		const { target, e } = event;
 		if (this.handler.interactionMode === 'selection') {
-			if (target && e.shiftKey && target.superType === 'node') {
+			if (target && e.shiftKey && event.isClick !== false && target.superType === 'node') {
 				const node = target as NodeObject;
 				this.canvas.discardActiveObject();
 				const nodes = [] as NodeObject[];
@@ -546,9 +1113,12 @@ class EventHandler extends AbstractHandler {
 				this.canvas.requestRenderAll();
 			}
 		}
+		this.movementConstraint = undefined;
+		this.dragDuplicateSession = undefined;
 		if (this.handler.editable && this.handler.guidelineOption.enabled) {
 			this.handler.guidelineHandler.verticalLines.length = 0;
 			this.handler.guidelineHandler.horizontalLines.length = 0;
+			this.handler.spacingGuidelineHandler.clear();
 		}
 		this.canvas.renderAll();
 	};
@@ -589,17 +1159,22 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public resize = (nextWidth: number, nextHeight: number) => {
-		this.canvas.setWidth(nextWidth);
-		this.canvas.setHeight(nextHeight);
+		const rulerInset = this.handler.rulerHandler?.getViewportInset?.() || 0;
+		const viewportWidth = Math.max(nextWidth - rulerInset, 0);
+		const viewportHeight = Math.max(nextHeight - rulerInset, 0);
+		this.canvas.setWidth(viewportWidth);
+		this.canvas.setHeight(viewportHeight);
 		this.canvas.backgroundColor = this.handler.canvasOption.backgroundColor;
 		this.canvas.renderAll();
+		const previousWidth = this.handler.width || viewportWidth;
+		const previousHeight = this.handler.height || viewportHeight;
+		this.handler.width = viewportWidth;
+		this.handler.height = viewportHeight;
 		if (!this.handler.workarea) {
 			return;
 		}
-		const diffWidth = nextWidth / 2 - this.handler.width / 2;
-		const diffHeight = nextHeight / 2 - this.handler.height / 2;
-		this.handler.width = nextWidth;
-		this.handler.height = nextHeight;
+		const diffWidth = viewportWidth / 2 - previousWidth / 2;
+		const diffHeight = viewportHeight / 2 - previousHeight / 2;
 		if (this.handler.workarea.layout === 'fixed') {
 			this.canvas.centerObject(this.handler.workarea);
 			this.handler.workarea.setCoords();
@@ -634,10 +1209,10 @@ class EventHandler extends AbstractHandler {
 			this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
 			return;
 		}
-		const scaleX = nextWidth / this.handler.workarea.width;
-		const scaleY = nextHeight / this.handler.workarea.height;
-		const diffScaleX = nextWidth / (this.handler.workarea.width * this.handler.workarea.scaleX);
-		const diffScaleY = nextHeight / (this.handler.workarea.height * this.handler.workarea.scaleY);
+		const scaleX = viewportWidth / this.handler.workarea.width;
+		const scaleY = viewportHeight / this.handler.workarea.height;
+		const diffScaleX = viewportWidth / (this.handler.workarea.width * this.handler.workarea.scaleX);
+		const diffScaleY = viewportHeight / (this.handler.workarea.height * this.handler.workarea.scaleY);
 		this.handler.workarea.set({
 			scaleX,
 			scaleY,
@@ -791,6 +1366,14 @@ class EventHandler extends AbstractHandler {
 		if (!Object.keys(canvasActions).length) {
 			return;
 		}
+		if (this.dragDuplicateSession) {
+			if (this.handler.shortcutHandler.isEscape(e)) {
+				e.preventDefault();
+				this.cancelDrag();
+				return;
+			}
+			this.updateDragDuplicateMode(e);
+		}
 		const { clipboard, grab } = canvasActions;
 		if (this.handler.interactionHandler.isDrawingMode()) {
 			if (this.handler.shortcutHandler.isEscape(e)) {
@@ -878,6 +1461,7 @@ class EventHandler extends AbstractHandler {
 		if (this.handler.interactionHandler.isDrawingMode()) {
 			return;
 		}
+		this.updateDragDuplicateMode(e);
 		if (this.handler.shortcutHandler.isW({ code: this.code } as any) && this.handler.shortcutHandler.isSpace(e)) {
 			this.isSpacePanning = false;
 			return;
@@ -906,6 +1490,8 @@ class EventHandler extends AbstractHandler {
 	};
 
 	public blur = (_e: FocusEvent) => {
+		this.movementConstraint = undefined;
+		this.dragDuplicateSession = undefined;
 		if (this.handler.shortcutHandler.isW({ code: this.code } as any)) {
 			return;
 		}

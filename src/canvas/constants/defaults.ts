@@ -1,4 +1,12 @@
-import { CanvasActions, CanvasOption, FabricObjectOption, GridOption, WorkareaObject } from '../models';
+import {
+	CanvasActions,
+	CanvasOption,
+	FabricObjectOption,
+	GridOption,
+	GuidelineOption,
+	RulerOption,
+	WorkareaObject,
+} from '../models';
 
 export const canvasOption: CanvasOption = {
 	preserveObjectStacking: true,
@@ -10,6 +18,8 @@ export const canvasOption: CanvasOption = {
 };
 
 export const canvasActions: CanvasActions = {
+	axisLock: true,
+	dragDuplicate: true,
 	move: true,
 	all: true,
 	copy: true,
@@ -31,6 +41,15 @@ export const gridOption: GridOption = {
 	snapToGrid: false,
 	lineColor: '#ebebeb',
 	borderColor: '#cccccc',
+};
+
+export const rulerOption: RulerOption = {
+	enabled: false,
+	unit: 'px',
+	size: 24,
+	backgroundColor: '#ffffff',
+	lineColor: '#d7e0e7',
+	textColor: '#64748b',
 };
 
 export const workareaOption: Partial<WorkareaObject> = {
@@ -66,8 +85,17 @@ export const objectOption: Partial<FabricObjectOption> = {
 	strokeUniform: true,
 };
 
-export const guidelineOption = {
+export const guidelineOption: GuidelineOption = {
 	enabled: true,
+	spacing: {
+		color: '#0f9f8f',
+		enabled: true,
+		labelBackgroundColor: '#0f172a',
+		labelTextColor: '#ffffff',
+		snap: true,
+		snapMargin: 4,
+		threshold: 80,
+	},
 };
 
 export const activeSelectionOption = {

@@ -8,3 +8,34 @@
 .rde-canvas iframe {
   pointer-events: none;
 }
+
+.rde-ruler,
+.rde-ruler-corner {
+  position: absolute;
+  z-index: 20;
+  box-sizing: border-box;
+  pointer-events: none;
+  user-select: none;
+}
+
+.rde-ruler-horizontal {
+  top: 0;
+  right: 0;
+}
+
+.rde-ruler-vertical {
+  bottom: 0;
+  left: 0;
+}
+
+.rde-ruler-corner {
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  font: 9px/1 sans-serif;
+  text-transform: uppercase;
+}

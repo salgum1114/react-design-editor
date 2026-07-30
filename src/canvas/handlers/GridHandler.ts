@@ -119,6 +119,20 @@ class GridHandler extends AbstractHandler {
 	};
 
 	/**
+	 * Get the grid-aligned position without mutating the target.
+	 */
+	public getSnappedPosition = (target: FabricObject | fabric.ActiveSelection) => {
+		const { enabled, grid, snapToGrid } = this.handler.gridOption;
+		if (!enabled || !grid || !snapToGrid) {
+			return { left: target.left, top: target.top };
+		}
+		return {
+			left: Math.round(target.left / grid) * grid,
+			top: Math.round(target.top / grid) * grid,
+		};
+	};
+
+	/**
 	 * Set coords in grid
 	 * @param {(FabricObject | fabric.ActiveSelection)} target
 	 * @returns
@@ -126,12 +140,10 @@ class GridHandler extends AbstractHandler {
 	public setCoords = (target: FabricObject | fabric.ActiveSelection) => {
 		const { enabled, grid, snapToGrid } = this.handler.gridOption;
 		if (enabled && grid && snapToGrid) {
+			const snappedPosition = this.getSnappedPosition(target);
 			if (this.handler.isActiveSelection(target)) {
 				const activeSelection = target as fabric.ActiveSelection;
-				activeSelection.set({
-					left: Math.round(target.left / grid) * grid,
-					top: Math.round(target.top / grid) * grid,
-				});
+				activeSelection.set(snappedPosition);
 				activeSelection.setCoords();
 				activeSelection.getObjects().forEach((obj: any) => {
 					if (obj.superType === 'node') {
@@ -143,10 +155,7 @@ class GridHandler extends AbstractHandler {
 				return;
 			}
 			const obj = target as FabricObject;
-			obj.set({
-				left: Math.round(target.left / grid) * grid,
-				top: Math.round(target.top / grid) * grid,
-			});
+			obj.set(snappedPosition);
 			target.setCoords();
 			this.handler.portHandler.setCoords(target as NodeObject);
 		}

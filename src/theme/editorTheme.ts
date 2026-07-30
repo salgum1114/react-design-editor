@@ -31,6 +31,9 @@ export interface EditorThemePalette {
 export interface EditorCanvasTheme {
 	backgroundColor: string;
 	dotColor: string;
+	rulerBackgroundColor: string;
+	rulerLineColor: string;
+	rulerTextColor: string;
 	selectionColor: string;
 }
 
@@ -108,6 +111,9 @@ export const getEditorCanvasTheme = (theme: EditorTheme): EditorCanvasTheme => {
 	return {
 		backgroundColor: palette.canvas,
 		dotColor: palette.gridDot,
+		rulerBackgroundColor: palette.panel,
+		rulerLineColor: palette.border,
+		rulerTextColor: palette.mutedText,
 		selectionColor: palette.selection,
 	};
 };

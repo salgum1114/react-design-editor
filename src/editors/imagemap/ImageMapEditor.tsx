@@ -745,6 +745,12 @@ class ImageMapEditor extends Component<Record<string, never>, ImageMapEditorStat
 								backgroundColor: canvasTheme.backgroundColor,
 								selectionColor: canvasTheme.selectionColor,
 							}}
+							rulerOption={{
+								enabled: true,
+								backgroundColor: canvasTheme.rulerBackgroundColor,
+								lineColor: canvasTheme.rulerLineColor,
+								textColor: canvasTheme.rulerTextColor,
+							}}
 						/>
 					</div>
 					<EditorStatusBar

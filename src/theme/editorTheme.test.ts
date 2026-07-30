@@ -71,6 +71,9 @@ describe('editor canvas theme', () => {
 		expect(getEditorCanvasTheme('light')).toEqual({
 			backgroundColor: '#EEF3F7',
 			dotColor: '#C9D4DE',
+			rulerBackgroundColor: '#FFFFFF',
+			rulerLineColor: '#D7E0E7',
+			rulerTextColor: '#64748B',
 			selectionColor: 'rgba(15, 143, 119, 0.2)',
 		});
 	});
@@ -79,6 +82,9 @@ describe('editor canvas theme', () => {
 		expect(getEditorCanvasTheme('dark')).toEqual({
 			backgroundColor: '#1C2128',
 			dotColor: '#5F646B',
+			rulerBackgroundColor: '#111918',
+			rulerLineColor: '#34413E',
+			rulerTextColor: '#91A09A',
 			selectionColor: 'rgba(94, 224, 189, 0.2)',
 		});
 	});

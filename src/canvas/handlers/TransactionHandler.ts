@@ -15,6 +15,7 @@ export type TransactionType =
 	| 'skewed'
 	| 'group'
 	| 'ungroup'
+	| 'duplicate'
 	| 'paste'
 	| 'bringForward'
 	| 'bringToFront'
@@ -128,6 +129,44 @@ class TransactionHandler extends AbstractHandler {
 		});
 	};
 
+	private serializeObjectInCanvasPlane = (object: fabric.FabricObject) => {
+		const originalTransform = fabric.util.saveObjectTransform(object);
+		const canvasTransform = object.calcTransformMatrix();
+
+		try {
+			fabric.util.applyTransformToObject(object, canvasTransform);
+			return object.toObject(this.handler.propertiesToInclude) as FabricObject;
+		} finally {
+			object.set(originalTransform);
+			object.setCoords();
+		}
+	};
+
+	private createSnapshot = () => {
+		const objects = this.handler.canvas.toObject(this.handler.propertiesToInclude)
+			.objects as FabricObject[];
+		const activeObject = this.handler.canvas.getActiveObject();
+		if (
+			!activeObject ||
+			typeof activeObject.isType !== 'function' ||
+			!activeObject.isType('ActiveSelection')
+		) {
+			return objects;
+		}
+
+		const activeSelectionObjects = new Set((activeObject as fabric.ActiveSelection).getObjects());
+		const exportedObjects = this.handler.canvas
+			.getObjects()
+			.filter((object: fabric.FabricObject) => !object.excludeFromExport);
+
+		return objects.map((object, index) => {
+			const canvasObject = exportedObjects[index];
+			return canvasObject && activeSelectionObjects.has(canvasObject)
+				? this.serializeObjectInCanvasPlane(canvasObject)
+				: object;
+		});
+	};
+
 	/** Deep clone helper (avoid reference sharing across snapshots). */
 	private cloneDeep<T>(v: T): T {
 		// eslint-disable-next-line no-undef
@@ -218,8 +257,7 @@ class TransactionHandler extends AbstractHandler {
 
 		try {
 			// Always read fresh canvas state first.
-			const objects = this.handler.canvas.toObject(this.handler.propertiesToInclude)
-				.objects as FabricObject[];
+			const objects = this.createSnapshot();
 			const normalized = this.sortObjects(this.normalizeObjects(objects));
 
 			if (type === 'configuration') {

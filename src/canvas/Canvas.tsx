@@ -136,6 +136,9 @@ class InternalCanvas extends Component<CanvasProps, IState> implements CanvasIns
 		if (JSON.stringify(this.props.gridOption) !== JSON.stringify(prevProps.gridOption)) {
 			this.handler.setGridOption(this.props.gridOption);
 		}
+		if (JSON.stringify(this.props.rulerOption) !== JSON.stringify(prevProps.rulerOption)) {
+			this.handler.setRulerOption(this.props.rulerOption);
+		}
 		if (JSON.stringify(this.props.propertiesToInclude) !== JSON.stringify(prevProps.propertiesToInclude)) {
 			this.handler.setPropertiesToInclude(this.props.propertiesToInclude);
 		}
