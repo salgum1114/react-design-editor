@@ -169,9 +169,8 @@ Use `canvasRef.current.handler` to add or remove objects, change the selection, 
 | [Ant Design](https://github.com/ant-design/ant-design/)         | MIT                                                |
 | [Fabric.js](https://github.com/fabricjs/fabric.js)              | MIT                                                |
 | [MediaElement.js](https://github.com/mediaelement/mediaelement) | MIT                                                |
-| [React-Ace](https://github.com/securingsincity/react-ace)       | MIT                                                |
+| [Monaco Editor](https://github.com/microsoft/monaco-editor)     | MIT                                                |
 | [interact.js](https://github.com/taye/interact.js)              | MIT                                                |
 | [anime.js](https://github.com/juliangarnier/anime/)             | MIT                                                |
 | [Vite](https://github.com/vitejs/vite)                          | MIT                                                |
-| [Babel](https://github.com/babel/babel)                         | MIT                                                |
 | [fontawesome5](https://github.com/FortAwesome/Font-Awesome)     | Icons (CC BY 4.0), Fonts (SIL OFL 1.1), Code (MIT) |
