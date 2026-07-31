@@ -113,8 +113,6 @@ class LinkHandler {
 			toPortId: port.id,
 		});
 		this.finish(link);
-		// TODO...
-		// Save transactions unconditionally
 		if (!this.handler.transactionHandler.active) {
 			this.handler.transactionHandler.save('add');
 		}
@@ -135,20 +133,27 @@ class LinkHandler {
 		const link = this.handler.fabricObjects[type].create(fromNode, fromPort, toNode, toPort, {
 			...linkOptions,
 		}) as LinkObject;
+		const batching = this.handler.isBatching();
 		this.handler.canvas.add(link);
-		this.handler.objects = this.handler.getObjects();
+		if (!batching) {
+			this.handler.objects = this.handler.getObjects();
+		}
 		const { editable } = this.handler;
 		if (this.handler.onAdd && editable && !loaded) {
 			this.handler.onAdd(link);
 		}
-		this.handler.canvas.renderAll();
+		if (!batching) {
+			this.handler.canvas.renderAll();
+		}
 		link.setPort(fromNode, fromPort, toNode, toPort);
 		fromPort?.setConnected?.(true);
 		toPort?.setConnected?.(true);
-		this.handler.portHandler.setCoords(fromNode);
-		this.handler.portHandler.setCoords(toNode);
-		this.handler.canvas.requestRenderAll();
-		this.handler.canvas.sendObjectToBack(link);
+		if (!batching) {
+			this.handler.portHandler.setCoords(fromNode);
+			this.handler.portHandler.setCoords(toNode);
+			this.handler.canvas.requestRenderAll();
+			this.handler.canvas.sendObjectToBack(link);
+		}
 		return link;
 	};
 

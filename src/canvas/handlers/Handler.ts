@@ -21,7 +21,7 @@ import {
 	WorkareaObject,
 	WorkareaOption,
 } from '../models';
-import { LinkObject } from '../objects';
+import { LINK_PROPERTIES_TO_INCLUDE, LinkObject } from '../objects';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
 import { SvgObject } from '../objects/Svg';
@@ -39,7 +39,7 @@ import GuidelineHandler from './GuidelineHandler';
 import ImageHandler from './ImageHandler';
 import InteractionHandler from './InteractionHandler';
 import LayoutHandler from './LayoutHandler';
-import LinkHandler, { LinkOption } from './LinkHandler';
+import LinkHandler from './LinkHandler';
 import NodeHandler from './NodeHandler';
 import PortHandler from './PortHandler';
 import RulerHandler from './RulerHandler';
@@ -312,6 +312,8 @@ class Handler implements HandlerOptions {
 	public isCut = false;
 	public shouldHighlightPathOnSelect = false;
 
+	private batchDepth = 0;
+	private batchRenderOnAddRemove = true;
 	private isRequsetAnimFrame = false;
 	private requestFrame: any;
 	/**
@@ -441,6 +443,57 @@ class Handler implements HandlerOptions {
 		}
 		return objects;
 	};
+
+	/**
+	 * Run multiple canvas mutations with one object-index refresh and render.
+	 */
+	public runBatch<T>(operation: () => T): T {
+		const rootBatch = this.batchDepth === 0;
+		if (rootBatch) {
+			this.batchRenderOnAddRemove = this.canvas.renderOnAddRemove;
+			this.canvas.renderOnAddRemove = false;
+		}
+		this.batchDepth += 1;
+
+		try {
+			return operation();
+		} finally {
+			this.batchDepth -= 1;
+			if (rootBatch) {
+				this.canvas.renderOnAddRemove = this.batchRenderOnAddRemove;
+				this.objects = this.getObjects();
+				this.syncRequestAnimFrame();
+				this.canvas.requestRenderAll();
+			}
+		}
+	}
+
+	public isBatching() {
+		return this.batchDepth > 0;
+	}
+
+	private refreshAfterMutation() {
+		if (!this.isBatching()) {
+			this.objects = this.getObjects();
+		}
+	}
+
+	private syncRequestAnimFrame() {
+		if (this.objects.some(object => object.type === 'gif')) {
+			this.startRequestAnimFrame();
+		} else {
+			this.stopRequestAnimFrame();
+		}
+	}
+
+	public bindObjectEvents(object: FabricObject) {
+		if (!this.editable && object.superType !== 'element') {
+			object.on('mousedown', this.eventHandler.object.mousedown);
+		}
+		if (object.dblclick) {
+			object.on('mousedblclick', this.eventHandler.object.mousedblclick);
+		}
+	}
 
 	/**
 	 * Set key pair
@@ -846,17 +899,10 @@ class Handler implements HandlerOptions {
 			return createdObj;
 		}
 		this.canvas.add(createdObj);
-		this.objects = this.getObjects();
-		if (!editable && !(obj.superType === 'element')) {
-			createdObj.on('mousedown', this.eventHandler.object.mousedown);
-		}
-		if (createdObj.dblclick) {
-			createdObj.on('mousedblclick', this.eventHandler.object.mousedblclick);
-		}
-		if (this.objects.some(object => object.type === 'gif')) {
-			this.startRequestAnimFrame();
-		} else {
-			this.stopRequestAnimFrame();
+		this.refreshAfterMutation();
+		this.bindObjectEvents(createdObj);
+		if (!this.isBatching()) {
+			this.syncRequestAnimFrame();
 		}
 		if (obj.superType !== 'drawing' && obj.superType !== 'link' && editable && !loaded) {
 			this.centerObject(createdObj, centered);
@@ -904,12 +950,7 @@ class Handler implements HandlerOptions {
 	 * @returns
 	 */
 	public addGroup = (obj: FabricGroup) => {
-		const {
-			objects = [],
-			type: _type,
-			layoutManager: _layoutManager,
-			...groupOptions
-		} = obj;
+		const { objects = [], type: _type, layoutManager: _layoutManager, ...groupOptions } = obj;
 		const _objects = objects.map(child => this.add(child, false, true, true)) as FabricObject[];
 		return new fabric.Group(_objects, groupOptions) as FabricGroup;
 	};
@@ -1030,7 +1071,6 @@ class Handler implements HandlerOptions {
 		}
 		if (this.isActiveSelection(activeObject)) {
 			const activeObjects = activeObject.getObjects();
-
 			const hasNotDeletableObject = activeObjects.some(
 				(object: any) => typeof object.deletable !== 'undefined' && !object.deletable,
 			);
@@ -1212,6 +1252,140 @@ class Handler implements HandlerOptions {
 		this.canvas.wrapperEl.focus();
 	};
 
+	private serializeWorkflowLink(link: LinkObject) {
+		const propertiesToInclude = union(this.propertiesToInclude ?? [], Array.from(LINK_PROPERTIES_TO_INCLUDE));
+		const serialized =
+			typeof link.toObject === 'function'
+				? (link.toObject(propertiesToInclude) as Record<string, any>)
+				: ({ type: link.type, superType: link.superType } as Record<string, any>);
+		const {
+			id: _id,
+			fromNode: _fromNode,
+			fromNodeId: _fromNodeId,
+			fromPort: _fromPort,
+			fromPortId: _fromPortId,
+			layoutManager: _layoutManager,
+			objects: _objects,
+			toNode: _toNode,
+			toNodeId: _toNodeId,
+			toPort: _toPort,
+			toPortId: _toPortId,
+			...linkProperties
+		} = serialized;
+
+		return {
+			...linkProperties,
+			superType: 'link',
+			type: serialized.type || link.type || 'link',
+		};
+	}
+
+	private createClipboardSelectionPayload(
+		activeSelection: fabric.ActiveSelection,
+		selectedObjects = activeSelection.getObjects() as FabricObject[],
+	) {
+		const links = [] as any[];
+		const cloneableObjects = selectedObjects.filter(
+			(object: any) => typeof object.cloneable === 'undefined' || object.cloneable,
+		);
+		const nodeIndexById = new Map<string, number>();
+		let nodeIndex = 0;
+		cloneableObjects.forEach(object => {
+			if (object.superType === 'node' && object.id) {
+				nodeIndexById.set(object.id, nodeIndex);
+				nodeIndex += 1;
+			}
+		});
+		const objects = cloneableObjects.map((obj: any) => {
+			obj.fromPort?.forEach((port: PortObject) => {
+				port.links?.forEach((link: LinkObject) => {
+					const fromNodeIndex = nodeIndexById.get(obj.id);
+					const toNodeIndex = nodeIndexById.get(link.toNode?.id);
+					if (typeof fromNodeIndex === 'number' && typeof toNodeIndex === 'number') {
+						links.push({
+							...this.serializeWorkflowLink(link),
+							fromNodeIndex,
+							fromPortId: port.id,
+							toNodeIndex,
+						});
+					}
+				});
+			});
+			return {
+				name: obj.name,
+				description: obj.description,
+				superType: obj.superType,
+				type: obj.type,
+				nodeClazz: obj.nodeClazz,
+				configuration: obj.configuration,
+				descriptor: obj.descriptor,
+				properties: {
+					left: activeSelection.left + activeSelection.width / 2 + obj.left || 0,
+					top: activeSelection.top + activeSelection.height / 2 + obj.top || 0,
+					iconName: obj.descriptor.icon,
+				},
+			};
+		});
+		return objects.concat(links);
+	}
+
+	private duplicateWorkflowSelection(clipboard: fabric.ActiveSelection, padding: number) {
+		const selectedObjects = clipboard.getObjects() as NodeObject[];
+		const selectedIds = new Set(selectedObjects.map(object => object.id));
+		const links = selectedObjects.flatMap(source =>
+			(source.fromPort || []).flatMap((port: PortObject) =>
+				(port.links || [])
+					.filter((link: LinkObject) => selectedIds.has(link.toNode?.id))
+					.map((link: LinkObject) => ({
+						properties: this.serializeWorkflowLink(link),
+						fromNodeId: source.id,
+						fromPortId: port.id,
+						toNodeId: link.toNode.id,
+					})),
+			),
+		);
+		const clonedBySourceId = new Map<string, NodeObject>();
+		const clonedObjects: NodeObject[] = [];
+
+		this.runBatch(() => {
+			selectedObjects.forEach(source => {
+				if (typeof source.cloneable !== 'undefined' && !source.cloneable) {
+					return;
+				}
+				const cloned = source.duplicate();
+				cloned.set({
+					left: source.left + padding + (cloned.nodeClazz === 'SwitchNode' ? padding : 0),
+					top: source.top + padding,
+				});
+				if (cloned.dblclick) {
+					cloned.on('mousedblclick', this.eventHandler.object.mousedblclick);
+				}
+				this.canvas.add(cloned);
+				this.portHandler.create(cloned);
+				this.objectMap[cloned.id] = cloned;
+				clonedBySourceId.set(source.id, cloned);
+				clonedObjects.push(cloned);
+			});
+
+			links.forEach(link => {
+				const fromNode = clonedBySourceId.get(link.fromNodeId);
+				const toNode = clonedBySourceId.get(link.toNodeId);
+				if (!fromNode || !toNode?.toPort) {
+					return;
+				}
+				this.linkHandler.create({
+					...link.properties,
+					fromNodeId: fromNode.id,
+					fromPortId: link.fromPortId,
+					toNodeId: toNode.id,
+					toPortId: toNode.toPort.id,
+				});
+			});
+		});
+
+		return clonedObjects;
+	}
+
 	/**
 	 * Copy object
 	 *
@@ -1229,50 +1403,11 @@ class Handler implements HandlerOptions {
 			}
 			if (this.isActiveSelection(activeObject)) {
 				const activeSelection = activeObject as fabric.ActiveSelection;
-				if (activeSelection.getObjects().some((obj: any) => obj.superType === 'node')) {
+				const selectedObjects = activeSelection.getObjects() as FabricObject[];
+				if (selectedObjects.some((obj: any) => obj.superType === 'node')) {
 					if (this.canvasActions.clipboard) {
-						const links = [] as any[];
-						const objects = activeSelection.getObjects().map((obj: any, index: number) => {
-							if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
-								return null;
-							}
-							if (obj.fromPort.length) {
-								obj.fromPort.forEach((port: any) => {
-									if (port.links.length) {
-										port.links.forEach((link: any) => {
-											const linkTarget = {
-												fromNodeIndex: index,
-												fromPortId: port.id,
-												type: 'link',
-												superType: 'link',
-											} as any;
-											const findIndex = activeSelection
-												.getObjects()
-												.findIndex((compObj: any) => compObj.id === link.toNode.id);
-											if (findIndex >= 0) {
-												linkTarget.toNodeIndex = findIndex;
-												links.push(linkTarget);
-											}
-										});
-									}
-								});
-							}
-							return {
-								name: obj.name,
-								description: obj.description,
-								superType: obj.superType,
-								type: obj.type,
-								nodeClazz: obj.nodeClazz,
-								configuration: obj.configuration,
-								descriptor: obj.descriptor,
-								properties: {
-									left: activeObject.left + activeObject.width / 2 + obj.left || 0,
-									top: activeObject.top + activeObject.height / 2 + obj.top || 0,
-									iconName: obj.descriptor.icon,
-								},
-							};
-						});
-						this.copyToClipboard(JSON.stringify(objects.concat(links), null, '\t'));
+						const payload = this.createClipboardSelectionPayload(activeSelection, selectedObjects);
+						this.copyToClipboard(JSON.stringify(payload, null, '\t'));
 						return true;
 					}
 					this.clipboard = activeObject;
@@ -1334,65 +1469,7 @@ class Handler implements HandlerOptions {
 		if (this.isActiveSelection(clipboard)) {
 			if (clipboard.getObjects().some((obj: any) => obj.superType === 'node')) {
 				this.canvas.discardActiveObject();
-				const objects = [] as any[];
-				const linkObjects = [] as LinkOption[];
-				clipboard.getObjects().forEach((obj: any) => {
-					if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
-						return;
-					}
-					const clonedObj = obj.duplicate();
-					if (clonedObj.nodeClazz === 'SwitchNode') {
-						clonedObj.set({
-							left: obj.left + padding + padding,
-							top: obj.top + padding,
-						});
-					} else {
-						clonedObj.set({
-							left: obj.left + padding,
-							top: obj.top + padding,
-						});
-					}
-					if (obj.fromPort.length) {
-						obj.fromPort.forEach((port: PortObject) => {
-							if (port.links.length) {
-								port.links.forEach((link: LinkObject) => {
-									const linkTarget = {
-										fromNode: clonedObj.id,
-										fromPort: port.id,
-									} as any;
-									const findIndex = clipboard
-										.getObjects()
-										.findIndex((compObj: any) => compObj.id === link.toNode.id);
-									if (findIndex >= 0) {
-										linkTarget.toNodeIndex = findIndex;
-										linkObjects.push(linkTarget);
-									}
-								});
-							}
-						});
-					}
-					if (clonedObj.dblclick) {
-						clonedObj.on('mousedblclick', this.eventHandler.object.mousedblclick);
-					}
-					this.canvas.add(clonedObj);
-					this.objects = this.getObjects();
-					this.portHandler.create(clonedObj);
-					objects.push(clonedObj);
-				});
-				if (linkObjects.length) {
-					linkObjects.forEach((linkObject: any) => {
-						const { fromNode, fromPort, toNodeIndex } = linkObject;
-						const toNode = objects[toNodeIndex];
-						const link = {
-							type: 'link',
-							fromNodeId: fromNode,
-							fromPortId: fromPort,
-							toNodeId: toNode.id,
-							toPortId: toNode.toPort.id,
-						};
-						this.linkHandler.create(link);
-					});
-				}
+				const objects = this.duplicateWorkflowSelection(clipboard, padding);
 				const activeSelection = new fabric.ActiveSelection(objects, {
 					canvas: this.canvas,
 					...this.activeSelectionOption,
@@ -1406,7 +1483,6 @@ class Handler implements HandlerOptions {
 					this.transactionHandler.save('paste');
 				}
 				this.canvas.setActiveObject(activeSelection);
-				this.canvas.renderAll();
 				return true;
 			}
 		}
@@ -1708,7 +1784,7 @@ class Handler implements HandlerOptions {
 		this.canvas.renderAll();
 		this.objects = this.getObjects();
 		if (this.canvasActions.transaction) {
-			this.transactionHandler.setDefaultObjects(this.canvas.toObject(this.propertiesToInclude).objects as FabricObject[]);
+			this.transactionHandler.setDefaultObjects();
 		}
 		if (callback) {
 			callback(this.canvas);
@@ -1742,7 +1818,6 @@ class Handler implements HandlerOptions {
 		if (!objects.length) {
 			return null;
 		}
-
 		this.canvas.discardActiveObject();
 
 		objects.forEach(object => {
@@ -1883,10 +1958,10 @@ class Handler implements HandlerOptions {
 			if (firstObject.id === activeObject.id) {
 				return;
 			}
+			this.canvas.sendObjectBackwards(activeObject);
 			if (!this.transactionHandler.active) {
 				this.transactionHandler.save('sendBackwards');
 			}
-			this.canvas.sendObjectBackwards(activeObject);
 			const { onModified } = this;
 			if (onModified) {
 				onModified(activeObject);
@@ -1917,7 +1992,8 @@ class Handler implements HandlerOptions {
 	 * @param {boolean} [includeWorkarea=false]
 	 */
 	public clear = (includeWorkarea = false) => {
-		const ids = this.canvas.getObjects().reduce((prev, curr: any) => {
+		const canvasObjects = this.canvas.getObjects();
+		const ids = canvasObjects.reduce((prev, curr: any) => {
 			if (curr.superType === 'element') {
 				prev.push(curr.id);
 				return prev;
@@ -1930,15 +2006,15 @@ class Handler implements HandlerOptions {
 			this.workarea = null;
 		} else {
 			this.canvas.discardActiveObject();
-			this.canvas.getObjects().forEach((obj: any) => {
-				if (obj.id === 'workarea') {
-					return;
-				}
-				this.canvas.remove(obj);
-			});
+			const removableObjects = canvasObjects.filter((object: any) => object.id !== 'workarea');
+			if (removableObjects.length) {
+				this.canvas.remove(...removableObjects);
+			}
 		}
-		this.objects = this.getObjects();
-		this.canvas.renderAll();
+		this.refreshAfterMutation();
+		if (!this.isBatching()) {
+			this.canvas.renderAll();
+		}
 	};
 
 	/**

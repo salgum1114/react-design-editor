@@ -6,6 +6,8 @@ import { registerFabricClass, resolveFromObject, toObject } from '../utils';
 import { NodeObject, OUT_PORT_TYPE } from './Node';
 import { PortObject } from './Port';
 
+export const LINK_PROPERTIES_TO_INCLUDE = ['onlyLeft', 'originStroke', 'selectedStroke'] as const;
+
 export interface LinkedNodePropeties {
 	left: number;
 	top: number;
@@ -185,14 +187,7 @@ class Link extends fabric.Group {
 		toPort: Partial<PortObject>,
 		options: Partial<LinkObject> = {},
 	) {
-		const {
-			left,
-			top,
-			type: _type,
-			objects: _objects,
-			layoutManager: _layoutManager,
-			...other
-		} = options;
+		const { left, top, type: _type, objects: _objects, layoutManager: _layoutManager, ...other } = options;
 		const geometry = Link.calculateGeometry(fromNode, fromPort, toNode, toPort, options.onlyLeft);
 		const { line, arrow } = Link.createObjects(geometry, options);
 		Object.assign(other, {

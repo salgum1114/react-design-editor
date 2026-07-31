@@ -10,7 +10,7 @@ export { default as Gif } from './Gif';
 export { default as Iframe } from './Iframe';
 export { default as Line } from './Line';
 export { default as LineLink } from './LineLink';
-export { default as Link, type LinkedNodePropeties, type LinkObject } from './Link';
+export { default as Link, LINK_PROPERTIES_TO_INCLUDE, type LinkedNodePropeties, type LinkObject } from './Link';
 export { default as Node, type NodeObject } from './Node';
 export { default as OrthogonalLink } from './OrthogonalLink';
 export { default as Port, type PortObject } from './Port';

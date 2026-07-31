@@ -18,24 +18,25 @@ Try it out today - the project is being continually developed to support a varie
 - [x] Add, remove, resize, reorder, clone, copy/paste and drag/drop elements
 - [x] Build workflows with configurable trigger, logic, data and action nodes
 - [x] Connect workflow nodes with labeled ports, multiple routes and automatic layout
+- [x] Copy, paste and Ctrl-drag workflow nodes while preserving selected internal links and ports
 - [x] Review workflow validation, canvas status and undo/redo history
 - [x] Drawing capability, with polygon, line, arrows and link support
 - [x] Preview mode, tooltips, group/ungroup and zoom functionality
 - [x] Upload (with drag/drop), import and export to JSON or image
-- [x] Image cropping, Image filters, alignment, alignment guides
-- [x] Snap to grid, context menu, animation and video element
+- [x] Image cropping, image filters, alignment and zoom-aware alignment guides
+- [x] Distance measurement guides and equal-spacing snap assistance
+- [x] Snap to grid, rulers, context menu, animation and video elements
 - [x] Various icons in icon picker and fonts from Google Fonts (20)
 - [x] HTML/CSS/JS Element, iFrame element
 - [x] Animation support, with Fade / Bounce / Shake / Scaling / Rotation / Flash effects
 - [x] Monaco code editor with HTML / CSS / JavaScript preview
-- [x] Various interaction modes, including grasp, selection, ctrl + drag grab
+- [x] PowerPoint-style interactions, including selection, grab, Shift axis lock and Ctrl-drag duplication
 - [x] Multiple layouts, with fixed, responsive, fullscreen and grid modes
 - [x] SVG, Chart and GIF elements
 - [x] Undo/Redo support
 - [x] Light and dark editor themes
 - [ ] Wireframes - in development
 - [ ] Multiple Map - in development
-- [ ] Ruler - in development
 
 # Installation
 

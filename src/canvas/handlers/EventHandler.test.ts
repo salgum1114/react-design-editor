@@ -15,11 +15,7 @@ const createTarget = (left = 20, top = 30) => {
 	return target;
 };
 
-const createEventFixture = (
-	axisLock = true,
-	guidelineEnabled = false,
-	dragDuplicate = true,
-) => {
+const createEventFixture = (axisLock = true, guidelineEnabled = false, dragDuplicate = true) => {
 	const wrapperEl = {
 		addEventListener: vi.fn(),
 		removeEventListener: vi.fn(),
@@ -492,6 +488,79 @@ describe('EventHandler Shift-drag axis lock', () => {
 	});
 });
 
+describe('EventHandler clipboard paste batching', () => {
+	it('creates nodes before links inside one batch regardless of payload order', async () => {
+		const { canvas, eventHandler, handler: fixtureHandler } = createEventFixture();
+		const handler = fixtureHandler as any;
+		const sourceNode = createWorkflowNode('new-timer', 100, 100);
+		sourceNode.toPort = undefined;
+		sourceNode.fromPort = [{ id: 'output-1' }];
+		const destinationNode = createWorkflowNode('new-delay', 100, 200);
+		destinationNode.toPort = { id: 'input-1' };
+		const createdOrder: string[] = [];
+		handler.add = vi.fn((object: any) => {
+			createdOrder.push(object.superType);
+			if (object.superType === 'link') {
+				return { ...object, id: 'new-link' };
+			}
+			return object.nodeClazz === 'TimerNode' ? sourceNode : destinationNode;
+		});
+		handler.copy = vi.fn();
+		handler.gridOption = { grid: 10 };
+		handler.isCut = false;
+		handler.runBatch = vi.fn((operation: () => void) => operation());
+		const payload = [
+			{
+				fromNodeIndex: 0,
+				fromPortId: 'output-1',
+				superType: 'link',
+				toNodeIndex: 1,
+				type: 'link',
+			},
+			{
+				descriptor: { icon: 'timer' },
+				nodeClazz: 'TimerNode',
+				properties: { left: 100, top: 100 },
+				superType: 'node',
+				type: 'TriggerNode',
+			},
+			{
+				descriptor: { icon: 'delay' },
+				nodeClazz: 'DelayNode',
+				properties: { left: 100, top: 200 },
+				superType: 'node',
+				type: 'LogicNode',
+			},
+		];
+		vi.stubGlobal('document', {
+			activeElement: canvas.wrapperEl,
+		});
+		const clipboardEvent = {
+			clipboardData: {
+				getData: vi.fn(() => JSON.stringify(payload)),
+				types: ['text/plain'],
+			},
+			preventDefault: vi.fn(),
+			stopPropagation: vi.fn(),
+		} as unknown as ClipboardEvent;
+
+		await eventHandler.paste(clipboardEvent);
+
+		expect(handler.runBatch).toHaveBeenCalledOnce();
+		expect(createdOrder).toEqual(['node', 'node', 'link']);
+		expect(handler.add).toHaveBeenLastCalledWith(
+			expect.objectContaining({
+				fromNodeId: 'new-timer',
+				toNodeId: 'new-delay',
+			}),
+			false,
+			true,
+		);
+		expect(handler.transactionHandler.save).toHaveBeenCalledWith('paste');
+		expect(handler.copy).toHaveBeenCalledOnce();
+	});
+});
+
 describe('EventHandler Ctrl-drag duplication', () => {
 	it('is enabled by default', () => {
 		expect(defaults.canvasActions.dragDuplicate).toBe(true);
@@ -551,9 +620,9 @@ describe('EventHandler Ctrl-drag duplication', () => {
 		beginDrag(eventHandler, target, { ctrlKey: true });
 		moveTarget(eventHandler, target, 80, 70, false, { ctrlKey: true });
 		const preview = target.__dragPreview as any;
-		const afterRender = canvas.on.mock.calls
-			.map(([events]) => events)
-			.find(events => events['after:render'])['after:render'];
+		const afterRender = canvas.on.mock.calls.map(([events]) => events).find(events => events['after:render'])[
+			'after:render'
+		];
 		const context = {
 			restore: vi.fn(),
 			save: vi.fn(),
@@ -727,9 +796,9 @@ describe('EventHandler Ctrl-drag duplication', () => {
 		expect(fromPort.connected).toBe(true);
 		handler.portHandler.setCoords.mockClear();
 		moveTarget(eventHandler, sourceNode, 80, 70, false, { ctrlKey: true });
-		const afterRender = canvas.on.mock.calls
-			.map(([events]) => events)
-			.find(events => events['after:render'])['after:render'];
+		const afterRender = canvas.on.mock.calls.map(([events]) => events).find(events => events['after:render'])[
+			'after:render'
+		];
 		const context = {
 			restore: vi.fn(),
 			save: vi.fn(),

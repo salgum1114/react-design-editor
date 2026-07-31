@@ -3,7 +3,7 @@ import * as fabric from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { code } from '../constants';
 import { FabricEvent, FabricObject } from '../models';
-import { LinkObject } from '../objects/Link';
+import { LINK_PROPERTIES_TO_INCLUDE, LinkObject } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
 import { PortObject } from '../objects/Port';
 import { VideoObject } from '../objects/Video';
@@ -233,10 +233,7 @@ class EventHandler extends AbstractHandler {
 				});
 				this.restoreLockedCoordinate(target);
 			}
-			if (
-				this.dragDuplicateSession?.copyMode &&
-				this.dragDuplicateSession.target === target
-			) {
+			if (this.dragDuplicateSession?.copyMode && this.dragDuplicateSession.target === target) {
 				this.canvas.requestRenderAll();
 				return;
 			}
@@ -331,10 +328,7 @@ class EventHandler extends AbstractHandler {
 	};
 
 	private getNodePorts = (nodes: NodeObject[]) => {
-		const ports = nodes.flatMap(node => [
-			...(node.toPort ? [node.toPort] : []),
-			...(node.fromPort ?? []),
-		]);
+		const ports = nodes.flatMap(node => [...(node.toPort ? [node.toPort] : []), ...(node.fromPort ?? [])]);
 		return [...new Set(ports)] as PortObject[];
 	};
 
@@ -373,20 +367,17 @@ class EventHandler extends AbstractHandler {
 		ports.forEach(port => port.links?.forEach(link => links.add(link)));
 		session.relatedLinks = [...links];
 		const nodeIds = new Set(nodes.map(node => node.id));
-		const internalLinks = session.relatedLinks.filter(link => (
+		const internalLinks = session.relatedLinks.filter(
+			link =>
 				!!link.fromNode?.id &&
 				!!link.toNode?.id &&
 				nodeIds.has(link.fromNode.id) &&
-				nodeIds.has(link.toNode.id)
-			));
-		const connectedPorts = new Set(
-			internalLinks.flatMap(link => [link.fromPort, link.toPort]).filter(Boolean),
+				nodeIds.has(link.toNode.id),
 		);
+		const connectedPorts = new Set(internalLinks.flatMap(link => [link.fromPort, link.toPort]).filter(Boolean));
 		session.linkPreviews = internalLinks.map(link => this.createDragPreview(link));
 		session.portPreviews = ports.map(port => this.createPortPreview(port, connectedPorts.has(port)));
-		session.portStartTransforms = new Map(
-			ports.map(port => [port, fabric.util.saveObjectTransform(port)]),
-		);
+		session.portStartTransforms = new Map(ports.map(port => [port, fabric.util.saveObjectTransform(port)]));
 	};
 
 	private restoreDragRelations = (session: DragDuplicateSession) => {
@@ -403,11 +394,7 @@ class EventHandler extends AbstractHandler {
 
 	private beginDragDuplicate = (target: FabricObject | undefined, event: MouseEvent) => {
 		this.dragDuplicateSession = undefined;
-		if (
-			!target ||
-			!this.handler.canvasActions.dragDuplicate ||
-			!this.canDragDuplicate(target)
-		) {
+		if (!target || !this.handler.canvasActions.dragDuplicate || !this.canDragDuplicate(target)) {
 			return;
 		}
 		this.dragDuplicateSession = {
@@ -421,9 +408,7 @@ class EventHandler extends AbstractHandler {
 		this.updateDragDuplicateMode(event);
 	};
 
-	private updateDragDuplicateMode = (
-		event: Pick<MouseEvent | KeyboardEvent, 'ctrlKey' | 'metaKey'>,
-	) => {
+	private updateDragDuplicateMode = (event: Pick<MouseEvent | KeyboardEvent, 'ctrlKey' | 'metaKey'>) => {
 		const session = this.dragDuplicateSession;
 		if (!session || session.cancelled) {
 			return;
@@ -589,9 +574,7 @@ class EventHandler extends AbstractHandler {
 			}
 			const serialized = link.toObject([
 				...(this.handler.propertiesToInclude ?? []),
-				'onlyLeft',
-				'originStroke',
-				'selectedStroke',
+				...LINK_PROPERTIES_TO_INCLUDE,
 			]) as Record<string, any>;
 			const {
 				fromNode: _fromNode,
@@ -617,19 +600,14 @@ class EventHandler extends AbstractHandler {
 		});
 	};
 
-	private rollbackDragDuplicate = (
-		existingObjects: Set<FabricObject>,
-		target: FabricObject,
-	) => {
+	private rollbackDragDuplicate = (existingObjects: Set<FabricObject>, target: FabricObject) => {
 		const addedObjects = (this.canvas.getObjects() as FabricObject[]).filter(
 			object => !existingObjects.has(object),
 		);
 		addedObjects
 			.filter(object => object.superType === 'link')
 			.forEach(link => this.handler.linkHandler.remove(link as LinkObject));
-		addedObjects
-			.filter(object => object.superType !== 'link')
-			.forEach(object => this.canvas.remove(object));
+		addedObjects.filter(object => object.superType !== 'link').forEach(object => this.canvas.remove(object));
 		this.handler.objects = this.handler.getObjects();
 		this.canvas.setActiveObject(target);
 		this.canvas.requestRenderAll();
@@ -642,14 +620,8 @@ class EventHandler extends AbstractHandler {
 		existingObjects: Set<FabricObject>,
 	) => {
 		try {
-			const clonedObject = (await (target as any).clone(
-				this.handler.propertiesToInclude,
-			)) as FabricObject;
-			const { activate, nodeMap } = this.addDragDuplicate(
-				session.target,
-				clonedObject,
-				destinationTransform,
-			);
+			const clonedObject = (await (target as any).clone(this.handler.propertiesToInclude)) as FabricObject;
+			const { activate, nodeMap } = this.addDragDuplicate(session.target, clonedObject, destinationTransform);
 			this.duplicateDragLinks(session.relatedLinks ?? [], nodeMap);
 			const duplicate = activate();
 			if (!this.handler.transactionHandler.active) {
@@ -699,12 +671,7 @@ class EventHandler extends AbstractHandler {
 		this.restoreDragStart(session);
 		this.canvas.requestRenderAll();
 		const existingObjects = new Set(this.canvas.getObjects() as FabricObject[]);
-		return this.createDragDuplicate(
-			session,
-			target,
-			destinationTransform,
-			existingObjects,
-		);
+		return this.createDragDuplicate(session, target, destinationTransform, existingObjects);
 	};
 
 	private restoreLockedCoordinate = (target?: FabricObject) => {
@@ -1276,46 +1243,66 @@ class EventHandler extends AbstractHandler {
 						const padding = isCut ? 0 : grid;
 						if (objects && Array.isArray(objects)) {
 							const filteredObjects = objects.filter(obj => obj !== null);
-							if (filteredObjects.length === 1) {
-								const obj = filteredObjects[0];
-								if (typeof obj.cloneable !== 'undefined' && !obj.cloneable) {
-									return;
-								}
-								obj.left = obj.properties.left + padding;
-								obj.top = obj.properties.top + padding;
-								const createdObj = this.handler.add(obj, false, true);
-								this.canvas.setActiveObject(createdObj as FabricObject);
-								this.canvas.requestRenderAll();
-								this.handler.onAdd?.(createdObj);
-							} else {
-								const nodes = [] as any[];
-								const targets = [] as any[];
-								objects.forEach(obj => {
-									if (!obj) {
+							if (!filteredObjects.length) {
+								return;
+							}
+							const objectPayloads = filteredObjects.filter(obj => obj.superType !== 'link');
+							const linkPayloads = filteredObjects.filter(obj => obj.superType === 'link');
+							const nodes = [] as FabricObject[];
+							const targets = [] as FabricObject[];
+							let activeObject: FabricObject | undefined;
+
+							this.handler.runBatch(() => {
+								objectPayloads.forEach(source => {
+									if (typeof source.cloneable !== 'undefined' && !source.cloneable) {
 										return;
 									}
-									if (obj.superType === 'link') {
-										obj.fromNodeId = nodes[obj.fromNodeIndex].id;
-										obj.toNodeId = nodes[obj.toNodeIndex].id;
-									} else {
-										obj.left = obj.properties.left + padding;
-										obj.top = obj.properties.top + padding;
-									}
-									const createdObj = this.handler.add(obj, false, true);
+									const obj = {
+										...source,
+										left: source.properties?.left + padding,
+										top: source.properties?.top + padding,
+									};
+									const createdObject = this.handler.add(obj, false, true) as FabricObject;
 									if (obj.superType === 'node') {
-										nodes.push(createdObj);
+										nodes.push(createdObject);
 									} else {
-										targets.push(createdObj);
+										targets.push(createdObject);
 									}
 								});
-								const activeSelection = new fabric.ActiveSelection(nodes.length ? nodes : targets, {
-									canvas: this.canvas,
-									...this.handler.activeSelectionOption,
+
+								this.handler.objects = this.handler.getObjects();
+								linkPayloads.forEach(source => {
+									const fromNode = nodes[source.fromNodeIndex] as NodeObject | undefined;
+									const toNode = nodes[source.toNodeIndex] as NodeObject | undefined;
+									if (!fromNode?.id || !toNode?.id) {
+										return;
+									}
+									this.handler.add(
+										{
+											...source,
+											fromNodeId: fromNode.id,
+											toNodeId: toNode.id,
+											toPortId: source.toPortId ?? toNode.toPort?.id,
+										},
+										false,
+										true,
+									);
 								});
-								this.canvas.setActiveObject(activeSelection);
-								this.canvas.requestRenderAll();
-								this.handler.onAdd?.(activeSelection);
-							}
+
+								const selectionObjects = nodes.length ? nodes : targets;
+								if (selectionObjects.length === 1) {
+									activeObject = selectionObjects[0];
+								} else if (selectionObjects.length > 1) {
+									activeObject = new fabric.ActiveSelection(selectionObjects, {
+										canvas: this.canvas,
+										...this.handler.activeSelectionOption,
+									}) as FabricObject;
+								}
+								if (activeObject) {
+									this.canvas.setActiveObject(activeObject);
+								}
+							});
+							this.handler.onAdd?.(activeObject);
 							if (!this.handler.transactionHandler.active) {
 								this.handler.transactionHandler.save('paste');
 							}

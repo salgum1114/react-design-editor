@@ -1,6 +1,7 @@
 import * as fabric from 'fabric';
-import { sortBy, throttle } from 'lodash-es';
+import { sortBy, throttle, union } from 'lodash-es';
 import { FabricObject } from '../models';
+import { LINK_PROPERTIES_TO_INCLUDE } from '../objects/Link';
 import { NodeObject } from '../objects/Node';
 import AbstractHandler from './AbstractHandler';
 import Handler from './Handler';
@@ -56,7 +57,7 @@ class TransactionHandler extends AbstractHandler {
 	private readonly MAX_HISTORY_SIZE = 30;
 
 	private currentObjects: FabricObject[] = [];
-	private selectedObjectId?: string;
+	private selectedObjectIds: string[] = [];
 	redos: TransactionEvent[];
 	undos: TransactionEvent[];
 	active: boolean = false;
@@ -77,7 +78,7 @@ class TransactionHandler extends AbstractHandler {
 		this.redos = [];
 		this.undos = [];
 		this.currentObjects = [];
-		this.selectedObjectId = undefined;
+		this.selectedObjectIds = [];
 		this.active = false;
 		this.latestNodeSticky.clear();
 	};
@@ -89,12 +90,43 @@ class TransactionHandler extends AbstractHandler {
 		);
 	};
 
-	public setDefaultObjects = (objects: FabricObject[]) => {
+	private compactWorkflowRelations = (objects: FabricObject[]) => {
+		return (objects || []).map((object: any) => {
+			if (!object) {
+				return object;
+			}
+			if (object.superType === 'node') {
+				const { fromPort: _fromPort, ports: _ports, toPort: _toPort, ...node } = object;
+				return node;
+			}
+			if (object.superType === 'link') {
+				const {
+					fromNode,
+					fromPort,
+					layoutManager: _layoutManager,
+					objects: _objects,
+					toNode,
+					toPort,
+					...link
+				} = object;
+				return {
+					...link,
+					fromNodeId: link.fromNodeId ?? fromNode?.id,
+					fromPortId: link.fromPortId ?? fromPort?.id,
+					toNodeId: link.toNodeId ?? toNode?.id,
+					toPortId: link.toPortId ?? toPort?.id,
+				};
+			}
+			return object;
+		}) as FabricObject[];
+	};
+
+	public setDefaultObjects = (objects = this.createSnapshot()) => {
 		this.undos = [];
 		this.redos = [];
-		this.selectedObjectId = undefined;
+		this.selectedObjectIds = [];
 
-		const normalized = this.sortObjects(this.normalizeObjects(objects));
+		const normalized = this.sortObjects(this.normalizeObjects(this.compactWorkflowRelations(objects)));
 
 		// Seed sticky fields from initial state
 		this.captureLatestStickyFromSnapshot(normalized);
@@ -102,9 +134,22 @@ class TransactionHandler extends AbstractHandler {
 		this.currentObjects = normalized;
 	};
 
+	private getSelectionIds = (target?: FabricObject | null) => {
+		if (!target) {
+			return [];
+		}
+		if (typeof target.isType === 'function' && target.isType('ActiveSelection')) {
+			return (target as fabric.ActiveSelection)
+				.getObjects()
+				.map(object => (object as FabricObject).id)
+				.filter((id): id is string => Boolean(id));
+		}
+		return target.id ? [target.id] : [];
+	};
+
 	public rememberSelection = (target?: FabricObject | null) => {
 		if (!this.active) {
-			this.selectedObjectId = target?.id;
+			this.selectedObjectIds = this.getSelectionIds(target);
 		}
 	};
 
@@ -143,15 +188,14 @@ class TransactionHandler extends AbstractHandler {
 	};
 
 	private createSnapshot = () => {
-		const objects = this.handler.canvas.toObject(this.handler.propertiesToInclude)
-			.objects as FabricObject[];
+		const propertiesToInclude = union(
+			this.handler.propertiesToInclude ?? [],
+			Array.from(LINK_PROPERTIES_TO_INCLUDE),
+		);
+		const objects = this.handler.canvas.toObject(propertiesToInclude).objects as FabricObject[];
 		const activeObject = this.handler.canvas.getActiveObject();
-		if (
-			!activeObject ||
-			typeof activeObject.isType !== 'function' ||
-			!activeObject.isType('ActiveSelection')
-		) {
-			return objects;
+		if (!activeObject || typeof activeObject.isType !== 'function' || !activeObject.isType('ActiveSelection')) {
+			return this.compactWorkflowRelations(objects);
 		}
 
 		const activeSelectionObjects = new Set((activeObject as fabric.ActiveSelection).getObjects());
@@ -159,12 +203,14 @@ class TransactionHandler extends AbstractHandler {
 			.getObjects()
 			.filter((object: fabric.FabricObject) => !object.excludeFromExport);
 
-		return objects.map((object, index) => {
-			const canvasObject = exportedObjects[index];
-			return canvasObject && activeSelectionObjects.has(canvasObject)
-				? this.serializeObjectInCanvasPlane(canvasObject)
-				: object;
-		});
+		return this.compactWorkflowRelations(
+			objects.map((object, index) => {
+				const canvasObject = exportedObjects[index];
+				return canvasObject && activeSelectionObjects.has(canvasObject)
+					? this.serializeObjectInCanvasPlane(canvasObject)
+					: object;
+			}),
+		);
 	};
 
 	/** Deep clone helper (avoid reference sharing across snapshots). */
@@ -288,17 +334,23 @@ class TransactionHandler extends AbstractHandler {
 	/**
 	 * Undo transaction
 	 */
-	public undo = throttle(() => {
+	public undo = throttle(async () => {
+		if (this.active) return;
 		const undo = this.undos.pop();
 		if (!undo) return;
+		const redo = {
+			type: 'redo',
+			json: JSON.stringify(this.currentObjects),
+		} as TransactionEvent;
+		this.redos.push(redo);
 
 		try {
-			this.redos.push({
-				type: 'redo',
-				json: JSON.stringify(this.currentObjects),
-			});
-			this.replay(undo);
+			await this.replay(undo);
 		} catch (error) {
+			if (this.redos[this.redos.length - 1] === redo) {
+				this.redos.pop();
+			}
+			this.undos.push(undo);
 			console.error('[TransactionHandler] Undo failed:', error);
 		}
 	}, 100);
@@ -306,86 +358,143 @@ class TransactionHandler extends AbstractHandler {
 	/**
 	 * Redo transaction
 	 */
-	public redo = throttle(() => {
+	public redo = throttle(async () => {
+		if (this.active) return;
 		const redo = this.redos.pop();
 		if (!redo) return;
+		const undo = {
+			type: 'undo',
+			json: JSON.stringify(this.currentObjects),
+		} as TransactionEvent;
+		this.undos.push(undo);
 
 		try {
-			this.undos.push({
-				type: 'undo',
-				json: JSON.stringify(this.currentObjects),
-			});
-			this.replay(redo);
+			await this.replay(redo);
 		} catch (error) {
+			if (this.undos[this.undos.length - 1] === undo) {
+				this.undos.pop();
+			}
+			this.redos.push(redo);
 			console.error('[TransactionHandler] Redo failed:', error);
 		}
 	}, 100);
+
+	private restoreSnapshot = async (
+		objects: FabricObject[],
+		activeObjectIds: string[] = [],
+		beforeMutation?: () => void,
+	) => {
+		const fabricObjectSnapshots = objects.filter(object => object.superType !== 'link');
+		const workflowLinkSnapshots = objects.filter(object => object.superType === 'link');
+		const restoredFabricObjects = (await fabric.util.enlivenObjects(fabricObjectSnapshots)) as FabricObject[];
+
+		beforeMutation?.();
+		this.handler.runBatch(() => {
+			this.handler.clear();
+			this.handler.canvas.discardActiveObject();
+			const restoredNodes: NodeObject[] = [];
+
+			if (restoredFabricObjects.length) {
+				this.handler.canvas.add(...restoredFabricObjects);
+			}
+			restoredFabricObjects.forEach(object => {
+				this.handler.bindObjectEvents(object);
+				if (object.superType === 'node') {
+					const node = object as NodeObject;
+					restoredNodes.push(node);
+					this.handler.portHandler.create(node);
+				}
+			});
+
+			this.handler.objects = restoredFabricObjects.filter(object => object.id && object.superType !== 'port');
+			this.handler.objectMap = this.handler.objects.reduce(
+				(map, object) => Object.assign(map, { [object.id]: object }),
+				{},
+			);
+			const restoredLinks = workflowLinkSnapshots.map(link =>
+				this.handler.linkHandler.create(link as any, true),
+			);
+			if (restoredLinks.length) {
+				this.handler.canvas.remove(...restoredLinks);
+				const workareaIndex = this.handler.canvas
+					.getObjects()
+					.findIndex((object: FabricObject) => object.id === 'workarea');
+				this.handler.canvas.insertAt(workareaIndex >= 0 ? workareaIndex + 1 : 0, ...restoredLinks);
+			}
+			restoredNodes.forEach(node => this.handler.portHandler.setCoords(node));
+		});
+
+		const selectedObjects = activeObjectIds
+			.map(id => this.handler.objects.find(object => object.id === id))
+			.filter((object): object is FabricObject => Boolean(object));
+		if (selectedObjects.length === 1) {
+			this.handler.canvas.setActiveObject(selectedObjects[0]);
+		} else if (selectedObjects.length > 1) {
+			this.handler.canvas.setActiveObject(
+				new fabric.ActiveSelection(selectedObjects, {
+					canvas: this.handler.canvas,
+					...this.handler.activeSelectionOption,
+				}),
+			);
+		}
+	};
 
 	/**
 	 * Replay transaction
 	 *
 	 * @param {TransactionEvent} transaction
 	 */
-	public replay = (transaction: TransactionEvent) => {
+	public replay = async (transaction: TransactionEvent) => {
+		const fallbackObjects = this.cloneDeep(this.currentObjects);
+		const activeObjectIds = this.getSelectionIds(
+			this.handler.canvas.getActiveObject() as FabricObject | undefined,
+		);
+		const selectedObjectIds = activeObjectIds.length ? activeObjectIds : this.selectedObjectIds;
+		const interactionState = {
+			selection: this.handler.canvas.selection,
+			skipTargetFind: this.handler.canvas.skipTargetFind,
+		};
+		let canvasMutated = false;
+		this.active = true;
+		this.handler.canvas.selection = false;
+		this.handler.canvas.skipTargetFind = true;
+
 		try {
 			const parsed = JSON.parse(transaction.json) as FabricObject[];
-			const normalized = this.normalizeObjects(parsed);
-			const activeObjectId =
-				(this.handler.canvas.getActiveObject() as FabricObject | undefined)?.id ?? this.selectedObjectId;
-			if (activeObjectId) {
-				this.selectedObjectId = activeObjectId;
+			const normalized = this.normalizeObjects(this.compactWorkflowRelations(parsed));
+			if (selectedObjectIds.length) {
+				this.selectedObjectIds = selectedObjectIds;
 			}
 
 			// Enforce sticky fields (configuration/name/description) before enlivening
 			this.applyLatestStickyToSnapshot(normalized);
 
+			await this.restoreSnapshot(normalized, selectedObjectIds, () => {
+				canvasMutated = true;
+			});
+
 			this.currentObjects = normalized;
-
-			this.active = true;
-
-			void fabric.util
-				.enlivenObjects(this.currentObjects)
-				.then(enlivenedObjects => {
-					this.handler.canvas.renderOnAddRemove = false;
-					this.handler.clear();
-					this.handler.canvas.discardActiveObject();
-
-					(enlivenedObjects as FabricObject[]).forEach(obj => {
-						const targetIndex = this.handler.canvas.getObjects().length;
-
-						if (obj.superType === 'node') {
-							const node = obj as NodeObject;
-							this.handler.canvas.insertAt(targetIndex, node);
-							this.handler.portHandler.create(node);
-						} else if (obj.superType === 'link') {
-							this.handler.objects = this.handler.getObjects();
-							this.handler.linkHandler.create({
-								type: 'link',
-								fromNodeId: (obj as any).fromNode?.id,
-								fromPortId: (obj as any).fromPort?.id,
-								toNodeId: (obj as any).toNode?.id,
-								toPortId: (obj as any).toPort?.id,
-							});
-						} else {
-							this.handler.canvas.insertAt(targetIndex, obj);
-						}
-					});
-
-					this.active = false;
-					this.handler.canvas.renderOnAddRemove = true;
-					this.handler.objects = this.handler.getObjects();
-					const restoredActiveObject = activeObjectId
-						? this.handler.objects.find(object => object.id === activeObjectId)
-						: undefined;
-					if (restoredActiveObject) {
-						this.handler.canvas.setActiveObject(restoredActiveObject);
-					}
-					this.handler.canvas.renderAll();
-					this.handler.onTransaction?.(transaction);
-				})
-				.catch((error: unknown) => console.error(error));
+			this.handler.onTransaction?.(transaction);
 		} catch (error) {
-			console.error(error);
+			let rollbackSucceeded = !canvasMutated;
+			if (canvasMutated) {
+				try {
+					const rollbackObjects = this.cloneDeep(fallbackObjects);
+					this.applyLatestStickyToSnapshot(rollbackObjects);
+					await this.restoreSnapshot(rollbackObjects, selectedObjectIds);
+					rollbackSucceeded = true;
+				} catch (rollbackError) {
+					console.error('[TransactionHandler] Rollback failed:', rollbackError);
+				}
+			}
+			this.currentObjects = rollbackSucceeded
+				? fallbackObjects
+				: this.sortObjects(this.normalizeObjects(this.createSnapshot()));
+			throw error;
+		} finally {
+			this.handler.canvas.selection = interactionState.selection;
+			this.handler.canvas.skipTargetFind = interactionState.skipTargetFind;
+			this.active = false;
 		}
 	};
 
