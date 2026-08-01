@@ -4,6 +4,7 @@ import 'mediaelement/build/mediaelementplayer.min.css';
 import { FabricElement } from '../models';
 import {
 	createDOMElement,
+	getCanvasElementPosition,
 	registerFabricClass,
 	resolveFromObject,
 	toObject,
@@ -86,11 +87,7 @@ class Video extends fabric.Rect {
 			const loop = this.get('loop') as boolean;
 			const { scaleX, scaleY, width, height, angle, src, file } = this;
 			const zoom = this.canvas.getZoom();
-			const { tl } = this.calcOCoords();
-			const left = tl.x;
-			const top = tl.y;
-			const padLeft = (width * scaleX * zoom - width) / 2;
-			const padTop = (height * scaleY * zoom - height) / 2;
+			const { left, top } = getCanvasElementPosition(this, this.canvas);
 			this.videoElement = createDOMElement('video', {
 				id,
 				autoplay: editable ? false : autoplay,
@@ -104,8 +101,8 @@ class Video extends fabric.Rect {
 				style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
                         width: ${width}px;
                         height: ${height}px;
-                        left: ${left + padLeft}px;
-                        top: ${top + padTop}px;
+						left: ${left}px;
+						top: ${top}px;
                         position: absolute;
                         user-select: ${editable ? 'none' : 'auto'};
                         pointer-events: ${editable ? 'none' : 'auto'};`,

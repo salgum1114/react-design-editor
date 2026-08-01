@@ -1,9 +1,10 @@
-import * as fabric from 'fabric';
+import type * as fabric from 'fabric';
 
 import { ChartObject } from '../objects/Chart';
 import { ElementObject } from '../objects/Element';
 import { IframeObject } from '../objects/Iframe';
 import { VideoObject } from '../objects/Video';
+import { getCanvasElementPosition } from '../utils';
 import Handler from './Handler';
 
 export type ElementType = 'container' | 'script' | 'style';
@@ -120,27 +121,9 @@ class ElementHandler {
 		if (!el) {
 			return;
 		}
-		obj.setCoords();
-		const zoom = this.handler.canvas.getZoom();
-		const { scaleX, scaleY, width, height } = obj;
-		const { left, top } = obj.getBoundingRect();
-		const padLeft = (width * scaleX * zoom - width) / 2;
-		const padTop = (height * scaleY * zoom - height) / 2;
-		el.style.left = `${left + padLeft}px`;
-		el.style.top = `${top + padTop}px`;
-	};
-
-	public setPositionByOrigin = (el: HTMLElement, obj: fabric.FabricObject, left: number, top: number) => {
-		if (!el) {
-			return;
-		}
-		obj.setCoords();
-		const zoom = this.handler.canvas.getZoom();
-		const { scaleX, scaleY, width, height } = obj;
-		const padLeft = (width * scaleX * zoom - width) / 2;
-		const padTop = (height * scaleY * zoom - height) / 2;
-		el.style.left = `${left + padLeft}px`;
-		el.style.top = `${top + padTop}px`;
+		const { left, top } = getCanvasElementPosition(obj, this.handler.canvas);
+		el.style.left = `${left}px`;
+		el.style.top = `${top}px`;
 	};
 
 	/**

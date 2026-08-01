@@ -2,6 +2,7 @@ import * as fabric from 'fabric';
 import { FabricElement } from '../models';
 import {
 	createDOMElement,
+	getCanvasElementPosition,
 	registerFabricClass,
 	resolveFromObject,
 	toObject,
@@ -60,11 +61,7 @@ class Iframe extends fabric.Rect {
 			const editable = this.get('editable') as boolean;
 			const { scaleX, scaleY, width, height, angle, src } = this;
 			const zoom = this.canvas.getZoom();
-			const { tl } = this.calcOCoords();
-			const left = tl.x;
-			const top = tl.y;
-			const padLeft = (width * scaleX * zoom - width) / 2;
-			const padTop = (height * scaleY * zoom - height) / 2;
+			const { left, top } = getCanvasElementPosition(this, this.canvas);
 			this.iframeElement = createDOMElement('iframe', {
 				id,
 				src,
@@ -76,8 +73,8 @@ class Iframe extends fabric.Rect {
 				style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
                         width: ${width}px;
                         height: ${height}px;
-                        left: ${left + padLeft}px;
-                        top: ${top + padTop}px;
+						left: ${left}px;
+						top: ${top}px;
                         position: absolute;
                         user-select: ${editable ? 'none' : 'auto'};
                         pointer-events: ${editable ? 'none' : 'auto'};`,

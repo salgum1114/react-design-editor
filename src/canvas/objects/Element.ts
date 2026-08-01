@@ -1,6 +1,12 @@
 import * as fabric from 'fabric';
 import { FabricElement } from '../models';
-import { createDOMElement, registerFabricClass, resolveFromObject, toObject } from '../utils';
+import {
+	createDOMElement,
+	getCanvasElementPosition,
+	registerFabricClass,
+	resolveFromObject,
+	toObject,
+} from '../utils';
 
 export interface Code {
 	html: string;
@@ -67,18 +73,14 @@ class Element extends fabric.Rect {
 			const editable = this.get('editable') as boolean;
 			const { scaleX, scaleY, width, height, angle, code } = this;
 			const zoom = this.canvas.getZoom();
-			const { tl } = this.calcOCoords();
-			const left = tl.x;
-			const top = tl.y;
-			const padLeft = (width * scaleX * zoom - width) / 2;
-			const padTop = (height * scaleY * zoom - height) / 2;
+			const { left, top } = getCanvasElementPosition(this, this.canvas);
 			this.element = createDOMElement('div', {
 				id: `${id}_container`,
 				style: `transform: rotate(${angle}deg) scale(${scaleX * zoom}, ${scaleY * zoom});
                         width: ${width}px;
                         height: ${height}px;
-                        left: ${left + padLeft}px;
-                        top: ${top + padTop}px;
+						left: ${left}px;
+						top: ${top}px;
                         position: absolute;
                         user-select: ${editable ? 'none' : 'auto'};
                         pointer-events: ${editable ? 'none' : 'auto'};`,

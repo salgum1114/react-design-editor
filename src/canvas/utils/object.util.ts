@@ -1,8 +1,19 @@
 import { classRegistry } from 'fabric';
+import type { Canvas, FabricObject } from 'fabric';
 
 type FabricClass = (new (...args: any[]) => any) & {
 	type?: string;
 	prototype: any;
+};
+
+export const getCanvasElementPosition = (obj: FabricObject, canvas: Canvas) => {
+	const center = obj.getCenterPoint().transform(canvas.viewportTransform);
+	const wrapperLeft = canvas.wrapperEl?.offsetLeft || 0;
+	const wrapperTop = canvas.wrapperEl?.offsetTop || 0;
+	return {
+		left: center.x + wrapperLeft - obj.width / 2,
+		top: center.y + wrapperTop - obj.height / 2,
+	};
 };
 
 export const toObject = (

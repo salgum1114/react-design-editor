@@ -2,6 +2,7 @@ import * as fabric from 'fabric';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { defaults } from '../constants';
+import ElementHandler from './ElementHandler';
 import EventHandler from './EventHandler';
 
 const createTarget = (left = 20, top = 30) => {
@@ -73,7 +74,6 @@ const createEventFixture = (axisLock = true, guidelineEnabled = false, dragDupli
 		elementHandler: {
 			findById: vi.fn(),
 			setPosition: vi.fn(),
-			setPositionByOrigin: vi.fn(),
 		},
 		gridHandler: {
 			getSnappedPosition: vi.fn((target: fabric.FabricObject) => ({
@@ -485,6 +485,45 @@ describe('EventHandler Shift-drag axis lock', () => {
 		} as any);
 
 		expect(handler.nodeHandler.getNodePath).not.toHaveBeenCalled();
+	});
+});
+
+describe('EventHandler element overlay synchronization', () => {
+	it('keeps a transformed element centered inside a moving active selection', () => {
+		const { eventHandler, handler } = createEventFixture(false);
+		Object.assign(handler.canvas.wrapperEl, {
+			offsetLeft: 24,
+			offsetTop: 24,
+		});
+		const element = new fabric.Rect({
+			angle: 20,
+			height: 60,
+			left: 100,
+			scaleX: 1.3,
+			scaleY: 1.2,
+			strokeWidth: 0,
+			top: 80,
+			width: 120,
+		}) as any;
+		element.id = 'element-1';
+		element.superType = 'element';
+		const selection = new fabric.ActiveSelection([element, createTarget(360, 240)]);
+		selection.set({ left: selection.left + 75, top: selection.top + 35 });
+		selection.setCoords();
+
+		const overlay = { style: {} } as HTMLElement;
+		const elementHandler = new ElementHandler(handler as any);
+		vi.spyOn(elementHandler, 'findById').mockReturnValue(overlay);
+		(handler as any).elementHandler = elementHandler;
+
+		eventHandler.moving({
+			e: { shiftKey: false } as MouseEvent,
+			target: selection,
+		} as any);
+
+		const center = element.getCenterPoint();
+		expect(Number.parseFloat(overlay.style.left) + element.width / 2).toBeCloseTo(center.x + 24, 5);
+		expect(Number.parseFloat(overlay.style.top) + element.height / 2).toBeCloseTo(center.y + 24, 5);
 	});
 });
 
