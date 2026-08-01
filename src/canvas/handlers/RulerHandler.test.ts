@@ -7,14 +7,8 @@ import RulerHandler, { getRulerStep, rulerValueToScreenPosition } from './RulerH
 
 const canvasSource = readFileSync(new URL('../Canvas.tsx', import.meta.url), 'utf8');
 const handlerSource = readFileSync(new URL('./Handler.ts', import.meta.url), 'utf8');
-const imageMapSource = readFileSync(
-	new URL('../../editors/imagemap/ImageMapEditor.tsx', import.meta.url),
-	'utf8',
-);
-const workflowSource = readFileSync(
-	new URL('../../editors/workflow/WorkflowEditor.tsx', import.meta.url),
-	'utf8',
-);
+const imageMapSource = readFileSync(new URL('../../editors/imagemap/ImageMapEditor.tsx', import.meta.url), 'utf8');
+const workflowSource = readFileSync(new URL('../../editors/workflow/WorkflowEditor.tsx', import.meta.url), 'utf8');
 
 const createContext = () =>
 	({
@@ -278,8 +272,7 @@ describe('ruler viewport sizing', () => {
 			off: vi.fn(),
 			on: vi.fn(),
 			renderAll: vi.fn(),
-			setHeight: vi.fn(),
-			setWidth: vi.fn(),
+			setDimensions: vi.fn(),
 			wrapperEl,
 		};
 		const handler = {
@@ -295,7 +288,6 @@ describe('ruler viewport sizing', () => {
 
 		eventHandler.resize(600, 400);
 
-		expect(canvas.setWidth).toHaveBeenCalledWith(576);
-		expect(canvas.setHeight).toHaveBeenCalledWith(376);
+		expect(canvas.setDimensions).toHaveBeenCalledWith({ height: 376, width: 576 });
 	});
 });

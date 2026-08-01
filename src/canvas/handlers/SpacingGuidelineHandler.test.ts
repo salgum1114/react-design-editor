@@ -20,14 +20,17 @@ const createContext = () =>
 		transform: vi.fn(),
 	}) as unknown as CanvasRenderingContext2D;
 
-const createRect = (left: number, top: number, width = 100, height = 100) =>
-	new fabric.Rect({
+const createRect = (left: number, top: number, width = 100, height = 100) => {
+	const rect = new fabric.Rect({
 		height,
-		left,
+		left: 0,
 		strokeWidth: 0,
-		top,
+		top: 0,
 		width,
 	});
+	rect.setPositionByOrigin(new fabric.Point(left, top), 'left', 'top');
+	return rect;
+};
 
 const createFixture = (
 	objects: fabric.FabricObject[],
@@ -169,19 +172,12 @@ describe('SpacingGuidelineHandler measurements', () => {
 		const aboveFirst = createRect(100, 60);
 		const aboveSecond = createRect(300, 120);
 		const selection = new fabric.ActiveSelection([first, second]);
-		const { spacingGuidelineHandler } = createFixture([
-			aboveFirst,
-			aboveSecond,
-			first,
-			second,
-		]);
+		const { spacingGuidelineHandler } = createFixture([aboveFirst, aboveSecond, first, second]);
 
 		spacingGuidelineHandler.movingGuidelines(selection);
 
 		expect(
-			spacingGuidelineHandler.guides.filter(
-				guide => guide.axis === 'vertical' && guide.kind === 'distance',
-			),
+			spacingGuidelineHandler.guides.filter(guide => guide.axis === 'vertical' && guide.kind === 'distance'),
 		).toEqual([
 			expect.objectContaining({
 				cross: 150,
@@ -208,9 +204,7 @@ describe('SpacingGuidelineHandler measurements', () => {
 		spacingGuidelineHandler.movingGuidelines(selection);
 
 		expect(
-			spacingGuidelineHandler.guides.filter(
-				guide => guide.axis === 'vertical' && guide.kind === 'distance',
-			),
+			spacingGuidelineHandler.guides.filter(guide => guide.axis === 'vertical' && guide.kind === 'distance'),
 		).toEqual([
 			expect.objectContaining({
 				cross: 150,
@@ -242,7 +236,7 @@ describe('SpacingGuidelineHandler equal spacing snap', () => {
 
 		spacingGuidelineHandler.movingGuidelines(target);
 
-		expect(target.left).toBe(400);
+		expect(target.getBoundingRect().left).toBe(400);
 		expect(spacingGuidelineHandler.guides).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
@@ -271,7 +265,7 @@ describe('SpacingGuidelineHandler equal spacing snap', () => {
 
 		spacingGuidelineHandler.movingGuidelines(target);
 
-		expect(target.top).toBe(400);
+		expect(target.getBoundingRect().top).toBe(400);
 		expect(spacingGuidelineHandler.guides).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
@@ -291,11 +285,9 @@ describe('SpacingGuidelineHandler equal spacing snap', () => {
 
 		spacingGuidelineHandler.movingGuidelines(target);
 
-		expect(target.left).toBe(250);
+		expect(target.getBoundingRect().left).toBe(250);
 		expect(
-			spacingGuidelineHandler.guides.filter(
-				guide => guide.axis === 'horizontal' && guide.kind === 'equal',
-			),
+			spacingGuidelineHandler.guides.filter(guide => guide.axis === 'horizontal' && guide.kind === 'equal'),
 		).toEqual([
 			expect.objectContaining({ distance: 150, end: 250, start: 100 }),
 			expect.objectContaining({ distance: 150, end: 500, start: 350 }),
@@ -308,20 +300,13 @@ describe('SpacingGuidelineHandler equal spacing snap', () => {
 		const selectedFirst = createRect(401, 100);
 		const selectedSecond = createRect(401, 300);
 		const selection = new fabric.ActiveSelection([selectedFirst, selectedSecond]);
-		const { spacingGuidelineHandler } = createFixture([
-			first,
-			second,
-			selectedFirst,
-			selectedSecond,
-		]);
+		const { spacingGuidelineHandler } = createFixture([first, second, selectedFirst, selectedSecond]);
 
 		spacingGuidelineHandler.movingGuidelines(selection);
 
 		expect(selection.getBoundingRect().left).toBe(400);
 		expect(
-			spacingGuidelineHandler.guides.filter(
-				guide => guide.axis === 'horizontal' && guide.kind === 'equal',
-			),
+			spacingGuidelineHandler.guides.filter(guide => guide.axis === 'horizontal' && guide.kind === 'equal'),
 		).toEqual([
 			expect.objectContaining({ distance: 100, end: 200, start: 100 }),
 			expect.objectContaining({ distance: 100, end: 400, start: 300 }),
@@ -336,7 +321,7 @@ describe('SpacingGuidelineHandler equal spacing snap', () => {
 
 		spacingGuidelineHandler.movingGuidelines(target);
 
-		expect(target.left).toBe(402.5);
+		expect(target.getBoundingRect().left).toBe(402.5);
 		expect(spacingGuidelineHandler.guides.every(guide => guide.kind !== 'equal')).toBe(true);
 	});
 
@@ -356,18 +341,14 @@ describe('SpacingGuidelineHandler equal spacing snap', () => {
 
 		spacingGuidelineHandler.movingGuidelines(target);
 
-		expect(target.left).toBe(400);
-		expect(target.top).toBe(400);
+		expect(target.getBoundingRect().left).toBe(400);
+		expect(target.getBoundingRect().top).toBe(400);
 		expect(
-			spacingGuidelineHandler.guides.some(
-				guide => guide.axis === 'horizontal' && guide.kind === 'equal',
-			),
+			spacingGuidelineHandler.guides.some(guide => guide.axis === 'horizontal' && guide.kind === 'equal'),
 		).toBe(true);
-		expect(
-			spacingGuidelineHandler.guides.some(
-				guide => guide.axis === 'vertical' && guide.kind === 'equal',
-			),
-		).toBe(true);
+		expect(spacingGuidelineHandler.guides.some(guide => guide.axis === 'vertical' && guide.kind === 'equal')).toBe(
+			true,
+		);
 	});
 
 	it('does not snap or render equal guides on an axis reserved by alignment', () => {
@@ -380,11 +361,9 @@ describe('SpacingGuidelineHandler equal spacing snap', () => {
 			disabledSnapAxes: ['horizontal'],
 		});
 
-		expect(target.left).toBe(401);
+		expect(target.getBoundingRect().left).toBe(401);
 		expect(
-			spacingGuidelineHandler.guides.some(
-				guide => guide.axis === 'horizontal' && guide.kind === 'equal',
-			),
+			spacingGuidelineHandler.guides.some(guide => guide.axis === 'horizontal' && guide.kind === 'equal'),
 		).toBe(false);
 	});
 });
@@ -421,12 +400,9 @@ describe('SpacingGuidelineHandler lifecycle and rendering', () => {
 	it('does not measure or subscribe when spacing guides are disabled', () => {
 		const reference = createRect(0, 100);
 		const target = createRect(140, 100);
-		const { canvas, spacingGuidelineHandler } = createFixture(
-			[reference, target],
-			1,
-			[1, 0, 0, 1, 0, 0],
-			{ enabled: false },
-		);
+		const { canvas, spacingGuidelineHandler } = createFixture([reference, target], 1, [1, 0, 0, 1, 0, 0], {
+			enabled: false,
+		});
 
 		spacingGuidelineHandler.movingGuidelines(target, { altKey: true } as MouseEvent);
 

@@ -78,13 +78,13 @@ class WorkareaHandler {
 			}
 		});
 		if (isResponsive) {
-			const center = canvas.getCenter();
+			const center = canvas.getCenterPoint();
 			if (isElement) {
 				this.handler.workarea.set({
 					scaleX: 1,
 					scaleY: 1,
 				});
-				this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
+				this.handler.zoomHandler.zoomToPoint(center, scaleX);
 			} else {
 				this.handler.workarea.set({
 					width: workareaWidth,
@@ -97,7 +97,7 @@ class WorkareaHandler {
 				} else {
 					scaleY = scaleX;
 				}
-				this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
+				this.handler.zoomHandler.zoomToPoint(center, scaleX);
 			}
 			canvas.centerObject(this.handler.workarea);
 			canvas.renderAll();
@@ -129,9 +129,9 @@ class WorkareaHandler {
 			}
 		}
 		canvas.centerObject(this.handler.workarea);
-		const center = canvas.getCenter();
+		const center = canvas.getCenterPoint();
 		canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-		this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), 1);
+		this.handler.zoomHandler.zoomToPoint(center, 1);
 		canvas.renderAll();
 	};
 
@@ -274,10 +274,10 @@ class WorkareaHandler {
 					}
 				});
 			}
-			const center = canvas.getCenter();
+			const center = canvas.getCenterPoint();
 			const zoom = loaded || workarea.layout === 'fullscreen' ? 1 : this.handler.canvas.getZoom();
 			canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-			this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
+			this.handler.zoomHandler.zoomToPoint(center, zoom);
 			canvas.renderAll();
 			return workarea;
 		};
@@ -292,10 +292,10 @@ class WorkareaHandler {
 				isElement: false,
 			});
 			canvas.centerObject(workarea);
-			const center = canvas.getCenter();
+			const center = canvas.getCenterPoint();
 			const zoom = loaded ? 1 : canvas.getZoom();
 			canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-			this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), zoom);
+			this.handler.zoomHandler.zoomToPoint(center, zoom);
 			canvas.renderAll();
 			return workarea;
 		}

@@ -7,11 +7,7 @@ import { v4 as uuid } from 'uuid';
 import { CanvasInstance, FabricObject, LinkObject, NodeObject } from '../../canvas';
 import { PortObject } from '../../canvas/objects';
 import { CommonButton, Scrollbar } from '../../components/common';
-import {
-	EditorPanelHeader,
-	PALETTE_COLLAPSE_PROPS,
-	resolvePaletteActiveKeys,
-} from '../../components/editor';
+import { EditorPanelHeader, PALETTE_COLLAPSE_PROPS, resolvePaletteActiveKeys } from '../../components/editor';
 import { Flex } from '../../components/flex';
 import Icon from '../../components/icon/Icon';
 import { getNode } from './configuration/NodeConfiguration';
@@ -136,10 +132,11 @@ class WorkflowItems extends React.Component<IProps, IState> {
 								? selectedNode?.fromPort?.find((port: PortObject) => !port.links!.length)
 								: undefined;
 					if (item.type !== 'TRIGGER' && unusedFromPort) {
+						const selectedCenter = selectedNode.getCenterPoint();
 						const createdNode = !centered
 							? instance.handler.add(option, false, false, false, false)
 							: instance.handler.add(
-									{ ...option, left: selectedNode.left, top: selectedNode.top },
+									{ ...option, left: selectedCenter.x, top: selectedCenter.y },
 									false,
 									false,
 									false,
@@ -153,8 +150,12 @@ class WorkflowItems extends React.Component<IProps, IState> {
 						});
 						if (centered) {
 							createdNode.set({
-								left: selectedNode.left! + (selectedNode.width! - createdNode.width) / 2,
-								top: selectedNode.height! + selectedNode.top! + 40,
+								left: selectedCenter.x,
+								top:
+									selectedCenter.y +
+									selectedNode.getScaledHeight() / 2 +
+									createdNode.getScaledHeight() / 2 +
+									40,
 							});
 							instance.handler.portHandler.setCoords(createdNode as any);
 							instance.handler.zoomHandler.zoomToCenterWithObject(createdNode);
@@ -162,13 +163,10 @@ class WorkflowItems extends React.Component<IProps, IState> {
 					} else {
 						const createdNode = instance.handler.add(option, false, false, false, false);
 						if (centered) {
+							const center = instance.canvas.getVpCenter();
 							createdNode.set({
-								left:
-									(instance.canvas.getWidth() / 2 - instance.canvas.viewportTransform![4]) /
-									instance.canvas.getZoom(),
-								top:
-									(instance.canvas.getHeight() / 2 - instance.canvas.viewportTransform![5]) /
-									instance.canvas.getZoom(),
+								left: center.x,
+								top: center.y,
 							});
 							instance.handler.portHandler.setCoords(createdNode as any);
 							instance.handler.zoomHandler.zoomToCenterWithObject(createdNode);
@@ -218,7 +216,7 @@ class WorkflowItems extends React.Component<IProps, IState> {
 				e.dataTransfer.dropEffect = 'copy';
 			}
 			if (this.item?.type !== 'TRIGGER') {
-				const pointer = this.props.instance.canvas.getPointer(e);
+				const pointer = this.props.instance.canvas.getScenePoint(e);
 				this.links.forEach(link => {
 					const isIntersecting = link.isPointNear(new fabric.Point(pointer.x, pointer.y), 20);
 					if (isIntersecting) {
@@ -252,8 +250,8 @@ class WorkflowItems extends React.Component<IProps, IState> {
 			if (e.stopPropagation) {
 				e.stopPropagation();
 			}
-			const { layerX, layerY } = e;
-			const option = Object.assign({}, this.item, { left: layerX, top: layerY });
+			const point = this.props.instance.canvas.getScenePoint(e);
+			const option = Object.assign({}, this.item, { left: point.x, top: point.y });
 			this.handlers.addItem(option, false);
 			return false;
 		},
@@ -365,7 +363,9 @@ class WorkflowItems extends React.Component<IProps, IState> {
 												''
 											) : (
 												<span className="rde-editor-items-category">
-													<span style={{ backgroundColor: NODE_COLORS[descriptorKey].fill }} />
+													<span
+														style={{ backgroundColor: NODE_COLORS[descriptorKey].fill }}
+													/>
 													{key}
 												</span>
 											),

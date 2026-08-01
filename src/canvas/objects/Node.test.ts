@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import { describe, expect, it } from 'vitest';
 
 import * as nodeModule from './Node';
@@ -25,9 +27,7 @@ describe('workflow node serialization', () => {
 			routeTextColor: '#172A2D',
 		};
 
-		expect(serializeNodeThemeProperties({ get: key => values[key as keyof typeof values] })).toEqual(
-			values,
-		);
+		expect(serializeNodeThemeProperties({ get: key => values[key as keyof typeof values] })).toEqual(values);
 	});
 });
 
@@ -46,4 +46,20 @@ describe('workflow node ports', () => {
 			stroke: '#5F646B',
 		});
 	});
+});
+
+describe('workflow node coordinates', () => {
+	it('uses Fabric 7 center origins for new nodes', () => {
+		const node = new Node({
+			fill: '#ffffff',
+			left: 320,
+			name: 'Centered node',
+			stroke: '#000000',
+			top: 180,
+		} as any);
+
+		expect(node.originX).toBe('center');
+		expect(node.originY).toBe('center');
+		expect(node.getCenterPoint()).toMatchObject({ x: 320, y: 180 });
+	}, 20_000);
 });

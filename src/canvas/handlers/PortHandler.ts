@@ -13,7 +13,9 @@ class PortHandler extends AbstractHandler {
 	 * @param {NodeObject} target
 	 */
 	create = (target: NodeObject) => {
-		const toPort = target.createToPort?.(target.left + target.width / 2, target.top);
+		const center = target.getCenterPoint();
+		const halfHeight = target.getScaledHeight() / 2;
+		const toPort = target.createToPort?.(center.x, center.y - halfHeight);
 		if (toPort) {
 			toPort.on('mouseover', () => {
 				if (
@@ -40,7 +42,7 @@ class PortHandler extends AbstractHandler {
 				this.handler.canvas.bringObjectToFront(toPort);
 			}
 		}
-		const fromPort = target.createFromPort?.(target.left + target.width / 2, target.top + target.height);
+		const fromPort = target.createFromPort?.(center.x, center.y + halfHeight);
 		if (fromPort && fromPort.length) {
 			fromPort.forEach(port => {
 				if (port) {
@@ -79,9 +81,11 @@ class PortHandler extends AbstractHandler {
 	 * @param {NodeObject} target
 	 */
 	setCoords = (target: NodeObject) => {
+		const center = target.getCenterPoint();
+		const halfHeight = target.getScaledHeight() / 2;
 		if (target.toPort) {
-			const left = target.left + target.width / 2;
-			const top = target.top;
+			const left = center.x;
+			const top = center.y - halfHeight;
 
 			target.toPort.setPosition(left, top);
 
@@ -97,8 +101,8 @@ class PortHandler extends AbstractHandler {
 
 		if (target.fromPort) {
 			const fromCoords = {
-				left: target.left + target.width / 2,
-				top: target.top + target.height,
+				left: center.x,
+				top: center.y + halfHeight,
 			};
 
 			target.fromPort.forEach((port: any) => {

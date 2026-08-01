@@ -1016,7 +1016,7 @@ class EventHandler extends AbstractHandler {
 		}
 		if (this.handler.interactionMode === 'polygon') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
-				const pointer = this.canvas.getPointer(event.e);
+				const pointer = this.canvas.getScenePoint(event.e);
 				this.handler.activeLine.set({ x2: pointer.x, y2: pointer.y });
 				const points = this.handler.activeShape.get('points');
 				points[this.handler.pointArray.length] = {
@@ -1028,19 +1028,19 @@ class EventHandler extends AbstractHandler {
 			}
 		} else if (this.handler.interactionMode === 'line') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
-				const pointer = this.canvas.getPointer(event.e);
+				const pointer = this.canvas.getScenePoint(event.e);
 				this.handler.activeLine.set({ x2: pointer.x, y2: pointer.y });
 			}
 			this.canvas.requestRenderAll();
 		} else if (this.handler.interactionMode === 'arrow') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
-				const pointer = this.canvas.getPointer(event.e);
+				const pointer = this.canvas.getScenePoint(event.e);
 				this.handler.activeLine.set({ x2: pointer.x, y2: pointer.y });
 			}
 			this.canvas.requestRenderAll();
 		} else if (this.handler.interactionMode === 'link') {
 			if (this.handler.activeLine && this.handler.activeLine.class === 'line') {
-				const pointer = this.canvas.getPointer(event.e);
+				const pointer = this.canvas.getScenePoint(event.e);
 				this.handler.activeLine.update(this.handler.activeLine.fromPort, { left: pointer.x, top: pointer.y });
 			}
 			this.canvas.requestRenderAll();
@@ -1129,8 +1129,7 @@ class EventHandler extends AbstractHandler {
 		const rulerInset = this.handler.rulerHandler?.getViewportInset?.() || 0;
 		const viewportWidth = Math.max(nextWidth - rulerInset, 0);
 		const viewportHeight = Math.max(nextHeight - rulerInset, 0);
-		this.canvas.setWidth(viewportWidth);
-		this.canvas.setHeight(viewportHeight);
+		this.canvas.setDimensions({ width: viewportWidth, height: viewportHeight });
 		this.canvas.backgroundColor = this.handler.canvasOption.backgroundColor;
 		this.canvas.renderAll();
 		const previousWidth = this.handler.width || viewportWidth;
@@ -1170,10 +1169,10 @@ class EventHandler extends AbstractHandler {
 		}
 		if (this.handler.workarea.layout === 'responsive') {
 			const { scaleX } = this.handler.workareaHandler.calculateScale();
-			const center = this.canvas.getCenter();
+			const center = this.canvas.getCenterPoint();
 			const deltaPoint = new fabric.Point(diffWidth, diffHeight);
 			this.canvas.relativePan(deltaPoint);
-			this.handler.zoomHandler.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
+			this.handler.zoomHandler.zoomToPoint(center, scaleX);
 			return;
 		}
 		const scaleX = viewportWidth / this.handler.workarea.width;
@@ -1468,7 +1467,7 @@ class EventHandler extends AbstractHandler {
 		e.preventDefault();
 		const { editable, onContext } = this.handler;
 		if (editable && onContext) {
-			const target = this.canvas.findTarget(e as any) as FabricObject;
+			const { target } = this.canvas.findTarget(e);
 			if (target && !this.handler.isActiveSelection(target)) {
 				this.handler.select(target);
 			}

@@ -2151,8 +2151,7 @@ class Handler implements HandlerOptions {
 			if (this.eventHandler) {
 				this.eventHandler.resize(canvasOption.width, canvasOption.height);
 			} else {
-				this.canvas.setWidth(canvasOption.width);
-				this.canvas.setHeight(canvasOption.height);
+				this.canvas.setDimensions({ width: canvasOption.width, height: canvasOption.height });
 			}
 		}
 		if (typeof canvasOption.selection !== 'undefined') {

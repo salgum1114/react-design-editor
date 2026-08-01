@@ -5,7 +5,6 @@ import type {
 	FabricObject as NativeFabricObject,
 	Group,
 	Pattern,
-	Point,
 	Rect,
 	TFabricObjectProps,
 	TPointerEventInfo,
@@ -487,8 +486,6 @@ export interface FabricEvent<T extends Event = Event> extends Omit<Partial<TPoin
 	button?: number;
 	isClick?: boolean;
 	action?: string;
-	pointer?: Point;
-	absolutePointer?: Point;
 }
 
 export type FabricObjects = {

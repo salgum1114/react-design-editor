@@ -28,11 +28,12 @@ describe('ElementHandler position', () => {
 		const handler = new ElementHandler({ canvas } as any);
 		const object = new fabric.Rect({
 			height: 60,
-			left: 100,
+			left: 0,
 			strokeWidth: 0,
-			top: 80,
+			top: 0,
 			width: 120,
 		});
+		object.setPositionByOrigin(new fabric.Point(100, 80), 'left', 'top');
 		const overlay = { style: {} } as HTMLElement;
 
 		handler.setPosition(overlay, object);

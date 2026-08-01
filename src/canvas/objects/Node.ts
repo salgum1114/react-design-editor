@@ -2,12 +2,7 @@ import Color from 'color';
 import * as fabric from 'fabric';
 import { v4 as uuid } from 'uuid';
 import { FabricObject } from '../models';
-import {
-	fitTextToRect,
-	registerFabricClass,
-	resolveFromObject,
-	toObject,
-} from '../utils';
+import { fitTextToRect, registerFabricClass, resolveFromObject, toObject } from '../utils';
 import { CustomControlObject } from './CustomControl';
 import FromPort from './FromPort';
 import { LinkObject } from './Link';
@@ -212,8 +207,6 @@ class Node extends fabric.Group {
 			id: options.id || uuid(),
 			width: 240,
 			height: 60,
-			originX: 'left',
-			originY: 'top',
 			hasRotatingPoint: false,
 			hasControls: false,
 			fontSize,
@@ -222,12 +215,7 @@ class Node extends fabric.Group {
 			subTargetCheck: !!options.descriptor?.actionButton,
 			originStroke: options.stroke,
 		});
-		const {
-			type: _type,
-			objects: _objects,
-			layoutManager: _layoutManager,
-			...groupOptions
-		} = nextOptions;
+		const { type: _type, objects: _objects, layoutManager: _layoutManager, ...groupOptions } = nextOptions;
 		super(node, groupOptions);
 		this.label = label;
 		this.rect = rect;

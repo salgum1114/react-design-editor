@@ -352,6 +352,9 @@ class GuidelineHandler {
 		if (!verticalInTheRange) {
 			this.verticalLines.length = 0;
 		}
+		if (horizontalInTheRange || verticalInTheRange) {
+			target.setCoords();
+		}
 	};
 
 	scalingGuidelines = (_target: FabricObject) => {

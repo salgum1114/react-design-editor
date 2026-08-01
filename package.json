@@ -51,6 +51,9 @@
 	],
 	"author": "salgum1114",
 	"license": "MIT",
+	"engines": {
+		"node": ">=20.0.0"
+	},
 	"bugs": {
 		"url": "https://github.com/salgum1114/react-design-editor/issues"
 	},
@@ -66,7 +69,7 @@
 		"color": "^3.1.2",
 		"echarts": "^4.7.0",
 		"elkjs": "^0.10.0",
-		"fabric": "^6.9.1",
+		"fabric": "^7.4.0",
 		"gifler": "^0.1.0",
 		"honeycomb-grid": "^3.1.7",
 		"lodash-es": "^4.17.23",

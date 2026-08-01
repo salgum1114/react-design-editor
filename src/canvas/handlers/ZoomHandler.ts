@@ -52,9 +52,9 @@ class ZoomHandler extends AbstractHandler {
 	 *
 	 */
 	public zoomOneToOne = () => {
-		const center = this.handler.canvas.getCenter();
+		const center = this.handler.canvas.getCenterPoint();
 		this.handler.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-		this.zoomToPoint(new fabric.Point(center.left, center.top), 1);
+		this.zoomToPoint(center, 1);
 	};
 
 	/**
@@ -74,9 +74,9 @@ class ZoomHandler extends AbstractHandler {
 				scaleX = scaleX * (this.handler.canvas.getHeight() / (this.handler.workarea.height * scaleX));
 			}
 		}
-		const center = this.handler.canvas.getCenter();
+		const center = this.handler.canvas.getCenterPoint();
 		this.handler.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
-		this.zoomToPoint(new fabric.Point(center.left, center.top), scaleX);
+		this.zoomToPoint(center, scaleX);
 	};
 
 	/**
@@ -86,8 +86,8 @@ class ZoomHandler extends AbstractHandler {
 	public zoomIn = () => {
 		let zoomRatio = this.handler.canvas.getZoom();
 		zoomRatio += this._zoomStep;
-		const center = this.handler.canvas.getCenter();
-		this.zoomToPoint(new fabric.Point(center.left, center.top), zoomRatio);
+		const center = this.handler.canvas.getCenterPoint();
+		this.zoomToPoint(center, zoomRatio);
 	};
 
 	/**
@@ -97,8 +97,8 @@ class ZoomHandler extends AbstractHandler {
 	public zoomOut = () => {
 		let zoomRatio = this.handler.canvas.getZoom();
 		zoomRatio -= this._zoomStep;
-		const center = this.handler.canvas.getCenter();
-		this.zoomToPoint(new fabric.Point(center.left, center.top), zoomRatio);
+		const center = this.handler.canvas.getCenterPoint();
+		this.zoomToPoint(center, zoomRatio);
 	};
 
 	/**
@@ -107,10 +107,11 @@ class ZoomHandler extends AbstractHandler {
 	 * @param {FabricObject} target If zoomFit true, rescaled canvas zoom.
 	 */
 	public zoomToCenterWithObject = (target: FabricObject, zoomFit?: boolean) => {
-		const { left: canvasLeft, top: canvasTop } = this.handler.canvas.getCenter();
-		const { left, top, width, height } = target;
-		const diffTop = canvasTop - (top + height / 2);
-		const diffLeft = canvasLeft - (left + width / 2);
+		const canvasCenter = this.handler.canvas.getCenterPoint();
+		const targetCenter = target.getCenterPoint();
+		const { width, height } = target;
+		const diffTop = canvasCenter.y - targetCenter.y;
+		const diffLeft = canvasCenter.x - targetCenter.x;
 		if (zoomFit) {
 			let scaleX;
 			let scaleY;
@@ -128,11 +129,11 @@ class ZoomHandler extends AbstractHandler {
 				}
 			}
 			this.handler.canvas.setViewportTransform([1, 0, 0, 1, diffLeft, diffTop]);
-			this.zoomToPoint(new fabric.Point(canvasLeft, canvasTop), scaleX);
+			this.zoomToPoint(canvasCenter, scaleX);
 		} else {
 			const zoom = this.handler.canvas.getZoom();
 			this.handler.canvas.setViewportTransform([1, 0, 0, 1, diffLeft, diffTop]);
-			this.zoomToPoint(new fabric.Point(canvasLeft, canvasTop), zoom);
+			this.zoomToPoint(canvasCenter, zoom);
 		}
 	};
 

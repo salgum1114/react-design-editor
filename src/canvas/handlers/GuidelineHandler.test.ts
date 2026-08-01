@@ -14,13 +14,19 @@ const createContext = () =>
 		transform: vi.fn(),
 	}) as unknown as CanvasRenderingContext2D;
 
-const createRect = (options: fabric.TOptions<fabric.RectProps>) =>
-	new fabric.Rect({
+const createRect = (options: fabric.TOptions<fabric.RectProps>) => {
+	const { left = 0, top = 0, ...rectOptions } = options;
+	const rect = new fabric.Rect({
 		height: 100,
+		left: 0,
 		strokeWidth: 0,
+		top: 0,
 		width: 100,
-		...options,
+		...rectOptions,
 	});
+	rect.setPositionByOrigin(new fabric.Point(left, top), 'left', 'top');
+	return rect;
+};
 
 const createGuidelineFixture = (
 	objects: fabric.FabricObject[],
@@ -52,7 +58,7 @@ const createGuidelineFixture = (
 	return { canvas, context, guidelineHandler };
 };
 
-describe('GuidelineHandler Fabric v6 coordinates', () => {
+describe('GuidelineHandler Fabric v7 center coordinates', () => {
 	it('aligns to the scene bounds of a scaled object at non-default zoom', () => {
 		const reference = createRect({
 			left: 100,
@@ -72,7 +78,7 @@ describe('GuidelineHandler Fabric v6 coordinates', () => {
 				x: 300,
 			}),
 		);
-		expect(target.left).toBe(200);
+		expect(target.getBoundingRect().left).toBe(200);
 	});
 
 	it('keeps the snap tolerance at four screen pixels when zoomed out', () => {
@@ -88,7 +94,7 @@ describe('GuidelineHandler Fabric v6 coordinates', () => {
 
 		guidelineHandler.movingGuidelines(target);
 
-		expect(target.left).toBe(100);
+		expect(target.getBoundingRect().left).toBe(100);
 		expect(guidelineHandler.verticalLines.length).toBeGreaterThan(0);
 	});
 
@@ -105,7 +111,7 @@ describe('GuidelineHandler Fabric v6 coordinates', () => {
 
 		guidelineHandler.movingGuidelines(target);
 
-		expect(target.left).toBe(103);
+		expect(target.getBoundingRect().left).toBe(103);
 		expect(guidelineHandler.verticalLines).toHaveLength(0);
 	});
 
@@ -168,15 +174,13 @@ describe('GuidelineHandler Fabric v6 coordinates', () => {
 		workarea.set({
 			scaleX: 2,
 		});
-		target.set({
-			left: 500,
-		});
+		target.setPositionByOrigin(new fabric.Point(350, 500), 'left', 'top');
 		guidelineHandler.movingGuidelines(target);
 
 		expect(setCoords).toHaveBeenCalledTimes(2);
 		expect(guidelineHandler.verticalLines).toContainEqual(
 			expect.objectContaining({
-				x: 600,
+				x: 450,
 			}),
 		);
 
@@ -204,14 +208,12 @@ describe('GuidelineHandler Fabric v6 coordinates', () => {
 		reference.set({
 			strokeUniform: true,
 		});
-		target.set({
-			left: 210,
-		});
+		target.setPositionByOrigin(new fabric.Point(215, 400), 'left', 'top');
 		guidelineHandler.movingGuidelines(target);
 
 		expect(guidelineHandler.verticalLines).toContainEqual(
 			expect.objectContaining({
-				x: 310,
+				x: 315,
 			}),
 		);
 	});
@@ -298,17 +300,13 @@ describe('GuidelineHandler Fabric v6 coordinates', () => {
 			left: 302,
 			top: 102,
 		});
-		const { guidelineHandler } = createGuidelineFixture([
-			horizontalReference,
-			verticalReference,
-			target,
-		]);
+		const { guidelineHandler } = createGuidelineFixture([horizontalReference, verticalReference, target]);
 
 		guidelineHandler.movingGuidelines(target);
 
 		expect(guidelineHandler.verticalLines.length).toBeGreaterThan(0);
 		expect(guidelineHandler.horizontalLines.length).toBeGreaterThan(0);
-		expect(target.left).toBe(300);
-		expect(target.top).toBe(100);
+		expect(target.getBoundingRect().left).toBe(300);
+		expect(target.getBoundingRect().top).toBe(100);
 	});
 });

@@ -267,8 +267,8 @@ describe('TransactionHandler', () => {
 
 		const firstLocalPosition = { left: first.left, top: first.top };
 		const secondLocalPosition = { left: second.left, top: second.top };
-		const firstCanvasPosition = first.getBoundingRect();
-		const secondCanvasPosition = second.getBoundingRect();
+		const firstCanvasPosition = first.getCenterPoint();
+		const secondCanvasPosition = second.getCenterPoint();
 		const canvasObjects = [first, second];
 		const canvas = {
 			getActiveObject: vi.fn(() => selection),
@@ -287,10 +287,10 @@ describe('TransactionHandler', () => {
 		transaction.save('moved');
 
 		const snapshot = (transaction as any).currentObjects;
-		expect(snapshot[0].left).toBeCloseTo(firstCanvasPosition.left);
-		expect(snapshot[0].top).toBeCloseTo(firstCanvasPosition.top);
-		expect(snapshot[1].left).toBeCloseTo(secondCanvasPosition.left);
-		expect(snapshot[1].top).toBeCloseTo(secondCanvasPosition.top);
+		expect(snapshot[0].left).toBeCloseTo(firstCanvasPosition.x);
+		expect(snapshot[0].top).toBeCloseTo(firstCanvasPosition.y);
+		expect(snapshot[1].left).toBeCloseTo(secondCanvasPosition.x);
+		expect(snapshot[1].top).toBeCloseTo(secondCanvasPosition.y);
 		expect({ left: first.left, top: first.top }).toEqual(firstLocalPosition);
 		expect({ left: second.left, top: second.top }).toEqual(secondLocalPosition);
 	});
@@ -610,5 +610,4 @@ describe('TransactionHandler', () => {
 		expect((transaction as any).currentObjects[0]).toMatchObject({ id: 'fallback-node' });
 		consoleError.mockRestore();
 	});
-
 });

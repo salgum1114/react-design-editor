@@ -15,6 +15,9 @@ export const canvasOption: CanvasOption = {
 	selection: true,
 	defaultCursor: 'default',
 	backgroundColor: '#f3f3f3',
+	fireMiddleClick: false,
+	fireRightClick: false,
+	stopContextMenu: false,
 };
 
 export const canvasActions: CanvasActions = {
