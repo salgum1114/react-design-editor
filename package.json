@@ -56,8 +56,6 @@
 	},
 	"homepage": "https://salgum1114.github.io/react-design-editor",
 	"peerDependencies": {
-		"animejs": "^3.0.0",
-		"fabric": "^6.9.1",
 		"react": ">=18 <20",
 		"react-dom": ">=18 <20"
 	},
