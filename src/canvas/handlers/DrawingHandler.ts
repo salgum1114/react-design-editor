@@ -38,7 +38,7 @@ class DrawingHandler {
 			const { scenePoint } = opt;
 			const { x, y } = scenePoint;
 			const circle = new fabric.Circle({
-				radius: 1,
+				radius: 2,
 				fill: '#ffffff',
 				stroke: '#333333',
 				strokeWidth: 0.5,
