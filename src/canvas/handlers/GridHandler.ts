@@ -126,9 +126,10 @@ class GridHandler extends AbstractHandler {
 		if (!enabled || !grid || !snapToGrid) {
 			return { left: target.left, top: target.top };
 		}
+		const topLeft = target.getPointByOrigin('left', 'top');
 		return {
-			left: Math.round(target.left / grid) * grid,
-			top: Math.round(target.top / grid) * grid,
+			left: target.left + Math.round(topLeft.x / grid) * grid - topLeft.x,
+			top: target.top + Math.round(topLeft.y / grid) * grid - topLeft.y,
 		};
 	};
 
