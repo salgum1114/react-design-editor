@@ -100,8 +100,10 @@ class Node extends fabric.Group {
 			height: 48,
 			rx: 10,
 			ry: 10,
-			left: 8,
-			top: 7,
+			left: 0,
+			top: 0,
+			originX: 'center',
+			originY: 'center',
 			strokeWidth: 0,
 		});
 		iconBox.set(
@@ -120,9 +122,15 @@ class Node extends fabric.Group {
 			fontWeight: 900,
 			fontSize: 24,
 			fill: '#fff',
+			left: 0,
+			top: 0,
+			originX: 'center',
+			originY: 'center',
 		});
-		icon.set({ left: iconBox.width / 2 - icon.width / 2 + 8, top: icon.height / 2 + 5 });
-		return new fabric.Group([iconBox, icon]);
+		return new fabric.Group([iconBox, icon], {
+			originX: 'center',
+			originY: 'center',
+		});
 	}
 
 	private static createErrorFlag() {
@@ -131,11 +139,19 @@ class Node extends fabric.Group {
 			fontWeight: 900,
 			fontSize: 12,
 			fill: '#fff',
-			left: 2,
-			top: 2,
+			left: 0,
+			top: 0,
+			originX: 'center',
+			originY: 'center',
 		});
 		const box = Node.createIconBoxPath({ width: 20, height: 20, fill: 'red', strokeWidth: 0 }, 12);
-		return new fabric.Group([box, icon], { left: 0, top: 0 });
+		icon.set({ left: box.width / 2, top: box.height / 2 });
+		return new fabric.Group([box, icon], {
+			left: 0,
+			top: 0,
+			originX: 'center',
+			originY: 'center',
+		});
 	}
 
 	private static createActionButton(options: any) {
@@ -158,9 +174,46 @@ class Node extends fabric.Group {
 			fontWeight: 900,
 			fontSize: 14,
 			fill: options.actionButtonIconColor || '#fff',
+			left: box.width / 2,
+			top: box.height / 2,
+			originX: 'center',
+			originY: 'center',
 		});
-		icon.set({ left: box.width / 2 - icon.width / 2, top: box.height / 2 - icon.height / 2 });
-		return new fabric.Group([box, icon], { hoverCursor: 'pointer' });
+		return new fabric.Group([box, icon], {
+			hoverCursor: 'pointer',
+			originX: 'center',
+			originY: 'center',
+		});
+	}
+
+	private static layoutContents(
+		rect: fabric.Rect,
+		nodeIcon: fabric.Group,
+		label: fabric.Text,
+		errorFlag: fabric.Group,
+		button?: fabric.Group,
+	) {
+		const rectLeft = rect.left - rect.width / 2;
+		const rectTop = rect.top - rect.height / 2;
+		nodeIcon.set({
+			left: rectLeft + 8 + nodeIcon.width / 2,
+			top: rectTop + 7 + nodeIcon.height / 2,
+		});
+		label.set({
+			left: nodeIcon.left + nodeIcon.width / 2 + 10 + label.width / 2,
+			top: rect.top,
+		});
+		errorFlag.set({
+			left: rectLeft + errorFlag.width / 2,
+			top: rectTop + errorFlag.height / 2,
+		});
+		if (button) {
+			button.set({
+				left: rect.left + rect.width / 2 - button.width / 2 + 1,
+				top: rect.top + 1,
+			});
+		}
+		[nodeIcon, label, errorFlag, button].forEach(object => object?.setCoords());
 	}
 
 	constructor(options: any = {}) {
@@ -203,6 +256,7 @@ class Node extends fabric.Group {
 		if (button) {
 			node.push(button);
 		}
+		Node.layoutContents(rect, nodeIcon, label, errorFlag, button);
 		const nextOptions = Object.assign({}, options, {
 			id: options.id || uuid(),
 			width: 240,
@@ -222,18 +276,7 @@ class Node extends fabric.Group {
 		this.nodeIcon = nodeIcon;
 		this.errorFlag = errorFlag;
 		this.button = button;
-		this.label.set({
-			left: this.nodeIcon.left + this.nodeIcon.width + 10,
-			top: this.nodeIcon.top + this.nodeIcon.height / 2 - this.label.height / 2,
-		});
 		this.setErrors(options.errors);
-		if (this.button) {
-			this.button.set({
-				left: this.rect.left + this.rect.width - this.button.width + 1,
-				top: this.rect.top + this.rect.height - this.button.height + 1,
-			});
-			this.button.setCoords();
-		}
 	}
 
 	defaultPortOption() {
@@ -368,8 +411,8 @@ class Node extends fabric.Group {
 		this.label.set({
 			fontSize: fitted.fontSize,
 			text: fitted.text,
-			top: this.height > 60 ? -fitted.height / 2 - 19 : -fitted.height / 2,
 		});
+		Node.layoutContents(this.rect, this.nodeIcon, this.label, this.errorFlag, this.button);
 	}
 
 	select() {
