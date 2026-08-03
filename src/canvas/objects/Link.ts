@@ -55,6 +55,17 @@ class Link extends fabric.Group {
 		}
 	}
 
+	private static getNodeBounds(node: Partial<NodeObject>) {
+		if (typeof node.getBoundingRect === 'function') {
+			const { left, width } = node.getBoundingRect();
+			return { left, width, centerX: left + width / 2 };
+		}
+		const width = node.width ?? 240;
+		const originOffset = node.originX === 'center' ? width / 2 : node.originX === 'right' ? width : 0;
+		const left = (node.left ?? 0) - originOffset;
+		return { left, width, centerX: left + width / 2 };
+	}
+
 	private static calculateGeometry(
 		fromNode: Partial<NodeObject>,
 		fromPort: Partial<PortObject>,
@@ -68,15 +79,13 @@ class Link extends fabric.Group {
 		const height = fromNode?.height || 60;
 		const curvedOffset = Math.floor(p1.x) === Math.floor(p2.x) ? 0 : 40;
 		const offset = 40;
-		const fromGroup = fromNode.group;
-		const toGroup = toNode.group;
-		const fromNodeLeft = fromNode.left + (fromGroup ? fromGroup.left + fromGroup.width / 2 : 0);
-		const toNodeLeft = toNode.left + (toGroup ? toGroup.left + toGroup.width / 2 : 0);
+		const fromBounds = Link.getNodeBounds(fromNode);
+		const toBounds = Link.getNodeBounds(toNode);
 		const x1 = p1.x;
 		const y1 = p1.y;
 		const x2 = x1;
 		const y2 = y1 + height / 2;
-		let x3 = x2 - (fromPort.left || 0) + fromNodeLeft - offset;
+		let x3 = x2 - (fromPort.left || 0) + fromBounds.left - offset;
 		const y3 = p2.y - height / 2;
 		const x4 = p2.x;
 		const y4 = p2.y;
@@ -106,12 +115,11 @@ class Link extends fabric.Group {
 					`L ${x4} ${y4}`,
 				].join(' ');
 			} else {
-				const nodeCenterGap =
-					fromNodeLeft + (fromNode?.width || 0) / 2 - (toNodeLeft + (toNode?.width || 0) / 2);
+				const nodeCenterGap = fromBounds.centerX - toBounds.centerX;
 				const gap = isNaN(nodeCenterGap) ? x1 - x4 : nodeCenterGap;
 				const isNegativeShift = gap <= 0;
 				if (!isNegativeShift) {
-					x3 = fromNodeLeft + (fromNode.width || 0) + offset;
+					x3 = fromBounds.left + fromBounds.width + offset;
 				}
 				path = [
 					`M ${x1} ${y1}`,
