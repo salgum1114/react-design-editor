@@ -1008,7 +1008,7 @@ video {
   --rde-monaco-background: #FFFFFF;
   --rde-status-selected: #3D73D9;
   --rde-warning-ring: rgba(201, 135, 36, 0.12);
-  --rde-appbar-height: 54px;
+  --rde-appbar-height: 60px;
   --rde-commandbar-height: 44px;
   --rde-statusbar-height: 38px;
   --rde-rail-width: 58px;
@@ -1154,6 +1154,21 @@ body {
 .rde-appbar-actions {
   align-items: center;
   gap: 3px;
+}
+
+.rde-appbar-ad {
+  width: 600px;
+  min-width: 600px;
+  height: 60px;
+  flex: 0 0 600px;
+  margin-right: 12px;
+  overflow: hidden;
+}
+
+.rde-appbar-ad .adsbygoogle {
+  display: inline-block;
+  width: 600px;
+  height: 60px;
 }
 
 .rde-theme-switch.ant-segmented {
@@ -2983,6 +2998,10 @@ body {
 
   .rde-appbar-brand {
     min-width: 180px;
+  }
+
+  .rde-appbar-ad {
+    display: none;
   }
 
   .rde-operator-editor .rde-editor-items {

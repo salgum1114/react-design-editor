@@ -240,3 +240,18 @@ describe('canvas-backed modal preview containment', () => {
 		);
 	});
 });
+
+describe('header AdSense placement', () => {
+	it('reserves a 60px desktop app bar and hides the fixed ad at 1024px', () => {
+		expect(stylesheet).toMatch(/:root\s*\{[^}]*--rde-appbar-height:\s*60px;/s);
+		expect(stylesheet).toMatch(
+			/\.rde-appbar-ad\s*\{[^}]*width:\s*600px;[^}]*min-width:\s*600px;[^}]*height:\s*60px;[^}]*flex:\s*0 0 600px;/s,
+		);
+		expect(stylesheet).toMatch(
+			/@media \(max-width:\s*1024px\)[\s\S]*?\.rde-appbar-ad\s*\{[^}]*display:\s*none;/s,
+		);
+		expect(stylesheet).toMatch(
+			/@media \(max-width:\s*760px\)[\s\S]*?--rde-appbar-height:\s*50px;/s,
+		);
+	});
+});
