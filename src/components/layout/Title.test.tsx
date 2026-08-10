@@ -22,4 +22,13 @@ describe('Title', () => {
 		expect(html).toContain('rde-theme-switch');
 		expect(html).not.toContain('ant-menu-dark');
 	});
+
+	it('places the AdSense banner immediately before the app-bar toolbar', () => {
+		const html = renderToStaticMarkup(<Title currentEditor="workflow" onChangeEditor={() => undefined} />);
+		const adIndex = html.indexOf('rde-appbar-ad');
+		const toolbarIndex = html.indexOf('rde-theme-switch');
+
+		expect(adIndex).toBeGreaterThan(-1);
+		expect(toolbarIndex).toBeGreaterThan(adIndex);
+	});
 });

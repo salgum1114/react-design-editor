@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { AdsenseLoader } from './components/layout/AdsenseBanner';
 import Title from './components/layout/Title';
 import FlowContainer from './containers/FlowContainer';
 import { ImageMapEditor, WorkflowEditor } from './editors';
@@ -60,6 +61,7 @@ class App extends React.Component<any, IState> {
                         `}
 							</script>
 						</Helmet>
+						<AdsenseLoader />
 						<div className="rde-title">
 							<Title onChangeEditor={this.handleChangeEditor} currentEditor={activeEditor} />
 						</div>

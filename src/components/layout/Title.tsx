@@ -5,6 +5,7 @@ import { EditorThemeContext, type EditorTheme } from '../../theme';
 import { Flex } from '../flex';
 import { ShortcutHelp } from '../help';
 import Icon from '../icon/Icon';
+import AdsenseBanner from './AdsenseBanner';
 
 interface IProps {
 	onChangeEditor: NonNullable<React.ComponentProps<typeof Menu>['onClick']>;
@@ -53,6 +54,7 @@ class Title extends React.Component<IProps> {
 					/>
 				</Flex>
 				<Flex className="rde-appbar-actions" flex="1" justifyContent="flex-end">
+					<AdsenseBanner />
 					<Segmented
 						aria-label="Editor theme"
 						className="rde-theme-switch"
