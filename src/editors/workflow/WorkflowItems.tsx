@@ -250,7 +250,7 @@ class WorkflowItems extends React.Component<IProps, IState> {
 			if (e.stopPropagation) {
 				e.stopPropagation();
 			}
-			const point = this.props.instance.canvas.getScenePoint(e);
+			const point = this.props.instance.canvas.getViewportPoint(e);
 			const option = Object.assign({}, this.item, { left: point.x, top: point.y });
 			this.handlers.addItem(option, false);
 			return false;

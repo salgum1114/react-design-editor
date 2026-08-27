@@ -191,7 +191,7 @@ describe('workflow canvas theme', () => {
 			connectedFill: nodeColor,
 			fill: nodeColor,
 			originFill: '#8A99A6',
-			stroke: nodeColor,
+			stroke: '#8A99A6',
 		});
 		expect(link).toMatchObject({ originStroke: '#8A99A6', stroke: '#8A99A6' });
 
@@ -207,7 +207,7 @@ describe('workflow canvas theme', () => {
 			connectedFill: nodeColor,
 			fill: nodeColor,
 			originFill: '#5F646B',
-			stroke: nodeColor,
+			stroke: '#5F646B',
 		});
 	});
 });

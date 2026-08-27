@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { defaults } from '../constants';
 import ElementHandler from './ElementHandler';
 import EventHandler from './EventHandler';
+import PortHandler from './PortHandler';
 
 const createTarget = (left = 20, top = 30) => {
 	const target = new fabric.Rect({
@@ -524,6 +525,36 @@ describe('EventHandler element overlay synchronization', () => {
 		const center = element.getCenterPoint();
 		expect(Number.parseFloat(overlay.style.left) + element.width / 2).toBeCloseTo(center.x + 24, 5);
 		expect(Number.parseFloat(overlay.style.top) + element.height / 2).toBeCloseTo(center.y + 24, 5);
+	});
+});
+
+describe('EventHandler workflow port synchronization', () => {
+	it('updates ports while moving nodes in an active selection', () => {
+		const { eventHandler, handler } = createEventFixture(false);
+		const node = new fabric.Rect({
+			height: 60,
+			left: 100,
+			strokeWidth: 0,
+			top: 80,
+			width: 120,
+		}) as any;
+		node.superType = 'node';
+		node.toPort = {
+			links: [],
+			setPosition: vi.fn(),
+		};
+		const selection = new fabric.ActiveSelection([node, createTarget(360, 240)]);
+		selection.set({ left: selection.left + 75, top: selection.top + 35 });
+		selection.setCoords();
+		(handler as any).portHandler = new PortHandler(handler as any);
+
+		expect(() =>
+			eventHandler.moving({
+				e: { shiftKey: false } as MouseEvent,
+				target: selection,
+			} as any),
+		).not.toThrow();
+		expect(node.toPort.setPosition).toHaveBeenCalledOnce();
 	});
 });
 

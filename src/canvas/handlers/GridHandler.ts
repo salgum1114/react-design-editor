@@ -148,9 +148,7 @@ class GridHandler extends AbstractHandler {
 				activeSelection.setCoords();
 				activeSelection.getObjects().forEach((obj: any) => {
 					if (obj.superType === 'node') {
-						const left = target.left + obj.left + target.width / 2;
-						const top = target.top + obj.top + target.height / 2;
-						this.handler.portHandler.setCoords({ ...obj, left, top });
+						this.handler.portHandler.setCoords(obj);
 					}
 				});
 				return;

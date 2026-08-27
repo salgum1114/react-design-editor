@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('mediaelement', () => ({}));
 
-import Handler from './Handler';
+import Handler, { viewportPointToScene } from './Handler';
 import { resolveFabricObjectType } from './resolveFabricObjectType';
 
 describe('Handler object factory resolution', () => {
@@ -21,6 +21,15 @@ describe('Handler object factory resolution', () => {
 		);
 
 		expect(objectType).toBe('TimerNode');
+	});
+});
+
+describe('Handler object positioning', () => {
+	it('converts viewport pointer coordinates to centered scene coordinates', () => {
+		const point = viewportPointToScene({ x: 520, y: 400 }, 2, [2, 0, 0, 2, -300, -120]);
+
+		expect(point.x).toBe(410);
+		expect(point.y).toBe(260);
 	});
 });
 

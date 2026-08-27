@@ -249,9 +249,7 @@ class EventHandler extends AbstractHandler {
 			const activeSelection = target as fabric.ActiveSelection;
 			activeSelection.getObjects().forEach((obj: any) => {
 				if (obj.superType === 'node') {
-					const left = obj.left + target.left + target.width / 2;
-					const top = obj.top + target.top + target.height / 2;
-					this.handler.portHandler.setCoords({ ...obj, left, top });
+					this.handler.portHandler.setCoords(obj);
 				} else if (obj.superType === 'element') {
 					const { id } = obj;
 					const el = this.handler.elementHandler.findById(id);

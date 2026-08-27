@@ -51,6 +51,15 @@ import WorkareaHandler from './WorkareaHandler';
 import ZoomHandler from './ZoomHandler';
 import { resolveFabricObjectType } from './resolveFabricObjectType';
 
+export const viewportPointToScene = (
+	point: { x: number; y: number },
+	zoom: number,
+	viewportTransform: number[],
+) => ({
+	x: (point.x - viewportTransform[4]) / zoom,
+	y: (point.y - viewportTransform[5]) / zoom,
+});
+
 export interface HandlerCallback {
 	/**
 	 * When has been added object in Canvas, Called function
@@ -824,19 +833,18 @@ class Handler implements HandlerOptions {
 	public centerObject = (obj: FabricObject, centered?: boolean) => {
 		if (centered) {
 			this.canvas.centerObject(obj);
-			obj.setCoords();
 		} else {
+			const point = viewportPointToScene(
+				{ x: obj.left, y: obj.top },
+				this.canvas.getZoom(),
+				this.canvas.viewportTransform,
+			);
 			this.setByPartial(obj, {
-				left:
-					obj.left / this.canvas.getZoom() -
-					obj.width / 2 -
-					this.canvas.viewportTransform[4] / this.canvas.getZoom(),
-				top:
-					obj.top / this.canvas.getZoom() -
-					obj.height / 2 -
-					this.canvas.viewportTransform[5] / this.canvas.getZoom(),
+				left: point.x,
+				top: point.y,
 			});
 		}
+		obj.setCoords();
 	};
 
 	/**

@@ -154,6 +154,12 @@ class SwitchNode extends LogicNode {
 		return new SwitchNode(options);
 	}
 
+	toObject(propertiesToInclude: any[] = []) {
+		const options = super.toObject(propertiesToInclude);
+		options.top = this.rect.getCenterPoint().y;
+		return options;
+	}
+
 	static fromObject(options: any, _abortable?: any) {
 		return resolveFromObject(new SwitchNode(options)) as Promise<any>;
 	}

@@ -159,7 +159,7 @@ const applyPortTheme = (
 		connectedFill,
 		fill: currentFill,
 		originFill: portFill,
-		stroke: currentFill,
+		stroke: portFill,
 	});
 };
 
