@@ -4,6 +4,8 @@ import { fitTextToRect, registerFabricClass, resolveFromObject } from '../../../
 import { FromPort, PortObject } from '../../../../canvas/objects';
 import LogicNode from './LogicNode';
 
+const getPortShift = (options: any) => Math.max(0, ((options.configuration?.routes?.length ?? 0) * 80 - 240) / 2);
+
 class SwitchNode extends LogicNode {
 	static type = 'SwitchNode';
 
@@ -15,13 +17,10 @@ class SwitchNode extends LogicNode {
 
 	constructor(options: any = {}) {
 		const nextOptions = { ...options };
-		const routeLength = nextOptions.configuration?.routes?.length ?? 0;
 		if (nextOptions.__baseLeft == null) {
 			nextOptions.__baseLeft = nextOptions.left ?? 0;
 		}
-		const nodeWidth = 240;
-		const portsWidth = routeLength * 80;
-		const shift = Math.max(0, (portsWidth - nodeWidth) / 2);
+		const shift = getPortShift(nextOptions);
 		super({
 			...nextOptions,
 			left: nextOptions.__baseLeft + shift,
@@ -150,7 +149,7 @@ class SwitchNode extends LogicNode {
 		const options = this.toObject();
 		options.id = uuid();
 		options.name = `${options.name}_clone`;
-		options.__baseLeft = options.left ?? 0;
+		options.__baseLeft = (options.left ?? 0) - getPortShift(options);
 		return new SwitchNode(options);
 	}
 
@@ -161,7 +160,7 @@ class SwitchNode extends LogicNode {
 	}
 
 	static fromObject(options: any, _abortable?: any) {
-		return resolveFromObject(new SwitchNode(options)) as Promise<any>;
+		return resolveFromObject(new SwitchNode({ ...options, __baseLeft: (options.left ?? 0) - getPortShift(options) })) as Promise<any>;
 	}
 }
 

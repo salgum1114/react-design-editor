@@ -59,7 +59,7 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 
 	React.useEffect(() => {
 		let timeoutId: number | undefined;
-		let attachedCanvas: CanvasInstance | null | undefined;
+		let attachedElement: HTMLElement | undefined;
 
 		const onDragOver = (event: DragEvent) => {
 			if (event.preventDefault) {
@@ -144,7 +144,7 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 
 		const attach = () => {
 			if (canvasRef?.canvas?.wrapperEl) {
-				attachedCanvas = canvasRef;
+				attachedElement = canvasRef.canvas.wrapperEl;
 				canvasRef.canvas.wrapperEl.addEventListener('dragenter', onDragEnter, false);
 				canvasRef.canvas.wrapperEl.addEventListener('dragover', onDragOver, false);
 				canvasRef.canvas.wrapperEl.addEventListener('dragleave', onDragLeave, false);
@@ -160,11 +160,11 @@ const ImageMapItems = React.forwardRef<ImageMapItemsHandle, ImageMapItemsProps>(
 			if (timeoutId) {
 				window.clearTimeout(timeoutId);
 			}
-			if (attachedCanvas?.canvas?.wrapperEl) {
-				attachedCanvas.canvas.wrapperEl.removeEventListener('dragenter', onDragEnter);
-				attachedCanvas.canvas.wrapperEl.removeEventListener('dragover', onDragOver);
-				attachedCanvas.canvas.wrapperEl.removeEventListener('dragleave', onDragLeave);
-				attachedCanvas.canvas.wrapperEl.removeEventListener('drop', onDrop);
+			if (attachedElement) {
+				attachedElement.removeEventListener('dragenter', onDragEnter);
+				attachedElement.removeEventListener('dragover', onDragOver);
+				attachedElement.removeEventListener('dragleave', onDragLeave);
+				attachedElement.removeEventListener('drop', onDrop);
 			}
 		};
 	}, [canvasRef]);

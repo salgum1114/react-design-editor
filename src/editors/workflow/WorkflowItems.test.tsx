@@ -18,6 +18,18 @@ vi.mock('../../components/flex', () => ({ Flex: (): null => null }));
 vi.mock('../../components/icon/Icon', () => ({ default: (): null => null }));
 
 describe('WorkflowItems drag and drop', () => {
+	it('detaches listeners after the canvas has been disposed', async () => {
+		const { default: WorkflowItems } = await import('./WorkflowItems');
+		const wrapper = { addEventListener: vi.fn(), removeEventListener: vi.fn() };
+		const instance: any = { canvas: { wrapperEl: wrapper } };
+		const component = new WorkflowItems({ instance, descriptors: {} } as any);
+		component.attachEventListener(instance);
+		instance.canvas.wrapperEl = undefined;
+
+		expect(() => component.componentWillUnmount()).not.toThrow();
+		expect(wrapper.removeEventListener).toHaveBeenCalledWith('drop', component.events.onDrop);
+	});
+
 	it('passes viewport pointer coordinates to the handler positioning boundary', async () => {
 		Object.defineProperty(document, 'queryCommandSupported', {
 			configurable: true,

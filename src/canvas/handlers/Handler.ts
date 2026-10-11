@@ -1192,6 +1192,9 @@ class Handler implements HandlerOptions {
 			}
 			this.canvas.setActiveObject(clonedObj);
 			this.portHandler.create(clonedObj as NodeObject);
+			if (!this.transactionHandler.active) {
+				this.transactionHandler.save('duplicate');
+			}
 			this.canvas.requestRenderAll();
 		});
 	};
@@ -1229,6 +1232,9 @@ class Handler implements HandlerOptions {
 				}
 				this.canvas.setActiveObject(cloned);
 				this.portHandler.create(cloned as NodeObject);
+				if (!this.transactionHandler.active) {
+					this.transactionHandler.save('duplicate');
+				}
 				this.canvas.requestRenderAll();
 			});
 		}
@@ -2144,6 +2150,7 @@ class Handler implements HandlerOptions {
 		this.contextmenuHandler.destroy();
 		this.tooltipHandler.destroy();
 		this.clear(true);
+		void this.canvas.dispose();
 	};
 
 	/**
@@ -2183,6 +2190,9 @@ class Handler implements HandlerOptions {
 	 */
 	public setCanvasActions = (canvasActions: CanvasActions) => {
 		this.canvasActions = Object.assign({}, this.canvasActions, canvasActions);
+		if (this.shortcutHandler) {
+			this.shortcutHandler.canvasActions = this.canvasActions;
+		}
 	};
 
 	/**

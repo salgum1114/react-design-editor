@@ -30,6 +30,7 @@ export default function ImageMapFooterToolbar({
 			}, 5);
 			return () => window.clearTimeout(timeoutId);
 		}
+		const wrapper = canvasRef.canvas.wrapperEl;
 
 		const handleSelection = () => {
 			if (canvasRef.handler.interactionHandler.isDrawingMode()) {
@@ -48,7 +49,7 @@ export default function ImageMapFooterToolbar({
 		};
 
 		const handleKeydown = (event: KeyboardEvent) => {
-			if (canvasRef.canvas.wrapperEl !== document.activeElement) {
+			if (wrapper !== document.activeElement) {
 				return;
 			}
 
@@ -59,10 +60,10 @@ export default function ImageMapFooterToolbar({
 			}
 		};
 
-		canvasRef.canvas.wrapperEl.addEventListener('keydown', handleKeydown, false);
+		wrapper.addEventListener('keydown', handleKeydown, false);
 
 		return () => {
-			canvasRef.canvas.wrapperEl.removeEventListener('keydown', handleKeydown);
+			wrapper.removeEventListener('keydown', handleKeydown);
 		};
 	}, [canvasRef]);
 

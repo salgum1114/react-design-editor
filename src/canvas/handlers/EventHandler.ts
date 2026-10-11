@@ -176,6 +176,9 @@ class EventHandler extends AbstractHandler {
 	 * @returns
 	 */
 	public modified = (opt: FabricEvent) => {
+		if (this.handler.interactionMode === 'crop') {
+			return undefined;
+		}
 		const { target } = opt;
 		if (!target) {
 			return undefined;
@@ -833,27 +836,37 @@ class EventHandler extends AbstractHandler {
 		if (activeObject.id === 'workarea') {
 			return false;
 		}
+		const horizontal = e.code === code.ARROW_LEFT || e.code === code.ARROW_RIGHT;
+		const vertical = e.code === code.ARROW_UP || e.code === code.ARROW_DOWN;
+		const targets = this.handler.isActiveSelection(activeObject)
+			? [activeObject, ...(activeObject as fabric.ActiveSelection).getObjects()]
+			: [activeObject];
+		if (targets.some(target => (horizontal && target.lockMovementX) || (vertical && target.lockMovementY))) {
+			return false;
+		}
 		if (e.code === code.ARROW_UP) {
 			activeObject.set('top', activeObject.top - 2);
-			activeObject.setCoords();
-			this.canvas.renderAll();
-			return true;
 		} else if (e.code === code.ARROW_DOWN) {
 			activeObject.set('top', activeObject.top + 2);
-			activeObject.setCoords();
-			this.canvas.renderAll();
-			return true;
 		} else if (e.code === code.ARROW_LEFT) {
 			activeObject.set('left', activeObject.left - 2);
-			activeObject.setCoords();
-			this.canvas.renderAll();
-			return true;
 		} else if (e.code === code.ARROW_RIGHT) {
 			activeObject.set('left', activeObject.left + 2);
+		} else {
+			return false;
+		}
+		if (this.handler.interactionMode === 'crop') {
+			this.handler.cropHandler.moving({ target: activeObject } as FabricEvent);
 			activeObject.setCoords();
 			this.canvas.renderAll();
 			return true;
 		}
+		activeObject.setCoords();
+		this.syncMovingTarget(activeObject);
+		if (!this.handler.transactionHandler.active) {
+			this.handler.transactionHandler.save('moved');
+		}
+		this.canvas.renderAll();
 		if (this.handler.onModified) {
 			this.handler.onModified(activeObject);
 		}
@@ -1393,12 +1406,17 @@ class EventHandler extends AbstractHandler {
 		if (this.canvas.wrapperEl !== document.activeElement) {
 			return;
 		}
+		if (this.handler.cropHandler.isFinishing) {
+			e.preventDefault();
+			return;
+		}
 		if (editable) {
 			if (this.handler.shortcutHandler.isQ(e)) {
 				this.code = e.code;
 			} else if (this.handler.shortcutHandler.isDelete(e)) {
 				this.handler.remove();
 			} else if (this.handler.shortcutHandler.isArrow(e)) {
+				e.preventDefault();
 				this.arrowmoving(e);
 			} else if (this.handler.shortcutHandler.isCtrlA(e)) {
 				e.preventDefault();
@@ -1442,7 +1460,7 @@ class EventHandler extends AbstractHandler {
 	 * @param {KeyboardEvent} _e
 	 */
 	public keyup = (e: KeyboardEvent) => {
-		if (this.handler.interactionHandler.isDrawingMode()) {
+		if (this.handler.interactionMode === 'crop' || this.handler.interactionHandler.isDrawingMode()) {
 			return;
 		}
 		this.updateDragDuplicateMode(e);

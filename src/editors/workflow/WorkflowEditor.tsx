@@ -93,6 +93,9 @@ class WorkflowEditor extends React.Component {
 			this.setState({ zoomRatio: zoom });
 		},
 		onAdd: (target: FabricObject & Record<string, any>) => {
+			if (!this.state.editing) {
+				this.changeEditing(true);
+			}
 			if (this.canvasRef?.handler.isActiveSelection(target)) {
 				this.canvasHandlers.onSelect(null);
 				return;
@@ -156,20 +159,35 @@ class WorkflowEditor extends React.Component {
 			if (files?.length) {
 				this.showLoading();
 				const reader = new FileReader();
-				reader.onload = (e: ProgressEvent<FileReader>) => {
+				reader.onload = async (e: ProgressEvent<FileReader>) => {
 					try {
 						const result = JSON.parse(String(e.target?.result || '{}')) as any;
-						this.setState({ workflow: result });
-						this.canvasRef.handler.clear();
+						if (!result || !Array.isArray(result.nodes) || !Array.isArray(result.links) || !result.properties) {
+							throw new Error('Invalid workflow file');
+						}
+						const { viewportTransform } = result.properties;
+						if (viewportTransform && (!Array.isArray(viewportTransform) || viewportTransform.length !== 6 ||
+							!viewportTransform.every((value: unknown) => typeof value === 'number' && Number.isFinite(value)))) {
+							throw new Error('Invalid workflow viewport');
+						}
 						const nodes = (result.nodes || []).map((node: any) => {
-							return {
+							if (!node || typeof node.nodeClazz !== 'string' || !node.id ||
+								!this.canvasRef.handler.fabricObjects?.[getNode(node.nodeClazz)]) {
+								throw new Error('Invalid workflow node');
+							}
+							const prepared = this.canvasRef.handler.fabricObjects[getNode(node.nodeClazz)].create({
 								...node,
-								type: getNode(node.nodeClazz),
 								left: node.properties ? node.properties.left : 0,
 								top: node.properties ? node.properties.top : 0,
-							};
+							});
+							return prepared.toObject(this.canvasRef.handler.propertiesToInclude);
 						});
 						const links = (result.links || []).map((link: any) => {
+							if (!link || typeof link.fromPort !== 'string' ||
+								!nodes.some((node: any) => node.id === link.fromNode) ||
+								!nodes.some((node: any) => node.id === link.toNode)) {
+								throw new Error('Invalid workflow connection');
+							}
 							return {
 								fromNodeId: link.fromNode,
 								fromPortId: link.fromPort,
@@ -181,16 +199,22 @@ class WorkflowEditor extends React.Component {
 							};
 						});
 						const objects = nodes.concat(links) as any[];
-						const { viewportTransform } = result.properties;
+						// Replay restores the previous canvas if node, port or link construction fails.
+						await this.canvasRef.handler.transactionHandler.replay({ type: 'add', json: JSON.stringify(objects) }, false);
+						this.canvasRef.handler.getObjects().forEach(object => {
+							if (object.superType === 'node') {
+								this.canvasRef.handler.gridHandler.setCoords(object);
+							}
+						});
+						this.canvasRef.handler.transactionHandler.setDefaultObjects();
 						if (viewportTransform) {
 							this.canvasRef.canvas.setViewportTransform(viewportTransform);
 						}
-						this.canvasRef.handler.importJSON(objects, () => {
-							this.hideLoading();
-							this.canvasRef.canvas.setZoom(this.state.zoomRatio);
-						});
+						this.setState({ workflow: result, editing: false, selectedItem: null });
+						this.hideLoading();
+						this.canvasRef.canvas.setZoom(this.state.zoomRatio);
 					} catch (error: any) {
-						console.error(error);
+						message.error(error?.message || 'Failed to import workflow');
 						this.hideLoading();
 					}
 				};

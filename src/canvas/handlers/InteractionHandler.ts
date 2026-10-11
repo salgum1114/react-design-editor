@@ -28,7 +28,7 @@ class InteractionHandler {
 	 * @param {(obj: FabricObject) => IReturnType} [callback]
 	 */
 	public selection = (callback?: (obj: FabricObject) => IReturnType) => {
-		if (this.handler.interactionMode === 'selection') {
+		if (this.handler.cropHandler?.isFinishing || this.handler.interactionMode === 'selection') {
 			return;
 		}
 		this.handler.interactionMode = 'selection';
@@ -66,7 +66,7 @@ class InteractionHandler {
 	 * @param {(obj: FabricObject) => IReturnType} [callback]
 	 */
 	public grab = (callback?: (obj: FabricObject) => IReturnType) => {
-		if (this.handler.interactionMode === 'grab') {
+		if (this.handler.cropHandler?.isFinishing || this.handler.interactionMode === 'grab') {
 			return;
 		}
 		this.handler.interactionMode = 'grab';
@@ -90,7 +90,7 @@ class InteractionHandler {
 	 * @param {(obj: FabricObject) => IReturnType} [callback]
 	 */
 	public drawing = (type?: InteractionMode, callback?: (obj: FabricObject) => IReturnType) => {
-		if (this.isDrawingMode()) {
+		if (this.handler.cropHandler?.isFinishing || this.isDrawingMode()) {
 			return;
 		}
 		this.handler.interactionMode = type;
@@ -109,7 +109,7 @@ class InteractionHandler {
 	};
 
 	public linking = (callback?: (obj: FabricObject) => IReturnType) => {
-		if (this.isDrawingMode()) {
+		if (this.handler.cropHandler?.isFinishing || this.isDrawingMode()) {
 			return;
 		}
 		this.handler.interactionMode = 'link';

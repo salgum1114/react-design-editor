@@ -1,9 +1,51 @@
+// @vitest-environment jsdom
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('mediaelement', () => ({}));
 
+import * as fabric from 'fabric';
+import TransactionHandler from './TransactionHandler';
 import Handler, { viewportPointToScene } from './Handler';
 import { resolveFabricObjectType } from './resolveFabricObjectType';
+import ShortcutHandler from './ShortcutHandler';
+
+describe('Handler lifecycle and action updates', () => {
+	const createHandler = () => {
+		const initialize = vi.spyOn(Handler.prototype, 'initialize').mockImplementation(() => {});
+		const handler = new Handler({});
+		initialize.mockRestore();
+		return handler;
+	};
+
+	it('applies changed action permissions to existing keyboard shortcuts', () => {
+		const handler = createHandler();
+		const shortcut = new ShortcutHandler(handler);
+		handler.shortcutHandler = shortcut;
+		handler.setCanvasActions({ del: false, transaction: false });
+
+		expect(shortcut.isDelete({ code: 'Delete' } as KeyboardEvent)).toBe(false);
+		expect(shortcut.isCtrlZ({ code: 'KeyZ', ctrlKey: true } as KeyboardEvent)).toBe(false);
+		handler.setCanvasActions({ del: true, transaction: true });
+		expect(shortcut.isDelete({ code: 'Delete' } as KeyboardEvent)).toBe(true);
+		expect(shortcut.isCtrlZ({ code: 'KeyZ', ctrlKey: true } as KeyboardEvent)).toBe(true);
+	});
+
+	it('disposes the Fabric canvas after detaching editor handlers', () => {
+		const handler = createHandler();
+		const dispose = vi.fn().mockResolvedValue(true);
+		handler.canvas = { dispose } as any;
+		const cleanup = vi.fn();
+		for (const key of ['rulerHandler', 'eventHandler', 'guidelineHandler', 'spacingGuidelineHandler', 'contextmenuHandler', 'tooltipHandler'] as const) {
+			handler[key] = { destroy: cleanup } as any;
+		}
+		handler.clear = vi.fn();
+
+		handler.destroy();
+
+		expect(dispose).toHaveBeenCalledOnce();
+		expect(dispose.mock.invocationCallOrder[0]).toBeGreaterThan(cleanup.mock.invocationCallOrder[0]);
+	});
+});
 
 describe('Handler object factory resolution', () => {
 	it('uses nodeClazz when a serialized workflow node has a base Fabric type', () => {
@@ -330,5 +372,35 @@ describe('Handler batch updates', () => {
 			type: 'curvedLink',
 		});
 		expect(duplicated).toEqual([sourceClone, destinationClone]);
+	});
+});
+
+
+describe('Handler duplicate history', () => {
+	it.each(['duplicate', 'duplicateById'] as const)('undoes only the clone created by %s', async method => {
+		const initialize = vi.spyOn(Handler.prototype, 'initialize').mockImplementation(() => {});
+		const handler = new Handler({});
+		initialize.mockRestore();
+		const canvas = new fabric.Canvas(document.createElement('canvas'));
+		handler.canvas = canvas as any;
+		handler.propertiesToInclude = ['id'];
+		handler.portHandler = { create: vi.fn(), setCoords: vi.fn() } as any;
+		handler.bindObjectEvents = vi.fn();
+		handler.clear = () => { canvas.remove(...canvas.getObjects()); };
+		const original = new fabric.Rect({ width: 40, height: 40 }) as any;
+		original.id = 'original';
+		canvas.add(original);
+		canvas.setActiveObject(original);
+		handler.objects = [original];
+		handler.transactionHandler = new TransactionHandler(handler);
+		handler.transactionHandler.setDefaultObjects();
+		if (method === 'duplicate') handler.duplicate();
+		else handler.duplicateById('original');
+		await vi.waitFor(() => expect(canvas.getObjects()).toHaveLength(2));
+		await handler.transactionHandler.undo();
+		expect(canvas.getObjects().map((object: any) => object.id)).toEqual(['original']);
+		await handler.transactionHandler.redo();
+		expect(canvas.getObjects()).toHaveLength(2);
+		await canvas.dispose();
 	});
 });

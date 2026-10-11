@@ -128,6 +128,8 @@ class TransactionHandler extends AbstractHandler {
 
 		const normalized = this.sortObjects(this.normalizeObjects(this.compactWorkflowRelations(objects)));
 
+		this.latestNodeSticky.clear();
+
 		// Seed sticky fields from initial state
 		this.captureLatestStickyFromSnapshot(normalized);
 
@@ -444,7 +446,7 @@ class TransactionHandler extends AbstractHandler {
 	 *
 	 * @param {TransactionEvent} transaction
 	 */
-	public replay = async (transaction: TransactionEvent) => {
+	public replay = async (transaction: TransactionEvent, preserveStickyFields = true) => {
 		const fallbackObjects = this.cloneDeep(this.currentObjects);
 		const activeObjectIds = this.getSelectionIds(
 			this.handler.canvas.getActiveObject() as FabricObject | undefined,
@@ -467,7 +469,9 @@ class TransactionHandler extends AbstractHandler {
 			}
 
 			// Enforce sticky fields (configuration/name/description) before enlivening
-			this.applyLatestStickyToSnapshot(normalized);
+			if (preserveStickyFields) {
+				this.applyLatestStickyToSnapshot(normalized);
+			}
 
 			await this.restoreSnapshot(normalized, selectedObjectIds, () => {
 				canvasMutated = true;

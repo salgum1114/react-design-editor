@@ -48,6 +48,8 @@ class WorkflowItems extends React.Component<IProps, IState> {
 	private item: WorkflowDescriptor | null = null;
 	private intersectedLink?: LinkObject & Record<string, any>;
 	private links: Array<LinkObject & Record<string, any>> = [];
+	private canvasElement?: HTMLElement;
+	private canvasRenderTimer?: ReturnType<typeof setTimeout>;
 
 	componentDidMount() {
 		const { instance } = this.props;
@@ -81,6 +83,7 @@ class WorkflowItems extends React.Component<IProps, IState> {
 	}
 
 	componentWillUnmount() {
+		clearTimeout(this.canvasRenderTimer);
 		const { instance } = this.props;
 		this.detachEventListener(instance);
 	}
@@ -262,7 +265,7 @@ class WorkflowItems extends React.Component<IProps, IState> {
 	};
 
 	waitForCanvasRender = (canvas?: CanvasInstance) => {
-		setTimeout(() => {
+		this.canvasRenderTimer = setTimeout(() => {
 			if (canvas) {
 				this.attachEventListener(canvas);
 				return;
@@ -273,17 +276,20 @@ class WorkflowItems extends React.Component<IProps, IState> {
 	};
 
 	attachEventListener = (canvasRef: CanvasInstance) => {
-		canvasRef.canvas.wrapperEl.addEventListener('dragenter', this.events.onDragEnter, false);
-		canvasRef.canvas.wrapperEl.addEventListener('dragover', this.events.onDragOver, false);
-		canvasRef.canvas.wrapperEl.addEventListener('dragleave', this.events.onDragLeave, false);
-		canvasRef.canvas.wrapperEl.addEventListener('drop', this.events.onDrop, false);
+		this.canvasElement = canvasRef.canvas.wrapperEl;
+		this.canvasElement.addEventListener('dragenter', this.events.onDragEnter, false);
+		this.canvasElement.addEventListener('dragover', this.events.onDragOver, false);
+		this.canvasElement.addEventListener('dragleave', this.events.onDragLeave, false);
+		this.canvasElement.addEventListener('drop', this.events.onDrop, false);
 	};
 
 	detachEventListener = (canvasRef: CanvasInstance) => {
-		canvasRef.canvas.wrapperEl.removeEventListener('dragenter', this.events.onDragEnter);
-		canvasRef.canvas.wrapperEl.removeEventListener('dragover', this.events.onDragOver);
-		canvasRef.canvas.wrapperEl.removeEventListener('dragleave', this.events.onDragLeave);
-		canvasRef.canvas.wrapperEl.removeEventListener('drop', this.events.onDrop);
+		const element = this.canvasElement ?? canvasRef?.canvas?.wrapperEl;
+		element?.removeEventListener('dragenter', this.events.onDragEnter);
+		element?.removeEventListener('dragover', this.events.onDragOver);
+		element?.removeEventListener('dragleave', this.events.onDragLeave);
+		element?.removeEventListener('drop', this.events.onDrop);
+		this.canvasElement = undefined;
 	};
 
 	renderItems = (items: WorkflowDescriptor[]) => (

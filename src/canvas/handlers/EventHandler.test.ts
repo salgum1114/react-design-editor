@@ -5,6 +5,7 @@ import { defaults } from '../constants';
 import ElementHandler from './ElementHandler';
 import EventHandler from './EventHandler';
 import PortHandler from './PortHandler';
+import ShortcutHandler from './ShortcutHandler';
 
 const createTarget = (left = 20, top = 30) => {
 	const target = new fabric.Rect({
@@ -529,6 +530,111 @@ describe('EventHandler element overlay synchronization', () => {
 });
 
 describe('EventHandler workflow port synchronization', () => {
+	it.each(['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'])('respects movement locks for %s', key => {
+		const { eventHandler, handler, canvas } = createEventFixture();
+		const target = createTarget();
+		target.set({ lockMovementX: true, lockMovementY: true });
+		canvas.getActiveObject.mockReturnValue(target);
+		expect(eventHandler.arrowmoving({ code: key } as KeyboardEvent)).toBe(false);
+		expect([target.left, target.top]).toEqual([20, 30]);
+		expect(handler.transactionHandler.save).not.toHaveBeenCalled();
+		expect(handler.onModified).not.toHaveBeenCalled();
+	});
+
+	it.each(['selection', 'child'])('respects locks on the %s during selection nudges', lockedTarget => {
+		const { eventHandler, handler, canvas } = createEventFixture();
+		const child = createTarget();
+		const selection = new fabric.ActiveSelection([child]);
+		(lockedTarget === 'selection' ? selection : child).lockMovementX = true;
+		canvas.getActiveObject.mockReturnValue(selection);
+		const originalLeft = selection.left;
+		expect(eventHandler.arrowmoving({ code: 'ArrowRight' } as KeyboardEvent)).toBe(false);
+		expect(selection.left).toBe(originalLeft);
+		expect(handler.transactionHandler.save).not.toHaveBeenCalled();
+	});
+
+	it('allows vertical nudges when only horizontal movement is locked', () => {
+		const { eventHandler, canvas } = createEventFixture();
+		const target = createTarget();
+		target.lockMovementX = true;
+		canvas.getActiveObject.mockReturnValue(target);
+		eventHandler.arrowmoving({ code: 'ArrowDown' } as KeyboardEvent);
+		expect([target.left, target.top]).toEqual([20, 32]);
+	});
+
+	it('blocks keyboard mutations while a crop bitmap is loading', () => {
+		const { eventHandler, handler, canvas } = createEventFixture();
+		(handler.cropHandler as any).isFinishing = true;
+		(handler.canvasActions as any).transaction = true;
+		handler.shortcutHandler = new ShortcutHandler(handler as any) as any;
+		const undo = vi.fn();
+		(handler.transactionHandler as any).undo = undo;
+		vi.stubGlobal('document', { activeElement: canvas.wrapperEl });
+		const event = { code: 'KeyZ', ctrlKey: true, preventDefault: vi.fn() } as any;
+		eventHandler.keydown(event);
+		expect(event.preventDefault).toHaveBeenCalled();
+		expect(undo).not.toHaveBeenCalled();
+	});
+
+	it('keeps keyboard crop adjustments within bounds and out of canvas history', () => {
+		const { eventHandler, handler, canvas } = createEventFixture();
+		const target = createTarget();
+		handler.interactionMode = 'crop';
+		canvas.getActiveObject.mockReturnValue(target);
+		eventHandler.arrowmoving({ code: 'ArrowRight' } as KeyboardEvent);
+		expect(target.left).toBe(22);
+		expect(handler.cropHandler.moving).toHaveBeenCalledWith({ target });
+		expect(handler.transactionHandler.save).not.toHaveBeenCalled();
+		expect(handler.onModified).not.toHaveBeenCalled();
+	});
+
+	it('preserves crop mode when releasing an arrow key', () => {
+		const { eventHandler, handler } = createEventFixture();
+		handler.interactionMode = 'crop';
+		handler.shortcutHandler = new ShortcutHandler(handler as any) as any;
+		eventHandler.keyup({ code: 'ArrowRight' } as KeyboardEvent);
+		expect(handler.interactionHandler.selection).not.toHaveBeenCalled();
+	});
+
+	it('keeps temporary crop adjustments out of canvas history', () => {
+		const { eventHandler, handler } = createEventFixture();
+		handler.interactionMode = 'crop';
+		eventHandler.modified({ target: createTarget(), action: 'scale' } as any);
+		expect(handler.transactionHandler.save).not.toHaveBeenCalled();
+		expect(handler.onModified).not.toHaveBeenCalled();
+	});
+
+	it('keeps ports and links attached when nudging a node with an arrow key', () => {
+		const { eventHandler, handler, canvas } = createEventFixture();
+		const source = createWorkflowNode('source', 100, 100);
+		const destination = createWorkflowNode('destination', 300, 300);
+		const { fromPort, link } = connectWorkflowNodes(source, destination);
+		handler.portHandler = new PortHandler(handler as any) as any;
+		canvas.getActiveObject.mockReturnValue(source);
+
+		eventHandler.arrowmoving({ code: 'ArrowRight' } as KeyboardEvent);
+
+		expect(source.left).toBe(102);
+		expect(fromPort.left).toBe(102);
+		expect(link.update).toHaveBeenCalledWith(fromPort, destination.toPort);
+		expect(handler.transactionHandler.save).toHaveBeenCalledWith('moved');
+		expect(handler.onModified).toHaveBeenCalledWith(source);
+	});
+
+	it('synchronizes elements inside an active selection after keyboard movement', () => {
+		const { eventHandler, handler, canvas } = createEventFixture();
+		const element = createTarget();
+		element.superType = 'element';
+		element.id = 'element';
+		const selection = new fabric.ActiveSelection([element, createTarget(200, 200)]);
+		canvas.getActiveObject.mockReturnValue(selection);
+
+		eventHandler.arrowmoving({ code: 'ArrowDown' } as KeyboardEvent);
+
+		expect(handler.elementHandler.setPosition).toHaveBeenCalledWith(undefined, element);
+		expect(handler.onModified).toHaveBeenCalledWith(selection);
+	});
+
 	it('updates ports while moving nodes in an active selection', () => {
 		const { eventHandler, handler } = createEventFixture(false);
 		const node = new fabric.Rect({

@@ -7,6 +7,7 @@ class CropHandler {
 	handler: Handler;
 	cropRect: fabric.Rect;
 	cropObject: FabricImage;
+	isFinishing = false;
 
 	constructor(handler: Handler) {
 		this.handler = handler;
@@ -35,22 +36,25 @@ class CropHandler {
 	 *
 	 */
 	public start = () => {
+		if (this.isFinishing) {
+			return;
+		}
 		if (this.validType()) {
 			this.handler.interactionMode = 'crop';
 			this.cropObject = this.handler.canvas.getActiveObject() as FabricImage;
-			const { left, top } = this.cropObject;
+			const { left, top, width, height } = this.cropObject.getBoundingRect();
 			this.cropRect = new fabric.Rect({
-				width: this.cropObject.width,
-				height: this.cropObject.height,
-				scaleX: this.cropObject.scaleX,
-				scaleY: this.cropObject.scaleY,
+				width,
+				height,
+				strokeWidth: 0,
 				originX: 'left',
 				originY: 'top',
 				left,
 				top,
-				hasRotatingPoint: false,
+				excludeFromExport: true,
 				fill: 'rgba(0, 0, 0, 0.2)',
 			});
+			this.cropRect.setControlsVisibility({ mtr: false });
 			this.handler.canvas.add(this.cropRect);
 			this.handler.canvas.setActiveObject(this.cropRect);
 			this.cropObject.selectable = false;
@@ -63,16 +67,41 @@ class CropHandler {
 	 * Finish crop image
 	 *
 	 */
-	public finish = () => {
+	public finish = async () => {
+		if (this.isFinishing || !this.cropObject || !this.cropRect) {
+			return;
+		}
+		const image = this.cropObject;
+		const imageBounds = image.getBoundingRect();
 		const { left, top, width, height, scaleX, scaleY } = this.cropRect;
-		const croppedImg = this.cropObject.toDataURL({
-			left: left - this.cropObject.left,
-			top: top - this.cropObject.top,
+		const croppedImg = image.toDataURL({
+			left: left - imageBounds.left,
+			top: top - imageBounds.top,
 			width: width * scaleX,
 			height: height * scaleY,
 		});
-		this.handler.setImage(this.cropObject, croppedImg);
-		this.cancel();
+		this.isFinishing = true;
+		this.cropRect.set({ selectable: false, evented: false });
+		this.handler.canvas.discardActiveObject();
+		this.handler.canvas.renderAll();
+		try {
+			await this.handler.setImage(image, croppedImg);
+			if (this.handler.canvas.disposed || this.handler.canvas.destroyed) {
+				return;
+			}
+			// The exported bitmap already includes the image's displayed transform.
+			image.set({ scaleX: 1, scaleY: 1, angle: 0, skewX: 0, skewY: 0, flipX: false, flipY: false });
+			image.setPositionByOrigin(new fabric.Point(left, top), 'left', 'top');
+			image.setCoords();
+			this.isFinishing = false;
+			this.cancel();
+			if (!this.handler.transactionHandler.active) {
+				this.handler.transactionHandler.save('modified');
+			}
+			this.handler.onModified?.(image);
+		} finally {
+			this.isFinishing = false;
+		}
 	};
 
 	/**
@@ -80,6 +109,9 @@ class CropHandler {
 	 *
 	 */
 	public cancel = () => {
+		if (this.isFinishing || !this.cropObject || !this.cropRect) {
+			return;
+		}
 		this.handler.interactionMode = 'selection';
 		this.cropObject.selectable = true;
 		this.cropObject.evented = true;
@@ -106,9 +138,7 @@ class CropHandler {
 			top: cropTop,
 			width: cropWidth,
 			height: cropHeight,
-			scaleX: cropScaleX,
-			scaleY: cropScaleY,
-		} = this.cropObject;
+		} = this.cropObject.getBoundingRect();
 		if (corner === 'tl') {
 			if (Math.round(cropLeft) > Math.round(left)) {
 				// left
@@ -141,7 +171,7 @@ class CropHandler {
 					scaleX: diffRightRatio > 1 ? 1 : diffRightRatio,
 				});
 			}
-			if (Math.round(cropTop + cropHeight * cropScaleY) < Math.round(top + height * scaleY)) {
+			if (Math.round(cropTop + cropHeight) < Math.round(top + height * scaleY)) {
 				// bottom
 				const diffTopRatio = 1 - (original.top - cropTop) / cropHeight;
 				target.set({
@@ -150,7 +180,7 @@ class CropHandler {
 				});
 			}
 		} else if (corner === 'tr') {
-			if (Math.round(cropLeft + cropWidth * cropScaleX) < Math.round(left + width * scaleX)) {
+			if (Math.round(cropLeft + cropWidth) < Math.round(left + width * scaleX)) {
 				// right
 				const diffLeftRatio = 1 - (original.left - cropLeft) / cropWidth;
 				target.set({
@@ -169,7 +199,7 @@ class CropHandler {
 				});
 			}
 		} else if (corner === 'br') {
-			if (Math.round(cropLeft + cropWidth * cropScaleX) < Math.round(left + width * scaleX)) {
+			if (Math.round(cropLeft + cropWidth) < Math.round(left + width * scaleX)) {
 				// right
 				const diffLeftRatio = 1 - (original.left - cropLeft) / cropWidth;
 				target.set({
@@ -177,7 +207,7 @@ class CropHandler {
 					scaleX: diffLeftRatio > 1 ? 1 : diffLeftRatio,
 				});
 			}
-			if (Math.round(cropTop + cropHeight * cropScaleY) < Math.round(top + height * scaleY)) {
+			if (Math.round(cropTop + cropHeight) < Math.round(top + height * scaleY)) {
 				// bottom
 				const diffTopRatio = 1 - (original.top - cropTop) / cropHeight;
 				target.set({
@@ -208,7 +238,7 @@ class CropHandler {
 				});
 			}
 		} else if (corner === 'mb') {
-			if (Math.round(cropTop + cropHeight * cropScaleY) < Math.round(top + height * scaleY)) {
+			if (Math.round(cropTop + cropHeight) < Math.round(top + height * scaleY)) {
 				// bottom
 				const diffTopRatio = 1 - (original.top - cropTop) / cropHeight;
 				target.set({
@@ -217,7 +247,7 @@ class CropHandler {
 				});
 			}
 		} else if (corner === 'mr') {
-			if (Math.round(cropLeft + cropWidth * cropScaleX) < Math.round(left + width * scaleX)) {
+			if (Math.round(cropLeft + cropWidth) < Math.round(left + width * scaleX)) {
 				// right
 				const diffLeftRatio = 1 - (original.left - cropLeft) / cropWidth;
 				target.set({

@@ -18,6 +18,8 @@ interface IState {
 }
 
 class WorkflowToolbar extends Component<IProps, IState> {
+	private canvasElement?: HTMLElement;
+	private canvasRenderTimer?: ReturnType<typeof setTimeout>;
 	state: IState = {
 		interactionMode: 'selection',
 	};
@@ -28,6 +30,7 @@ class WorkflowToolbar extends Component<IProps, IState> {
 	}
 
 	componentWillUnmount() {
+		clearTimeout(this.canvasRenderTimer);
 		const { instance } = this.props;
 		this.detachEventListener(instance);
 	}
@@ -58,7 +61,7 @@ class WorkflowToolbar extends Component<IProps, IState> {
 	};
 
 	waitForCanvasRender = (canvas?: CanvasInstance) => {
-		setTimeout(() => {
+		this.canvasRenderTimer = setTimeout(() => {
 			if (canvas) {
 				this.attachEventListener(canvas);
 				return;
@@ -69,11 +72,14 @@ class WorkflowToolbar extends Component<IProps, IState> {
 	};
 
 	attachEventListener = (instance: CanvasInstance) => {
-		instance.canvas.wrapperEl.addEventListener('keydown', this.events.keydown, false);
+		this.canvasElement = instance.canvas.wrapperEl;
+		this.canvasElement.addEventListener('keydown', this.events.keydown, false);
 	};
 
 	detachEventListener = (instance: CanvasInstance) => {
-		instance.canvas.wrapperEl.removeEventListener('keydown', this.events.keydown);
+		const element = this.canvasElement ?? instance?.canvas?.wrapperEl;
+		element?.removeEventListener('keydown', this.events.keydown);
+		this.canvasElement = undefined;
 	};
 
 	render() {

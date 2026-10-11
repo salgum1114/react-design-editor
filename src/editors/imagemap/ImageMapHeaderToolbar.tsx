@@ -115,7 +115,9 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 				<CommonButton
 					className="rde-action-btn"
 					shape="circle"
-					disabled={canvasRef ? !canvasRef.handler?.cropHandler.cropRect : true}
+					disabled={
+						canvasRef ? !canvasRef.handler?.cropHandler.cropRect || canvasRef.handler?.cropHandler.isFinishing : true
+					}
 					onClick={() => canvasRef?.handler?.cropHandler.finish()}
 					icon="check"
 					tooltipTitle={i18next.t('action.crop-save')}
@@ -123,7 +125,9 @@ export default function ImageMapHeaderToolbar({ canvasRef, selectedItem }: Image
 				<CommonButton
 					className="rde-action-btn"
 					shape="circle"
-					disabled={canvasRef ? !canvasRef.handler?.cropHandler.cropRect : true}
+					disabled={
+						canvasRef ? !canvasRef.handler?.cropHandler.cropRect || canvasRef.handler?.cropHandler.isFinishing : true
+					}
 					onClick={() => canvasRef?.handler?.cropHandler.cancel()}
 					icon="times"
 					tooltipTitle={i18next.t('action.crop-cancel')}
