@@ -36,7 +36,8 @@ interface SpacingCandidate {
 	guide: SpacingGuide;
 }
 
-interface EqualSpacingSnap {
+interface SpacingSnap {
+	crossRange?: [number, number];
 	axis: SpacingAxis;
 	correction: number;
 	guides: SpacingGuide[];
@@ -107,15 +108,14 @@ class SpacingGuidelineHandler {
 			.filter((object: FabricObject) => this.isEligibleObject(object, target, selectionObjects))
 			.map((object: FabricObject) => this.getBounds(object));
 		let targetBounds = this.getBounds(target, true);
-		const equalSnaps = this.getEqualSpacingSnaps(
-			targetBounds,
-			referenceBounds,
-			constraints?.disabledSnapAxes,
-		);
-		if (equalSnaps.length) {
+		const disabledSnapAxes = new Set(constraints?.disabledSnapAxes);
+		if (target.lockMovementX) disabledSnapAxes.add('horizontal');
+		if (target.lockMovementY) disabledSnapAxes.add('vertical');
+		const snaps = this.getSpacingSnaps(targetBounds, referenceBounds, [...disabledSnapAxes]);
+		if (snaps.length) {
 			const center = target.getCenterPoint();
-			const horizontal = equalSnaps.find(snap => snap.axis === 'horizontal');
-			const vertical = equalSnaps.find(snap => snap.axis === 'vertical');
+			const horizontal = snaps.find(snap => snap.axis === 'horizontal');
+			const vertical = snaps.find(snap => snap.axis === 'vertical');
 			target.setPositionByOrigin(
 				new fabric.Point(
 					center.x + (horizontal?.correction ?? 0),
@@ -126,8 +126,8 @@ class SpacingGuidelineHandler {
 			);
 			targetBounds = this.getBounds(target, true);
 		}
-		const snappedAxes = new Set(equalSnaps.map(snap => snap.axis));
-		const equalGuides = equalSnaps.flatMap(snap =>
+		const snappedAxes = new Set(snaps.map(snap => snap.axis));
+		const snapGuides = snaps.flatMap(snap =>
 			snap.guides.map(guide => ({
 				...guide,
 				cross: guide.axis === 'horizontal' ? targetBounds.centerY : targetBounds.centerX,
@@ -139,7 +139,7 @@ class SpacingGuidelineHandler {
 				this.getCandidates(targetBounds, bounds, true),
 			);
 			this.guides = [
-				...equalGuides,
+				...snapGuides,
 				...candidates
 					.filter(candidate => !snappedAxes.has(candidate.guide.axis))
 					.map(candidate => candidate.guide),
@@ -172,7 +172,7 @@ class SpacingGuidelineHandler {
 				);
 		});
 		this.guides = [
-			...equalGuides,
+			...snapGuides,
 			...this.deduplicateGuides(distanceGuides),
 		];
 	};
@@ -300,7 +300,7 @@ class SpacingGuidelineHandler {
 		});
 	};
 
-	private getEqualSpacingSnaps = (
+	private getSpacingSnaps = (
 		target: ObjectBounds,
 		references: ObjectBounds[],
 		disabledSnapAxes: SpacingAxis[] = [],
@@ -309,17 +309,79 @@ class SpacingGuidelineHandler {
 			return [];
 		}
 		const disabledAxes = new Set(disabledSnapAxes);
-		return (['horizontal', 'vertical'] as SpacingAxis[])
+		const snaps = (['horizontal', 'vertical'] as SpacingAxis[])
 			.filter(axis => !disabledAxes.has(axis))
-			.map(axis => this.findEqualSpacingSnap(axis, target, references))
-			.filter((snap): snap is EqualSpacingSnap => Boolean(snap));
+			.map(axis => {
+				const contact = this.findContactSnap(axis, target, references);
+				const equal = this.findEqualSpacingSnap(axis, target, references);
+				return contact && (!equal || Math.abs(contact.correction) <= Math.abs(equal.correction))
+					? contact
+					: equal;
+			})
+			.filter((snap): snap is SpacingSnap => Boolean(snap));
+		const breaksContact = snaps.some(snap => {
+			if (!snap.crossRange) return false;
+			const correction = snaps.find(other => other.axis !== snap.axis)?.correction ?? 0;
+			const start = (snap.axis === 'horizontal' ? target.top : target.left) + correction;
+			const end = (snap.axis === 'horizontal' ? target.bottom : target.right) + correction;
+			return Math.min(end, snap.crossRange[1]) <= Math.max(start, snap.crossRange[0]);
+		});
+		// Keep the nearest snap if combining axes would separate touching edges.
+		return breaksContact ? [snaps.sort((a, b) => Math.abs(a.correction) - Math.abs(b.correction))[0]] : snaps;
+	};
+
+	private findContactSnap = (
+		axis: SpacingAxis,
+		target: ObjectBounds,
+		references: ObjectBounds[],
+	): SpacingSnap | undefined => {
+		const horizontal = axis === 'horizontal';
+		const targetStart = horizontal ? target.left : target.top;
+		const targetEnd = horizontal ? target.right : target.bottom;
+		const crossStart = horizontal ? target.top : target.left;
+		const crossEnd = horizontal ? target.bottom : target.right;
+		const snapMargin = this.getOption('snapMargin', 4) / this.getZoom();
+		let best: SpacingSnap | undefined;
+		for (const reference of references) {
+			const referenceCrossStart = horizontal ? reference.top : reference.left;
+			const referenceCrossEnd = horizontal ? reference.bottom : reference.right;
+			if (Math.min(crossEnd, referenceCrossEnd) <= Math.max(crossStart, referenceCrossStart)) {
+				continue;
+			}
+			const referenceStart = horizontal ? reference.left : reference.top;
+			const referenceEnd = horizontal ? reference.right : reference.bottom;
+			for (const [correction, position] of [
+				[referenceEnd - targetStart, referenceEnd],
+				[referenceStart - targetEnd, referenceStart],
+			]) {
+				if (Math.abs(correction) > snapMargin || (best && Math.abs(correction) >= Math.abs(best.correction))) {
+					continue;
+				}
+				best = {
+					crossRange: [referenceCrossStart, referenceCrossEnd],
+					axis,
+					correction,
+					guides: [
+						{
+							axis,
+							cross: horizontal ? target.centerY : target.centerX,
+							distance: 0,
+							start: position,
+							end: position,
+							kind: 'distance',
+						},
+					],
+				};
+			}
+		}
+		return best;
 	};
 
 	private findEqualSpacingSnap = (
 		axis: SpacingAxis,
 		target: ObjectBounds,
 		references: ObjectBounds[],
-	): EqualSpacingSnap | undefined => {
+	): SpacingSnap | undefined => {
 		const horizontal = axis === 'horizontal';
 		const targetStart = horizontal ? target.left : target.top;
 		const targetEnd = horizontal ? target.right : target.bottom;
@@ -338,7 +400,7 @@ class SpacingGuidelineHandler {
 					(horizontal ? first.left : first.top) - (horizontal ? second.left : second.top),
 			);
 		const snapMargin = this.getOption('snapMargin', 4) / this.getZoom();
-		let best: EqualSpacingSnap | undefined;
+		let best: SpacingSnap | undefined;
 
 		for (let index = 0; index < comparable.length - 1; index += 1) {
 			const first = comparable[index];

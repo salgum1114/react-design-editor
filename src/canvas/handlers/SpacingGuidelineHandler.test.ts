@@ -368,6 +368,140 @@ describe('SpacingGuidelineHandler equal spacing snap', () => {
 	});
 });
 
+describe('SpacingGuidelineHandler contact snap', () => {
+	it.each([
+		['right', 102, 20, 100, 20],
+		['left', -102, 20, -100, 20],
+		['bottom', 20, 102, 20, 100],
+		['top', 20, -102, 20, -100],
+		['right overlap', 98, 20, 100, 20],
+		['left overlap', -98, 20, -100, 20],
+		['bottom overlap', 20, 98, 20, 100],
+		['top overlap', 20, -98, 20, -100],
+	])('snaps %s to a zero gap', (_direction, x, y, expectedX, expectedY) => {
+		const reference = createRect(0, 0);
+		const target = createRect(x, y);
+		const { context, spacingGuidelineHandler } = createFixture([reference, target]);
+		spacingGuidelineHandler.movingGuidelines(target);
+		expect(target.getBoundingRect().left).toBe(expectedX);
+		expect(target.getBoundingRect().top).toBe(expectedY);
+		const contact = spacingGuidelineHandler.guides.find(guide => guide.distance === 0);
+		expect(contact).toBeDefined();
+		spacingGuidelineHandler.drawGuide(contact!);
+		expect(context.fillText).toHaveBeenCalledWith('0 px', expect.any(Number), expect.any(Number));
+	});
+
+	it.each([
+		[0.5, 106, 100],
+		[2, 103, 103],
+	])('uses screen-pixel tolerance at zoom %s', (zoom, x, expectedX) => {
+		const reference = createRect(0, 0);
+		const target = createRect(x, 20);
+		const { spacingGuidelineHandler } = createFixture([reference, target], zoom);
+		spacingGuidelineHandler.movingGuidelines(target);
+		expect(target.getBoundingRect().left).toBe(expectedX);
+	});
+
+	it('does not snap separated diagonal objects or deeply overlapping objects', () => {
+		for (const [x, y] of [
+			[102, 200],
+			[90, 20],
+		]) {
+			const reference = createRect(0, 0);
+			const target = createRect(x, y);
+			const { spacingGuidelineHandler } = createFixture([reference, target]);
+			spacingGuidelineHandler.movingGuidelines(target);
+			expect(target.getBoundingRect().left).toBe(x);
+			expect(target.getBoundingRect().top).toBe(y);
+		}
+	});
+
+	it.each([{ snap: false }, { enabled: false }])('respects disabled options %j', options => {
+		const reference = createRect(0, 0);
+		const target = createRect(102, 20);
+		const { spacingGuidelineHandler } = createFixture([reference, target], 1, [1, 0, 0, 1, 0, 0], options);
+		spacingGuidelineHandler.movingGuidelines(target);
+		expect(target.getBoundingRect().left).toBe(102);
+	});
+
+	it('respects axes reserved by alignment', () => {
+		const reference = createRect(0, 0);
+		const target = createRect(102, 20);
+		const { spacingGuidelineHandler } = createFixture([reference, target]);
+		spacingGuidelineHandler.movingGuidelines(target, undefined, { disabledSnapAxes: ['horizontal'] });
+		expect(target.getBoundingRect().left).toBe(102);
+	});
+
+	it('moves an active selection as one boundary and excludes its members', () => {
+		const reference = createRect(0, 0);
+		const first = createRect(102, 20);
+		const second = createRect(202, 20);
+		const selection = new fabric.ActiveSelection([first, second]);
+		const { spacingGuidelineHandler } = createFixture([reference, first, second]);
+		spacingGuidelineHandler.movingGuidelines(selection);
+		expect(selection.getBoundingRect().left).toBe(100);
+		expect(first.getBoundingRect().left).toBe(100);
+		expect(second.getBoundingRect().left).toBe(200);
+	});
+
+	it('selects the nearest contact when multiple objects are within tolerance', () => {
+		const first = createRect(0, 0);
+		const closer = createRect(3, 0);
+		const target = createRect(104, 20);
+		const { spacingGuidelineHandler } = createFixture([first, closer, target]);
+		spacingGuidelineHandler.movingGuidelines(target);
+		expect(target.getBoundingRect().left).toBe(103);
+	});
+	it.each(['lockMovementX', 'lockMovementY'] as const)('preserves %s while snapping the free axis', lock => {
+		const left = createRect(0, 101);
+		const above = createRect(101, 0);
+		const target = createRect(102, 102);
+		target.set(lock, true);
+		const { spacingGuidelineHandler } = createFixture([left, above, target]);
+		spacingGuidelineHandler.movingGuidelines(target);
+		expect(target.getBoundingRect().left).toBe(lock === 'lockMovementX' ? 102 : 100);
+		expect(target.getBoundingRect().top).toBe(lock === 'lockMovementY' ? 102 : 100);
+	});
+
+	it('retains the nearest contact when a second axis would break adjacency', () => {
+		const left = createRect(0, 0);
+		const below = createRect(103, 202);
+		const target = createRect(102, 99);
+		const { spacingGuidelineHandler } = createFixture([left, below, target]);
+		spacingGuidelineHandler.movingGuidelines(target);
+		expect(target.getBoundingRect().left).toBe(100);
+		expect(target.getBoundingRect().top).toBe(99);
+		expect(spacingGuidelineHandler.guides.filter(guide => guide.distance === 0)).toEqual([
+			expect.objectContaining({ axis: 'horizontal', start: 100, end: 100 }),
+		]);
+	});
+
+	it('snaps both axes when approaching two adjacent objects', () => {
+		const left = createRect(0, 101);
+		const above = createRect(101, 0);
+		const target = createRect(102, 102);
+		const { spacingGuidelineHandler } = createFixture([left, above, target]);
+		spacingGuidelineHandler.movingGuidelines(target);
+		expect(target.getBoundingRect().left).toBe(100);
+		expect(target.getBoundingRect().top).toBe(100);
+		expect(spacingGuidelineHandler.guides.filter(guide => guide.distance === 0)).toHaveLength(2);
+	});
+
+	it('honors a custom snap margin and excludes the workarea', () => {
+		const reference = createRect(0, 0);
+		const target = createRect(102, 20);
+		const { spacingGuidelineHandler } = createFixture([reference, target], 1, [1, 0, 0, 1, 0, 0], {
+			snapMargin: 1,
+		});
+		spacingGuidelineHandler.movingGuidelines(target);
+		expect(target.getBoundingRect().left).toBe(102);
+		(reference as any).id = 'workarea';
+		const fixture = createFixture([reference, target]);
+		fixture.spacingGuidelineHandler.movingGuidelines(target);
+		expect(target.getBoundingRect().left).toBe(102);
+	});
+});
+
 describe('SpacingGuidelineHandler lifecycle and rendering', () => {
 	it('enables proximity, equal-spacing snap, and Alt measurement by default', () => {
 		expect(defaults.guidelineOption.spacing).toEqual({
