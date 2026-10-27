@@ -447,7 +447,9 @@ class TransactionHandler extends AbstractHandler {
 	 * @param {TransactionEvent} transaction
 	 */
 	public replay = async (transaction: TransactionEvent, preserveStickyFields = true) => {
-		const fallbackObjects = this.cloneDeep(this.currentObjects);
+		// History is JSON-based; use the same representation for rollback so
+		// serializable Fabric properties with runtime methods can be restored.
+		const fallbackObjects = JSON.parse(JSON.stringify(this.currentObjects)) as FabricObject[];
 		const activeObjectIds = this.getSelectionIds(
 			this.handler.canvas.getActiveObject() as FabricObject | undefined,
 		);

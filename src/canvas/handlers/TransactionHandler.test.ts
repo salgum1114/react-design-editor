@@ -492,6 +492,22 @@ describe('TransactionHandler', () => {
 		expect(transaction.redos).toEqual([redo]);
 	});
 
+	it('replays JSON-serializable snapshots containing runtime functions', async () => {
+		const { handler, restoredObject } = createHandler();
+		const transaction = new TransactionHandler(handler);
+		transaction.setDefaultObjects([{
+			id: 'marker-1',
+			type: 'i-text',
+			custom: { toJSON: () => ({ value: 'saved' }) },
+		}] as any);
+		vi.mocked(fabric.util.enlivenObjects).mockResolvedValueOnce([restoredObject] as any);
+
+		await transaction.replay({ type: 'undo', json: JSON.stringify([{ id: 'marker-1', type: 'i-text' }]) });
+
+		expect(handler.onTransaction).toHaveBeenCalledOnce();
+		expect(handler.clear).toHaveBeenCalledOnce();
+	});
+
 	it('restores the undo stack when replay fails before mutating the canvas', async () => {
 		const { handler } = createHandler();
 		const transaction = new TransactionHandler(handler);
