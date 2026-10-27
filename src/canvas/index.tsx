@@ -1,3 +1,4 @@
+export * as fabric from 'fabric';
 export * from './Canvas';
 export { default as Canvas } from './Canvas';
 export { default as CanvasObject } from './CanvasObject';
