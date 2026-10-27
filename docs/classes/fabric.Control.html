@@ -1,0 +1,659 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Control | react-design-editor</title><meta name="description" content="Documentation for react-design-editor"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container"><a href="../index.html" class="title">react-design-editor</a>
+<div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/>
+<ul role="listbox" id="tsd-search-results"></ul>
+<div id="tsd-search-status" aria-live="polite" aria-atomic="true">
+<div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb" aria-label="Breadcrumb">
+<li><a href="../modules/fabric.html">fabric</a></li>
+<li><a href="" aria-current="page">Control</a></li></ul>
+<h1>Class Control</h1></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:6</li></ul></aside>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h5 class="tsd-index-heading uppercase">Index</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="constructors">Constructors<a href="#constructors" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#constructor" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Constructor"><use href="../assets/icons.svg#icon-512"></use></svg><span>constructor</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="properties">Properties<a href="#properties" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#actionhandler" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>action<wbr/>Handler</span></a>
+<a href="#actionname" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>action<wbr/>Name</span></a>
+<a href="#angle" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>angle</span></a>
+<a href="#cursorstyle" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>cursor<wbr/>Style</span></a>
+<a href="#mousedownhandler" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>mouse<wbr/>Down<wbr/>Handler?</span></a>
+<a href="#mouseuphandler" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>mouse<wbr/>Up<wbr/>Handler?</span></a>
+<a href="#offsetx" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>offset<wbr/>X</span></a>
+<a href="#offsety" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>offset<wbr/>Y</span></a>
+<a href="#sizex" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>size<wbr/>X</span></a>
+<a href="#sizey" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>size<wbr/>Y</span></a>
+<a href="#touchsizex" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>touch<wbr/>Size<wbr/>X</span></a>
+<a href="#touchsizey" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>touch<wbr/>Size<wbr/>Y</span></a>
+<a href="#transformanchorpoint" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>Anchor<wbr/>Point?</span></a>
+<a href="#visible" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>visible</span></a>
+<a href="#withconnection" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>with<wbr/>Connection</span></a>
+<a href="#x" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>x</span></a>
+<a href="#y" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>y</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading tsd-anchor-link" id="methods">Methods<a href="#methods" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-index-list"><a href="#calccornercoords" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>calc<wbr/>Corner<wbr/>Coords</span></a>
+<a href="#commonrenderprops" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>common<wbr/>Render<wbr/>Props</span></a>
+<a href="#cursorstylehandler" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>cursor<wbr/>Style<wbr/>Handler</span></a>
+<a href="#getactionhandler" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Action<wbr/>Handler</span></a>
+<a href="#getactionname" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Action<wbr/>Name</span></a>
+<a href="#getmousedownhandler" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Mouse<wbr/>Down<wbr/>Handler</span></a>
+<a href="#getmouseuphandler" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Mouse<wbr/>Up<wbr/>Handler</span></a>
+<a href="#gettransformanchorpoint" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Transform<wbr/>Anchor<wbr/>Point</span></a>
+<a href="#getvisibility" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Visibility</span></a>
+<a href="#positionhandler" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>position<wbr/>Handler</span></a>
+<a href="#render" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>render</span></a>
+<a href="#setvisibility" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Visibility</span></a>
+<a href="#shouldactivate" class="tsd-index-link tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>should<wbr/>Activate</span></a>
+</div></section></div></details></section></section>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="constructors-1">Constructors<a href="#constructors-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="constructor"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="constructorcontrol"><span class="tsd-signature-keyword">new</span> <span class="tsd-kind-constructor-signature">Control</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">options</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type tsd-kind-class">Control</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">Control</a><a href="#constructorcontrol" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type tsd-kind-class">Control</a><span class="tsd-signature-symbol">&gt;</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">Control</a></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:118</li></ul></aside></div></li></ul></section></section></details>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="actionhandler"><span>action<wbr/>Handler</span><a href="#actionhandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">actionHandler</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TransformActionHandler.html" class="tsd-signature-type tsd-kind-type-alias">TransformActionHandler</a></div>
+<div class="tsd-comment tsd-typography"><p>The control actionHandler, provide one to handle action ( control being moved )</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-eventdata">Param: eventData<a href="#param-eventdata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>the native mouse event</p>
+</div>
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-transformdata">Param: transformData<a href="#param-transformdata" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>properties of the current transform</p>
+</div>
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-x">Param: x<a href="#param-x" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>x position of the cursor</p>
+</div>
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-y">Param: y<a href="#param-y" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>y position of the cursor</p>
+</div>
+<div class="tsd-tag-returns">
+<h4 class="tsd-anchor-link" id="returns">Returns<a href="#returns" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>true if the action/event modified the object</p>
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:131</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="actionname"><span>action<wbr/>Name</span><a href="#actionname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">actionName</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>Name of the action that the control will likely execute.
+This is optional. FabricJS uses to identify what the user is doing for some
+extra optimizations. If you are writing a custom control and you want to know
+somewhere else in the code what is going on, you can use this string here.
+you can also provide a custom getActionName if your control run multiple actions
+depending on some external state.
+default to scale since is the most common, used on 4 corners by default</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default">Default<a href="#default" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-2">&#39;scale&#39;</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:27</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="angle"><span>angle</span><a href="#angle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">angle</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>Drawing angle of the control.
+NOT used for now, but name marked as needed for internal logic
+example: to reuse the same drawing function for different rotated controls</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-1">Default<a href="#default-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-8">0</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:35</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="cursorstyle"><span>cursor<wbr/>Style</span><a href="#cursorstyle" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">cursorStyle</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+<div class="tsd-comment tsd-typography"><p>Css cursor style to display when the control is hovered.
+if the method <code>cursorStyleHandler</code> is provided, this property is ignored.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-2">Default<a href="#default-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-2">&#39;crosshair&#39;</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:106</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="mousedownhandler"><code class="tsd-tag">Optional</code><span>mouse<wbr/>Down<wbr/>Handler</span><a href="#mousedownhandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">mouseDownHandler</span><span class="tsd-signature-symbol">?:</span> <a href="../types/fabric.ControlActionHandler.html" class="tsd-signature-type tsd-kind-type-alias">ControlActionHandler</a></div>
+<div class="tsd-comment tsd-typography"><p>The control handler for mouse down, provide one to handle mouse down on control</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-eventdata-1">Param: eventData<a href="#param-eventdata-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>the native mouse event</p>
+</div>
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-transformdata-1">Param: transformData<a href="#param-transformdata-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>properties of the current transform</p>
+</div>
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-x-1">Param: x<a href="#param-x-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>x position of the cursor</p>
+</div>
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-y-1">Param: y<a href="#param-y-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>y position of the cursor</p>
+</div>
+<div class="tsd-tag-returns">
+<h4 class="tsd-anchor-link" id="returns-1">Returns<a href="#returns-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>true if the action/event modified the object</p>
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:140</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="mouseuphandler"><code class="tsd-tag">Optional</code><span>mouse<wbr/>Up<wbr/>Handler</span><a href="#mouseuphandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">mouseUpHandler</span><span class="tsd-signature-symbol">?:</span> <a href="../types/fabric.ControlActionHandler.html" class="tsd-signature-type tsd-kind-type-alias">ControlActionHandler</a></div>
+<div class="tsd-comment tsd-typography"><p>The control mouseUpHandler, provide one to handle an effect on mouse up.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-eventdata-2">Param: eventData<a href="#param-eventdata-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>the native mouse event</p>
+</div>
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-transformdata-2">Param: transformData<a href="#param-transformdata-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>properties of the current transform</p>
+</div>
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-x-2">Param: x<a href="#param-x-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>x position of the cursor</p>
+</div>
+<div class="tsd-tag-param">
+<h4 class="tsd-anchor-link" id="param-y-2">Param: y<a href="#param-y-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>y position of the cursor</p>
+</div>
+<div class="tsd-tag-returns">
+<h4 class="tsd-anchor-link" id="returns-2">Returns<a href="#returns-2" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>true if the action/event modified the object</p>
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:149</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="offsetx"><span>offset<wbr/>X</span><a href="#offsetx" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">offsetX</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>Horizontal offset of the control from the defined position. In pixels
+Positive offset moves the control to the right, negative to the left.
+It used when you want to have position of control that does not scale with
+the bounding box. Example: rotation control is placed at x:0, y: 0.5 on
+the boundind box, with an offset of 30 pixels vertically. Those 30 pixels will
+stay 30 pixels no matter how the object is big. Another example is having 2
+controls in the corner, that stay in the same position when the object scale.
+of the bounding box.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-3">Default<a href="#default-3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-8">0</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:64</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="offsety"><span>offset<wbr/>Y</span><a href="#offsety" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">offsetY</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>Vertical offset of the control from the defined position. In pixels
+Positive offset moves the control to the bottom, negative to the top.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-4">Default<a href="#default-4" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-8">0</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:71</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="sizex"><span>size<wbr/>X</span><a href="#sizex" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">sizeX</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>Sets the length of the control. If null, defaults to object's cornerSize.
+Expects both sizeX and sizeY to be set when set.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-5">Default<a href="#default-5" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">null</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:78</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="sizey"><span>size<wbr/>Y</span><a href="#sizey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">sizeY</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>Sets the height of the control. If null, defaults to object's cornerSize.
+Expects both sizeX and sizeY to be set when set.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-6">Default<a href="#default-6" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">null</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:85</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="touchsizex"><span>touch<wbr/>Size<wbr/>X</span><a href="#touchsizex" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">touchSizeX</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>Sets the length of the touch area of the control. If null, defaults to object's touchCornerSize.
+Expects both touchSizeX and touchSizeY to be set when set.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-7">Default<a href="#default-7" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">null</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:92</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="touchsizey"><span>touch<wbr/>Size<wbr/>Y</span><a href="#touchsizey" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">touchSizeY</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>Sets the height of the touch area of the control. If null, defaults to object's touchCornerSize.
+Expects both touchSizeX and touchSizeY to be set when set.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-8">Default<a href="#default-8" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">null</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:99</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="transformanchorpoint"><code class="tsd-tag">Optional</code><span>transform<wbr/>Anchor<wbr/>Point</span><a href="#transformanchorpoint" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">transformAnchorPoint</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">x</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TOriginX.html" class="tsd-signature-type tsd-kind-type-alias">TOriginX</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">y</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TOriginY.html" class="tsd-signature-type tsd-kind-type-alias">TOriginY</a> <span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:114</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="visible"><span>visible</span><a href="#visible" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">visible</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>keep track of control visibility.
+mainly for backward compatibility.
+if you do not want to see a control, you can remove it
+from the control set.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-9">Default<a href="#default-9" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">true</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:15</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="withconnection"><span>with<wbr/>Connection</span><a href="#withconnection" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">withConnection</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+<div class="tsd-comment tsd-typography"><p>If controls has an offsetY or offsetX, draw a line that connects
+the control to the bounding box</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-10">Default<a href="#default-10" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-4">false</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:113</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="x"><span>x</span><a href="#x" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">x</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>Relative position of the control. X
+0,0 is the center of the Object, while -0.5 (left) or 0.5 (right) are the extremities
+of the bounding box.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-11">Default<a href="#default-11" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-8">0</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:43</li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="y"><span>y</span><a href="#y" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">y</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+<div class="tsd-comment tsd-typography"><p>Relative position of the control. Y
+0,0 is the center of the Object, while -0.5 (top) or 0.5 (bottom) are the extremities
+of the bounding box.</p>
+</div>
+<div class="tsd-comment tsd-typography">
+<div class="tsd-tag-default">
+<h4 class="tsd-anchor-link" id="default-12">Default<a href="#default-12" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><pre><code class="ts"><span class="hl-8">0</span>
+</code><button type="button">Copy</button></pre>
+
+</div></div><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:51</li></ul></aside></section></section></details>
+<details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
+<section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="calccornercoords"><span>calc<wbr/>Corner<wbr/>Coords</span><a href="#calccornercoords" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="calccornercoords-1"><span class="tsd-kind-call-signature">calcCornerCoords</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">angle</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TDegree.html" class="tsd-signature-type tsd-kind-type-alias">TDegree</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">objectCornerSize</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">centerX</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">centerY</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">isTouch</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">bl</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">br</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">tl</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">tr</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a> <span class="tsd-signature-symbol">}</span><a href="#calccornercoords-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Returns the coords for this control based on object values.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">angle</span>: <a href="../types/fabric.TDegree.html" class="tsd-signature-type tsd-kind-type-alias">TDegree</a></span></li>
+<li><span><span class="tsd-kind-parameter">objectCornerSize</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>cornerSize from the fabric object holding the control (or touchCornerSize if
+isTouch is true)</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">centerX</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>x coordinate where the control center should be</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">centerY</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>y coordinate where the control center should be</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">isTouch</span>: <span class="tsd-signature-type">boolean</span></span>
+<div class="tsd-comment tsd-typography"><p>true if touch corner, false if normal corner</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">bl</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">br</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">tl</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">tr</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a> <span class="tsd-signature-symbol">}</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:217</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="commonrenderprops"><span>common<wbr/>Render<wbr/>Props</span><a href="#commonrenderprops" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="commonrenderprops-1"><span class="tsd-kind-call-signature">commonRenderProps</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">ctx</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CanvasRenderingContext2D</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">left</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">top</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">styleOverride</span><span class="tsd-signature-symbol">?:</span> <a href="../types/fabric.ControlRenderingStyleOverride.html" class="tsd-signature-type tsd-kind-type-alias">ControlRenderingStyleOverride</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">opName</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;fill&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;stroke&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">stroke</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">transparentCorners</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">xSize</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">ySize</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span><a href="#commonrenderprops-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>This is an helper method to prepare the canvas to render a control
+It detectes common control properties and sets the correct fill and
+stroke styles on the context. It does not execute translations or
+rotations since different controls need differnt combination of these.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">ctx</span>: <span class="tsd-signature-type">CanvasRenderingContext2D</span></span></li>
+<li><span><span class="tsd-kind-parameter">left</span>: <span class="tsd-signature-type">number</span></span></li>
+<li><span><span class="tsd-kind-parameter">top</span>: <span class="tsd-signature-type">number</span></span></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">styleOverride</span>: <a href="../types/fabric.ControlRenderingStyleOverride.html" class="tsd-signature-type tsd-kind-type-alias">ControlRenderingStyleOverride</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{</span><br/>    <span class="tsd-kind-property">opName</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;fill&quot;</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;stroke&quot;</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">stroke</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">transparentCorners</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">xSize</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/>    <span class="tsd-kind-property">ySize</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:229</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="cursorstylehandler"><span>cursor<wbr/>Style<wbr/>Handler</span><a href="#cursorstylehandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="cursorstylehandler-1"><span class="tsd-kind-call-signature">cursorStyleHandler</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">eventData</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">control</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">Control</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">coord</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">TOCoord</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><a href="#cursorstylehandler-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Returns control cursorStyle for css using cursorStyle. If you need a more elaborate
+function you can pass one in the constructor
+the cursorStyle property</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">eventData</span>: <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a></span>
+<div class="tsd-comment tsd-typography"><p>the native mouse event</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">control</span>: <a href="" class="tsd-signature-type tsd-kind-class">Control</a></span>
+<div class="tsd-comment tsd-typography"><p>the current control ( likely this)</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span></li>
+<li><span><span class="tsd-kind-parameter">coord</span>: <span class="tsd-signature-type">TOCoord</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:185</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="getactionhandler"><span>get<wbr/>Action<wbr/>Handler</span><a href="#getactionhandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="getactionhandler-1"><span class="tsd-kind-call-signature">getActionHandler</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">eventData</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">control</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">Control</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TransformActionHandler.html" class="tsd-signature-type tsd-kind-type-alias">TransformActionHandler</a><a href="#getactionhandler-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Returns control actionHandler</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">eventData</span>: <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a></span>
+<div class="tsd-comment tsd-typography"><p>the native mouse event</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span>
+<div class="tsd-comment tsd-typography"><p>on which the control is displayed</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">control</span>: <a href="" class="tsd-signature-type tsd-kind-class">Control</a></span>
+<div class="tsd-comment tsd-typography"><p>control for which the action handler is being asked</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="../types/fabric.TransformActionHandler.html" class="tsd-signature-type tsd-kind-type-alias">TransformActionHandler</a></h4><p>the action handler</p>
+<aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:158</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="getactionname"><span>get<wbr/>Action<wbr/>Name</span><a href="#getactionname" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="getactionname-1"><span class="tsd-kind-call-signature">getActionName</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">eventData</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">control</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">Control</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><a href="#getactionname-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Returns the action name. The basic implementation just return the actionName property.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">eventData</span>: <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a></span>
+<div class="tsd-comment tsd-typography"><p>the native mouse event</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">control</span>: <a href="" class="tsd-signature-type tsd-kind-class">Control</a></span>
+<div class="tsd-comment tsd-typography"><p>the current control ( likely this)</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:193</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="getmousedownhandler"><span>get<wbr/>Mouse<wbr/>Down<wbr/>Handler</span><a href="#getmousedownhandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="getmousedownhandler-1"><span class="tsd-kind-call-signature">getMouseDownHandler</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">eventData</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">control</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">Control</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.ControlActionHandler.html" class="tsd-signature-type tsd-kind-type-alias">ControlActionHandler</a><a href="#getmousedownhandler-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Returns control mouseDown handler</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">eventData</span>: <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a></span>
+<div class="tsd-comment tsd-typography"><p>the native mouse event</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span>
+<div class="tsd-comment tsd-typography"><p>on which the control is displayed</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">control</span>: <a href="" class="tsd-signature-type tsd-kind-class">Control</a></span>
+<div class="tsd-comment tsd-typography"><p>control for which the action handler is being asked</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="../types/fabric.ControlActionHandler.html" class="tsd-signature-type tsd-kind-type-alias">ControlActionHandler</a></h4><p>the action handler</p>
+<aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:166</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="getmouseuphandler"><span>get<wbr/>Mouse<wbr/>Up<wbr/>Handler</span><a href="#getmouseuphandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="getmouseuphandler-1"><span class="tsd-kind-call-signature">getMouseUpHandler</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">eventData</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">control</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">Control</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.ControlActionHandler.html" class="tsd-signature-type tsd-kind-type-alias">ControlActionHandler</a><a href="#getmouseuphandler-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Returns control mouseUp handler.
+During actions the fabricObject or the control can be of different obj</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">eventData</span>: <a href="../types/fabric.TPointerEvent.html" class="tsd-signature-type tsd-kind-type-alias">TPointerEvent</a></span>
+<div class="tsd-comment tsd-typography"><p>the native mouse event</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span>
+<div class="tsd-comment tsd-typography"><p>on which the control is displayed</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">control</span>: <a href="" class="tsd-signature-type tsd-kind-class">Control</a></span>
+<div class="tsd-comment tsd-typography"><p>control for which the action handler is being asked</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="../types/fabric.ControlActionHandler.html" class="tsd-signature-type tsd-kind-type-alias">ControlActionHandler</a></h4><p>the action handler</p>
+<aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:175</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="gettransformanchorpoint"><span>get<wbr/>Transform<wbr/>Anchor<wbr/>Point</span><a href="#gettransformanchorpoint" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="gettransformanchorpoint-1"><span class="tsd-kind-call-signature">getTransformAnchorPoint</span><span class="tsd-signature-symbol">()</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">x</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TOriginX.html" class="tsd-signature-type tsd-kind-type-alias">TOriginX</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">y</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TOriginY.html" class="tsd-signature-type tsd-kind-type-alias">TOriginY</a> <span class="tsd-signature-symbol">}</span><a href="#gettransformanchorpoint-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">x</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TOriginX.html" class="tsd-signature-type tsd-kind-type-alias">TOriginX</a><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">y</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TOriginY.html" class="tsd-signature-type tsd-kind-type-alias">TOriginY</a> <span class="tsd-signature-symbol">}</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:119</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="getvisibility"><span>get<wbr/>Visibility</span><a href="#getvisibility" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="getvisibility-1"><span class="tsd-kind-call-signature">getVisibility</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">controlKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><a href="#getvisibility-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Returns controls visibility</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span></li>
+<li><span><span class="tsd-kind-parameter">controlKey</span>: <span class="tsd-signature-type">string</span></span>
+<div class="tsd-comment tsd-typography"><p>key where the control is memorized on the</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:200</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="positionhandler"><span>position<wbr/>Handler</span><a href="#positionhandler" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="positionhandler-1"><span class="tsd-kind-call-signature">positionHandler</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">dim</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">finalMatrix</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TMat2D.html" class="tsd-signature-type tsd-kind-type-alias">TMat2D</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">currentControl</span><span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type tsd-kind-class">Control</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a><a href="#positionhandler-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">dim</span>: <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a></span></li>
+<li><span><span class="tsd-kind-parameter">finalMatrix</span>: <a href="../types/fabric.TMat2D.html" class="tsd-signature-type tsd-kind-type-alias">TMat2D</a></span></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span></li>
+<li><span><span class="tsd-kind-parameter">currentControl</span>: <a href="" class="tsd-signature-type tsd-kind-class">Control</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:207</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="render"><span>render</span><a href="#render" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="render-1"><span class="tsd-kind-call-signature">render</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">ctx</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CanvasRenderingContext2D</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">left</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">top</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">styleOverride</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><br/>        <span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><br/>            <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">&lt;</span><br/>                <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/fabric.FabricObjectProps.html" class="tsd-signature-type tsd-kind-interface">FabricObjectProps</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/>                <a href="../interfaces/fabric.SerializedObjectProps.html" class="tsd-signature-type tsd-kind-interface">SerializedObjectProps</a><span class="tsd-signature-symbol">,</span><br/>                <a href="../interfaces/fabric.ObjectEvents.html" class="tsd-signature-type tsd-kind-interface">ObjectEvents</a><span class="tsd-signature-symbol">,</span><br/>            <span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/><br/>                <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerStyle&quot;</span><br/>                <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerSize&quot;</span><br/>                <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerColor&quot;</span><br/>                <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerStrokeColor&quot;</span><br/>                <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerDashArray&quot;</span><br/>                <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;transparentCorners&quot;</span><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#render-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Render function for the control.
+When this function runs the context is unscaled. unrotate. Just retina scaled.
+all the functions will have to translate to the point left,top before starting Drawing
+if they want to draw a control where the position is detected.
+left and top are the result of the positionHandler function</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">ctx</span>: <span class="tsd-signature-type">CanvasRenderingContext2D</span></span>
+<div class="tsd-comment tsd-typography"><p>the context where the control will be drawn</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">left</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>position of the canvas where we are about to render the control.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">top</span>: <span class="tsd-signature-type">number</span></span>
+<div class="tsd-comment tsd-typography"><p>position of the canvas where we are about to render the control.</p>
+</div></li>
+<li><span><span class="tsd-kind-parameter">styleOverride</span>: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><br/>    <span class="tsd-signature-type">Pick</span><span class="tsd-signature-symbol">&lt;</span><br/>        <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">&lt;</span><br/>            <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/fabric.FabricObjectProps.html" class="tsd-signature-type tsd-kind-interface">FabricObjectProps</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/>            <a href="../interfaces/fabric.SerializedObjectProps.html" class="tsd-signature-type tsd-kind-interface">SerializedObjectProps</a><span class="tsd-signature-symbol">,</span><br/>            <a href="../interfaces/fabric.ObjectEvents.html" class="tsd-signature-type tsd-kind-interface">ObjectEvents</a><span class="tsd-signature-symbol">,</span><br/>        <span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/><br/>            <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerStyle&quot;</span><br/>            <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerSize&quot;</span><br/>            <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerColor&quot;</span><br/>            <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerStrokeColor&quot;</span><br/>            <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;cornerDashArray&quot;</span><br/>            <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">&quot;transparentCorners&quot;</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">&gt;</span></span></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span>
+<div class="tsd-comment tsd-typography"><p>the object where the control is about to be rendered</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:248</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="setvisibility"><span>set<wbr/>Visibility</span><a href="#setvisibility" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="setvisibility-1"><span class="tsd-kind-call-signature">setVisibility</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">visibility</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">name</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">?:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">void</span><a href="#setvisibility-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Sets controls visibility</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">visibility</span>: <span class="tsd-signature-type">boolean</span></span>
+<div class="tsd-comment tsd-typography"><p>for the object</p>
+</div></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><code class="tsd-tag">Optional</code><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:206</li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-external">
+<h3 class="tsd-anchor-link" id="shouldactivate"><span>should<wbr/>Activate</span><a href="#shouldactivate" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-external">
+<li class="tsd-is-external">
+<div class="tsd-signature tsd-anchor-link" id="shouldactivate-1"><span class="tsd-kind-call-signature">shouldActivate</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">controlKey</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">fabricObject</span><span class="tsd-signature-symbol">:</span> <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">pointer</span><span class="tsd-signature-symbol">:</span> <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">__namedParameters</span><span class="tsd-signature-symbol">:</span> <a href="../types/fabric.TCornerPoint.html" class="tsd-signature-type tsd-kind-type-alias">TCornerPoint</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><a href="#shouldactivate-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">controlKey</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><span class="tsd-kind-parameter">fabricObject</span>: <a href="fabric.InteractiveFabricObject.html" class="tsd-signature-type tsd-kind-class">InteractiveFabricObject</a></span></li>
+<li><span><span class="tsd-kind-parameter">pointer</span>: <a href="fabric.Point.html" class="tsd-signature-type tsd-kind-class">Point</a></span></li>
+<li><span><span class="tsd-kind-parameter">__namedParameters</span>: <a href="../types/fabric.TCornerPoint.html" class="tsd-signature-type tsd-kind-type-alias">TCornerPoint</a></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in node_modules/fabric/dist/src/controls/Control.d.ts:150</li></ul></aside></div></li></ul></section></section></details></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div>
+<div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
+<h3>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Constructors"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Constructors</summary>
+<div><a href="#constructor" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Constructor"><use href="../assets/icons.svg#icon-512"></use></svg><span>constructor</span></a></div></details>
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
+<div><a href="#actionhandler" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>action<wbr/>Handler</span></a><a href="#actionname" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>action<wbr/>Name</span></a><a href="#angle" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>angle</span></a><a href="#cursorstyle" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>cursor<wbr/>Style</span></a><a href="#mousedownhandler" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>mouse<wbr/>Down<wbr/>Handler</span></a><a href="#mouseuphandler" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>mouse<wbr/>Up<wbr/>Handler</span></a><a href="#offsetx" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>offset<wbr/>X</span></a><a href="#offsety" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>offset<wbr/>Y</span></a><a href="#sizex" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>size<wbr/>X</span></a><a href="#sizey" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>size<wbr/>Y</span></a><a href="#touchsizex" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>touch<wbr/>Size<wbr/>X</span></a><a href="#touchsizey" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>touch<wbr/>Size<wbr/>Y</span></a><a href="#transformanchorpoint" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>transform<wbr/>Anchor<wbr/>Point</span></a><a href="#visible" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>visible</span></a><a href="#withconnection" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>with<wbr/>Connection</span></a><a href="#x" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>x</span></a><a href="#y" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>y</span></a></div></details>
+<details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
+<div><a href="#calccornercoords" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>calc<wbr/>Corner<wbr/>Coords</span></a><a href="#commonrenderprops" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>common<wbr/>Render<wbr/>Props</span></a><a href="#cursorstylehandler" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>cursor<wbr/>Style<wbr/>Handler</span></a><a href="#getactionhandler" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Action<wbr/>Handler</span></a><a href="#getactionname" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Action<wbr/>Name</span></a><a href="#getmousedownhandler" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Mouse<wbr/>Down<wbr/>Handler</span></a><a href="#getmouseuphandler" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Mouse<wbr/>Up<wbr/>Handler</span></a><a href="#gettransformanchorpoint" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Transform<wbr/>Anchor<wbr/>Point</span></a><a href="#getvisibility" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>Visibility</span></a><a href="#positionhandler" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>position<wbr/>Handler</span></a><a href="#render" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>render</span></a><a href="#setvisibility" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Visibility</span></a><a href="#shouldactivate" class="tsd-is-external"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>should<wbr/>Activate</span></a></div></details></div></details></div>
+<div class="site-menu">
+<nav class="tsd-navigation"><a href="../modules.html">react-design-editor</a>
+<ul class="tsd-small-nested-navigation" id="tsd-nav-container">
+<li>Loading...</li></ul></nav></div></div></div><footer>
+<p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer>
+<div class="overlay"></div></body></html>
